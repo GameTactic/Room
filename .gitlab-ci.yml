@@ -50,6 +50,6 @@ deploy-eu:
       "
   dependencies:
     - build-master
-#  when: manual
+  when: manual
   only:
     - master
