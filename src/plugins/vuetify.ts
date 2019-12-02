@@ -12,7 +12,8 @@ import Vuetify, {
   VMenu,
   VList,
   VContent,
-  VCard
+  VCard,
+  VSheet
 } from 'vuetify/lib'
 // import { Ripple } from 'vuetify/lib/directives'
 
@@ -29,7 +30,8 @@ Vue.use(Vuetify, {
     VMenu,
     VList,
     VContent,
-    VCard
+    VCard,
+    VSheet
   },
   directives: { }
 })

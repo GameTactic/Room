@@ -1,7 +1,7 @@
 <template>
-  <v-btn-toggle class="flex-column btn-toggle-margin">
-    <Popout-button :id="id" icon="fa-mouse"/>
-    <Popout-button :id="id" icon="fa-pen"/>
+  <v-btn-toggle class="flex-column btn-toggle-box">
+    <Popout-button :id="id" icon="fa-mouse" tool="ping" :popout="false" />
+    <!--<Popout-button :id="id" icon="fa-pen"/> -->
   </v-btn-toggle>
 </template>
 
@@ -10,7 +10,7 @@ import { Component, Prop, Vue } from 'vue-property-decorator'
 import PopoutButton from './buttons/PopoutButton.vue'
 
 @Component({
-  name: 'App',
+  name: 'MapButtons',
   components: {
     PopoutButton
   }
@@ -20,7 +20,8 @@ export default class MapButtons extends Vue {
 }
 </script>
 <style scoped lang="scss">
-.btn-toggle-margin {
-  margin: 0.5rem;
+.btn-toggle-box{
+  margin: 0.25rem;
+  position: fixed;
 }
 </style>
