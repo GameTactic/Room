@@ -7,15 +7,11 @@
 <script lang="ts">
 import Vue from 'vue'
 import { Component, Prop } from 'vue-property-decorator'
-import Ping from './canvasElements/Ping.vue'
 import { ITool } from '../types/canvas'
 import Konva from 'konva'
 
 @Component({
   name: 'MapCanvas',
-  components: {
-    Ping
-  },
   data () {
     return {
       stageSize: {
