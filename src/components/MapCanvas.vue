@@ -1,5 +1,12 @@
 <template>
-  <v-stage ref="stage" :config="stageSize" class="konva-stage" :onClick="onClickHandler">
+  <v-stage
+    ref="stage"
+    class="konva-stage"
+    :config="stageSize"
+    :onMouseDown="onMouseDownHandler"
+    :onMouseUp="onMouseUpHandler"
+    @mousemove="throttledMethod"
+  >
     <v-layer ref="layer" />
   </v-stage>
 </template>
@@ -9,6 +16,8 @@ import Vue from 'vue'
 import { Component, Prop } from 'vue-property-decorator'
 import { ITool } from '../types/canvas'
 import Konva from 'konva'
+import _ from 'lodash'
+import { addPing } from './ping'
 
 @Component({
   name: 'MapCanvas',
@@ -18,49 +27,64 @@ import Konva from 'konva'
         width: window.innerWidth,
         height: window.innerHeight
       },
-      tools: []
+      tools: [],
+      showPing: false,
+      activeTool: ''
     }
   },
-  methods: {
-    onClickHandler (e:any) : void {
-      // this.$store.dispatch('setCursorPosition', {
-      //   x: e.evt.x,
-      //   y: e.evt.y
-      // })
-      this.$data.tools = this.$store.getters.tools
-      const found = this.$data.tools.find((tool: ITool) => tool.enabled === true)
-      if (found) {
-        const stage = this.$refs.stage.getStage()
-        const layer = this.$refs.layer.getNode()
-        switch (found.name) {
-          case 'ping':
-            const id = Math.random()
-            const amplitude = 25
-            const period = 500
-            let radius = 0
-
-            let item = new Konva.Circle({
-              x: e.evt.x,
-              y: e.evt.y,
-              radius: radius,
-              stroke: 'red',
-              fill: 'white',
-              strokeWidth: 5
-            })
-
-            const anim = new Konva.Animation((frame: any) => {
-              radius = amplitude * Math.sin((frame.time * Math.PI) / 1000)
-              layer.add(item)
-            }, layer)
-            anim.start()
-            setTimeout(() => {
-              console.log('stopped')
-              radius = 0
-              anim.stop()
-            }, period)
-            // stage.draw()
-            break
+  created () {
+    this.$store.subscribe((mutation: any, state: any) => {
+      if (mutation.type === 'SET_TOOLS') {
+        this.$data.tools = this.$store.getters.tools
+        const found = this.$data.tools.find((tool: ITool) => tool.enabled)
+        if (found) {
+          this.$data.showPing = false
+          this.$data.activeTool = found.name
+        } else {
+          this.$data.activeTool = ''
         }
+      }
+    })
+  },
+  methods: {
+    // UNCOMMENT AND PLEASE STOP THIS FROM COMPLAINING
+    /*
+      Property 'throttledMethod' is incompatible with index signature.
+      Type '((this: never, e: any) => void) & Cancelable' is not assignable to type '(this: Vue, ...args: any[]) => any'.
+      The 'this' types of each signature are incompatible.
+        Type 'Vue' is not assignable to type 'never'.
+    */
+    // throttledMethod: _.throttle(function (e) {
+    //   this.onMouseMoveHandler(e)
+    // }, 75),
+    onMouseUpHandler (e: any) : void {
+      // @ts-ignore - property 'getNode' does not exist on type 'Vue | Element | Vue[] | Element[]'
+      const layer = this.$refs.layer.getNode()
+      switch (this.$data.activeTool) {
+        case 'ping':
+          this.$data.showPing = false
+          break
+      }
+    },
+    onMouseDownHandler (e: any) : void {
+      // @ts-ignore - property 'getNode' does not exist on type 'Vue | Element | Vue[] | Element[]'
+      const layer = this.$refs.layer.getNode()
+      switch (this.$data.activeTool) {
+        case 'ping':
+          this.$data.showPing = true
+          addPing(e, layer)
+          break
+      }
+    },
+    onMouseMoveHandler (e:any) : void {
+      // @ts-ignore - property 'getNode' does not exist on type 'Vue | Element | Vue[] | Element[]'
+      const layer = this.$refs.layer.getNode()
+      switch (this.$data.activeTool) {
+        case 'ping':
+          if (this.$data.showPing) {
+            addPing(e, layer)
+            break
+          }
       }
     }
   }
