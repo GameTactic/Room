@@ -1,6 +1,6 @@
 FROM node:lts-alpine as build
 WORKDIR /app
-RUN npm install -g yarn
+#RUN npm install -g yarn
 COPY package*.json ./
 RUN yarn install
 COPY . .
