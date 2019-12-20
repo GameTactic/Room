@@ -80,6 +80,7 @@ export default class MapButtons extends mixins(canvasTools) {
       this.$data.enableTool = true
       const layer = this.$refs.layer.getNode()
       const activeTool = this.$data.activeTool
+      // @ts-ignore
       this[activeTool]().onClick(e, layer)
     }
   }
@@ -88,6 +89,7 @@ export default class MapButtons extends mixins(canvasTools) {
     if (this.$data.enableTool && this.$data.activeTool) {
       const layer = this.$refs.layer.getNode()
       const activeTool = this.$data.activeTool
+      // @ts-ignore
       this[activeTool]().onClick(e, layer)
     }
   }
