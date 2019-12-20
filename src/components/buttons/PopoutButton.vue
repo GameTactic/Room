@@ -41,7 +41,6 @@ export default class PopoutButton extends Vue {
   @Prop() private tool!: string;
 
   onButtonClickHandler () {
-    console.log(`${this.$props.tool} has been clicked`)
     this.$store.dispatch('setTools', this.$props.tool)
   }
 }
