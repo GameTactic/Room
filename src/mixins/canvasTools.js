@@ -31,7 +31,6 @@ export const canvasTools = {
     freedraw () {
       return {
         onClick (e, stage, layer, tool) {
-          console.log(e.evt, tool)
           // created canvas we can add to layer as "Konva.Image" element
           const line = new Konva.Line({
             stroke: tool.colour,
@@ -41,7 +40,6 @@ export const canvasTools = {
             points: [e.evt.x, e.evt.y]
           })
           layer.add(line)
-          console.log(line.points())
           const newPoints = line.points().concat([e.evt.x + 3, e.evt.y + 3])
           line.points(newPoints)
           layer.batchDraw()
