@@ -1,31 +1,39 @@
 <template>
   <div class="full-width-height">
-    <map-canvas :id="id" />
-    <Nav-small class="nav-small" :id="id"/>
-    <Nav-large class="nav-large" :id="id"/>
-    <map-buttons :id="id" />
-    <map-entity-panel :id="id" />
+    <the-canvas :id="id" />
+    <the-nav-extra-large class="the-nav-extra-large" :id="id"/>
+    <the-nav-small class="the-nav-small" :id="id"/>
+    <the-nav-extra-small class="the-nav-extra-small" :id="id"/>
+    <the-tool-panel :id="id" />
+    <the-entity-panel :id="id" />
   </div>
 </template>
 
 <script>
-import NavLarge from '@/components/NavLarge.vue'
-import NavSmall from '@/components/NavSmall.vue'
-import MapButtons from '@/components/MapButtons.vue'
-import MapCanvas from '@/components/MapCanvas.vue'
-import EntityPanel from '@/components/EntityPanel.vue'
-import MapEntityPanel from '@/components/MapEntityPanel.vue'
+import TheNavExtraLarge from '@/components/navigation/TheNavExtraLarge.vue'
+import TheNavSmall from '@/components/navigation/TheNavSmall.vue'
+import TheNavExtraSmall from '@/components/navigation/TheNavExtraSmall.vue'
+import TheToolPanel from '@/components/TheToolPanel.vue'
+import TheCanvas from '@/components/TheCanvas.vue'
+import TheEntityPanel from '@/components/TheEntityPanel.vue'
 export default {
   name: 'Room',
   props: {
     id: String
   },
   components: {
-    NavLarge: NavLarge,
-    NavSmall: NavSmall,
-    MapButtons,
-    MapCanvas,
-    MapEntityPanel
+    TheNavExtraLarge,
+    TheNavSmall,
+    TheNavExtraSmall,
+    TheToolPanel,
+    TheCanvas,
+    TheEntityPanel
+  },
+  created () {
+    let vm = this
+    this.$socket.onopen = () => {
+      vm.$socket.send(`join:${vm.$props.id}`)
+    }
   }
 }
 </script>
@@ -34,13 +42,18 @@ export default {
   width: 100%;
   height: 100%;
 }
-@media (max-width: 1023px) {
-  .nav-large {
+@media (max-width: 575px) {
+  .the-nav-extra-large, .the-nav-small {
     display: none;
   }
 }
-@media (min-width: 1024px) {
-  .nav-small {
+@media (min-width: 576px) and (max-width: 1199px) {
+  .the-nav-extra-large, .the-nav-extra-small {
+    display: none;
+  }
+}
+@media (min-width: 1200px) {
+  .the-nav-small, .the-nav-extra-small {
     display: none;
   }
 }
