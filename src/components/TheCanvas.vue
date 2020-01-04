@@ -82,9 +82,7 @@ export default class TheCanvas extends mixins(canvasTools) {
           vm.$data.enabledTool = receivedData.type
           vm.throttleToolRender(receivedData.data.e, true)
         }
-      } catch (err) {
-        console.error(err.message)
-      }
+      } catch (err) {}
     }
   }
 
