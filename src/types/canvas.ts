@@ -1,4 +1,6 @@
 export interface ITool {
     name: string;
-    enabled: boolean;
+    colour: string;
+    size: number;
+    [key: string]: any;
 }

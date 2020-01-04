@@ -1,6 +1,6 @@
 <template>
   <v-sheet
-    class="entity-panel-container"
+    class="the-entity-panel-sheet"
     :elevation="5"
   >
     Entity Settings go here!
@@ -11,14 +11,14 @@
 import { Component, Prop, Vue } from 'vue-property-decorator'
 
 @Component({
-  name: 'MapEntityButtons'
+  name: 'TheEntityPanel'
 })
 export default class MapButtons extends Vue {
   @Prop() private id!: string;
 }
 </script>
 <style scoped lang="scss">
-.entity-panel-container {
+.the-entity-panel-sheet {
   right: 0.25rem;
   margin: 0.25rem;
   height: 75%;
