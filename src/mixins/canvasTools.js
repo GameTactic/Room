@@ -4,15 +4,15 @@ export const canvasTools = {
   methods: {
     ping () {
       return {
-        onClick (e, layer) {
+        onClick (e, stage, layer, tool) {
           const amplitude = 25
           const period = 500
           const item = new Konva.Circle({
             x: e.evt.x,
             y: e.evt.y,
             radius: 0,
-            stroke: 'red',
-            strokeWidth: 5
+            stroke: tool.colour,
+            strokeWidth: tool.size
           })
           layer.add(item)
           const anim = new Konva.Animation((frame) => {
@@ -25,6 +25,46 @@ export const canvasTools = {
             anim.stop()
             layer.batchDraw()
           }, period)
+        }
+      }
+    },
+    freedraw () {
+      return {
+        onClick (e, stage, layer, tool) {
+          console.log(e.evt, tool)
+          // created canvas we can add to layer as "Konva.Image" element
+          const line = new Konva.Line({
+            stroke: tool.colour,
+            strokeWidth: Number(tool.size),
+            lineJoin: 'round',
+            globalCompositeOperation: 'source-over',
+            points: [e.evt.x, e.evt.y]
+          })
+          layer.add(line)
+          console.log(line.points())
+          const newPoints = line.points().concat([e.evt.x + 3, e.evt.y + 3])
+          line.points(newPoints)
+          layer.batchDraw()
+
+          // // Now we need to get access to context element
+          // const context = canvas.getContext('2d')
+          // context.strokeStyle = tool.colour
+          // context.lineJoin = 'round'
+          // context.lineWidth = tool.size
+
+          // let pointerPosition = stage.getPointerPosition()
+          // context.globalCompositeOperation = 'source-over'
+          // context.beginPath()
+
+          // const localPosition = {
+          //   x: pointerPosition.x,
+          //   y: pointerPosition.y
+          // }
+
+          // context.lineTo(e.evt.x, e.evt.y)
+          // // context.closePath()
+          // context.stroke()
+          // layer.batchDraw()
         }
       }
     }
