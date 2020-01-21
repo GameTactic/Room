@@ -1,6 +1,6 @@
 <template>
     <v-btn-toggle class="flex-column side-toolbar">
-      <slot></slot>
+      <slot/>
     </v-btn-toggle>
 </template>
 
