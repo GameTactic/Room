@@ -6,9 +6,6 @@ import './registerServiceWorker'
 import router from './router/index'
 import store from './store'
 
-let socket = new WebSocket('ws://localhost:80')
-Vue.prototype.$socket = socket
-
 Vue.config.productionTip = false
 Vue.use(VueKonva)
 

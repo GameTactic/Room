@@ -9,7 +9,7 @@
 import { Component, Prop, Vue } from 'vue-property-decorator'
 import ToolContainer from './canvas-tools/ToolContainer.vue'
 import FreedrawTemplate from './canvas-tools/templates/Freedraw.vue'
-import { ITool } from '../types/canvas'
+import { Tool } from '../tools/Tool'
 
 @Component({
   name: 'TheToolPanel',
@@ -21,7 +21,7 @@ import { ITool } from '../types/canvas'
 export default class TheToolPanel extends Vue {
   @Prop() private id!: string;
 
-  tools: ITool[] = []
+  tools: Tool[] = []
 }
 </script>
 <style scoped lang="scss">
