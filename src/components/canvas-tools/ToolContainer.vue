@@ -32,31 +32,35 @@
 
 <script lang="ts">
 import { Component, Prop, Vue } from 'vue-property-decorator'
-import { ITool } from '../../types/canvas'
+import { Tool } from '../../tools/Tool'
+import { namespace } from 'vuex-class'
+import { Namespaces } from '@/store'
+import { ToolGetters, ToolsAction } from '@/store/modules/tools'
 
-@Component({
-  name: 'ToolContainer'
-})
+const Tools = namespace(Namespaces.TOOLS)
+
+  @Component({
+    name: 'ToolContainer'
+  })
 export default class ToolContainer extends Vue {
-  @Prop() private id!: string;
-  @Prop() private icon!: string;
-  @Prop() private popout!: boolean;
-  @Prop() private toolname!: string;
+    @Prop() private id!: string
+    @Prop() private icon!: string
+    @Prop() private popout!: boolean
+    @Prop() private toolname!: string
+    @Tools.Action(ToolsAction.ENABLE_TOOL) enableTool!: (toolName: string) => void
+    @Tools.Getter(ToolGetters.ACTIVE_TOOL) enabledTool?: Tool
 
-  onButtonClickHandler () {
-    if (this.$store.getters.enabledTool) {
-      this.$store.dispatch('setDisabledTool')
-    } else {
-      this.$store.dispatch('setEnabledTool', this.toolname)
+    onButtonClickHandler () {
+      if (this.enabledTool?.name !== this.toolname) {
+        this.enableTool(this.toolname)
+      }
     }
-    this.$store.dispatch('setDisabled')
-  }
 }
 
 </script>
 <style scoped lang="scss">
-.v-menu-content-class {
-  margin-left: 5px;
-  box-shadow: 0px 4px 4px -3px rgba(0, 0, 0, 0.2), 0px 2px 2px 0px rgba(0, 0, 0, 0.14), 0px 1px 5px 0px rgba(0, 0, 0, 0.12)
-}
+  .v-menu-content-class {
+    margin-left: 5px;
+    box-shadow: 0px 4px 4px -3px rgba(0, 0, 0, 0.2), 0px 2px 2px 0px rgba(0, 0, 0, 0.14), 0px 1px 5px 0px rgba(0, 0, 0, 0.12)
+  }
 </style>

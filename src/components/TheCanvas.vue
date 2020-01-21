@@ -7,139 +7,140 @@
     @mouseup="onMouseUpHandler"
     @mousemove="throttleToolRender"
   >
-    <v-layer ref="layer" />
+    <v-layer ref="layer"/>
   </v-stage>
 </template>
 
 <script lang="ts">
-import Vue from 'vue'
+/* eslint-disable @typescript-eslint/no-this-alias */
+
 import { Prop } from 'vue-property-decorator'
-import Component, { mixins } from 'vue-class-component'
-import { ITool } from '../types/canvas'
-import Konva from 'konva'
+import Component from 'vue-class-component'
+import { Tool } from '@/tools/Tool'
 import throttle from 'lodash.throttle'
-import { KonvaNodeEvent } from 'konva/types/types'
-const { canvasTools } = require('../mixins/canvasTools')
+import Vue from 'vue'
+import { Namespaces } from '@/store'
+import { Action, Getter, namespace } from 'vuex-class'
+import { ToolGetters, ToolsAction } from '@/store/modules/tools'
+import Konva from 'konva'
+import { SocketActions, SocketGetters } from '@/store/modules/socket'
 
-interface IVmThis {
-    [key: string]: any;
-}
+const Tools = namespace(Namespaces.TOOLS)
+const Sockets = namespace(Namespaces.SOCKET)
 
-@Component({
-  name: 'TheCanvas',
-  methods: {
-    throttleToolRender: throttle(function (this: any, e:any, websocket: boolean = false) {
+  @Component({
+    name: 'TheCanvas'
+  })
+export default class TheCanvas extends Vue {
+    @Prop() private id!: string
+    @Tools.Action(ToolsAction.DISABLE) disable!: () => void
+    @Action(`tools/${ToolsAction.ENABLE}`) enable!: () => void
+    @Action(`tools/${ToolsAction.ENABLE_TOOL}`) enableTool !: (name: string) => void
+    @Getter(`tools/${ToolGetters.ENABLED}`) enabled!: boolean
+    @Getter(`tools/${ToolGetters.TOOLS}`) tools!: Tool[]
+    @Getter(`tools/${ToolGetters.ACTIVE_TOOL}`) activeTool!: Tool
+    @Sockets.Getter(SocketGetters.SOCKET) socket!: WebSocket
+    @Sockets.Action(SocketActions.SEND_IF_OPEN) send!: (message: string) => void
+
+    stageSize = {
+      width: window.innerWidth,
+      height: window.innerHeight
+    }
+    $refs!: {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      layer: any;
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      stage: any;
+    }
+
+    created () {
+      window.addEventListener('resize', (e) => {
+        const currentTarget = e.currentTarget as Window
+        if (currentTarget) {
+          this.$data.stageSize = {
+            width: currentTarget.innerWidth,
+            height: currentTarget.innerHeight
+          }
+        }
+      }, true)
+      this.socket.onmessage = (data: MessageEvent) => {
+        try {
+          const receivedData = JSON.parse(data.data)
+          if (receivedData.type && receivedData.data.e) {
+            this.enableTool(receivedData.type)
+            this.throttleToolRender(receivedData.data.e, true)
+          }
+        } catch (err) {
+        }
+      }
+    }
+
+    beforeDestroy () {
+      window.removeEventListener('resize', () => null)
+    }
+
+    webSocketSendData (enabledTool: string, e: Konva.KonvaPointerEvent) {
+      return JSON.stringify({
+        type: enabledTool,
+        data: {
+          e: {
+            evt: {
+              x: e.evt.x,
+              y: e.evt.y
+            }
+          }
+        }
+      })
+    }
+
+    onMouseUpHandler (): void {
+      if (this.enabled) {
+        this.disable()
+      }
+    }
+
+    onMouseDownHandler (e: Konva.KonvaPointerEvent): void {
+      if (this.activeTool) {
+        this.enable()
+        this.socket.send(this.webSocketSendData(this.activeTool.name, e))
+      }
+    }
+
+    onMouseMoveHandler (e: Konva.KonvaPointerEvent): void {
+      if (this.activeTool && this.enabled) {
+        this.activeTool.action(e, this.stageNode, this.layerNode)
+        if (this.socket.readyState === WebSocket.OPEN) {
+          this.socket.send(this.webSocketSendData(this.activeTool.name, e))
+        }
+      }
+    }
+
+    onWebSocketHandler (e: Event): void {
+      this.activeTool.action(e as unknown as Konva.KonvaPointerEvent, this.stageNode, this.layerNode)
+    }
+
+    throttleToolRender = throttle((e: Event, websocket = false) => {
       if (!websocket) {
-        this.onMouseMoveHandler(e)
+        this.onMouseMoveHandler(e as unknown as Konva.KonvaPointerEvent)
       } else {
         this.onWebSocketHandler(e)
       }
     }, 75)
-  }
-})
 
-export default class TheCanvas extends mixins(canvasTools) {
-  @Prop() private id!: string;
-
-  stageSize = {
-    width: window.innerWidth,
-    height: window.innerHeight
-  }
-  enabledTool: string = ''
-  enabled: boolean = false
-  tools: ITool[] = []
-  $refs!: {
-    layer: any
-  }
-
-  created () {
-    let vm: IVmThis = this
-    vm.$data.tools = vm.$store.getters.tools
-    vm.$store.subscribe((mutation: any, state: any) => {
-      if (mutation.type === 'SET_ENABLED_TOOL') {
-        vm.$data.enabledTool = vm.$store.getters.enabledTool
-      } else if (mutation.type === 'SET_DISABLED_TOOL') {
-        vm.$data.enabledTool = ''
-      } else if (mutation.type === 'SET_ENABLED') {
-        vm.$data.enabled = true
-      } else if (mutation.type === 'SET_DISABLED') {
-        vm.$data.enabled = false
-      }
-    })
-    window.addEventListener('resize', (e) => {
-      const currentTarget = e.currentTarget as Window
-      if (currentTarget) {
-        vm.$data.stageSize = {
-          width: currentTarget.innerWidth,
-          height: currentTarget.innerHeight
-        }
-      }
-    }, true)
-    vm.$socket.onmessage = (data: any) => {
-      try {
-        const receivedData = JSON.parse(data.data)
-        if (receivedData.type && receivedData.data.e) {
-          vm.$data.enabledTool = receivedData.type
-          vm.throttleToolRender(receivedData.data.e, true)
-        }
-      } catch (err) {}
+    get stageNode () {
+      return this.$refs.stage.getNode()
     }
-  }
 
-  beforeDestroy () {
-    window.removeEventListener('resize', (e: any) => {})
-  }
-
-  webSocketSendData (enabledTool: string, e: any) {
-    return JSON.stringify({
-      type: enabledTool,
-      data: {
-        e: {
-          evt: {
-            x: e.evt.x,
-            y: e.evt.y
-          }
-        }
-      }
-    })
-  }
-
-  onMouseUpHandler (e: any) : void {
-    this.$store.dispatch('setDisabled')
-  }
-
-  onMouseDownHandler (e: any) : void {
-    let vm: IVmThis = this
-    const enabledTool = vm.$data.enabledTool
-    vm.$store.dispatch('setEnabled')
-    if (enabledTool) {
-      vm[enabledTool]().onClick(e, vm.$refs.stage.getNode(), vm.$refs.layer.getNode(), this.$store.getters.tool(enabledTool))
-      vm.$socket.send(this.webSocketSendData(enabledTool, e))
+    get layerNode () {
+      return this.$refs.layer.getNode()
     }
-  }
-
-  onMouseMoveHandler (e: any) : void {
-    let vm: IVmThis = this
-    const enabledTool = vm.$data.enabledTool
-    if (enabledTool && vm.$data.enabled) {
-      vm[enabledTool]().onClick(e, vm.$refs.stage.getNode(), vm.$refs.layer.getNode(), this.$store.getters.tool(enabledTool))
-      vm.$socket.send(this.webSocketSendData(enabledTool, e))
-    }
-  }
-
-  onWebSocketHandler (e: Event) : void {
-    let vm: IVmThis = this
-    const enabledTool = vm.$data.enabledTool
-    const layer = vm.$refs.layer.getNode()
-    // vm[enabledTool]().onClick(e, layer, this.$store.getters.tool(enabledTool))
-  }
 }
 </script>
 <style scoped lang="scss">
-.konva-stage {
-  background-color: white;
-  position: absolute;
-}
+  .konva-stage {
+    background-color: white;
+    position: absolute;
+  }
 </style>
 
 <!--
