@@ -22,45 +22,51 @@
 </template>
 
 <script lang="ts">
-import { Component, Prop, Vue } from 'vue-property-decorator'
-import { ITool } from '../../../types/canvas'
+import { Component, Vue } from 'vue-property-decorator'
+import { Tool } from '@/tools/Tool'
+import { namespace } from 'vuex-class'
+import { Namespaces } from '@/store'
+import { ToolGetters, ToolsAction } from '@/store/modules/tools'
 
-@Component({
-  name: 'Freedraw',
-  computed: {
-    penSizeHint () : string {
-      return `Size: ${this.$store.getters.tool('freedraw', 'size')}`
-    },
-    penSize: {
-      get () {
-        return this.$store.getters.tool('freedraw', 'size')
-      },
-      set (newValue: string) {
-        this.$store.dispatch('setTool', { name: 'freedraw', size: newValue })
-      }
-    },
-    penColour: {
-      get () {
-        return this.$store.getters.tool('freedraw', 'colour')
-      },
-      set (newValue) {
-        let colour = newValue
-        if (newValue.hexa) {
-          colour = newValue.hexa
-        }
-        this.$store.dispatch('setTool', { name: 'freedraw', colour })
-      }
-    }
-  }
-})
+const Tools = namespace(Namespaces.TOOLS)
+
+  @Component({
+    name: 'Freedraw',
+    computed: {}
+  })
 export default class PopoutButton extends Vue {
-  swatches = [
-    ['#FF0000', '#AA0000', '#550000'],
-    ['#FFFF00', '#AAAA00', '#555500'],
-    ['#00FF00', '#00AA00', '#005500'],
-    ['#00FFFF', '#00AAAA', '#005555'],
-    ['#0000FF', '#0000AA', '#000055']
-  ]
+    @Tools.Getter(ToolGetters.TOOL) findTool!: (name: string) => Tool
+    @Tools.Action(ToolsAction.SET_TOOL) setTool!: (tool: Tool) => void
+    swatches = [
+      ['#FF0000', '#AA0000', '#550000'],
+      ['#FFFF00', '#AAAA00', '#555500'],
+      ['#00FF00', '#00AA00', '#005500'],
+      ['#00FFFF', '#00AAAA', '#005555'],
+      ['#0000FF', '#0000AA', '#000055']
+    ]
+
+    penSizeHint (): string {
+      return `Size: ${this.penSize}`
+    }
+
+    get penSize () {
+      return this.findTool('freedraw').size
+    }
+
+    set penSize (newValue: number) {
+      const tool: Tool = this.findTool('freedraw')
+
+      this.setTool({ ...tool, size: newValue })
+    }
+
+    get penColour (): string {
+      return this.findTool('freedraw').colour
+    }
+
+    set penColour (newValue: string) {
+      const tool: Tool = this.findTool('freedraw')
+      this.setTool({ ...tool, colour: newValue })
+    }
 }
 
 </script>
@@ -68,7 +74,7 @@ export default class PopoutButton extends Vue {
 
 </style>
 <style lang="scss">
-.v-color-picker__controls {
-  display: none;
-}
+  .v-color-picker__controls {
+    display: none;
+  }
 </style>

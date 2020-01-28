@@ -1,0 +1,5 @@
+vue.config.js
+jest.config.js
+postcss.config.js
+babel.config.js
+*.d.ts
