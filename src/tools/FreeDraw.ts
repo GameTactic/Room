@@ -4,8 +4,8 @@ import Konva from 'konva'
 export default class FreeDraw implements Tool {
   // eslint-disable-next-line no-useless-constructor
   constructor (public readonly name: string,
-               public readonly size: number,
-               public readonly colour: string) {
+               public size: number,
+               public colour: string) {
   }
 
   action (e: Konva.KonvaPointerEvent, stage: Konva.Stage | null, layer: Konva.Layer): void {
