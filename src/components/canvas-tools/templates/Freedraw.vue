@@ -36,7 +36,8 @@ const Tools = namespace(Namespaces.TOOLS)
   })
 export default class PopoutButton extends Vue {
     @Tools.Getter(ToolGetters.TOOL) findTool!: (name: string) => Tool
-    @Tools.Action(ToolsAction.SET_TOOL) setTool!: (tool: Tool) => void
+    @Tools.Action(ToolsAction.SET_COLOUR) setColour!: (colour: string) => void
+    @Tools.Action(ToolsAction.SET_SIZE) setSize!: (size: number) => void
     swatches = [
       ['#FF0000', '#AA0000', '#550000'],
       ['#FFFF00', '#AAAA00', '#555500'],
@@ -54,9 +55,7 @@ export default class PopoutButton extends Vue {
     }
 
     set penSize (newValue: number) {
-      const tool: Tool = this.findTool('freedraw')
-
-      this.setTool({ ...tool, size: newValue })
+      this.setSize(newValue)
     }
 
     get penColour (): string {
@@ -64,8 +63,7 @@ export default class PopoutButton extends Vue {
     }
 
     set penColour (newValue: string) {
-      const tool: Tool = this.findTool('freedraw')
-      this.setTool({ ...tool, colour: newValue })
+      this.setColour(newValue)
     }
 }
 
