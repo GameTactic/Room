@@ -15,7 +15,9 @@ export enum ToolsAction {
   DISABLE_TOOL = 'disableTool',
   ENABLE = 'enable',
   DISABLE = 'disable',
-  SET_TOOL = 'setTool'
+  SET_TOOL = 'setTool',
+  SET_COLOUR = 'setColour',
+  SET_SIZE = 'setSize'
 }
 
 export interface ToolState {
@@ -30,7 +32,9 @@ export enum ToolsMutation {
   SET_DISABLED_TOOL = 'SET_DISABLED_TOOL',
   SET_ENABLED = 'SET_ENABLED',
   SET_DISABLED = 'SET_DISABLED',
-  SET_TOOL = 'SET_TOOL'
+  SET_TOOL = 'SET_TOOL',
+  SET_COLOUR = 'SET_COLOUR',
+  SET_SIZE = ' SET_SIZE'
 }
 
 type ToolActionContext = ActionContext<ToolState, {}>;
@@ -76,6 +80,16 @@ const ToolModule: Module<ToolState, {}> = {
       if (found) {
         state.activeTool = payload
       }
+    },
+    [ToolsMutation.SET_COLOUR] (state: ToolState, colour: string) {
+      if (state.activeTool) {
+        state.activeTool.colour = colour
+      }
+    },
+    [ToolsMutation.SET_SIZE] (state: ToolState, size: number) {
+      if (state.activeTool) {
+        state.activeTool.size = size
+      }
     }
   },
   actions: {
@@ -93,6 +107,12 @@ const ToolModule: Module<ToolState, {}> = {
     },
     [ToolsAction.SET_TOOL] (context: ToolActionContext, tool: Tool) {
       context.commit(ToolsMutation.SET_TOOL, tool)
+    },
+    [ToolsAction.SET_COLOUR] (context: ToolActionContext, colour: string) {
+      context.commit(ToolsMutation.SET_COLOUR, colour)
+    },
+    [ToolsAction.SET_SIZE] (context: ToolActionContext, size: number) {
+      context.commit(ToolsMutation.SET_SIZE, size)
     }
   }
 }
