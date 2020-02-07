@@ -29,13 +29,17 @@
 <script lang="ts">
 import { Component, Prop, Vue } from 'vue-property-decorator'
 
-@Component
-export default class Nav extends Vue {
+@Component({
+  name: 'TheNavExtraLarge'
+})
+export default class TheNavExtraLarge extends Vue {
   @Prop() private id!: string;
 }
+
 </script>
 <style scoped lang="scss">
 .navbar-row {
+  margin: 0px;
    div {
     padding: 0px;
   }
@@ -65,8 +69,7 @@ export default class Nav extends Vue {
 }
 
 .navbar-toolbar-center {
-  background-color: $room-background;
-  color: $room-navbar-text;
+  color: black;
 }
 
 .navbar-toolbar-right {

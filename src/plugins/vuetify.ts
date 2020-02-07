@@ -12,7 +12,10 @@ import Vuetify, {
   VMenu,
   VList,
   VContent,
-  VCard
+  VCard,
+  VSheet,
+  VColorPicker,
+  VSlider
 } from 'vuetify/lib'
 // import { Ripple } from 'vuetify/lib/directives'
 
@@ -29,12 +32,16 @@ Vue.use(Vuetify, {
     VMenu,
     VList,
     VContent,
-    VCard
+    VCard,
+    VSheet,
+    VColorPicker,
+    VSlider
   },
   directives: { }
 })
 
-const opts:Object = {
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const opts: Record<string, any> = {
   icons: {
     iconfont: 'fa' // 'mdi' || 'mdiSvg' || 'md' || 'fa' || 'fa4'
   }

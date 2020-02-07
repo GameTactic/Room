@@ -1,17 +1,19 @@
 <template>
-  <v-btn-toggle class="flex-column btn-toggle-margin">
+  <side-toolbar>
     <Popout-button :id="id" icon="fa-mouse"/>
     <Popout-button :id="id" icon="fa-pen"/>
-  </v-btn-toggle>
+  </side-toolbar>
 </template>
 
 <script lang="ts">
 import { Component, Prop, Vue } from 'vue-property-decorator'
-import PopoutButton from './buttons/PopoutButton.vue'
+import PopoutButton from '../buttons/PopoutButton.vue'
+import SideToolbar from './SideToolbar.vue'
 
 @Component({
-  name: 'App',
+  name: 'MapButtons',
   components: {
+    SideToolbar,
     PopoutButton
   }
 })
