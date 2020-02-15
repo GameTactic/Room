@@ -2,7 +2,6 @@ import { ActionContext, Module } from 'vuex'
 import { Tool } from '@/tools/Tool'
 import Ping from '@/tools/Ping'
 import FreeDraw from '@/tools/FreeDraw'
-import Erase from '@/tools/Erase'
 
 export enum ToolGetters {
   ACTIVE_TOOL = 'activeTool',
@@ -49,8 +48,7 @@ const ToolModule: Module<ToolState, {}> = {
       enabled: true,
       tools: [
         new Ping('ping', 5, '#005555'),
-        new FreeDraw('freedraw', 2, '#FF0000'),
-        new Erase('erase', 2, '#FFFFFF')
+        new FreeDraw('freedraw', 2, '#FF0000')
       ]
     }
   },
