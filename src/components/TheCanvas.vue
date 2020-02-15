@@ -65,7 +65,7 @@ export default class TheCanvas extends Vue {
       }, true)
       this.socket.onmessage = (data: MessageEvent) => {
         try {
-          const receivedData = JSON.parse(data.data)
+          const receivedData = JSON.parse(data.data).payload
           if (receivedData.type && receivedData.data.e) {
             this.enableTool(receivedData.type)
             this.throttleToolRender(receivedData.data.e, true)
