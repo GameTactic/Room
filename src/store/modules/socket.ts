@@ -18,7 +18,7 @@ const SocketModule: Module<SocketState, {}> = {
   namespaced: true,
   state () {
     return {
-      socket: new WebSocket('wss://echo.eu.gametactic.eu')
+      socket: new WebSocket(process.env.ECHO_SERVER || 'wss://echo.eu.gametactic.eu')
     }
   },
   getters: {
