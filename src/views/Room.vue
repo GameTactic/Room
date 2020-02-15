@@ -41,7 +41,8 @@ export default class extends Vue {
 
     created () {
       this.socket.onopen = () => {
-        this.socket.send(`join:${this.id}`)
+        // eslint-disable-next-line @typescript-eslint/camelcase
+        this.socket.send(JSON.stringify({ join_room: this.id }))
       }
     }
 }
