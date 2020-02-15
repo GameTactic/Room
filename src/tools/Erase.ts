@@ -1,7 +1,7 @@
 import { Tool } from '@/tools/Tool'
 import Konva from 'konva'
 
-export default class FreeDraw implements Tool {
+export default class Erase implements Tool {
   // eslint-disable-next-line no-useless-constructor
   constructor (public readonly name: string,
                public size: number,
@@ -19,10 +19,10 @@ export default class FreeDraw implements Tool {
     if (!this.isDrawing) {
       this.isDrawing = true
       this.line = new Konva.Line({
-        stroke: this.colour,
         strokeWidth: Number(this.size),
         lineJoin: 'bevel',
-        globalCompositeOperation: 'source-over',
+        stroke: this.colour,
+        globalCompositeOperation: 'destination-out',
         points: [e.evt.x, e.evt.y],
         bezier: true,
         lineCap: 'round'

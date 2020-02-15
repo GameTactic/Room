@@ -7,8 +7,13 @@ export default class Ping implements Tool {
                public readonly size: number,
                public readonly colour: string) {
   }
+  isDrawing = false;
+  stop () {
+    this.isDrawing = false
+  }
 
   action = (e: Konva.KonvaPointerEvent, stage: Konva.Stage | null, layer: Konva.Layer): void => {
+    this.isDrawing = true
     const amplitude = 25
     const period = 500
     const item = new Konva.Circle({

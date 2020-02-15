@@ -8,6 +8,6 @@ export interface Tool {
   colour: string;
   size: number;
   action: PointerHandler;
-
+  stop: PointerHandler;
   [key: string]: any;
 }

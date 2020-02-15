@@ -43,7 +43,7 @@ export class CanvasTools extends Vue {
         const line = new Konva.Line({
           stroke: tool.colour,
           strokeWidth: Number(tool.size),
-          lineJoin: 'round',
+          lineJoin: 'butt',
           globalCompositeOperation: 'source-over',
           points: [e.evt.x, e.evt.y]
         })

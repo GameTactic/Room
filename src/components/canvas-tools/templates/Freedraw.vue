@@ -46,7 +46,7 @@ export default class PopoutButton extends Vue {
       ['#0000FF', '#0000AA', '#000055']
     ]
 
-    penSizeHint (): string {
+    get penSizeHint (): string {
       return `Size: ${this.penSize}`
     }
 
@@ -68,10 +68,8 @@ export default class PopoutButton extends Vue {
 }
 
 </script>
-<style scoped lang="scss">
 
-</style>
-<style lang="scss">
+<style scoped lang="scss">
   .v-color-picker__controls {
     display: none;
   }

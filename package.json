@@ -20,7 +20,8 @@
     "vue-router": "^3.0.6",
     "vue-socket.io-extended": "^4.0.1",
     "vuex": "^3.1.2",
-    "vuex-class": "^0.3.2"
+    "vuex-class": "^0.3.2",
+    "yarn": "^1.22.0"
   },
   "devDependencies": {
     "@babel/plugin-proposal-optional-chaining": "^7.8.3",

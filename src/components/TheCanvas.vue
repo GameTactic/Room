@@ -101,6 +101,7 @@ export default class TheCanvas extends Vue {
 
     onMouseDownHandler (e: Konva.KonvaPointerEvent): void {
       if (this.activeTool) {
+        this.activeTool.stop(e, this.stageNode, this.layerNode)
         this.enable()
         this.socket.send(this.webSocketSendData(this.activeTool.name, e))
       }
