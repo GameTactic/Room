@@ -4,6 +4,7 @@ import { CanvasElement } from '@/types/Canvas'
 import Ping from '@/tools/Ping'
 import FreeDraw from '@/tools/FreeDraw'
 import Erase from '@/tools/Erase'
+import Circle from '@/tools/Circle'
 
 export enum ToolGetters {
   ENABLED_TOOL = 'enabledTool',
@@ -51,7 +52,8 @@ const ToolModule: Module<ToolState, {}> = {
       tools: [
         new Ping('ping', 5, '#005555'),
         new FreeDraw('freedraw', 6, '#FF0000'),
-        new Erase('erase')
+        new Erase('erase'),
+        new Circle('circle', 5, '#FF0000')
       ]
     }
   },
