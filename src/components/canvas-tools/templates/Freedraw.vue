@@ -51,7 +51,7 @@ export default class PopoutButton extends Vue {
     }
 
     get penSize () {
-      return this.findTool('freedraw').size
+      return this.findTool('freedraw').size || 2
     }
 
     set penSize (newValue: number) {
@@ -59,7 +59,7 @@ export default class PopoutButton extends Vue {
     }
 
     get penColour (): string {
-      return this.findTool('freedraw').colour
+      return this.findTool('freedraw').colour || '#FF0000'
     }
 
     set penColour (newValue: string) {
