@@ -1,6 +1,6 @@
 import { Tool } from '@/tools/Tool'
 import Konva from 'konva'
-import { CanvasElementPayload, Data, CanvasElement } from '@/types/Canvas'
+import { CanvasElementPayload, CanvasElement } from '@/types/Canvas'
 import uuid from 'uuid'
 import throttle from 'lodash.throttle'
 
