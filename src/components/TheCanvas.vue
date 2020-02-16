@@ -41,7 +41,7 @@ export default class TheCanvas extends Vue {
     @Sockets.Getter(SocketGetters.SOCKET) socket!: WebSocket
     @Sockets.Action(SocketActions.SEND_IF_OPEN) send!: (message: string) => void
     @Action(`canvas/${CanvasAction.ADD_CANVAS_ELEMENT}`) addCanvasElement!: (canvasElementPayload: CanvasElementPayload) => void
-    @Getter(`canvas/${CanvasGetters.CANVAS_ELEMENTS}`) canvasElements!: () => void
+    @Getter(`canvas/${CanvasGetters.CANVAS_ELEMENTS}`) canvasElements!: CanvasElement[]
 
     stageSize = {
       width: window.innerWidth,
@@ -72,15 +72,21 @@ export default class TheCanvas extends Vue {
       this.socket.onmessage = (data: MessageEvent) => {
         try {
           const canvasElement: CanvasElement = JSON.parse(data.data).payload
-          if (canvasElement.immediate) {
-            // render it on the canvas
-            const foundTool = this.tools.find((tool: Tool) => tool.name === canvasElement.tool.name)
-            if (foundTool && foundTool.renderCanvas && canvasElement.jti !== 'SAM') {
-              foundTool.renderCanvas(canvasElement, this.layerNode)
+          if (canvasElement.jti !== 'SAM1') {
+            if (canvasElement.immediate) {
+              // render it on the canvas
+              const foundTool = this.tools.find((tool: Tool) => tool.name === canvasElement.tool.name)
+              if (foundTool && foundTool.renderCanvas) {
+                foundTool.renderCanvas(canvasElement, this.layerNode)
+              }
+            } else {
+              // send it to the store and then render it on canvas
+              this.addCanvasElement(canvasElement)
+              const foundTool = this.tools.find((tool: Tool) => tool.name === canvasElement.tool.name)
+              if (foundTool && foundTool.renderCanvas) {
+                foundTool.renderCanvas(canvasElement, this.layerNode)
+              }
             }
-          } else {
-            // send it to the store and then render it on canvas
-            this.addCanvasElement(canvasElement)
           }
         } catch (err) { }
       }
