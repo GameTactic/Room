@@ -48,7 +48,7 @@ export default class ToolContainer extends Vue {
     @Prop() private popout!: boolean
     @Prop() private toolname!: string
     @Tools.Action(ToolsAction.ENABLE_TOOL) enableTool!: (toolName: string) => void
-    @Tools.Getter(ToolGetters.ACTIVE_TOOL) enabledTool?: Tool
+    @Tools.Getter(ToolGetters.ENABLED_TOOL) enabledTool?: Tool
 
     onButtonClickHandler () {
       if (this.enabledTool?.name !== this.toolname) {
