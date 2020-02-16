@@ -47,7 +47,7 @@ const CursorModule: Module<CanvasState, {}> = {
     [CanvasMutation.ADD_CANVAS_ELEMENT] (state: CanvasState, payload: CanvasElement) {
       payload.id = uuid()
       payload.jti = '11111'
-      state.canvasElements = [...state.canvasElements, payload as CanvasElement]
+      state.canvasElements = state.canvasElements.concat(payload as CanvasElement)
     },
     [CanvasMutation.REMOVE_CANVAS_ELEMENT] (state: CanvasState, id: string) {
       let foundElementIndex = -1
@@ -56,7 +56,7 @@ const CursorModule: Module<CanvasState, {}> = {
         return canvasElement.id === id
       })
       if (foundElementIndex && foundElement) {
-        state.canvasElementsHistory = [...state.canvasElementsHistory, foundElement]
+        state.canvasElementsHistory = state.canvasElementsHistory.concat(foundElement)
         state.canvasElements = state.canvasElements.splice(foundElementIndex, 1)
       }
     },
@@ -69,7 +69,7 @@ const CursorModule: Module<CanvasState, {}> = {
         const foundElementIndex = state.canvasElementsHistory.findIndex((canvasElement: CanvasElement) => canvasElement.id === foundElement.id)
         if (foundElementIndex) {
           state.canvasElementsHistory = state.canvasElements.splice(foundElementIndex, 1)
-          state.canvasElements = [...state.canvasElements, foundElement]
+          state.canvasElements = state.canvasElements.concat(foundElement)
         }
       }
     }
