@@ -6,8 +6,8 @@ export type RenderCanvas = ( canvasElement: CanvasElement, layer: Konva.Layer) =
 
 export interface Tool {
   name: string;
-  colour: string;
-  size: number;
+  colour?: string;
+  size?: number;
   mouseDownAction?: PointerHandler;
   mouseMoveAction?: PointerHandler;
   mouseUpAction?: PointerHandler;
