@@ -3,6 +3,7 @@
     <tool-container :id="id" icon="fa-map-pin" toolname="ping" :popout="false" />
     <tool-container :id="id" icon="fa-pen" toolname="freedraw" :popout="true"><freedraw-template /></tool-container>
     <tool-container :id="id" icon="fa-eraser" toolname="erase" :popout="false"></tool-container>
+    <tool-container :id="id" icon="far fa-circle" toolname="circle" :popout="false"></tool-container>
   </v-btn-toggle>
 </template>
 
