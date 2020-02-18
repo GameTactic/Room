@@ -1,6 +1,6 @@
 import { Tool } from '@/tools/Tool'
 import Konva from 'konva'
-import { CanvasElementPayload, CanvasElement } from '@/types/Canvas'
+import { CanvasElementPayload, CanvasElement, Data } from '@/types/Canvas'
 import uuid from 'uuid'
 import throttle from 'lodash.throttle'
 
@@ -33,8 +33,13 @@ export default class FreeDraw implements Tool {
   }
 
   renderCanvas = (canvasElement: CanvasElement, layer: Konva.Layer): void => {
-    console.log('layer', layer) // eslint-disable-line
-    console.log('canvasElement', canvasElement) // eslint-disable-line
+    this.line = this.createElement(canvasElement, canvasElement.tool.colour, canvasElement.tool.size)
+    canvasElement.data.forEach((data: Data) => {
+      const newPoints: number[] = this.line.points().concat([data.x, data.y])
+      this.line.points(newPoints)
+      layer.add(this.line)
+      layer.batchDraw()
+    })
   }
 
   createElement = (canvasElementPayload: CanvasElementPayload, colour?: string, stroke?: number): Konva.Shape & Konva.Line => {
