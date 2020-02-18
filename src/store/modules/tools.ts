@@ -1,10 +1,11 @@
 import { ActionContext, Module } from 'vuex'
 import { Tool } from '@/tools/Tool'
+import { CanvasElement } from '@/types/Canvas'
 import Ping from '@/tools/Ping'
 import FreeDraw from '@/tools/FreeDraw'
 
 export enum ToolGetters {
-  ACTIVE_TOOL = 'activeTool',
+  ENABLED_TOOL = 'enabledTool',
   TOOLS = 'tools',
   TOOL = 'tool',
   ENABLED = 'enabled'
@@ -21,10 +22,10 @@ export enum ToolsAction {
 }
 
 export interface ToolState {
-  activeTool?: Tool;
-  enabledTool: string;
+  enabledTool?: Tool;
   enabled: boolean;
   tools: Tool[];
+  history: CanvasElement[];
 }
 
 export enum ToolsMutation {
@@ -34,7 +35,7 @@ export enum ToolsMutation {
   SET_DISABLED = 'SET_DISABLED',
   SET_TOOL = 'SET_TOOL',
   SET_COLOUR = 'SET_COLOUR',
-  SET_SIZE = ' SET_SIZE'
+  SET_SIZE = 'SET_SIZE'
 }
 
 type ToolActionContext = ActionContext<ToolState, {}>;
@@ -43,9 +44,9 @@ const ToolModule: Module<ToolState, {}> = {
   namespaced: true,
   state () {
     return {
-      activeTool: undefined,
-      enabledTool: '',
-      enabled: true,
+      enabledTool: undefined,
+      enabled: false,
+      history: [],
       tools: [
         new Ping('ping', 5, '#005555'),
         new FreeDraw('freedraw', 2, '#FF0000')
@@ -54,18 +55,16 @@ const ToolModule: Module<ToolState, {}> = {
   },
   getters: {
     [ToolGetters.TOOLS]: state => state.tools,
-    [ToolGetters.ACTIVE_TOOL]: state => state.activeTool,
+    [ToolGetters.ENABLED_TOOL]: state => state.enabledTool,
     [ToolGetters.TOOL]: (state) => (name: string) => state.tools.find(tool => tool.name === name),
     [ToolGetters.ENABLED]: state => state.enabled
   },
   mutations: {
     [ToolsMutation.SET_ENABLED_TOOL] (state: ToolState, payload: string) {
-      state.enabledTool = payload
-      state.activeTool = state.tools.find(tool => tool.name === payload)
+      state.enabledTool = state.tools.find(tool => tool.name === payload)
     },
     [ToolsMutation.SET_DISABLED_TOOL] (state: ToolState) {
-      state.enabledTool = ''
-      state.activeTool = undefined
+      state.enabledTool = undefined
     },
     [ToolsMutation.SET_ENABLED] (state: ToolState) {
       state.enabled = true
@@ -74,21 +73,25 @@ const ToolModule: Module<ToolState, {}> = {
       state.enabled = false
     },
     [ToolsMutation.SET_TOOL] (state: ToolState, payload: Tool) {
-      const found = state.tools.find((tool: Tool) => {
+      let foundIndex = -1
+      const found = state.tools.find((tool: Tool, index: number) => {
+        foundIndex = index
         return tool.name === payload.name
       })
+
       if (found) {
-        state.activeTool = payload
+        state.tools.splice(foundIndex, 1, { ...found, ...payload })
       }
+      state.enabledTool = payload
     },
     [ToolsMutation.SET_COLOUR] (state: ToolState, colour: string) {
-      if (state.activeTool) {
-        state.activeTool.colour = colour
+      if (state.enabledTool) {
+        state.enabledTool.colour = colour
       }
     },
     [ToolsMutation.SET_SIZE] (state: ToolState, size: number) {
-      if (state.activeTool) {
-        state.activeTool.size = size
+      if (state.enabledTool) {
+        state.enabledTool.size = size
       }
     }
   },
