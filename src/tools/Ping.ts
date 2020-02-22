@@ -13,8 +13,8 @@ export default class Ping implements Tool {
                public readonly colour: string) {
   }
 
-  mouseDownAction = (canvasElement: CanvasElement, layer: Konva.Layer, socket: WebSocket): void => {
-    const dataCoords: number[] = []
+  mouseDownAction = (e: Konva.KonvaPointerEvent, canvasElement: CanvasElement, layer: Konva.Layer, socket: WebSocket): void => {
+    const dataCoords: number[] = [e.evt.x, e.evt.y]
     this.runAnimation(dataCoords, layer)
     this.sendToWebsockets(socket, dataCoords, canvasElement.layerId)
   }

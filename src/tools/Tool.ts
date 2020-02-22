@@ -1,7 +1,7 @@
 import Konva from 'konva'
 import { CanvasElement } from '@/types/Canvas';
 
-export type MouseDownAction = (canvasElement: CanvasElement, layer: Konva.Layer, socket: WebSocket) => void;
+export type MouseDownAction = (e: Konva.KonvaPointerEvent, canvasElement: CanvasElement, layer: Konva.Layer, socket: WebSocket) => void;
 export type MouseMoveAction = (e: Konva.KonvaPointerEvent, canvasElement: CanvasElement, layer: Konva.Layer, socket: WebSocket) => void;
 export type MouseUpAction = (e: Konva.KonvaPointerEvent, canvasElement: CanvasElement, layer: Konva.Layer, socket: WebSocket) => void;
 export type RenderCanvas = (canvasElement: CanvasElement, layer: Konva.Layer) => void;

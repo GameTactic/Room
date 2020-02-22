@@ -9,12 +9,12 @@ export default class FreeDraw implements Tool {
   constructor (public readonly name: string,
                public size: number,
                public colour: string) {
-    this.line = new Konva.Line({ points: [] })
+    this.line = new Konva.Line()
   }
 
   // eslint-disable-next-line
-  mouseDownAction = (canvasElement: CanvasElement, layer: Konva.Layer, _socket: WebSocket): void => {
-    canvasElement.data = []
+  mouseDownAction = (e: Konva.KonvaPointerEvent, canvasElement: CanvasElement, layer: Konva.Layer, _socket: WebSocket): void => {
+    canvasElement.data = [e.evt.x, e.evt.y]
     canvasElement.id = uuid()
     this.line = this.createElement(canvasElement)
     layer.add(this.line)

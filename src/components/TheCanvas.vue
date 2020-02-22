@@ -107,10 +107,10 @@ export default class TheCanvas extends Vue {
       })
     }
 
-    onMouseDownHandler (): void {
+    onMouseDownHandler (e: Konva.KonvaPointerEvent): void {
       if (this.enabledTool?.mouseDownAction) {
         this.enable()
-        this.enabledTool.mouseDownAction(this.$data.canvasElement, this.layerNode, this.socket)
+        this.enabledTool.mouseDownAction(e, this.$data.canvasElement, this.layerNode, this.socket)
       }
     }
 
