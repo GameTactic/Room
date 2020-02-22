@@ -7,7 +7,7 @@
     @mouseup="onMouseUpHandler"
     @mousemove="onMouseMoveHandler"
   >
-    <v-layer ref="layer"/>
+    <v-layer ref="layer" :config="{ id: canvasElement.layerId }" />
   </v-stage>
 </template>
 
@@ -15,7 +15,7 @@
 import { Prop } from 'vue-property-decorator'
 import Component from 'vue-class-component'
 import { Tool } from '@/tools/Tool'
-import { VueKonvaLayer, VueKonvaStage, CanvasElementPayload, CanvasElement } from '@/types/Canvas'
+import { VueKonvaLayer, VueKonvaStage, CanvasElement } from '@/types/Canvas'
 import Vue from 'vue'
 import { Namespaces } from '@/store'
 import { Action, Getter, namespace } from 'vuex-class'
@@ -40,7 +40,7 @@ export default class TheCanvas extends Vue {
     @Getter(`tools/${ToolGetters.TOOLS}`) tools!: Tool[]
     @Sockets.Getter(SocketGetters.SOCKET) socket!: WebSocket
     @Sockets.Action(SocketActions.SEND_IF_OPEN) send!: (message: string) => void
-    @Action(`canvas/${CanvasAction.ADD_CANVAS_ELEMENT}`) addCanvasElement!: (canvasElementPayload: CanvasElementPayload) => void
+    @Action(`canvas/${CanvasAction.ADD_CANVAS_ELEMENT}`) addCanvasElement!: (canvasElement: CanvasElement) => void
     @Getter(`canvas/${CanvasGetters.CANVAS_ELEMENTS}`) canvasElements!: CanvasElement[]
 
     stageSize = {
@@ -48,9 +48,17 @@ export default class TheCanvas extends Vue {
       height: window.innerHeight
     }
 
-    canvasElementPayload = {
+    canvasElement: CanvasElement = {
+      jti: 'SAM',
+      id: '',
       data: [],
-      tool: null
+      tool: {
+        name: '',
+        colour: '',
+        size: 0
+      },
+      temporary: false,
+      layerId: Math.random().toString(36)
     }
 
     $refs!: {
@@ -72,20 +80,15 @@ export default class TheCanvas extends Vue {
       this.socket.onmessage = (data: MessageEvent) => {
         try {
           const canvasElement: CanvasElement = JSON.parse(data.data).payload
-          if (canvasElement.jti !== 'SAM1') {
-            if (canvasElement.immediate) {
-              // render it on the canvas
+          if (canvasElement.layerId !== this.$data.canvasElement.layerId) {
+            if (canvasElement.temporary) {
               const foundTool = this.tools.find((tool: Tool) => tool.name === canvasElement.tool.name)
               if (foundTool && foundTool.renderCanvas) {
                 foundTool.renderCanvas(canvasElement, this.layerNode)
               }
             } else {
-              // send it to the store and then render it on canvas
               this.addCanvasElement(canvasElement)
-              const foundTool = this.tools.find((tool: Tool) => tool.name === canvasElement.tool.name)
-              if (foundTool && foundTool.renderCanvas) {
-                foundTool.renderCanvas(canvasElement, this.layerNode)
-              }
+              this.renderShapes()
             }
           }
         } catch (err) { }
@@ -96,23 +99,37 @@ export default class TheCanvas extends Vue {
       window.removeEventListener('resize', () => null)
     }
 
-    onMouseDownHandler (e: Konva.KonvaPointerEvent): void {
+    renderShapes (): void {
+      this.canvasElements.forEach((canvasElement: CanvasElement) => {
+        if (canvasElement.tool.renderCanvas && !this.layerNode.find((shape: Konva.Shape) => shape.attrs.id === canvasElement.id).length) {
+          canvasElement.tool.renderCanvas(canvasElement, this.layerNode)
+        }
+      })
+    }
+
+    onMouseDownHandler (): void {
       if (this.enabledTool?.mouseDownAction) {
         this.enable()
-        this.enabledTool.mouseDownAction(e, this.$data.canvasElementPayload, this.layerNode, this.socket)
+        this.enabledTool.mouseDownAction(this.$data.canvasElement, this.layerNode, this.socket)
       }
     }
 
     onMouseMoveHandler (e: Konva.KonvaPointerEvent): void {
       if (this.enabledTool?.mouseMoveAction && this.enabled) {
-        this.enabledTool.mouseMoveAction(e, this.$data.canvasElementPayload, this.layerNode, this.socket)
+        this.enabledTool.mouseMoveAction(e, this.$data.canvasElement, this.layerNode, this.socket)
       }
     }
 
     onMouseUpHandler (e: Konva.KonvaPointerEvent): void {
       if (this.enabledTool?.mouseUpAction && this.enabled) {
         this.disable()
-        this.enabledTool.mouseUpAction(e, this.$data.canvasElementPayload, this.layerNode, this.socket)
+        this.enabledTool.mouseUpAction(e, this.$data.canvasElement, this.layerNode, this.socket)
+        this.addCanvasElement({
+          ...this.$data.canvasElement,
+          tool: { ...this.enabledTool },
+          temporary: false
+        })
+        this.renderShapes()
       }
     }
 
@@ -131,15 +148,3 @@ export default class TheCanvas extends Vue {
     position: absolute;
   }
 </style>
-
-<!--
-Konva
-1) Starts with a stage which contains multiple user Layers
-2) Each Layer has 2 Canvas renderers: Scene and Hit Graph
-3) The Scene layer contains what we see
-4) The Hit Graph layer is hidden and used for event detection
-5) Each layer can contain shapes, groups of other groups and shapes
-5) The Stage, Layers and Groups are virtual nodes like DOM nodes
-6) All nodes can be styled and transformed and Konva provides shapes
-7) Create custom shapes by using the Shape Class and creating a draw function
--->
