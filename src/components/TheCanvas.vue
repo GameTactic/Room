@@ -46,7 +46,7 @@ export default class TheCanvas extends Vue {
     stageSize = {
       width: window.innerWidth,
       height: window.innerHeight
-    }
+    };
 
     canvasElement: CanvasElement = {
       jti: 'SAM',
@@ -64,7 +64,7 @@ export default class TheCanvas extends Vue {
     $refs!: {
       layer: VueKonvaLayer;
       stage: VueKonvaStage;
-    }
+    };
 
     created () {
       window.addEventListener('resize', (e) => {

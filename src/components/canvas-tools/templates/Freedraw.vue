@@ -44,7 +44,7 @@ export default class PopoutButton extends Vue {
       ['#00FF00', '#00AA00', '#005500'],
       ['#00FFFF', '#00AAAA', '#005555'],
       ['#0000FF', '#0000AA', '#000055']
-    ]
+    ];
 
     get penSizeHint (): string {
       return `Size: ${this.penSize}`
