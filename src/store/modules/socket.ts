@@ -1,6 +1,6 @@
 import { Module } from 'vuex'
 
-interface SocketState {
+export interface SocketState {
   socket: WebSocket;
 }
 
