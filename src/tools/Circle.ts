@@ -107,7 +107,7 @@ export default class Circle implements Tool {
       jti: 'SAM',
       id: uuid(),
       tool: {
-        name: 'freedraw',
+        name: 'circle',
         colour: this.colour,
         size: this.size
       },
