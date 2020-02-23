@@ -1,6 +1,9 @@
 import { ActionContext, Module } from 'vuex'
 import { CanvasElement } from '@/types/Canvas'
-import uuid from 'uuid'
+import { Tool } from '@/tools/Tool'
+import { CursorState } from './cursor'
+import { SocketState } from './socket'
+import { ToolState } from './tools'
 
 export enum CanvasMutation {
   SET_CANVAS_ELEMENT = 'SET_CANVAS_ELEMENT',
@@ -26,6 +29,15 @@ interface CanvasState {
   canvasElementsHistory: CanvasElement[];
 }
 
+interface RootState extends CanvasElement {
+  rootState: {
+    canvas: CanvasState;
+    cursor: CursorState;
+    socket: SocketState;
+    tools: ToolState;
+  };
+}
+
 type CursorActionContext = ActionContext<CanvasState, {}>
 
 const CursorModule: Module<CanvasState, {}> = {
@@ -44,10 +56,10 @@ const CursorModule: Module<CanvasState, {}> = {
     [CanvasMutation.SET_CANVAS_ELEMENT] (state: CanvasState, payload: CanvasElement[]) {
       state.canvasElements = [...payload]
     },
-    [CanvasMutation.ADD_CANVAS_ELEMENT] (state: CanvasState, payload: CanvasElement) {
-      payload.id = uuid()
-      payload.jti = '11111'
-      state.canvasElements = state.canvasElements.concat(payload as CanvasElement)
+    [CanvasMutation.ADD_CANVAS_ELEMENT] (state: CanvasState, payload: RootState) {
+      payload.jti = 'SAM'
+      const foundTool: Tool | undefined = payload.rootState.tools.tools.find((tool: Tool) => tool.name === payload.tool.name)
+      state.canvasElements.push({ ...payload, tool: { ...payload.tool, renderCanvas: foundTool?.renderCanvas } })
     },
     [CanvasMutation.REMOVE_CANVAS_ELEMENT] (state: CanvasState, id: string) {
       let foundElementIndex = -1
@@ -79,7 +91,7 @@ const CursorModule: Module<CanvasState, {}> = {
       context.commit('SET_CANVAS_ELEMENT', payload)
     },
     [CanvasAction.ADD_CANVAS_ELEMENT] (context: CursorActionContext, payload: CanvasElement) {
-      context.commit('ADD_CANVAS_ELEMENT', payload)
+      context.commit('ADD_CANVAS_ELEMENT', { ...payload, rootState: context.rootState })
     },
     [CanvasAction.REMOVE_CANVAS_ELEMENT] (context: CursorActionContext, id: string) {
       context.commit('REMOVE_CANVAS_ELEMENT', id)
