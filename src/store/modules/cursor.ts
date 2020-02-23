@@ -1,6 +1,6 @@
 import { ActionContext, Module } from 'vuex'
 
-interface CursorState {
+export interface CursorState {
   x: number;
   y: number;
 }
