@@ -1,6 +1,7 @@
 import Vue from 'vue'
 import VueRouter, { RouteConfig } from 'vue-router'
 import Room from '@/views/Room.vue'
+import Index from '@/views/Index.vue'
 
 Vue.use(VueRouter)
 
@@ -10,6 +11,11 @@ const routes: RouteConfig[] = [
     name: 'room',
     component: Room,
     props: true
+  },
+  {
+    path: '/',
+    name: 'index',
+    component: Index
   }
 ]
 
