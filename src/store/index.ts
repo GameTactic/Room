@@ -4,6 +4,7 @@ import ToolModule from '@/store/modules/tools'
 import CursorModule from '@/store/modules/cursor'
 import SocketModule from '@/store/modules/socket'
 import CanvasModule from '@/store/modules/canvas'
+import AuthenticationModule from '@/store/modules/authentication'
 
 Vue.use(Vuex)
 
@@ -11,7 +12,8 @@ export enum Namespaces {
   TOOLS = 'tools',
   CURSOR = 'cursor',
   SOCKET = 'socket',
-  CANVAS = 'canvas'
+  CANVAS = 'canvas',
+  AUTH = 'authentication'
 }
 
 export default new Vuex.Store<{}>({
@@ -19,6 +21,7 @@ export default new Vuex.Store<{}>({
     [Namespaces.TOOLS]: ToolModule,
     [Namespaces.CURSOR]: CursorModule,
     [Namespaces.SOCKET]: SocketModule,
-    [Namespaces.CANVAS]: CanvasModule
+    [Namespaces.CANVAS]: CanvasModule,
+    [Namespaces.AUTH]: AuthenticationModule
   }
 })
