@@ -39,7 +39,7 @@ export default class TheNavExtraSmall extends Vue {
   }
 }
 
-.navbar-toolbar-left {
+header.navbar-toolbar-left.navbar-toolbar-left.navbar-toolbar-left {
   background-color: $room-navbar;
   color: $room-navbar-text;
   position: relative;

@@ -1,6 +1,6 @@
 import { Tool } from '@/tools/Tool'
 import Konva from 'konva'
-import { CanvasElementPayload, CanvasElement } from '@/types/Canvas'
+import { CanvasElement } from '@/types/Canvas'
 import uuid from 'uuid'
 import throttle from 'lodash.throttle'
 
@@ -18,37 +18,38 @@ export default class Circle implements Tool {
     this.mapRatio = 1 // TODO: Inplement map ratio dynamicly
   }
 
-  // eslint-disable-unused-parameters
-  mouseDownAction = (e: Konva.KonvaPointerEvent, canvasElementPayload: CanvasElementPayload, layer: Konva.Layer, _socket: WebSocket): void => {
-    canvasElementPayload.data = []
-    canvasElementPayload.data.push({ x: e.evt.x, y: e.evt.y })
-    this.circle = this.createElement(canvasElementPayload)
-    this.line = this.createLineElement(canvasElementPayload)
-    this.text = this.createTextElement(canvasElementPayload)
+  // eslint-disable-next-line
+  mouseDownAction = (e: Konva.KonvaPointerEvent, canvasElement: CanvasElement, layer: Konva.Layer, _socket: WebSocket): void => {
+    canvasElement.data = [e.evt.x, e.evt.y]
+    canvasElement.id = uuid()
+    this.circle = this.createElement(canvasElement)
+    this.line = this.createLineElement(canvasElement)
+    this.text = this.createTextElement(canvasElement)
     layer.add(this.text)
     layer.add(this.circle)
     layer.add(this.line)
   }
 
-  mouseMoveAction = throttle((e: Konva.KonvaPointerEvent, canvasElementPayload: CanvasElementPayload, layer: Konva.Layer, _socket: WebSocket): void => {
-    const data = {
-      x: e.evt.x,
-      y: e.evt.y
-    }
-    canvasElementPayload.data.push(data)
-    this.circle.radius(this.calcRadius(e.evt.x, e.evt.y))
-    this.line.points([canvasElementPayload.data[0].x, canvasElementPayload.data[0].y, e.evt.x, e.evt.y])
-    this.text.setPosition(this.calcTextPosition(e.evt.x, e.evt.y))
-    this.text.setText(Math.floor(this.calcRadius(e.evt.x, e.evt.y) * this.mapRatio) + ' m')
-    layer.add(this.line)
-    layer.add(this.circle)
+  // eslint-disable-next-line
+  mouseMoveAction = throttle((e: Konva.KonvaPointerEvent, canvasElement: CanvasElement, layer: Konva.Layer, _socket: WebSocket): void => {
+    const x = e.evt.x
+    const y = e.evt.y
+    canvasElement.data = canvasElement.data.concat([x, y])
+    this.circle.radius(this.calcRadius(x, y))
+    this.line.points([canvasElement.data[0], canvasElement.data[1], x, y])
+    this.text.setPosition(this.calcTextPosition(x, y))
+    this.text.setText(Math.floor(this.calcRadius(x, y) * this.mapRatio) + ' m')
     layer.batchDraw()
   }, 10)
 
-  createTextElement = (canvasElementPayload: CanvasElementPayload, colour?: string): Konva.Shape & Konva.Text => {
+  mouseUpAction = (e: Konva.KonvaPointerEvent, canvasElement: CanvasElement, layer: Konva.Layer, socket: WebSocket): void => {
+    this.sendToWebsockets(socket, canvasElement)
+  }
+
+  createTextElement = (canvasElement: CanvasElement, colour?: string): Konva.Shape & Konva.Text => {
     return new Konva.Text({
-      x: canvasElementPayload.data[0].x,
-      y: canvasElementPayload.data[0].y,
+      x: canvasElement.data[0],
+      y: canvasElement.data[1],
       text: '0 m',
       fontSize: 20,
       fontFamily: 'Calibri',
@@ -56,10 +57,10 @@ export default class Circle implements Tool {
     })
   }
 
-  createLineElement = (canvasElementPayload: CanvasElementPayload, colour?: string): Konva.Shape & Konva.Line => {
+  createLineElement = (canvasElement: CanvasElement, colour?: string): Konva.Shape & Konva.Line => {
     return new Konva.Line({
       globalCompositeOperation: 'source-over',
-      points: [canvasElementPayload.data[0].x, canvasElementPayload.data[0].y],
+      points: [canvasElement.data[0], canvasElement.data[1]],
       stroke: colour || this.colour,
       strokeWidth: 2,
       lineCap: 'mitter',
@@ -67,12 +68,32 @@ export default class Circle implements Tool {
     })
   }
 
+  createElement = (canvasElement: CanvasElement, colour?: string, stroke?: number): Konva.Shape & Konva.Circle => {
+    return new Konva.Circle({
+      id: canvasElement.id,
+      globalCompositeOperation: 'source-over',
+      stroke: colour || this.colour,
+      strokeWidth: stroke || this.size,
+      radius: 5,
+      x: canvasElement.data[0],
+      y: canvasElement.data[1]
+    })
+  }
+
+  renderCanvas = (canvasElement: CanvasElement, layer: Konva.Layer): void => {
+    layer.add(this.createElement(canvasElement, canvasElement.tool.colour, canvasElement.tool.size))
+    layer.batchDraw()
+  }
+
   calcTextPosition = (x: number, y: number): object => {
+    const offset = 30
     const offsetX = (x - this.circle.getPosition().x) / 2
     const offsetY = (y - this.circle.getPosition().y) / 2
+    const angleX = -(y - this.circle.getPosition().y) / (this.calcRadius(x, y))
+    const angleY = (x - this.circle.getPosition().x) / (this.calcRadius(x, y))
     return {
-      x: this.circle.getPosition().x + offsetX,
-      y: this.circle.getPosition().y + offsetY
+      x: this.circle.getPosition().x + offsetX + (angleX * offset) - (this.text.getWidth() / 2),
+      y: this.circle.getPosition().y + offsetY + (angleY * offset) - (this.text.getHeight() / 2)
     }
   }
 
@@ -82,37 +103,18 @@ export default class Circle implements Tool {
     return Math.sqrt(a + b)
   }
 
-  mouseUpAction = (e: Konva.KonvaPointerEvent, canvasElementPayload: CanvasElementPayload, layer: Konva.Layer, socket: WebSocket): void => {
-    this.sendToWebsockets(socket, canvasElementPayload)
-  }
-
-  renderCanvas = (canvasElement: CanvasElement, layer: Konva.Layer): void => {
-    console.log('layer', layer) // eslint-disable-line
-    console.log('canvasElement', canvasElement) // eslint-disable-line
-  }
-
-  createElement = (canvasElementPayload: CanvasElementPayload, colour?: string, stroke?: number): Konva.Shape & Konva.Circle => {
-    return new Konva.Circle({
-      globalCompositeOperation: 'source-over',
-      stroke: colour || this.colour,
-      strokeWidth: stroke || this.size,
-      radius: 5,
-      x: canvasElementPayload.data[0].x,
-      y: canvasElementPayload.data[0].y
-    })
-  }
-
-  sendToWebsockets = (socket: WebSocket, canvasElementPayload: CanvasElementPayload) => {
+  sendToWebsockets = (socket: WebSocket, canvasElement: CanvasElement) => {
     const data: CanvasElement = {
       jti: 'SAM',
-      id: uuid(),
+      id: canvasElement.id,
+      layerId: canvasElement.layerId,
       tool: {
-        name: 'freedraw',
+        name: 'circle',
         colour: this.colour,
         size: this.size
       },
-      immediate: false,
-      data: canvasElementPayload.data
+      temporary: false,
+      data: canvasElement.data
     }
     socket.send(JSON.stringify(data))
   }

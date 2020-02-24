@@ -9,18 +9,11 @@ export type VueKonvaStage = Konva.Stage & Vue & {
   getNode: Function
 }
 
-export interface Data {
-  x: number;
-  y: number;
-}
-
-export interface CanvasElementPayload {
-  tool: Tool;
-  immediate: boolean;
-  data: Data[];
-}
-
-export interface CanvasElement extends CanvasElementPayload{
+export interface CanvasElement {
   id: string;
+  tool: Tool;
+  temporary: boolean;
+  data: number[];
+  layerId: string;
   jti: string;
 }
