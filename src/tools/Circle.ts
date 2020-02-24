@@ -36,8 +36,7 @@ export default class Circle implements Tool {
     const y = e.evt.y
     canvasElement.data = canvasElement.data.concat([x, y])
     this.circle.radius(this.calcRadius(x, y))
-    const newPoints: number[] = this.line.points().concat([x, y])
-    this.line.points(newPoints)
+    this.line.points([canvasElement.data[0], canvasElement.data[1], x, y])
     this.text.setPosition(this.calcTextPosition(x, y))
     this.text.setText(Math.floor(this.calcRadius(x, y) * this.mapRatio) + ' m')
     layer.batchDraw()
@@ -87,11 +86,14 @@ export default class Circle implements Tool {
   }
 
   calcTextPosition = (x: number, y: number): object => {
+    const offset = 30
     const offsetX = (x - this.circle.getPosition().x) / 2
     const offsetY = (y - this.circle.getPosition().y) / 2
+    const angleX = -(y - this.circle.getPosition().y) / (this.calcRadius(x, y))
+    const angleY = (x - this.circle.getPosition().x) / (this.calcRadius(x, y))
     return {
-      x: this.circle.getPosition().x + offsetX,
-      y: this.circle.getPosition().y + offsetY
+      x: this.circle.getPosition().x + offsetX + (angleX * offset) - (this.text.getWidth() / 2),
+      y: this.circle.getPosition().y + offsetY + (angleY * offset) - (this.text.getHeight() / 2)
     }
   }
 
