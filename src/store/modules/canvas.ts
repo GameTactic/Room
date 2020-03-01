@@ -40,7 +40,7 @@ interface RootState extends CanvasElement {
 
 type CursorActionContext = ActionContext<CanvasState, {}>
 
-const CursorModule: Module<CanvasState, {}> = {
+const CanvasModule: Module<CanvasState, {}> = {
   namespaced: true,
   state () {
     return {
@@ -102,4 +102,4 @@ const CursorModule: Module<CanvasState, {}> = {
   }
 }
 
-export default CursorModule
+export default CanvasModule
