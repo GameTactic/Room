@@ -83,7 +83,7 @@ export default class MapButtons extends Vue {
   ]
 
   images = {
-    wows: require('@/assets/wow-icon.png'),
+    wows: require('@/assets/wows-icon.png'),
     wot: require('@/assets/wot-icon.png')
   }
 
