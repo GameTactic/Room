@@ -28,7 +28,7 @@ export default class FreeDraw implements Tool {
     const newPoints: number[] = this.line.points().concat([x, y])
     this.line.points(newPoints)
     layer.batchDraw()
-  }, 10)
+  }, 0)
 
   mouseUpAction = (e: Konva.KonvaPointerEvent, canvasElement: CanvasElement, _layer: Konva.Layer, socket: WebSocket): void => {
     this.sendToWebsockets(socket, canvasElement)
