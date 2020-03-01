@@ -14,7 +14,7 @@ export enum Namespaces {
   CURSOR = 'cursor',
   SOCKET = 'socket',
   CANVAS = 'canvas',
-  ROOM = 'room,'
+  ROOM = 'room',
   AUTH = 'authentication'
 }
 
