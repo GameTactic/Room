@@ -155,12 +155,14 @@ export default class MapButtons extends Vue {
       flex-direction: column;
       flex: 1 1 80%;
       justify-content: space-between;
+      align-items: center;
     }
   }
 }
 
 .custom-list-item-center {
   padding: 0px;
+  justify-content: center;
 
   &:hover::before {
     background-color: white;
