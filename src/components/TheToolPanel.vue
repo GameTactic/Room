@@ -28,7 +28,7 @@ export default class TheToolPanel extends Vue {
 </script>
 <style scoped lang="scss">
 .btn-toggle-box{
-  margin: 0.25rem;
+  margin-top: 0.25rem;
   position: fixed;
 }
 </style>

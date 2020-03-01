@@ -3,6 +3,8 @@ import '@fortawesome/fontawesome-free/css/all.css'
 import Vuetify, {
   VApp,
   VRow,
+  VImg,
+  VDivider,
   VToolbar,
   VSpacer,
   VBtn,
@@ -11,18 +13,26 @@ import Vuetify, {
   VBtnToggle,
   VMenu,
   VList,
+  VListItem,
+  VListItemAction,
+  VListItemAvatar,
+  VListItemContent,
+  VListItemTitle,
   VContent,
   VCard,
+  VCardActions,
   VSheet,
   VColorPicker,
-  VSlider
+  VSlider,
+  VNavigationDrawer
 } from 'vuetify/lib'
-// import { Ripple } from 'vuetify/lib/directives'
 
 Vue.use(Vuetify, {
   components: {
     VApp,
     VRow,
+    VImg,
+    VDivider,
     VToolbar,
     VSpacer,
     VBtn,
@@ -31,11 +41,18 @@ Vue.use(Vuetify, {
     VBtnToggle,
     VMenu,
     VList,
+    VListItem,
+    VListItemAction,
+    VListItemAvatar,
+    VListItemContent,
+    VListItemTitle,
     VContent,
     VCard,
+    VCardActions,
     VSheet,
     VColorPicker,
-    VSlider
+    VSlider,
+    VNavigationDrawer
   },
   directives: { }
 })
