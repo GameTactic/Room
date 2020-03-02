@@ -10,6 +10,8 @@ export interface Tool {
   name: string;
   colour?: string;
   size?: number;
+  endStyle?: string;
+  strokeStyle?: number;
   mouseDownAction?: MouseDownAction;
   mouseMoveAction?: MouseMoveAction;
   mouseUpAction?: MouseUpAction;

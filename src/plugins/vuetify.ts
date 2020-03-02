@@ -2,8 +2,12 @@ import Vue from 'vue'
 import '@fortawesome/fontawesome-free/css/all.css'
 import Vuetify, {
   VApp,
+  VRadio,
+  VRadioGroup,
   VRow,
   VToolbar,
+  VSwitch,
+  VContainer,
   VSpacer,
   VBtn,
   VIcon,
@@ -22,6 +26,10 @@ import Vuetify, {
 Vue.use(Vuetify, {
   components: {
     VApp,
+    VRadioGroup,
+    VSwitch,
+    VRadio,
+    VContainer,
     VRow,
     VToolbar,
     VSpacer,

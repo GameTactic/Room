@@ -5,6 +5,7 @@ import Ping from '@/tools/Ping'
 import FreeDraw from '@/tools/FreeDraw'
 import Erase from '@/tools/Erase'
 import Circle from '@/tools/Circle'
+import Line from '@/tools/Line'
 
 export enum ToolGetters {
   ENABLED_TOOL = 'enabledTool',
@@ -20,7 +21,10 @@ export enum ToolsAction {
   DISABLE = 'disable',
   SET_TOOL = 'setTool',
   SET_COLOUR = 'setColour',
-  SET_SIZE = 'setSize'
+  SET_SIZE = 'setSize',
+  SET_ENDSTYLE = 'setEndStyle',
+  SET_STROKESTYLE = 'setStrokeStyle',
+  SET_TEMPORARILY = 'setTemporarily'
 }
 
 export interface ToolState {
@@ -37,7 +41,10 @@ export enum ToolsMutation {
   SET_DISABLED = 'SET_DISABLED',
   SET_TOOL = 'SET_TOOL',
   SET_COLOUR = 'SET_COLOUR',
-  SET_SIZE = 'SET_SIZE'
+  SET_SIZE = 'SET_SIZE',
+  SET_ENDSTYLE = 'SET_ENDSTYLE',
+  SET_STROKESTYLE = 'SET_STROKESTYLE',
+  SET_TEMPORARILY = 'SET_TEMPORARILY'
 }
 
 type ToolActionContext = ActionContext<ToolState, {}>;
@@ -53,7 +60,8 @@ const ToolModule: Module<ToolState, {}> = {
         new Ping('ping', 5, '#005555'),
         new FreeDraw('freedraw', 6, '#FF0000'),
         new Erase('erase'),
-        new Circle('circle', 5, '#FF0000')
+        new Circle('circle', 5, '#FF0000'),
+        new Line('line', 3, '#FF0000', 'line', 0, false)
       ]
     }
   },
@@ -97,6 +105,21 @@ const ToolModule: Module<ToolState, {}> = {
       if (state.enabledTool) {
         state.enabledTool.size = size
       }
+    },
+    [ToolsMutation.SET_ENDSTYLE] (state: ToolState, endStyle: string) {
+      if (state.enabledTool) {
+        state.enabledTool.endStyle = endStyle
+      }
+    },
+    [ToolsMutation.SET_STROKESTYLE] (state: ToolState, strokeStyle: number) {
+      if (state.enabledTool) {
+        state.enabledTool.strokeStyle = strokeStyle
+      }
+    },
+    [ToolsMutation.SET_TEMPORARILY] (state: ToolState, temporarily: boolean) {
+      if (state.enabledTool) {
+        state.enabledTool.temporarily = temporarily
+      }
     }
   },
   actions: {
@@ -120,6 +143,15 @@ const ToolModule: Module<ToolState, {}> = {
     },
     [ToolsAction.SET_SIZE] (context: ToolActionContext, size: number) {
       context.commit(ToolsMutation.SET_SIZE, size)
+    },
+    [ToolsAction.SET_ENDSTYLE] (context: ToolActionContext, endStyle: string) {
+      context.commit(ToolsMutation.SET_ENDSTYLE, endStyle)
+    },
+    [ToolsAction.SET_STROKESTYLE] (context: ToolActionContext, strokeStyle: string) {
+      context.commit(ToolsMutation.SET_STROKESTYLE, strokeStyle)
+    },
+    [ToolsAction.SET_TEMPORARILY] (context: ToolActionContext, temporarily: boolean) {
+      context.commit(ToolsMutation.SET_TEMPORARILY, temporarily)
     }
   }
 }
