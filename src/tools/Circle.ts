@@ -29,6 +29,7 @@ export default class Circle implements Tool {
 
   // eslint-disable-next-line
   mouseDownAction = (e: Konva.KonvaPointerEvent, canvasElement: CanvasElement, layer: Konva.Layer, _socket: WebSocket): void => {
+    console.log(this)
     canvasElement.data = [e.evt.x, e.evt.y]
     canvasElement.id = uuid()
     this.circle = this.createElement(canvasElement)

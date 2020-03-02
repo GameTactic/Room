@@ -1,16 +1,7 @@
 <template>
   <div>
-    <p>Outline colour</p>
-    <v-color-picker
-      v-model="circleColour"
-      :swatches="swatches"
-      mode="hexa"
-      show-swatches
-      hide-canvas
-      flat
-      hide-inputs
-      hide-mode-switch
-    />
+    <p>Fill</p>
+    <colour-picker v-model="circleColour"></colour-picker>
     <v-slider
       prepend-icon="fa-ruler-vertical"
       :hint="circleSizeHint"
@@ -19,7 +10,7 @@
       :step="1"
       ticks="always"
     />
-    <p>Fill colour</p>
+    <p>Outline</p>
     <v-color-picker
       v-model="circleOutlineColour"
       :swatches="swatches"
@@ -61,17 +52,19 @@ import { Tool } from '@/tools/Tool'
 import { namespace } from 'vuex-class'
 import { Namespaces } from '@/store'
 import { ToolGetters, ToolsAction } from '@/store/modules/tools'
+import ColourPicker from '@/components/canvas-tools/templates/template-tools/ColourPicker.vue'
 
 const Tools = namespace(Namespaces.TOOLS)
 
 @Component({
   name: 'DrawCircle',
+  components: { ColourPicker },
   computed: {}
 })
 export default class PopoutButton extends Vue {
   @Tools.Getter(ToolGetters.TOOL) findTool!: (name: string) => Tool
-  @Tools.Action(ToolsAction.SET_COLOUR) setColour!: (colour: string) => void
   @Tools.Action(ToolsAction.SET_SIZE) setSize!: (size: number) => void
+  @Tools.Action(ToolsAction.SET_COLOUR) setColour!: (colour: string) => void
   @Tools.Action(ToolsAction.SET_SHOWRADIUS) setShowRadius!: (showRadius: boolean) => void
   @Tools.Action(ToolsAction.SET_OUTLINECOLOUR) setOutlineColour!: (outlineColour: string) => void
   @Tools.Action(ToolsAction.SET_TEMPORARILY) setTemporarily!: (temporarily: boolean) => void
@@ -108,7 +101,7 @@ export default class PopoutButton extends Vue {
   }
 
   get circleColour (): string {
-    return this.findTool('circle').colour || '#FF0000'
+    return this.findTool('circle').colour || this.swatches[0][0]
   }
 
   get circleOutlineColour (): string {
@@ -147,9 +140,4 @@ export default class PopoutButton extends Vue {
 </script>
 <style scoped lang="scss">
 
-</style>
-<style lang="scss">
-.v-color-picker__controls {
-  display: none;
-}
 </style>
