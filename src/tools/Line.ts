@@ -8,7 +8,6 @@ export default class Line implements Tool {
   private line: Konva.Line
   private arrow: Konva.Arrow
   private TBar: Konva.Line
-  private mapRatio: number
   private stroke: number[][]
   constructor (public readonly name: string,
                public size: number,
@@ -19,7 +18,6 @@ export default class Line implements Tool {
     this.line = new Konva.Line()
     this.arrow = new Konva.Arrow()
     this.TBar = new Konva.Line()
-    this.mapRatio = 1
     this.stroke = [
       [0, 0],
       [30, 10]

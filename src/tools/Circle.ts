@@ -7,7 +7,6 @@ import throttle from 'lodash.throttle'
 export default class Circle implements Tool {
   private circle: Konva.Circle;
   private line: Konva.Line;
-  private mapRatio: number;
   private stroke: number[][];
   constructor (public readonly name: string,
                public size: number,
@@ -19,11 +18,9 @@ export default class Circle implements Tool {
   ) {
     this.circle = new Konva.Circle()
     this.line = new Konva.Line()
-    this.mapRatio = 1
     this.stroke = [
       [0, 0],
-      [15 * this.mapRatio, 5 * this.mapRatio],
-      [15 * this.mapRatio, 5 * this.mapRatio]
+      [30, 10]
     ]
   }
 
@@ -79,6 +76,7 @@ export default class Circle implements Tool {
   }
 
   renderCanvas = (canvasElement: CanvasElement, layer: Konva.Layer): void => {
+    this.strokeStyle = canvasElement.strokeStyle || 0
     const radius = this.calcRadius(canvasElement.data[0], canvasElement.data[1], canvasElement.data[2], canvasElement.data[3])
     layer.add(this.createElement(canvasElement, canvasElement.tool.colour, canvasElement.tool.size, radius, canvasElement.outlineColour))
     if (canvasElement.showRadius) {
