@@ -21,10 +21,10 @@ export enum ToolsAction {
   SET_TOOL = 'setTool',
   SET_COLOUR = 'setColour',
   SET_SIZE = 'setSize',
-  SET_SHOWRADIUS = 'setShowRadius',
-  SET_OUTLINECOLOUR = 'setOutlineColour',
-  SET_TEMPORARILY = 'setTemporarily',
-  SET_STROKESTYLE = 'setStrokeStyle'
+  SET_SHOW_RADIUS = 'setShowRadius',
+  SET_OUTLINE_COLOUR = 'setOutlineColour',
+  SET_TEMPORARY = 'setTemporary',
+  SET_STROKE_STYLE = 'setStrokeStyle'
 }
 
 export interface ToolState {
@@ -42,10 +42,10 @@ export enum ToolsMutation {
   SET_TOOL = 'SET_TOOL',
   SET_COLOUR = 'SET_COLOUR',
   SET_SIZE = 'SET_SIZE',
-  SET_SHOWRADIUS = 'SET_SHOWRADIUS',
-  SET_OUTLINECOLOUR = 'SET_OUTLINECOLOUR',
-  SET_TEMPORARILY = 'SET_TEMPORARILY',
-  SET_STROKESTYLE = 'SET_STROKESTYLE'
+  SET_SHOW_RADIUS = 'SET_SHOW_RADIUS',
+  SET_OUTLINE_COLOUR = 'SET_OUTLINE_COLOUR',
+  SET_TEMPORARY = 'SET_TEMPORARY',
+  SET_STROKE_STYLE = 'SET_STROKE_STYLE'
 }
 
 type ToolActionContext = ActionContext<ToolState, {}>;
@@ -106,22 +106,22 @@ const ToolModule: Module<ToolState, {}> = {
         state.enabledTool.size = size
       }
     },
-    [ToolsMutation.SET_OUTLINECOLOUR] (state: ToolState, outlineColour: string) {
+    [ToolsMutation.SET_OUTLINE_COLOUR] (state: ToolState, outlineColour: string) {
       if (state.enabledTool) {
         state.enabledTool.outlineColour = outlineColour
       }
     },
-    [ToolsMutation.SET_SHOWRADIUS] (state: ToolState, showRadius: boolean) {
+    [ToolsMutation.SET_SHOW_RADIUS] (state: ToolState, showRadius: boolean) {
       if (state.enabledTool) {
         state.enabledTool.showRadius = showRadius
       }
     },
-    [ToolsMutation.SET_TEMPORARILY] (state: ToolState, temporarily: boolean) {
+    [ToolsMutation.SET_TEMPORARY] (state: ToolState, temporary: boolean) {
       if (state.enabledTool) {
-        state.enabledTool.temporarily = temporarily
+        state.enabledTool.temporary = temporary
       }
     },
-    [ToolsMutation.SET_STROKESTYLE] (state: ToolState, strokeStyle: number) {
+    [ToolsMutation.SET_STROKE_STYLE] (state: ToolState, strokeStyle: number) {
       if (state.enabledTool) {
         state.enabledTool.strokeStyle = strokeStyle
       }
@@ -149,17 +149,17 @@ const ToolModule: Module<ToolState, {}> = {
     [ToolsAction.SET_SIZE] (context: ToolActionContext, size: number) {
       context.commit(ToolsMutation.SET_SIZE, size)
     },
-    [ToolsAction.SET_OUTLINECOLOUR] (context: ToolActionContext, outlineColour: string) {
-      context.commit(ToolsMutation.SET_OUTLINECOLOUR, outlineColour)
+    [ToolsAction.SET_OUTLINE_COLOUR] (context: ToolActionContext, outlineColour: string) {
+      context.commit(ToolsMutation.SET_OUTLINE_COLOUR, outlineColour)
     },
-    [ToolsAction.SET_SHOWRADIUS] (context: ToolActionContext, showRadius: boolean) {
-      context.commit(ToolsMutation.SET_SHOWRADIUS, showRadius)
+    [ToolsAction.SET_SHOW_RADIUS] (context: ToolActionContext, showRadius: boolean) {
+      context.commit(ToolsMutation.SET_SHOW_RADIUS, showRadius)
     },
-    [ToolsAction.SET_TEMPORARILY] (context: ToolActionContext, temporarily: boolean) {
-      context.commit(ToolsMutation.SET_TEMPORARILY, temporarily)
+    [ToolsAction.SET_TEMPORARY] (context: ToolActionContext, temporarily: boolean) {
+      context.commit(ToolsMutation.SET_TEMPORARY, temporarily)
     },
-    [ToolsAction.SET_STROKESTYLE] (context: ToolActionContext, strokeStyle: number) {
-      context.commit(ToolsMutation.SET_STROKESTYLE, strokeStyle)
+    [ToolsAction.SET_STROKE_STYLE] (context: ToolActionContext, strokeStyle: number) {
+      context.commit(ToolsMutation.SET_STROKE_STYLE, strokeStyle)
     }
   }
 }
