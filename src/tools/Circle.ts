@@ -12,7 +12,7 @@ export default class Circle implements Tool {
   constructor (public readonly name: string,
                public size: number,
                public colour: string,
-               public temporarily: boolean,
+               public temporary: boolean,
                public showRadius: boolean,
                public outlineColour: string,
                public strokeStyle: number
@@ -104,7 +104,7 @@ export default class Circle implements Tool {
         colour: this.colour,
         size: this.size
       },
-      temporary: this.temporarily,
+      temporary: this.temporary,
       showRadius: this.showRadius,
       strokeStyle: this.strokeStyle,
       outlineColour: this.outlineColour,
