@@ -9,13 +9,24 @@ export default class Circle implements Tool {
   private line: Konva.Line;
   private text: Konva.Text;
   private mapRatio: number;
+  private stroke: number[][];
   constructor (public readonly name: string,
                public size: number,
-               public colour: string) {
+               public colour: string,
+               public temporarily: boolean,
+               public showRadius: boolean,
+               public outlineColour: string,
+               public strokeStyle: number
+  ) {
     this.circle = new Konva.Circle()
     this.line = new Konva.Line()
     this.text = new Konva.Text()
-    this.mapRatio = 1 // TODO: Implement map ratio dynamically
+    this.mapRatio = 1
+    this.stroke = [
+      [0, 0],
+      [15 * this.mapRatio, 5 * this.mapRatio],
+      [15 * this.mapRatio, 5 * this.mapRatio]
+    ]
   }
 
   // eslint-disable-next-line
@@ -23,19 +34,27 @@ export default class Circle implements Tool {
     canvasElement.data = [e.evt.x, e.evt.y]
     canvasElement.id = uuid()
     this.circle = this.createElement(canvasElement)
-    this.line = this.createLineElement(canvasElement)
-    this.text = this.createTextElement(canvasElement)
-    layer.add(this.text)
     layer.add(this.circle)
-    layer.add(this.line)
+    if (this.showRadius) {
+      this.line = this.createLineElement(canvasElement)
+      layer.add(this.line)
+      if (this.strokeStyle === 2) {
+        this.text = this.createTextElement(canvasElement)
+        layer.add(this.text)
+      }
+    }
   }
 
   // eslint-disable-next-line
   mouseMoveAction = throttle((e: Konva.KonvaPointerEvent, canvasElement: CanvasElement, layer: Konva.Layer, _socket: WebSocket): void => {
     this.circle.radius(this.calcRadius(e.evt.x, e.evt.y, this.circle.getPosition().x, this.circle.getPosition().y))
-    this.line.points([canvasElement.data[0], canvasElement.data[1], e.evt.x, e.evt.y])
-    this.text.setPosition(this.calcTextPosition(e.evt.x, e.evt.y, this.circle.getPosition().x, this.circle.getPosition().y))
-    this.text.setText(Math.floor(this.calcRadius(e.evt.x, e.evt.y, this.circle.getPosition().x, this.circle.getPosition().y) * this.mapRatio) + ' m')
+    if (this.showRadius) {
+      this.line.points([canvasElement.data[0], canvasElement.data[1], e.evt.x, e.evt.y])
+      if (this.strokeStyle === 2) {
+        this.text.setPosition(this.calcTextPosition(e.evt.x, e.evt.y, this.circle.getPosition().x, this.circle.getPosition().y))
+        this.text.setText(this.getText(this.calcRadius(e.evt.x, e.evt.y, this.circle.getPosition().x, this.circle.getPosition().y)))
+      }
+    }
     layer.batchDraw()
   }, 10)
 
@@ -44,52 +63,59 @@ export default class Circle implements Tool {
     this.sendToWebsockets(socket, canvasElement)
   }
 
-  createTextElement = (canvasElement: CanvasElement, colour?: string, text?: string): Konva.Shape & Konva.Text => {
+  createTextElement = (canvasElement: CanvasElement, text?: string, outlineColour?: string): Konva.Shape & Konva.Text => {
     return new Konva.Text({
       x: canvasElement.data[0],
       y: canvasElement.data[1],
       text: text || '0 m',
       fontSize: 20,
       fontFamily: 'Calibri',
-      fill: colour || this.colour
+      fill: outlineColour || this.outlineColour,
+      zIndex: 0
     })
   }
 
-  createLineElement = (canvasElement: CanvasElement, colour?: string): Konva.Shape & Konva.Line => {
+  createLineElement = (canvasElement: CanvasElement, outlineColour?: string): Konva.Shape & Konva.Line => {
     return new Konva.Line({
       globalCompositeOperation: 'source-over',
       points: canvasElement.data,
-      stroke: colour || this.colour,
+      stroke: outlineColour || this.outlineColour,
       strokeWidth: 2,
       lineCap: 'mitter',
-      dash: [23, 10]
+      dash: this.stroke[this.strokeStyle]
     })
   }
 
-  createElement = (canvasElement: CanvasElement, colour?: string, stroke?: number, radius?: number): Konva.Shape & Konva.Circle => {
+  createElement = (canvasElement: CanvasElement, colour?: string, stroke?: number, radius?: number, outlineColour?: string): Konva.Shape & Konva.Circle => {
     return new Konva.Circle({
       id: canvasElement.id,
       globalCompositeOperation: 'source-over',
-      stroke: colour || this.colour,
+      fill: colour || this.colour,
+      stroke: outlineColour || this.outlineColour,
       strokeWidth: stroke || this.size,
       radius: radius || 0,
       x: canvasElement.data[0],
-      y: canvasElement.data[1]
+      y: canvasElement.data[1],
+      dash: this.stroke[this.strokeStyle]
     })
   }
 
   renderCanvas = (canvasElement: CanvasElement, layer: Konva.Layer): void => {
-    // Render circle
     const radius = this.calcRadius(canvasElement.data[0], canvasElement.data[1], canvasElement.data[2], canvasElement.data[3])
-    layer.add(this.createElement(canvasElement, canvasElement.tool.colour, canvasElement.tool.size, radius))
-    // Render dashed line
-    layer.add(this.createLineElement(canvasElement, canvasElement.tool.colour))
-    // Render text
-    this.text = this.createTextElement(canvasElement, canvasElement.tool.colour, Math.floor(radius * this.mapRatio) + ' m')
-    this.text.setPosition(this.calcTextPosition(canvasElement.data[2], canvasElement.data[3], canvasElement.data[0], canvasElement.data[1]))
-    layer.add(this.text)
-    // Batch draw
+    layer.add(this.createElement(canvasElement, canvasElement.tool.colour, canvasElement.tool.size, radius, canvasElement.outlineColour))
+    if (canvasElement.showRadius) {
+      layer.add(this.createLineElement(canvasElement, canvasElement.outlineColour))
+      if (canvasElement.strokeStyle === 2) {
+        this.text = this.createTextElement(canvasElement, this.getText(radius), canvasElement.outlineColour)
+        this.text.setPosition(this.calcTextPosition(canvasElement.data[2], canvasElement.data[3], canvasElement.data[0], canvasElement.data[1]))
+        layer.add(this.text)
+      }
+    }
     layer.batchDraw()
+  }
+
+  getText = (radius: number): string => {
+    return Math.floor(radius * this.mapRatio) + ' m'
   }
 
   calcTextPosition = (x1: number, y1: number, x2: number, y2: number): object => {
@@ -120,7 +146,10 @@ export default class Circle implements Tool {
         colour: this.colour,
         size: this.size
       },
-      temporary: false,
+      temporary: this.temporarily,
+      showRadius: this.showRadius,
+      strokeStyle: this.strokeStyle,
+      outlineColour: this.outlineColour,
       data: canvasElement.data
     }
     socket.send(JSON.stringify(data))
