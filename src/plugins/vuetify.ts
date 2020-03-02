@@ -5,23 +5,35 @@ import Vuetify, {
   VRadio,
   VRadioGroup,
   VRow,
+  VImg,
+  VSwitch,
+  VRadioGroup,
+  VRadio,
+  VDivider,
   VToolbar,
   VSwitch,
   VContainer,
   VSpacer,
+  VContainer,
   VBtn,
   VIcon,
   VCol,
   VBtnToggle,
   VMenu,
   VList,
+  VListItem,
+  VListItemAction,
+  VListItemAvatar,
+  VListItemContent,
+  VListItemTitle,
   VContent,
   VCard,
+  VCardActions,
   VSheet,
   VColorPicker,
-  VSlider
+  VSlider,
+  VNavigationDrawer
 } from 'vuetify/lib'
-// import { Ripple } from 'vuetify/lib/directives'
 
 Vue.use(Vuetify, {
   components: {
@@ -31,7 +43,13 @@ Vue.use(Vuetify, {
     VRadio,
     VContainer,
     VRow,
+    VImg,
+    VDivider,
     VToolbar,
+    VSwitch,
+    VRadioGroup,
+    VRadio,
+    VContainer,
     VSpacer,
     VBtn,
     VIcon,
@@ -39,11 +57,18 @@ Vue.use(Vuetify, {
     VBtnToggle,
     VMenu,
     VList,
+    VListItem,
+    VListItemAction,
+    VListItemAvatar,
+    VListItemContent,
+    VListItemTitle,
     VContent,
     VCard,
+    VCardActions,
     VSheet,
     VColorPicker,
-    VSlider
+    VSlider,
+    VNavigationDrawer
   },
   directives: { }
 })

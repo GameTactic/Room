@@ -18,4 +18,6 @@ export interface CanvasElement {
   jti: string;
   endStyle?: string;
   strokeStyle?: number;
+  showRadius?: boolean;
+  outlineColour?: string;
 }
