@@ -1,5 +1,5 @@
 <template>
-  <v-row class="child-flex navbar-row">
+  <v-row class="navbar-row">
     <v-col xl="2" lg="2" md="3" sm="6" cols="12" order-md="1" order="1">
       <v-toolbar dense class="navbar-toolbar-left">
         <v-icon color="#FFFFFF">fa-anchor</v-icon>
@@ -45,7 +45,7 @@ export default class TheNavExtraLarge extends Vue {
   }
 }
 
-.navbar-toolbar-left {
+header.navbar-toolbar-left.navbar-toolbar-left.navbar-toolbar-left {
   background-color: $room-navbar;
   color: $room-navbar-text;
   position: relative;
@@ -72,7 +72,7 @@ export default class TheNavExtraLarge extends Vue {
   color: black;
 }
 
-.navbar-toolbar-right {
+.navbar-toolbar-right.navbar-toolbar-right.navbar-toolbar-right {
   background-color: $room-navbar;
   color: $room-navbar-text;
   position: relative;
