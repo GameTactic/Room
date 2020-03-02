@@ -1,5 +1,5 @@
 <template>
-  <v-row class="child-flex navbar-row">
+  <v-row class="navbar-row">
     <v-col cols="12">
       <v-toolbar dense class="navbar-toolbar-left">
         <v-icon color="#FFFFFF">fa-anchor</v-icon>
@@ -66,7 +66,7 @@ header.navbar-toolbar-left.navbar-toolbar-left.navbar-toolbar-left {
   color: black;
 }
 
-.navbar-toolbar-right {
+.navbar-toolbar-right.navbar-toolbar-right.navbar-toolbar-right {
   background-color: $room-navbar;
   color: $room-navbar-text;
   position: relative;

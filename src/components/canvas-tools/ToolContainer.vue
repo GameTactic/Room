@@ -7,14 +7,28 @@
     offset-x
   >
     <template v-slot:activator="{ on }">
-      <v-btn
-        icon
-        elevation="2"
-        v-on="on"
-        @click="onButtonClickHandler"
-      >
-        <v-icon dense>{{icon}}</v-icon>
-      </v-btn>
+      <div>
+        <v-btn
+          icon
+          tile
+          elevation="2"
+          @click="onButtonClickHandler"
+        >
+          <v-icon dense>{{icon}}</v-icon>
+        </v-btn>
+        <v-btn
+          x-small
+          class="tools-caret-down"
+          icon
+          elevation="0"
+          tile
+          absolute
+          v-on="on"
+          @click="onButtonClickHandler"
+        >
+          <v-icon small>{{ 'fa-caret-down' }}</v-icon>
+        </v-btn>
+      </div>
     </template>
     <v-sheet>
       <slot>Default Content For Slot</slot>
@@ -62,5 +76,13 @@ export default class ToolContainer extends Vue {
   .v-menu-content-class {
     margin-left: 5px;
     box-shadow: 0px 4px 4px -3px rgba(0, 0, 0, 0.2), 0px 2px 2px 0px rgba(0, 0, 0, 0.14), 0px 1px 5px 0px rgba(0, 0, 0, 0.12)
+  }
+  .tools-caret-down {
+    right:2px;
+    transition:0.2s ease-in-out;
+    margin-top:28px;
+  }
+  .rotate90 {
+    transform: rotate(-90deg);
   }
 </style>
