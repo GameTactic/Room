@@ -2,14 +2,8 @@
   <div>
     <p>Fill</p>
     <colour-picker :value.sync="circleColour" />
-    <v-slider
-      prepend-icon="fa-ruler-vertical"
-      :hint="circleSizeHint"
-      v-model="circleSize"
-      :max="6"
-      :step="1"
-      ticks="always"
-    />
+    <p>Size</p>
+    <size-picker :value.sync="circleSize"></size-picker>
     <p>Outline</p>
     <colour-picker :value.sync="circleOutlineColour" />
     <v-radio-group v-model="circleStrokeStyle" row>
@@ -23,8 +17,8 @@
       <v-row>
         <v-spacer></v-spacer>
         <v-switch
-          v-model="circleTemporarily"
-          :label="circleTemporarily === true ? 'Temporarily' : 'Permanent'"
+          v-model="circleTemporary"
+          :label="circleTemporary === true ? 'Temporary' : 'Permanent'"
         ></v-switch>
         <v-spacer></v-spacer>
         <v-switch
@@ -44,40 +38,23 @@ import { namespace } from 'vuex-class'
 import { Namespaces } from '@/store'
 import { ToolGetters, ToolsAction } from '@/store/modules/tools'
 import ColourPicker from '@/components/canvas-tools/templates/template-tools/ColourPicker.vue'
+import SizePicker from '@/components/canvas-tools/templates/template-tools/SizePicker.vue'
 
 const Tools = namespace(Namespaces.TOOLS)
 
 @Component({
   name: 'DrawCircle',
-  components: { ColourPicker },
+  components: { SizePicker, ColourPicker },
   computed: {}
 })
 export default class PopoutButton extends Vue {
   @Tools.Getter(ToolGetters.TOOL) findTool!: (name: string) => Tool
   @Tools.Action(ToolsAction.SET_SIZE) setSize!: (size: number) => void
   @Tools.Action(ToolsAction.SET_COLOUR) setColour!: (colour: string) => void
-  @Tools.Action(ToolsAction.SET_SHOWRADIUS) setShowRadius!: (showRadius: boolean) => void
-  @Tools.Action(ToolsAction.SET_OUTLINECOLOUR) setOutlineColour!: (outlineColour: string) => void
-  @Tools.Action(ToolsAction.SET_TEMPORARILY) setTemporarily!: (temporarily: boolean) => void
-  @Tools.Action(ToolsAction.SET_STROKESTYLE) setStrokeStyle!: (strokeStyle: number) => void
-  swatches = [
-    ['#FF0000', '#AA0000', '#550000'],
-    ['#FFFF00', '#AAAA00', '#555500'],
-    ['#00FF00', '#00AA00', '#005500'],
-    ['#00FFFF', '#00AAAA', '#005555'],
-    ['#0000FF', '#0000AA', '#000055']
-  ];
-  swatchesFill = [
-    ['#FF000066', '#AA000066', '#55000066'],
-    ['#FFFF0066', '#AAAA0066', '#55550066'],
-    ['#00FF0066', '#00AA0066', '#00550066'],
-    ['#00FFFF66', '#00AAAA66', '#00555566'],
-    ['#0000FF66', '#0000AA66', '#00005566']
-  ];
-
-  get circleSizeHint (): string {
-    return `Size: ${this.circleSize}`
-  }
+  @Tools.Action(ToolsAction.SET_SHOW_RADIUS) setShowRadius!: (showRadius: boolean) => void
+  @Tools.Action(ToolsAction.SET_OUTLINE_COLOUR) setOutlineColour!: (outlineColour: string) => void
+  @Tools.Action(ToolsAction.SET_TEMPORARY) setTemporary!: (temporary: boolean) => void
+  @Tools.Action(ToolsAction.SET_STROKE_STYLE) setStrokeStyle!: (strokeStyle: number) => void
 
   get circleSize () {
     return this.findTool('circle').size || 2
@@ -92,7 +69,7 @@ export default class PopoutButton extends Vue {
   }
 
   get circleColour (): string {
-    return this.findTool('circle').colour || this.swatches[0][0]
+    return this.findTool('circle').colour || '#FF0000'
   }
 
   get circleOutlineColour (): string {
@@ -111,12 +88,12 @@ export default class PopoutButton extends Vue {
     this.setShowRadius(newValue)
   }
 
-  get circleTemporarily (): boolean {
-    return this.findTool('circle').temporarily || false
+  get circleTemporary (): boolean {
+    return this.findTool('circle').temporary || false
   }
 
-  set circleTemporarily (newValue: boolean) {
-    this.setTemporarily(newValue)
+  set circleTemporary (newValue: boolean) {
+    this.setTemporary(newValue)
   }
 
   get circleStrokeStyle (): number {
