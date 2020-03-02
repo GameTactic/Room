@@ -59,9 +59,9 @@ const ToolModule: Module<ToolState, {}> = {
       history: [],
       tools: [
         new Ping('ping', 5, '#005555'),
-        new FreeDraw('freedraw', 6, '#FF0000'),
+        new FreeDraw('freedraw', 3, '#FF0000'),
         new Erase('erase'),
-        new Circle('circle', 3, '#FF0000', false, true, '#AA0000', 2)
+        new Circle('circle', 3, '#FF0000', false, true, '#AA0000', 0)
       ]
     }
   },
