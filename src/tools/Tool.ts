@@ -10,6 +10,9 @@ export interface Tool {
   name: string;
   colour?: string;
   size?: number;
+  showRadius?: boolean;
+  outlineColour?: string;
+  temporarily?: boolean;
   mouseDownAction?: MouseDownAction;
   mouseMoveAction?: MouseMoveAction;
   mouseUpAction?: MouseUpAction;
