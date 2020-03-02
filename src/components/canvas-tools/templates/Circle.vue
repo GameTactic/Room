@@ -1,7 +1,7 @@
 <template>
   <div>
     <p>Fill</p>
-    <colour-picker v-model="circleColour"></colour-picker>
+    <colour-picker :value.sync="circleColour" />
     <v-slider
       prepend-icon="fa-ruler-vertical"
       :hint="circleSizeHint"
@@ -11,16 +11,7 @@
       ticks="always"
     />
     <p>Outline</p>
-    <v-color-picker
-      v-model="circleOutlineColour"
-      :swatches="swatches"
-      mode="hexa"
-      show-swatches
-      hide-canvas
-      flat
-      hide-inputs
-      hide-mode-switch
-    />
+    <colour-picker :value.sync="circleOutlineColour" />
     <v-radio-group v-model="circleStrokeStyle" row>
       <v-spacer></v-spacer>
       <v-radio class="mr-0" name="strokeStyle" on-icon="fa-minus" off-icon="fa-minus" :value="0"></v-radio>

@@ -1,14 +1,14 @@
 <template>
   <v-color-picker
+    :value="value"
     :swatches="swatches"
-    v-bind:value="value"
-    v-on:input="$emit('input', $event.target.value)"
     mode="hexa"
     show-swatches
     hide-canvas
     flat
     hide-inputs
     hide-mode-switch
+    @input="onColourPickerHandler"
   />
 </template>
 
@@ -29,8 +29,14 @@ export default class ColourPicker extends Vue {
     ['#0000FF', '#0000AA', '#000055']
   ];
 
+  vi = this
+
   element = (e: object) => {
     return e
+  }
+
+  onColourPickerHandler (colour: string) {
+    this.$emit('update:value', colour)
   }
 }
 </script>
