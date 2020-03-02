@@ -22,8 +22,7 @@ export default class Line implements Tool {
     this.mapRatio = 1
     this.stroke = [
       [0, 0],
-      [30, 10],
-      [15 * this.mapRatio, 5 * this.mapRatio]
+      [30, 10]
     ]
   }
 

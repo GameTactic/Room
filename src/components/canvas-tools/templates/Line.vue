@@ -33,8 +33,6 @@
       <v-spacer></v-spacer>
       <v-radio class="mr-0" name="endStyle" on-icon="fa-ellipsis-h" off-icon="fa-ellipsis-h" :value="1"></v-radio>
       <v-spacer></v-spacer>
-      <v-radio class="mr-0" name="endStyle" on-icon="fa-ruler" off-icon="fa-ruler" :value="2"></v-radio>
-      <v-spacer></v-spacer>
     </v-radio-group>
     <v-container>
       <v-row>
