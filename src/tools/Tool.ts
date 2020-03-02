@@ -12,7 +12,7 @@ export interface Tool {
   size?: number;
   showRadius?: boolean;
   outlineColour?: string;
-  temporarily?: boolean;
+  temporary?: boolean;
   mouseDownAction?: MouseDownAction;
   mouseMoveAction?: MouseMoveAction;
   mouseUpAction?: MouseUpAction;
