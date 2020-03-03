@@ -10,6 +10,8 @@ export interface Tool {
   name: string;
   colour?: string;
   size?: number;
+  endStyle?: string;
+  strokeStyle?: number;
   showRadius?: boolean;
   outlineColour?: string;
   temporary?: boolean;
