@@ -7,9 +7,9 @@ export default class LineCreator implements Shape {
   private arrow: Konva.Arrow
   private tBar: Konva.Line
   private stroke: number[][]
-  constructor (public size: number,
-               public colour: string,
-               public strokeStyle: number) {
+  constructor (public size?: number,
+               public colour?: string,
+               public strokeStyle?: number) {
     this.line = new Konva.Line()
     this.arrow = new Konva.Arrow()
     this.tBar = new Konva.Line()
@@ -111,11 +111,11 @@ export default class LineCreator implements Shape {
     return new Konva.Line({
       globalCompositeOperation: 'source-over',
       points: canvasElement.data,
-      stroke: colour || this.colour,
-      strokeWidth: size || this.size,
+      stroke: colour || this.colour || '#FF0000',
+      strokeWidth: size || this.size || 5,
       lineCap: 'mitter',
       id: canvasElement.id,
-      dash: this.stroke[this.strokeStyle]
+      dash: this.stroke[this.strokeStyle || 0]
     })
   }
 
@@ -124,8 +124,8 @@ export default class LineCreator implements Shape {
     return new Konva.Line({
       globalCompositeOperation: 'source-over',
       points: point,
-      stroke: colour || this.colour,
-      strokeWidth: size || this.size,
+      stroke: colour || this.colour || '#FF0000',
+      strokeWidth: size || this.size || 5,
       lineCap: 'mitter',
       id: canvasElement.id
     })
@@ -135,11 +135,11 @@ export default class LineCreator implements Shape {
     return new Konva.Arrow({
       globalCompositeOperation: 'source-over',
       points: canvasElement.data,
-      stroke: colour || this.colour,
-      strokeWidth: size || this.size,
+      stroke: colour || this.colour || '#FF0000',
+      strokeWidth: size || this.size || 5,
       lineCap: 'mitter',
       id: canvasElement.id,
-      dash: this.stroke[this.strokeStyle],
+      dash: this.stroke[this.strokeStyle || 0],
       fill: this.colour
     })
   }
