@@ -20,7 +20,7 @@ export default class Line implements Tool {
     this.line = new Konva.Line()
     this.arrow = new Konva.Arrow()
     this.tBar = new Konva.Line()
-    this.lineCreator = new LineCreator(this.size, this.colour, this.strokeStyle)
+    this.lineCreator = new LineCreator()
     this.stroke = [
       [0, 0],
       [30, 10]
@@ -33,6 +33,7 @@ export default class Line implements Tool {
     canvasElement.id = uuid()
     canvasElement.endStyle = this.endStyle
     canvasElement.strokeStyle = this.strokeStyle
+    this.lineCreator = new LineCreator(this.size, this.colour, this.strokeStyle)
     const result = this.lineCreator['create' + this.endStyle.toUpperCase()](canvasElement, layer)
     this.line = result.line
     this.arrow = result.arrow
