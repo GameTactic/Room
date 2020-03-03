@@ -1,30 +1,14 @@
 <template>
   <div>
-    <v-color-picker
-      v-model="lineColour"
-      :swatches="swatches"
-      mode="hexa"
-      show-swatches
-      hide-canvas
-      flat
-      hide-inputs
-      hide-mode-switch
-    />
-    <v-slider
-      prepend-icon="fa-ruler-vertical"
-      :hint="lineSizeHint"
-      v-model="lineSize"
-      :max="6"
-      :step="1"
-      ticks="always"
-    />
+    <colour-picker :value.sync="lineColour" />
+    <size-picker :value.sync="lineSize"></size-picker>
     <v-radio-group v-model="lineEndStyle" row>
       <v-spacer></v-spacer>
       <v-radio class="mr-0" name="endStyle" on-icon="fa-arrow-right" off-icon="fa-arrow-right" :value="'arrow'"></v-radio>
       <v-spacer></v-spacer>
       <v-radio class="mr-0" name="endStyle" on-icon="fa-slash" off-icon="fa-slash" :value="'line'"></v-radio>
       <v-spacer></v-spacer>
-      <v-radio class="mr-0" name="endStyle" on-icon="fa-ruler-combined" off-icon="fa-ruler-combined" :value="'T'"></v-radio>
+      <v-radio class="mr-0" name="endStyle" on-icon="fa-ruler-combined" off-icon="fa-ruler-combined" :value="'tBar'"></v-radio>
       <v-spacer></v-spacer>
     </v-radio-group>
     <v-radio-group v-model="lineStrokeStyle" row>
@@ -38,8 +22,8 @@
       <v-row>
         <v-spacer></v-spacer>
         <v-switch
-          v-model="lineTemporarily"
-          :label="lineTemporarily === true ? 'Temporarily' : 'Permanent'"
+          v-model="lineTemporary"
+          :label="lineTemporary === true ? 'Temporary' : 'Permanent'"
         ></v-switch>
         <v-spacer></v-spacer>
       </v-row>
@@ -53,34 +37,26 @@ import { Tool } from '@/tools/Tool'
 import { namespace } from 'vuex-class'
 import { Namespaces } from '@/store'
 import { ToolGetters, ToolsAction } from '@/store/modules/tools'
+import ColourPicker from '@/components/canvas-tools/templates/template-tools/ColourPicker.vue'
+import SizePicker from '@/components/canvas-tools/templates/template-tools/SizePicker.vue'
 
 const Tools = namespace(Namespaces.TOOLS)
 
 @Component({
   name: 'StraightLine',
-  computed: {}
+  computed: {},
+  components: { SizePicker, ColourPicker }
 })
 export default class PopoutButton extends Vue {
   @Tools.Getter(ToolGetters.TOOL) findTool!: (name: string) => Tool
   @Tools.Action(ToolsAction.SET_COLOUR) setColour!: (colour: string) => void
   @Tools.Action(ToolsAction.SET_SIZE) setSize!: (size: number) => void
-  @Tools.Action(ToolsAction.SET_ENDSTYLE) setEndStyle!: (endStyle: string) => void
-  @Tools.Action(ToolsAction.SET_STROKESTYLE) setStrokeStyle!: (strokeStyle: number) => void
-  @Tools.Action(ToolsAction.SET_TEMPORARILY) setTemporarily!: (temporarily: boolean) => void
-  swatches = [
-    ['#FF0000', '#AA0000', '#550000'],
-    ['#FFFF00', '#AAAA00', '#555500'],
-    ['#00FF00', '#00AA00', '#005500'],
-    ['#00FFFF', '#00AAAA', '#005555'],
-    ['#0000FF', '#0000AA', '#000055']
-  ];
-
-  get lineSizeHint (): string {
-    return `Size: ${this.lineSize}`
-  }
+  @Tools.Action(ToolsAction.SET_END_STYLE) setEndStyle!: (endStyle: string) => void
+  @Tools.Action(ToolsAction.SET_STROKE_STYLE) setStrokeStyle!: (strokeStyle: number) => void
+  @Tools.Action(ToolsAction.SET_TEMPORARY) setTemporary!: (temporary: boolean) => void
 
   get lineSize () {
-    return this.findTool('line').size || 2
+    return this.findTool('line').size || 3
   }
 
   set lineSize (newValue: number) {
@@ -111,12 +87,12 @@ export default class PopoutButton extends Vue {
     this.setStrokeStyle(newValue)
   }
 
-  get lineTemporarily (): boolean {
-    return this.findTool('line').temporarily || false
+  get lineTemporary (): boolean {
+    return this.findTool('line').temporary || false
   }
 
-  set lineTemporarily (newValue: boolean) {
-    this.setTemporarily(newValue)
+  set lineTemporary (newValue: boolean) {
+    this.setTemporary(newValue)
   }
 }
 

@@ -23,7 +23,7 @@
         <v-spacer></v-spacer>
         <v-switch
           v-model="circleShowRadius"
-          :label="circleShowRadius === true ? 'Show radius' : 'Hide radius'"
+          :label="circleShowRadius === true ? 'Show Radius' : 'Hide Radius'"
         ></v-switch>
         <v-spacer></v-spacer>
       </v-row>
@@ -81,7 +81,7 @@ export default class PopoutButton extends Vue {
   }
 
   get circleShowRadius (): boolean {
-    return this.findTool('circle').showRadius || true
+    return this.findTool('circle').showRadius || false
   }
 
   set circleShowRadius (newValue: boolean) {

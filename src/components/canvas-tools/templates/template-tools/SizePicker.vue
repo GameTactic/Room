@@ -4,6 +4,7 @@
   :hint="'Size: ' + value"
   prepend-icon="fa-ruler-vertical"
   :max="6"
+  :min="1"
   :step="1"
   ticks="always"
   @input="onColourPickerHandler"
