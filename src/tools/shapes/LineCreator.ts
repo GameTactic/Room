@@ -1,7 +1,8 @@
 import Konva from 'konva'
 import { CanvasElement } from '@/types/Canvas'
+import {Shape} from "@/tools/shapes/Shape";
 
-export default class Line {
+export default class LineCreator implements Shape {
   private line: Konva.Line
   private arrow: Konva.Arrow
   private tBar: Konva.Line

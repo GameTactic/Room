@@ -1,6 +1,6 @@
 import { Tool } from '@/tools/Tool'
 import Konva from 'konva'
-import LineCreator from '@/tools/shapes/Line'
+import LineCreator from '@/tools/shapes/LineCreator'
 import { CanvasElement } from '@/types/Canvas'
 import uuid from 'uuid'
 import throttle from 'lodash.throttle'
@@ -9,7 +9,7 @@ export default class Line implements Tool {
   private line: Konva.Line
   private arrow: Konva.Arrow
   private tBar: Konva.Line
-  private shapeCreator: LineCreator
+  private lineCreator: LineCreator
   private stroke: number[][]
   constructor (public readonly name: string,
                public size: number,
@@ -20,7 +20,7 @@ export default class Line implements Tool {
     this.line = new Konva.Line()
     this.arrow = new Konva.Arrow()
     this.tBar = new Konva.Line()
-    this.shapeCreator = new LineCreator(this.size, this.colour, this.strokeStyle)
+    this.lineCreator = new LineCreator(this.size, this.colour, this.strokeStyle)
     this.stroke = [
       [0, 0],
       [30, 10]
@@ -33,7 +33,7 @@ export default class Line implements Tool {
     canvasElement.id = uuid()
     canvasElement.endStyle = this.endStyle
     canvasElement.strokeStyle = this.strokeStyle
-    const result = this.shapeCreator['create' + this.endStyle.toUpperCase()](canvasElement, layer)
+    const result = this.lineCreator['create' + this.endStyle.toUpperCase()](canvasElement, layer)
     this.line = result.line
     this.arrow = result.arrow
     this.tBar = result.tBar
@@ -45,7 +45,7 @@ export default class Line implements Tool {
       x: e.evt.x,
       y: e.evt.y
     }
-    this.shapeCreator['move' + this.endStyle.toUpperCase()](canvasElement, layer, pos, this.line, this.arrow, this.tBar)
+    this.lineCreator['move' + this.endStyle.toUpperCase()](canvasElement, layer, pos, this.line, this.arrow, this.tBar)
     layer.batchDraw()
   }, 5)
 
@@ -55,12 +55,12 @@ export default class Line implements Tool {
   }
 
   renderCanvas = (canvasElement: CanvasElement, layer: Konva.Layer): void => {
-    this.shapeCreator = new LineCreator(
+    this.lineCreator = new LineCreator(
       canvasElement.tool.size || this.size,
       canvasElement.tool.colour || this.colour,
       canvasElement.strokeStyle || this.strokeStyle
     )
-    this.shapeCreator['create' + canvasElement.endStyle.toUpperCase()](canvasElement, layer)
+    this.lineCreator['create' + canvasElement.endStyle.toUpperCase()](canvasElement, layer)
     layer.batchDraw()
   }
 
