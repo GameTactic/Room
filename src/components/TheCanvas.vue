@@ -2,6 +2,7 @@
   <v-stage
     ref="stage"
     class="konva-stage"
+    :class="[enabledTool ? enabledTool.name : '']"
     :config="stageSize"
     @mousedown="onMouseDownHandler"
     @mouseup="onMouseUpHandler"
@@ -30,6 +31,7 @@ const Sockets = namespace(Namespaces.SOCKET)
 @Component({
   name: 'TheCanvas'
 })
+
 export default class TheCanvas extends Vue {
     @Prop() private id!: string
     @Tools.Action(ToolsAction.DISABLE) disable!: () => void
@@ -146,5 +148,22 @@ export default class TheCanvas extends Vue {
   .konva-stage {
     background-color: white;
     position: absolute;
+    /* These are FA icons and might need replacing. */
+    &.ping::v-deep canvas {
+      cursor: pointer;
+    }
+    &.line::v-deep canvas {
+      cursor: url('~@/assets/cursor/pen.png'), auto;
+    }
+    &.freedraw::v-deep canvas {
+      cursor: url('~@/assets/cursor/pen.png'), auto;
+    }
+    &.erase::v-deep canvas {
+      cursor: url('~@/assets/cursor/eraser.png'), auto;
+    }
+    &.circle::v-deep canvas {
+      cursor: url('~@/assets/cursor/circle.png'), auto;
+    }
+    /* Extra Tools Here */
   }
 </style>
