@@ -18,12 +18,12 @@
         <v-spacer></v-spacer>
         <v-switch
           v-model="circleTemporary"
-          :label="circleTemporary === true ? 'Temporary' : 'Permanent'"
+          :label="circleTemporary ? 'Temporary' : 'Permanent'"
         ></v-switch>
         <v-spacer></v-spacer>
         <v-switch
           v-model="circleShowRadius"
-          :label="circleShowRadius === true ? 'Show Radius' : 'Hide Radius'"
+          :label="circleShowRadius ? 'Show Radius' : 'Hide Radius'"
         ></v-switch>
         <v-spacer></v-spacer>
       </v-row>

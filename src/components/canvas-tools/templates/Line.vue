@@ -23,7 +23,7 @@
         <v-spacer></v-spacer>
         <v-switch
           v-model="lineTemporary"
-          :label="lineTemporary === true ? 'Temporary' : 'Permanent'"
+          :label="lineTemporary ? 'Temporary' : 'Permanent'"
         ></v-switch>
         <v-spacer></v-spacer>
       </v-row>
