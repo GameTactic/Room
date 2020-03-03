@@ -60,7 +60,7 @@ export default class Line implements Tool {
       canvasElement.tool.colour || this.colour,
       canvasElement.strokeStyle || this.strokeStyle
     )
-    this.lineCreator['create' + canvasElement.endStyle.toUpperCase()](canvasElement, layer)
+    this.lineCreator['create' + canvasElement?.endStyle?.toUpperCase()](canvasElement, layer)
     layer.batchDraw()
   }
 

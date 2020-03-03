@@ -1,6 +1,6 @@
 import Konva from 'konva'
 import { CanvasElement } from '@/types/Canvas'
-import {Shape} from "@/tools/shapes/Shape";
+import { Shape } from '@/tools/shapes/Shape'
 
 export default class LineCreator implements Shape {
   private line: Konva.Line
@@ -143,4 +143,7 @@ export default class LineCreator implements Shape {
       fill: this.colour
     })
   }
+
+  // eslint-disable-next-line
+  [key: string]: any;
 }
