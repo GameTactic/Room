@@ -100,12 +100,12 @@ export default class TextCreator implements Shape {
 }
 
 export interface CreateRuler {
-  circle: Konva.Circle,
-  line: Konva.Line,
-  text: Konva.Text
+  circle: Konva.Circle;
+  line: Konva.Line;
+  text: Konva.Text;
 }
 
 export interface Position {
-  x: number,
-  y: number
+  x: number;
+  y: number;
 }

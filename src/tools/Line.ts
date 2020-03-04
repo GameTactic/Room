@@ -20,7 +20,7 @@ export default class Line implements Tool {
     this.line = new Konva.Line()
     this.arrow = new Konva.Arrow()
     this.tBar = new Konva.Line()
-    this.lineCreator = new LineCreator(this.size, this.colour, this.strokeStyle)
+    this.lineCreator = new LineCreator()
     this.stroke = [
       [0, 0],
       [30, 10]
@@ -31,8 +31,9 @@ export default class Line implements Tool {
   mouseDownAction = (e: Konva.KonvaPointerEvent, canvasElement: CanvasElement, layer: Konva.Layer, _socket: WebSocket): void => {
     canvasElement.data = [e.evt.x, e.evt.y]
     canvasElement.id = uuid()
-    canvasElement.endStyle = this.endStyle
-    canvasElement.strokeStyle = this.strokeStyle
+    canvasElement.tool.endStyle = this.endStyle
+    canvasElement.tool.strokeStyle = this.strokeStyle
+    this.lineCreator = new LineCreator(this.size, this.colour, this.strokeStyle)
     const result = this.lineCreator['create' + this.endStyle.toUpperCase()](canvasElement, layer)
     this.line = result.line
     this.arrow = result.arrow
@@ -58,9 +59,9 @@ export default class Line implements Tool {
     this.lineCreator = new LineCreator(
       canvasElement.tool.size || this.size,
       canvasElement.tool.colour || this.colour,
-      canvasElement.strokeStyle || this.strokeStyle
+      canvasElement.tool.strokeStyle || this.strokeStyle
     )
-    this.lineCreator['create' + canvasElement?.endStyle?.toUpperCase()](canvasElement, layer)
+    this.lineCreator['create' + canvasElement.tool.endStyle?.toUpperCase()](canvasElement, layer)
     layer.batchDraw()
   }
 
@@ -72,12 +73,12 @@ export default class Line implements Tool {
       tool: {
         name: 'line',
         colour: this.colour,
-        size: this.size
+        size: this.size,
+        strokeStyle: this.strokeStyle,
+        endStyle: this.endStyle
       },
       temporary: this.temporary,
-      data: canvasElement.data,
-      strokeStyle: canvasElement.strokeStyle,
-      endStyle: canvasElement.endStyle
+      data: canvasElement.data
     }
     socket.send(JSON.stringify(data))
   }

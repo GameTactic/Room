@@ -76,11 +76,11 @@ export default class Circle implements Tool {
   }
 
   renderCanvas = (canvasElement: CanvasElement, layer: Konva.Layer): void => {
-    this.strokeStyle = canvasElement.strokeStyle || 0
+    this.strokeStyle = canvasElement.tool.strokeStyle || 0
     const radius = this.calcRadius(canvasElement.data[0], canvasElement.data[1], canvasElement.data[2], canvasElement.data[3])
-    layer.add(this.createElement(canvasElement, canvasElement.tool.colour, canvasElement.tool.size, radius, canvasElement.outlineColour))
-    if (canvasElement.showRadius) {
-      layer.add(this.createLineElement(canvasElement, canvasElement.outlineColour))
+    layer.add(this.createElement(canvasElement, canvasElement.tool.colour, canvasElement.tool.size, radius, canvasElement.tool.outlineColour))
+    if (canvasElement.tool.showRadius) {
+      layer.add(this.createLineElement(canvasElement, canvasElement.tool.outlineColour))
     }
     layer.batchDraw()
   }
@@ -99,12 +99,12 @@ export default class Circle implements Tool {
       tool: {
         name: 'circle',
         colour: this.colour,
-        size: this.size
+        size: this.size,
+        showRadius: this.showRadius,
+        strokeStyle: this.strokeStyle,
+        outlineColour: this.outlineColour
       },
       temporary: this.temporary,
-      showRadius: this.showRadius,
-      strokeStyle: this.strokeStyle,
-      outlineColour: this.outlineColour,
       data: canvasElement.data
     }
     socket.send(JSON.stringify(data))

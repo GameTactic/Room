@@ -7,9 +7,9 @@ export default class LineCreator implements Shape {
   private arrow: Konva.Arrow
   private tBar: Konva.Line
   private stroke: number[][]
-  constructor (public size: number,
-               public colour: string,
-               public strokeStyle: number) {
+  constructor (public size?: number,
+               public colour?: string,
+               public strokeStyle?: number) {
     this.line = new Konva.Line()
     this.arrow = new Konva.Arrow()
     this.tBar = new Konva.Line()
@@ -115,7 +115,7 @@ export default class LineCreator implements Shape {
       strokeWidth: size || this.size,
       lineCap: 'mitter',
       id: canvasElement.id,
-      dash: this.stroke[this.strokeStyle]
+      dash: this.stroke[this.strokeStyle || 0]
     })
   }
 
@@ -139,7 +139,7 @@ export default class LineCreator implements Shape {
       strokeWidth: size || this.size,
       lineCap: 'mitter',
       id: canvasElement.id,
-      dash: this.stroke[this.strokeStyle],
+      dash: this.stroke[this.strokeStyle || 0],
       fill: this.colour
     })
   }
@@ -149,7 +149,7 @@ export default class LineCreator implements Shape {
 }
 
 export interface CreateLine {
-  line?: Konva.Line,
-  arrow?: Konva.Arrow,
-  tBar?: Konva.Line
+  line?: Konva.Line;
+  arrow?: Konva.Arrow;
+  tBar?: Konva.Line;
 }
