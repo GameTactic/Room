@@ -47,7 +47,7 @@ export default class Circle implements Tool {
 
   mouseUpAction = (e: Konva.KonvaPointerEvent, canvasElement: CanvasElement, layer: Konva.Layer, socket: WebSocket): void => {
     canvasElement.data = canvasElement.data.concat([e.evt.x, e.evt.y])
-    this.sendToWebsockets(socket, canvasElement)
+    this.sendToWebSocket(canvasElement, socket)
   }
 
   renderCanvas = (canvasElement: CanvasElement, layer: Konva.Layer): void => {
@@ -68,7 +68,7 @@ export default class Circle implements Tool {
     layer.batchDraw()
   }
 
-  sendToWebsockets = (socket: WebSocket, canvasElement: CanvasElement) => {
+  sendToWebSocket = (canvasElement: CanvasElement, socket: WebSocket) => {
     const data: CanvasElement = {
       jti: 'SAM',
       id: canvasElement.id,

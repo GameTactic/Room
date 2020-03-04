@@ -31,7 +31,7 @@ export default class Ping implements Tool {
     canvasElement.data = [e.evt.x, e.evt.y]
     canvasElement.id = uuid()
     this.pingCreator.create(canvasElement, layer)
-    this.sendToWebsockets(canvasElement, socket)
+    this.sendToWebSocket(canvasElement, socket)
   }
 
   renderCanvas = (canvasElement: CanvasElement, layer: Konva.Layer): void => {
@@ -42,7 +42,7 @@ export default class Ping implements Tool {
     this.pingCreator.create(canvasElement, layer)
   }
 
-  sendToWebsockets = (canvasElement: CanvasElement, socket: WebSocket) => {
+  sendToWebSocket = (canvasElement: CanvasElement, socket: WebSocket) => {
     const data: CanvasElement = {
       jti: 'SAM',
       id: uuid(),
