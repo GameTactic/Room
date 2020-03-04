@@ -3,76 +3,58 @@ import Konva from 'konva'
 import { CanvasElement } from '@/types/Canvas'
 import throttle from 'lodash.throttle'
 import uuid from 'uuid'
+import PingCreator from '@/tools/shapes/PingCreator'
 
 export default class Ping implements Tool {
-  private readonly amplitude = 25
-  private readonly period = 500
-  // eslint-disable-next-line no-useless-constructor
+  private pingCreator: PingCreator
+  private ping: Konva.Circle
   constructor (public readonly name: string,
                public readonly size: number,
                public readonly colour: string) {
+    this.pingCreator = new PingCreator(this.size, this.colour)
+    this.ping = new Konva.Circle()
   }
 
   mouseDownAction = (e: Konva.KonvaPointerEvent, canvasElement: CanvasElement, layer: Konva.Layer, socket: WebSocket): void => {
-    const dataCoords: number[] = [e.evt.x, e.evt.y]
-    this.runAnimation(dataCoords, layer)
-    this.sendToWebsockets(socket, dataCoords, canvasElement.layerId)
+    this.triggerPing(e, canvasElement, layer, socket)
   }
 
   mouseMoveAction = throttle((e: Konva.KonvaPointerEvent, canvasElement: CanvasElement, layer: Konva.Layer, socket: WebSocket): void => {
-    const dataCoords: number[] = [e.evt.x, e.evt.y]
-    this.runAnimation(dataCoords, layer)
-    this.sendToWebsockets(socket, dataCoords, canvasElement.layerId)
+    this.triggerPing(e, canvasElement, layer, socket)
   }, 75)
 
   mouseUpAction = (): void => {
     // mouse up action
   }
 
+  triggerPing = (e: Konva.KonvaPointerEvent, canvasElement: CanvasElement, layer: Konva.Layer, socket: WebSocket): void => {
+    canvasElement.data = [e.evt.x, e.evt.y]
+    canvasElement.id = uuid()
+    this.pingCreator.create(canvasElement, layer)
+    this.sendToWebsockets(canvasElement, socket)
+  }
+
   renderCanvas = (canvasElement: CanvasElement, layer: Konva.Layer): void => {
-    this.runAnimation(canvasElement.data, layer, canvasElement.tool.colour, canvasElement.tool.size)
+    this.pingCreator = new PingCreator(
+      canvasElement.tool.size,
+      canvasElement.tool.colour
+    )
+    this.pingCreator.create(canvasElement, layer)
   }
 
-  createElement = (dataCoords: number[], colour?: string, stroke?: number): Konva.Shape & Konva.Circle => {
-    return new Konva.Circle({
-      x: dataCoords[0],
-      y: dataCoords[1],
-      radius: 0,
-      stroke: colour || this.colour,
-      strokeWidth: stroke || this.size
-    })
-  }
-
-  sendToWebsockets = (socket: WebSocket, dataCoords: number[], layerId: string) => {
+  sendToWebsockets = (canvasElement: CanvasElement, socket: WebSocket) => {
     const data: CanvasElement = {
       jti: 'SAM',
       id: uuid(),
-      layerId,
+      layerId: canvasElement.layerId,
       tool: {
         name: 'ping',
         colour: this.colour,
         size: this.size
       },
       temporary: true,
-      data: dataCoords
+      data: canvasElement.data
     }
     socket.send(JSON.stringify(data))
-  }
-
-  runAnimation = (dataCoords: number[], layer: Konva.Layer, colour?: string, size?: number): void => {
-    const item = this.createElement(dataCoords, colour, size)
-    layer.add(item)
-    const anim = new Konva.Animation((frame) => {
-      if (frame) {
-        item.radius(this.amplitude * Math.sin((frame.time * Math.PI) / 1000))
-        item.opacity(1.8 - (frame.time * Math.PI) / 1000)
-      }
-    }, layer)
-    anim.start()
-    setTimeout(() => {
-      item.destroy()
-      anim.stop()
-      layer.batchDraw()
-    }, this.period)
   }
 }
