@@ -5,6 +5,7 @@ export type MouseDownAction = (e: Konva.KonvaPointerEvent, canvasElement: Canvas
 export type MouseMoveAction = (e: Konva.KonvaPointerEvent, canvasElement: CanvasElement, layer: Konva.Layer, socket: WebSocket) => void;
 export type MouseUpAction = (e: Konva.KonvaPointerEvent, canvasElement: CanvasElement, layer: Konva.Layer, socket: WebSocket) => void;
 export type RenderCanvas = (canvasElement: CanvasElement, layer: Konva.Layer) => void;
+export type SendToWebSocket = (canvasElement: CanvasElement, socket: WebSocket) => void;
 
 export interface Tool {
   name: string;
@@ -19,5 +20,6 @@ export interface Tool {
   mouseMoveAction?: MouseMoveAction;
   mouseUpAction?: MouseUpAction;
   renderCanvas?: RenderCanvas;
+  sendToWebSocket?: SendToWebSocket;
   [key: string]: any;
 }
