@@ -9,7 +9,15 @@ export default class Erase implements Tool {
   }
   // eslint-disable-next-line
   mouseDownAction = (e: Konva.KonvaPointerEvent, CanvasElement: CanvasElement, layer: Konva.Layer, socket: WebSocket): void => {
-  // TODO: Remove clicked layer
+
+  }
+  // eslint-disable-next-line
+  mouseMoveAction = (e: Konva.KonvaPointerEvent, CanvasElement: CanvasElement, layer: Konva.Layer, socket: WebSocket): void => {
+
+  }
+  // eslint-disable-next-line
+  mouseUpAction = (e: Konva.KonvaPointerEvent, CanvasElement: CanvasElement, layer: Konva.Layer, socket: WebSocket): void => {
+
   }
 
   // eslint-disable-next-line
@@ -17,7 +25,7 @@ export default class Erase implements Tool {
   // TODO: Render eraser
   }
 
-  sendToWebsockets = (socket: WebSocket, canvasElement: CanvasElement) => {
+  sendToWebSocket = (canvasElement: CanvasElement, socket: WebSocket) => {
     const data: CanvasElement = {
       jti: 'SAM',
       id: uuid(),
