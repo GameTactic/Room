@@ -29,7 +29,6 @@ export default class RulerCreator implements Shape {
     }
   }
 
-  // eslint-disable-next-line
   move = (canvasElement: CanvasElement, layer: Konva.Layer, pos: Position, line: Konva.Line, text: Konva.Text, circle: Konva.Circle): void => {
     circle.radius(this.calcRadius(canvasElement.data[0], canvasElement.data[1], pos.x, pos.y))
     text.text(this.getText(this.calcRadius(canvasElement.data[0], canvasElement.data[1], pos.x, pos.y)))
@@ -74,14 +73,21 @@ export default class RulerCreator implements Shape {
   }
 
   calcTextPosition = (x1: number, y1: number, x2: number, y2: number): Position => {
-    const offset = 30
-    const offsetX = (x1 - x2) / 2
-    const offsetY = (y1 - y2) / 2
-    const angleX = -(y1 - y2) / (this.calcRadius(x1, y1, x2, y2))
-    const angleY = (x1 - x2) / (this.calcRadius(x1, y1, x2, y2))
-    return {
-      x: x2 + offsetX + (angleX * offset) - (this.text.getWidth() / 2),
-      y: y2 + offsetY + (angleY * offset) - (this.text.getHeight() / 2)
+    if ((x1 - x2) === 0 || (y1 - y2) === 0) {
+      return {
+        x: x1,
+        y: y1
+      }
+    } else {
+      const offset = 30
+      const offsetX = (x1 - x2) / 2
+      const offsetY = (y1 - y2) / 2
+      const angleX = -(y1 - y2) / (this.calcRadius(x1, y1, x2, y2))
+      const angleY = (x1 - x2) / (this.calcRadius(x1, y1, x2, y2))
+      return {
+        x: x2 + offsetX + (angleX * offset) - (this.text.getWidth() / 2),
+        y: y2 + offsetY + (angleY * offset) - (this.text.getHeight() / 2)
+      }
     }
   }
 

@@ -6,8 +6,8 @@ import throttle from 'lodash.throttle'
 import CircleCreator from '@/tools/shapes/CircleCreator'
 
 export default class Circle implements Tool {
-  private circle: Konva.Circle;
-  private line?: Konva.Line;
+  private circle: Konva.Circle
+  private line?: Konva.Line
   private circleCreator: CircleCreator
   constructor (public readonly name: string,
                public size: number,

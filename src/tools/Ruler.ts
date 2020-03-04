@@ -42,7 +42,7 @@ export default class Ruler implements Tool {
 
   mouseUpAction = (e: Konva.KonvaPointerEvent, canvasElement: CanvasElement, _layer: Konva.Layer, socket: WebSocket): void => {
     canvasElement.data = canvasElement.data.concat([e.evt.x, e.evt.y])
-    this.sendToWebsockets(socket, canvasElement)
+    socket.send(JSON.stringify(canvasElement))
   }
 
   renderCanvas = (canvasElement: CanvasElement, layer: Konva.Layer): void => {
