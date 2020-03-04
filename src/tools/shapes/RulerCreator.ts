@@ -2,7 +2,7 @@ import Konva from 'konva'
 import { CanvasElement } from '@/types/Canvas'
 import { Shape } from '@/tools/shapes/Shape'
 
-export default class TextCreator implements Shape {
+export default class RulerCreator implements Shape {
   private line: Konva.Line
   private text: Konva.Text
   private circle: Konva.Circle
