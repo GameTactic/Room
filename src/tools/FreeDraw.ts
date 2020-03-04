@@ -3,30 +3,30 @@ import Konva from 'konva'
 import { CanvasElement } from '@/types/Canvas'
 import uuid from 'uuid'
 import throttle from 'lodash.throttle'
+import FreedrawCreator from '@/tools/shapes/FreedrawCreator'
 
 export default class FreeDraw implements Tool {
-  private line: Konva.Line;
+  private freedraw: Konva.Line;
+  private freedrawCreator: FreedrawCreator;
   constructor (public readonly name: string,
                public size: number,
                public colour: string) {
-    this.line = new Konva.Line()
+    this.freedraw = new Konva.Line()
+    this.freedrawCreator = new FreedrawCreator()
   }
 
   // eslint-disable-next-line
   mouseDownAction = (e: Konva.KonvaPointerEvent, canvasElement: CanvasElement, layer: Konva.Layer, _socket: WebSocket): void => {
     canvasElement.data = [e.evt.x, e.evt.y]
     canvasElement.id = uuid()
-    this.line = this.createElement(canvasElement)
-    layer.add(this.line)
+    this.freedrawCreator = new FreedrawCreator(this.size, this.colour)
+    this.freedraw = this.freedrawCreator.create(canvasElement, layer)
   }
 
   // eslint-disable-next-line
   mouseMoveAction = throttle((e: Konva.KonvaPointerEvent, canvasElement: CanvasElement, layer: Konva.Layer, socket: WebSocket): void => {
-    const x = e.evt.x
-    const y = e.evt.y
-    canvasElement.data = canvasElement.data.concat([x, y])
-    const newPoints: number[] = this.line.points().concat([x, y])
-    this.line.points(newPoints)
+    canvasElement.data = canvasElement.data.concat([e.evt.x, e.evt.y])
+    this.freedrawCreator.move(canvasElement, layer, this.freedraw)
     layer.batchDraw()
   }, 0)
 
@@ -35,21 +35,12 @@ export default class FreeDraw implements Tool {
   }
 
   renderCanvas = (canvasElement: CanvasElement, layer: Konva.Layer): void => {
-    layer.add(this.createElement(canvasElement, canvasElement.tool.colour, canvasElement.tool.size))
+    this.freedrawCreator = new FreedrawCreator(
+      canvasElement.tool.size || this.size,
+      canvasElement.tool.colour || this.colour
+    )
+    this.freedrawCreator.create(canvasElement, layer)
     layer.batchDraw()
-  }
-
-  createElement = (canvasElement: CanvasElement, colour?: string, stroke?: number): Konva.Shape & Konva.Line => {
-    return new Konva.Line({
-      globalCompositeOperation: 'source-over',
-      lineJoin: 'bevel',
-      points: canvasElement.data,
-      stroke: colour || this.colour,
-      strokeWidth: stroke || this.size,
-      bezier: true,
-      lineCap: 'round',
-      id: canvasElement.id
-    })
   }
 
   sendToWebsockets = (socket: WebSocket, canvasElement: CanvasElement) => {
