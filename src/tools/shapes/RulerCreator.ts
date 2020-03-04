@@ -15,7 +15,7 @@ export default class TextCreator implements Shape {
     this.mapRatio = 1
   }
 
-  create = (canvasElement: CanvasElement, layer: Konva.Layer) => {
+  create = (canvasElement: CanvasElement, layer: Konva.Layer): CreateRuler => {
     this.line = this.createLineElement(canvasElement)
     this.text = this.createTextElement(canvasElement)
     this.circle = this.createCircleElement(canvasElement)
@@ -30,7 +30,7 @@ export default class TextCreator implements Shape {
   }
 
   // eslint-disable-next-line
-  move = (canvasElement: CanvasElement, layer: Konva.Layer, pos: any, line: Konva.Line, text: Konva.Text, circle: Konva.Circle): void => {
+  move = (canvasElement: CanvasElement, layer: Konva.Layer, pos: Position, line: Konva.Line, text: Konva.Text, circle: Konva.Circle): void => {
     circle.radius(this.calcRadius(canvasElement.data[0], canvasElement.data[1], pos.x, pos.y))
     text.text(this.getText(this.calcRadius(canvasElement.data[0], canvasElement.data[1], pos.x, pos.y)))
     const textPos = this.calcTextPosition(canvasElement.data[0], canvasElement.data[1], pos.x, pos.y)
@@ -73,7 +73,7 @@ export default class TextCreator implements Shape {
     })
   }
 
-  calcTextPosition = (x1: number, y1: number, x2: number, y2: number) => {
+  calcTextPosition = (x1: number, y1: number, x2: number, y2: number): Position => {
     const offset = 30
     const offsetX = (x1 - x2) / 2
     const offsetY = (y1 - y2) / 2
@@ -97,4 +97,15 @@ export default class TextCreator implements Shape {
 
   // eslint-disable-next-line
   [key: string]: any;
+}
+
+export interface CreateRuler {
+  circle: Konva.Circle,
+  line: Konva.Line,
+  text: Konva.Text
+}
+
+export interface Position {
+  x: number,
+  y: number
 }
