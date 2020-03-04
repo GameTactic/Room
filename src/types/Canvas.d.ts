@@ -16,8 +16,4 @@ export interface CanvasElement {
   data: number[];
   layerId: string;
   jti: string;
-  endStyle?: string;
-  strokeStyle?: number;
-  showRadius?: boolean;
-  outlineColour?: string;
 }

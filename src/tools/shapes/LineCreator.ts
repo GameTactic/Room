@@ -19,34 +19,34 @@ export default class LineCreator implements Shape {
     ]
   }
 
-  createLINE = (canvasElement: CanvasElement, layer: Konva.Layer): object => {
+  createLINE = (canvasElement: CanvasElement, layer: Konva.Layer): CreateLine => {
     this.line = this.createLineElement(canvasElement)
     layer.add(this.line)
     return {
       line: this.line,
-      arrow: null,
-      tBar: null
+      arrow: undefined,
+      tBar: undefined
     }
   }
 
-  createARROW = (canvasElement: CanvasElement, layer: Konva.Layer): object => {
+  createARROW = (canvasElement: CanvasElement, layer: Konva.Layer): CreateLine => {
     this.arrow = this.createArrowElement(canvasElement)
     layer.add(this.arrow)
     return {
-      line: null,
+      line: undefined,
       arrow: this.arrow,
-      tBar: null
+      tBar: undefined
     }
   }
 
-  createTBAR = (canvasElement: CanvasElement, layer: Konva.Layer): object => {
+  createTBAR = (canvasElement: CanvasElement, layer: Konva.Layer): CreateLine => {
     this.line = this.createLineElement(canvasElement)
     this.tBar = this.createTElement(canvasElement)
     layer.add(this.tBar)
     layer.add(this.line)
     return {
       line: this.line,
-      arrow: null,
+      arrow: undefined,
       tBar: this.tBar
     }
   }
@@ -146,4 +146,10 @@ export default class LineCreator implements Shape {
 
   // eslint-disable-next-line
   [key: string]: any;
+}
+
+export interface CreateLine {
+  line?: Konva.Line;
+  arrow?: Konva.Arrow;
+  tBar?: Konva.Line;
 }
