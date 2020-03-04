@@ -6,6 +6,7 @@ import FreeDraw from '@/tools/FreeDraw'
 import Erase from '@/tools/Erase'
 import Circle from '@/tools/Circle'
 import Line from '@/tools/Line'
+import Ruler from '@/tools/Ruler'
 
 export enum ToolGetters {
   ENABLED_TOOL = 'enabledTool',
@@ -65,7 +66,8 @@ const ToolModule: Module<ToolState, {}> = {
         new FreeDraw('freedraw', 5, '#FF0000'),
         new Erase('erase'),
         new Line('line', 5, '#FF0000', 'line', 0, false),
-        new Circle('circle', 5, '#FF0000', false, true, '#AA0000', 0)
+        new Circle('circle', 5, '#FF0000', false, true, '#AA0000', 0),
+        new Ruler('ruler', 5, '#c2c4bd', true)
       ]
     }
   },
