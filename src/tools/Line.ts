@@ -6,47 +6,36 @@ import uuid from 'uuid'
 import throttle from 'lodash.throttle'
 
 export default class Line implements Tool {
-  private line: Konva.Line
-  private arrow: Konva.Arrow
-  private tBar: Konva.Line
   private lineCreator: LineCreator
-  private stroke: number[][]
   constructor (public readonly name: string,
                public size: number,
                public colour: string,
                public endStyle: string,
                public strokeStyle: number,
                public temporary: boolean) {
-    this.line = new Konva.Line()
-    this.arrow = new Konva.Arrow()
-    this.tBar = new Konva.Line()
     this.lineCreator = new LineCreator()
-    this.stroke = [
-      [0, 0],
-      [30, 10]
-    ]
   }
 
   // eslint-disable-next-line
   mouseDownAction = (e: Konva.KonvaPointerEvent, canvasElement: CanvasElement, layer: Konva.Layer, _socket: WebSocket): void => {
     canvasElement.data = [e.evt.x, e.evt.y]
     canvasElement.id = uuid()
-    canvasElement.tool.endStyle = this.endStyle
-    canvasElement.tool.strokeStyle = this.strokeStyle
+    canvasElement.temporary = this.temporary
+    canvasElement.tool = {
+      name: this.name,
+      colour: this.colour,
+      size: this.size,
+      endStyle: this.endStyle,
+      strokeStyle: this.strokeStyle
+    }
     this.lineCreator = new LineCreator(this.size, this.colour, this.strokeStyle)
-    const result = this.lineCreator['create' + this.endStyle.toUpperCase()](canvasElement, layer)
-    this.line = result.line
-    this.arrow = result.arrow
-    this.tBar = result.tBar
+    this.lineCreator['create' + this.endStyle.toUpperCase()](canvasElement, layer)
   }
 
   // eslint-disable-next-line
   mouseMoveAction = throttle((e: Konva.KonvaPointerEvent, canvasElement: CanvasElement, layer: Konva.Layer, socket: WebSocket): void => {
-    const pos = {
-      x: e.evt.x,
-      y: e.evt.y
-    }
-    this.lineCreator['move' + this.endStyle.toUpperCase()](canvasElement, layer, pos, this.line, this.arrow, this.tBar)
+    const pos = { x: e.evt.x, y: e.evt.y }
+    this.lineCreator['move' + this.endStyle.toUpperCase()](canvasElement, layer, pos)
     layer.batchDraw()
   }, 5)
 

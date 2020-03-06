@@ -5,7 +5,8 @@ import { Shape } from '@/tools/shapes/Shape'
 export default class CircleCreator implements Shape {
   private line: Konva.Line
   private circle: Konva.Circle
-  private stroke: number[][]
+  private group: Konva.Group
+  private stroke: number[][] = [[0, 0], [30, 10]]
   constructor (public size?: number,
                public colour?: string,
                public outlineColour?: string,
@@ -14,37 +15,28 @@ export default class CircleCreator implements Shape {
                public showRadius?: boolean) {
     this.line = new Konva.Line()
     this.circle = new Konva.Circle()
-    this.stroke = [
-      [0, 0],
-      [30, 10]
-    ]
+    this.group = new Konva.Group()
   }
 
-  create = (canvasElement: CanvasElement, layer: Konva.Layer): CreateCircle => {
+  create = (canvasElement: CanvasElement, layer: Konva.Layer): void => {
+    this.updateFields(canvasElement)
+    this.group = new Konva.Group()
     if (this.showRadius && canvasElement.tool.showRadius) {
-      this.line = this.createLineElement(canvasElement)
-      this.circle = this.createCircleElement(canvasElement)
-      layer.add(this.circle)
-      layer.add(this.line)
-      return {
-        circle: this.circle,
-        line: this.line
-      }
+      layer.add(this.group.id(canvasElement.id).add(
+        this.circle = this.createCircleElement(canvasElement),
+        this.line = this.createLineElement(canvasElement)
+      ))
     } else {
-      this.circle = this.createCircleElement(canvasElement)
-      layer.add(this.circle)
-      return {
-        circle: this.circle,
-        line: undefined
-      }
+      layer.add(this.group.id(canvasElement.id).add(
+        this.circle = this.createCircleElement(canvasElement)
+      ))
     }
   }
-
   // eslint-disable-next-line
-  move = (canvasElement: CanvasElement, layer: Konva.Layer, pos: Position, circle: Konva.Circle, line?: Konva.Line): void => {
-    circle.radius(this.calcRadius(canvasElement.data[0], canvasElement.data[1], pos.x, pos.y))
-    if (canvasElement.tool.showRadius && line !== undefined) {
-      line.points([canvasElement.data[0], canvasElement.data[1], pos.x, pos.y])
+  move = (canvasElement: CanvasElement, layer: Konva.Layer, pos: Position): void => {
+    this.circle.radius(this.calcRadius(canvasElement.data[0], canvasElement.data[1], pos.x, pos.y))
+    if (canvasElement.tool.showRadius && this.line !== undefined) {
+      this.line.points([canvasElement.data[0], canvasElement.data[1], pos.x, pos.y])
     }
   }
 
@@ -52,41 +44,44 @@ export default class CircleCreator implements Shape {
     return new Konva.Line({
       globalCompositeOperation: 'source-over',
       points: canvasElement.data,
-      stroke: outlineColour || this.outlineColour,
-      strokeWidth: size || this.size,
+      stroke: outlineColour || canvasElement.tool.outlineColour || this.outlineColour,
+      strokeWidth: size || canvasElement.tool.size || this.size,
       lineCap: 'mitter',
       id: canvasElement.id,
-      dash: this.stroke[strokeStyle || this.strokeStyle || 0]
+      dash: this.stroke[strokeStyle || canvasElement.tool.strokeStyle || this.strokeStyle || 0]
     })
   }
 
-  createCircleElement = (canvasElement: CanvasElement, colour?: string, stroke?: number, radius?: number, strokeStyle?: number, outlineColour?: string): Konva.Shape & Konva.Circle => {
+  createCircleElement = (canvasElement: CanvasElement, colour?: string, size?: number, radius?: number, strokeStyle?: number, outlineColour?: string): Konva.Shape & Konva.Circle => {
     return new Konva.Circle({
       id: canvasElement.id,
       globalCompositeOperation: 'source-over',
-      fill: colour || this.colour,
-      stroke: outlineColour || this.outlineColour,
-      strokeWidth: stroke || this.size,
+      fill: colour || canvasElement.tool.colour || this.colour,
+      stroke: outlineColour || canvasElement.tool.outlineColour || this.outlineColour,
+      strokeWidth: size || canvasElement.tool.size || this.size,
       radius: radius || 0,
       x: canvasElement.data[0],
       y: canvasElement.data[1],
-      dash: this.stroke[strokeStyle || this.strokeStyle || 0]
+      dash: this.stroke[strokeStyle || canvasElement.tool.strokeStyle || this.strokeStyle || 0]
     })
   }
-
+  // Pythagoras formula
   calcRadius = (x1: number, y1: number, x2: number, y2: number): number => {
     const a = Math.pow((x2 - x1), 2)
     const b = Math.pow((y2 - y1), 2)
     return Math.sqrt(a + b)
   }
 
+  updateFields = (canvasElement: CanvasElement): void => {
+    this.strokeStyle = canvasElement.tool.strokeStyle
+    this.colour = canvasElement.tool.colour
+    this.outlineColour = canvasElement.tool.outlineColour
+    this.showRadius = canvasElement.tool.showRadius
+    this.temporary = canvasElement.temporary
+    this.size = canvasElement.tool.size
+  }
   // eslint-disable-next-line
   [key: string]: any;
-}
-
-export interface CreateCircle {
-  circle: Konva.Circle;
-  line?: Konva.Line;
 }
 
 export interface Position {
