@@ -6,6 +6,7 @@ export default class LineCreator implements Shape {
   private line: Konva.Line
   private arrow: Konva.Arrow
   private tBar: Konva.Line
+  private group: Konva.Group
   private stroke: number[][]
   constructor (public size?: number,
                public colour?: string,
@@ -13,58 +14,52 @@ export default class LineCreator implements Shape {
     this.line = new Konva.Line()
     this.arrow = new Konva.Arrow()
     this.tBar = new Konva.Line()
+    this.group = new Konva.Group()
     this.stroke = [
       [0, 0],
       [30, 10]
     ]
   }
 
-  createLINE = (canvasElement: CanvasElement, layer: Konva.Layer): CreateLine => {
-    this.line = this.createLineElement(canvasElement)
-    layer.add(this.line)
-    return {
-      line: this.line,
-      arrow: undefined,
-      tBar: undefined
-    }
+  createLINE = (canvasElement: CanvasElement, layer: Konva.Layer): void => {
+    this.group = new Konva.Group()
+    this.group.id(canvasElement.id).add(
+      this.line = this.createLineElement(canvasElement)
+    )
+    layer.add(this.group)
   }
 
-  createARROW = (canvasElement: CanvasElement, layer: Konva.Layer): CreateLine => {
-    this.arrow = this.createArrowElement(canvasElement)
-    layer.add(this.arrow)
-    return {
-      line: undefined,
-      arrow: this.arrow,
-      tBar: undefined
-    }
+  createARROW = (canvasElement: CanvasElement, layer: Konva.Layer): void => {
+    this.group = new Konva.Group()
+    this.group.id(canvasElement.id).add(
+      this.arrow = this.createArrowElement(canvasElement)
+    )
+    layer.add(this.group)
   }
 
-  createTBAR = (canvasElement: CanvasElement, layer: Konva.Layer): CreateLine => {
-    this.line = this.createLineElement(canvasElement)
-    this.tBar = this.createTElement(canvasElement)
-    layer.add(this.tBar)
-    layer.add(this.line)
-    return {
-      line: this.line,
-      arrow: undefined,
-      tBar: this.tBar
-    }
+  createTBAR = (canvasElement: CanvasElement, layer: Konva.Layer): void => {
+    this.group = new Konva.Group()
+    this.group.id(canvasElement.id).add(
+      this.line = this.createLineElement(canvasElement),
+      this.tBar = this.createTElement(canvasElement)
+    )
+    layer.add(this.group)
   }
 
   // eslint-disable-next-line
-  moveLINE = (canvasElement: CanvasElement, layer: Konva.Layer, pos: any, line: Konva.Line, arrow: Konva.Arrow, tBar: Konva.Line): void => {
-    line.points([canvasElement.data[0], canvasElement.data[1], pos.x, pos.y])
+  moveLINE = (canvasElement: CanvasElement, layer: Konva.Layer, pos: any): void => {
+    this.line.points([canvasElement.data[0], canvasElement.data[1], pos.x, pos.y])
   }
 
   // eslint-disable-next-line
-  moveARROW = (canvasElement: CanvasElement, layer: Konva.Layer, pos: any, line: Konva.Line, arrow: Konva.Arrow, tBar: Konva.Line): void => {
-    arrow.points([canvasElement.data[0], canvasElement.data[1], pos.x, pos.y])
+  moveARROW = (canvasElement: CanvasElement, layer: Konva.Layer, pos: any): void => {
+    this.arrow.points([canvasElement.data[0], canvasElement.data[1], pos.x, pos.y])
   }
 
   // eslint-disable-next-line
-  moveTBAR = (canvasElement: CanvasElement, layer: Konva.Layer, pos: any, line: Konva.Line, arrow: Konva.Arrow, tBar: Konva.Line): void => {
-    tBar.points(this.calcTBar(canvasElement.data[0], canvasElement.data[1], pos.x, pos.y))
-    line.points([canvasElement.data[0], canvasElement.data[1], pos.x, pos.y])
+  moveTBAR = (canvasElement: CanvasElement, layer: Konva.Layer, pos: any): void => {
+    this.tBar.points(this.calcTBar(canvasElement.data[0], canvasElement.data[1], pos.x, pos.y))
+    this.line.points([canvasElement.data[0], canvasElement.data[1], pos.x, pos.y])
   }
 
   calcTBar = (x1: number, y1: number, x2: number, y2: number): number[] => {
@@ -111,11 +106,11 @@ export default class LineCreator implements Shape {
     return new Konva.Line({
       globalCompositeOperation: 'source-over',
       points: canvasElement.data,
-      stroke: colour || this.colour || '#FF0000',
-      strokeWidth: size || this.size || 5,
+      stroke: colour || canvasElement.tool.colour || this.colour || '#FF0000',
+      strokeWidth: size || canvasElement.tool.size || this.size || 5,
       lineCap: 'mitter',
       id: canvasElement.id,
-      dash: this.stroke[this.strokeStyle || 0]
+      dash: this.stroke[canvasElement.tool.strokeStyle || this.strokeStyle || 0]
     })
   }
 
@@ -124,8 +119,8 @@ export default class LineCreator implements Shape {
     return new Konva.Line({
       globalCompositeOperation: 'source-over',
       points: point,
-      stroke: colour || this.colour || '#FF0000',
-      strokeWidth: size || this.size || 5,
+      stroke: colour || canvasElement.tool.colour || this.colour || '#FF0000',
+      strokeWidth: size || canvasElement.tool.size || this.size || 5,
       lineCap: 'mitter',
       id: canvasElement.id
     })
@@ -135,21 +130,15 @@ export default class LineCreator implements Shape {
     return new Konva.Arrow({
       globalCompositeOperation: 'source-over',
       points: canvasElement.data,
-      stroke: colour || this.colour || '#FF0000',
-      strokeWidth: size || this.size || 5,
+      stroke: colour || canvasElement.tool.colour || this.colour || '#FF0000',
+      strokeWidth: size || canvasElement.tool.size || this.size || 5,
       lineCap: 'mitter',
       id: canvasElement.id,
-      dash: this.stroke[this.strokeStyle || 0],
-      fill: this.colour
+      dash: this.stroke[canvasElement.tool.strokeStyle || this.strokeStyle || 0],
+      fill: canvasElement.tool.colour || this.colour
     })
   }
 
   // eslint-disable-next-line
   [key: string]: any;
-}
-
-export interface CreateLine {
-  line?: Konva.Line;
-  arrow?: Konva.Arrow;
-  tBar?: Konva.Line;
 }
