@@ -43,6 +43,7 @@ export default class TheCanvas extends Vue {
     @Sockets.Getter(SocketGetters.SOCKET) socket!: WebSocket
     @Sockets.Action(SocketActions.SEND_IF_OPEN) send!: (message: string) => void
     @Action(`canvas/${CanvasAction.ADD_CANVAS_ELEMENT}`) addCanvasElement!: (canvasElement: CanvasElement) => void
+    @Action(`canvas/${CanvasAction.REMOVE_CANVAS_ELEMENT}`) removeCanvasElement!: (id: string) => void
     @Getter(`canvas/${CanvasGetters.CANVAS_ELEMENTS}`) canvasElements!: CanvasElement[]
 
     stageSize = {
@@ -126,11 +127,17 @@ export default class TheCanvas extends Vue {
       if (this.enabledTool?.mouseUpAction && this.enabled) {
         this.disable()
         this.enabledTool.mouseUpAction(e, this.$data.canvasElement, this.layerNode, this.socket)
-        this.addCanvasElement({
-          ...this.$data.canvasElement,
-          tool: { ...this.enabledTool },
-          temporary: false
-        })
+        if (!this.enabledTool.temporary) {
+          if (this.enabledTool.name === 'erase') {
+            this.removeCanvasElement(this.$data.canvasElement.id)
+          } else {
+            this.addCanvasElement({
+              ...this.$data.canvasElement,
+              tool: { ...this.enabledTool },
+              temporary: false
+            })
+          }
+        }
         this.renderShapes()
       }
     }

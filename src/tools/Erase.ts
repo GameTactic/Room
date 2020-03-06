@@ -4,7 +4,8 @@ import { CanvasElement } from '@/types/Canvas'
 
 export default class Erase implements Tool {
   // eslint-disable-next-line no-useless-constructor
-  constructor (public readonly name: string) {
+  constructor (public readonly name: string,
+               public readonly temporary: boolean) {
   }
 
   mouseDownAction = (e: Konva.KonvaPointerEvent, canvasElement: CanvasElement, layer: Konva.Layer, socket: WebSocket): void => {
@@ -54,7 +55,7 @@ export default class Erase implements Tool {
         name: 'erase',
         erase: canvasElement.tool.erase
       },
-      temporary: true,
+      temporary: this.temporary,
       data: canvasElement.data
     }
     socket.send(JSON.stringify(data))
