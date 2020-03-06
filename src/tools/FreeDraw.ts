@@ -6,12 +6,10 @@ import throttle from 'lodash.throttle'
 import FreedrawCreator from '@/tools/shapes/FreedrawCreator'
 
 export default class FreeDraw implements Tool {
-  private freedraw: Konva.Line;
-  private freedrawCreator: FreedrawCreator;
+  private freedrawCreator: FreedrawCreator
   constructor (public readonly name: string,
                public size: number,
                public colour: string) {
-    this.freedraw = new Konva.Line()
     this.freedrawCreator = new FreedrawCreator()
   }
 
@@ -19,14 +17,19 @@ export default class FreeDraw implements Tool {
   mouseDownAction = (e: Konva.KonvaPointerEvent, canvasElement: CanvasElement, layer: Konva.Layer, _socket: WebSocket): void => {
     canvasElement.data = [e.evt.x, e.evt.y]
     canvasElement.id = uuid()
+    canvasElement.tool = {
+      name: this.name,
+      size: this.size,
+      colour: this.colour
+    }
     this.freedrawCreator = new FreedrawCreator(this.size, this.colour)
-    this.freedraw = this.freedrawCreator.create(canvasElement, layer)
+    this.freedrawCreator.create(canvasElement, layer)
   }
 
   // eslint-disable-next-line
   mouseMoveAction = throttle((e: Konva.KonvaPointerEvent, canvasElement: CanvasElement, layer: Konva.Layer, socket: WebSocket): void => {
     canvasElement.data = canvasElement.data.concat([e.evt.x, e.evt.y])
-    this.freedrawCreator.move(canvasElement, layer, this.freedraw)
+    this.freedrawCreator.move(canvasElement, layer)
     layer.batchDraw()
   }, 0)
 

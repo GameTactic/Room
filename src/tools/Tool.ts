@@ -16,6 +16,7 @@ export interface Tool {
   showRadius?: boolean;
   outlineColour?: string;
   temporary?: boolean;
+  erase?: string;
   mouseDownAction?: MouseDownAction;
   mouseMoveAction?: MouseMoveAction;
   mouseUpAction?: MouseUpAction;
