@@ -32,7 +32,8 @@ export default class Ping implements Tool {
     canvasElement.tool = {
       name: this.name,
       colour: this.colour,
-      size: this.size
+      size: this.size,
+      temporary: this.temporary
     }
     this.pingCreator.create(canvasElement, layer)
     this.sendToWebSocket(canvasElement, socket)
@@ -54,9 +55,9 @@ export default class Ping implements Tool {
       tool: {
         name: 'ping',
         colour: this.colour,
-        size: this.size
+        size: this.size,
+        temporary: this.temporary
       },
-      temporary: this.temporary,
       data: canvasElement.data
     }
     socket.send(JSON.stringify(data))

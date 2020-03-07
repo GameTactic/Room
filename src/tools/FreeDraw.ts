@@ -21,7 +21,8 @@ export default class FreeDraw implements Tool {
     canvasElement.tool = {
       name: this.name,
       size: this.size,
-      colour: this.colour
+      colour: this.colour,
+      temporary: this.temporary
     }
     this.freedrawCreator = new FreedrawCreator(this.size, this.colour)
     this.freedrawCreator.create(canvasElement, layer)
@@ -55,9 +56,9 @@ export default class FreeDraw implements Tool {
       tool: {
         name: 'freedraw',
         colour: this.colour,
-        size: this.size
+        size: this.size,
+        temporary: this.temporary
       },
-      temporary: this.temporary,
       data: canvasElement.data
     }
     socket.send(JSON.stringify(data))

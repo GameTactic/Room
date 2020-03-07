@@ -80,7 +80,7 @@ export default class CircleCreator implements Shape {
     this.colour = canvasElement.tool.colour
     this.outlineColour = canvasElement.tool.outlineColour
     this.showRadius = canvasElement.tool.showRadius
-    this.temporary = canvasElement.temporary
+    this.temporary = canvasElement.tool.temporary
     this.size = canvasElement.tool.size
   }
   // eslint-disable-next-line

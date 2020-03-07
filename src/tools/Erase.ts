@@ -1,49 +1,47 @@
 import { Tool } from '@/tools/Tool'
 import Konva from 'konva'
 import { CanvasElement } from '@/types/Canvas'
+import uuid from 'uuid'
 
 export default class Erase implements Tool {
   // eslint-disable-next-line no-useless-constructor
   constructor (public readonly name: string,
                public readonly temporary: boolean) {
   }
-
+  // eslint-disable-next-line
   mouseDownAction = (e: Konva.KonvaPointerEvent, canvasElement: CanvasElement, layer: Konva.Layer, socket: WebSocket): void => {
-    this.findAndEraseGroup(e, canvasElement, layer, socket)
-  }
-
-  mouseMoveAction = (e: Konva.KonvaPointerEvent, canvasElement: CanvasElement, layer: Konva.Layer, socket: WebSocket): void => {
-    this.findAndEraseGroup(e, canvasElement, layer, socket)
+    canvasElement.data = [e.evt.x, e.evt.y]
+    canvasElement.id = uuid()
+    canvasElement.tool = {
+      name: this.name,
+      erase: undefined,
+      temporary: false
+    }
   }
   // eslint-disable-next-line
+  mouseMoveAction = (e: Konva.KonvaPointerEvent, canvasElement: CanvasElement, layer: Konva.Layer, socket: WebSocket): void => {
+
+  }
+
   mouseUpAction = (e: Konva.KonvaPointerEvent, canvasElement: CanvasElement, layer: Konva.Layer, socket: WebSocket): void => {
-
+    const groupId = this.eraseGroup(layer, (e.target.parent?.attrs.id))
+    if (groupId) {
+      canvasElement.tool.erase = groupId
+      this.sendToWebSocket(canvasElement, socket)
+    }
   }
 
-  findAndEraseGroup = (e: Konva.KonvaPointerEvent, canvasElement: CanvasElement, layer: Konva.Layer, socket: WebSocket): void => {
-    const groupId = e.target.parent?.attrs.id
-    this.eraseGroup(canvasElement, layer, groupId)
-    this.sendToWebSocket(canvasElement, socket)
-  }
-
-  eraseGroup = (canvasElement: CanvasElement, layer: Konva.Layer, groupId?: string): void => {
-    if (groupId !== undefined && groupId !== null) {
-      const group = layer.getChildren(node => {
-        return node.attrs.id === groupId
-      })
-      if (group !== undefined && group !== null) {
-        canvasElement.tool.erase = groupId
-        const children = group.toArray()[0].getChildren()
-        children.each(child => {
-          child.hide()
-          layer.draw()
-        })
-      }
+  eraseGroup = (layer: Konva.Layer, groupId?: string): string | void => {
+    if (groupId) {
+      const group: Konva.Collection<Konva.Node> = layer.getChildren(node => node.attrs.id === groupId)
+      group.each(child => child.destroy())
+      layer.batchDraw()
+      return groupId
     }
   }
 
   renderCanvas = (canvasElement: CanvasElement, layer: Konva.Layer): void => {
-    this.eraseGroup(canvasElement, layer, canvasElement.tool.erase)
+    this.eraseGroup(layer, canvasElement.tool.erase)
   }
 
   sendToWebSocket = (canvasElement: CanvasElement, socket: WebSocket) => {
@@ -53,9 +51,9 @@ export default class Erase implements Tool {
       layerId: canvasElement.layerId,
       tool: {
         name: 'erase',
-        erase: canvasElement.tool.erase
+        erase: canvasElement.tool.erase,
+        temporary: this.temporary
       },
-      temporary: this.temporary,
       data: canvasElement.data
     }
     socket.send(JSON.stringify(data))

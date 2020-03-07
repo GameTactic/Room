@@ -22,14 +22,14 @@ export default class Circle implements Tool {
   mouseDownAction = (e: Konva.KonvaPointerEvent, canvasElement: CanvasElement, layer: Konva.Layer, _socket: WebSocket): void => {
     canvasElement.data = [e.evt.x, e.evt.y]
     canvasElement.id = uuid()
-    canvasElement.temporary = this.temporary
     canvasElement.tool = {
       name: this.name,
       size: this.size,
       colour: this.colour,
       showRadius: this.showRadius,
       outlineColour: this.outlineColour,
-      strokeStyle: this.strokeStyle
+      strokeStyle: this.strokeStyle,
+      temporary: this.temporary
     }
     this.circleCreator = new CircleCreator(this.size, this.colour, this.outlineColour, this.strokeStyle, this.temporary, this.showRadius)
     this.circleCreator.create(canvasElement, layer)
@@ -53,7 +53,7 @@ export default class Circle implements Tool {
       canvasElement.tool.colour || this.colour,
       canvasElement.tool.outlineColour || this.outlineColour,
       canvasElement.tool.strokeStyle || this.strokeStyle,
-      canvasElement.temporary || this.temporary,
+      canvasElement.tool.temporary || this.temporary,
       canvasElement.tool.showRadius || this.showRadius
     )
     this.circleCreator.create(canvasElement, layer)
@@ -73,9 +73,9 @@ export default class Circle implements Tool {
         size: this.size,
         showRadius: this.showRadius,
         strokeStyle: this.strokeStyle,
-        outlineColour: this.outlineColour
+        outlineColour: this.outlineColour,
+        temporary: this.temporary
       },
-      temporary: this.temporary,
       data: canvasElement.data
     }
     socket.send(JSON.stringify(data))

@@ -9,6 +9,7 @@ export type SendToWebSocket = (canvasElement: CanvasElement, socket: WebSocket) 
 
 export interface Tool {
   name: string;
+  temporary: boolean;
   colour?: string;
   size?: number;
   endStyle?: string;
