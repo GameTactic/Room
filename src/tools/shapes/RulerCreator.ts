@@ -72,7 +72,7 @@ export default class RulerCreator implements Shape {
   }
 
   calcTextPosition = (x1: number, y1: number, x2: number, y2: number): Position => {
-    if ((x1 - x2) === 0 || (y1 - y2) === 0) {
+    if ((x1 - x2) === 0 && (y1 - y2) === 0) {
       return {
         x: x1,
         y: y1

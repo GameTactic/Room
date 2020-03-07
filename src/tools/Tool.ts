@@ -15,7 +15,6 @@ export interface Tool {
   strokeStyle?: number;
   showRadius?: boolean;
   outlineColour?: string;
-  temporary?: boolean;
   erase?: string;
   mouseDownAction?: MouseDownAction;
   mouseMoveAction?: MouseMoveAction;

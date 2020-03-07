@@ -106,7 +106,7 @@ export default class LineCreator implements Shape {
     return new Konva.Line({
       globalCompositeOperation: 'source-over',
       points: canvasElement.data,
-      stroke: colour || canvasElement.tool.colour || this.colour || '#FF0000',
+      stroke: colour || canvasElement.tool.colour || this.colour,
       strokeWidth: size || canvasElement.tool.size || this.size || 5,
       lineCap: 'mitter',
       id: canvasElement.id,
@@ -119,7 +119,7 @@ export default class LineCreator implements Shape {
     return new Konva.Line({
       globalCompositeOperation: 'source-over',
       points: point,
-      stroke: colour || canvasElement.tool.colour || this.colour || '#FF0000',
+      stroke: colour || canvasElement.tool.colour || this.colour,
       strokeWidth: size || canvasElement.tool.size || this.size || 5,
       lineCap: 'mitter',
       id: canvasElement.id
@@ -130,7 +130,7 @@ export default class LineCreator implements Shape {
     return new Konva.Arrow({
       globalCompositeOperation: 'source-over',
       points: canvasElement.data,
-      stroke: colour || canvasElement.tool.colour || this.colour || '#FF0000',
+      stroke: colour || canvasElement.tool.colour || this.colour,
       strokeWidth: size || canvasElement.tool.size || this.size || 5,
       lineCap: 'mitter',
       id: canvasElement.id,
