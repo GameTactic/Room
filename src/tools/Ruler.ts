@@ -6,17 +6,11 @@ import throttle from 'lodash.throttle'
 import RulerCreator from '@/tools/shapes/RulerCreator'
 
 export default class Ruler implements Tool {
-  private line: Konva.Line
-  private text: Konva.Text
-  private circle: Konva.Circle
   private rulerCreator: RulerCreator
   constructor (public readonly name: string,
                public size: number,
                public colour: string,
                public temporary: boolean) {
-    this.line = new Konva.Line()
-    this.text = new Konva.Text()
-    this.circle = new Konva.Circle()
     this.rulerCreator = new RulerCreator(this.size, this.colour)
   }
 
@@ -24,19 +18,19 @@ export default class Ruler implements Tool {
   mouseDownAction = (e: Konva.KonvaPointerEvent, canvasElement: CanvasElement, layer: Konva.Layer, _socket: WebSocket): void => {
     canvasElement.data = [e.evt.x, e.evt.y]
     canvasElement.id = uuid()
-    const result = this.rulerCreator.create(canvasElement, layer)
-    this.circle = result.circle
-    this.line = result.line
-    this.text = result.text
+    canvasElement.temporary = this.temporary
+    canvasElement.tool = {
+      name: this.name,
+      size: this.size,
+      colour: this.colour
+    }
+    this.rulerCreator.create(canvasElement, layer)
   }
 
   // eslint-disable-next-line
   mouseMoveAction = throttle((e: Konva.KonvaPointerEvent, canvasElement: CanvasElement, layer: Konva.Layer, socket: WebSocket): void => {
-    const pos = {
-      x: e.evt.x,
-      y: e.evt.y
-    }
-    this.rulerCreator.move(canvasElement, layer, pos, this.line, this.text, this.circle)
+    const pos = { x: e.evt.x, y: e.evt.y }
+    this.rulerCreator.move(canvasElement, layer, pos)
     layer.batchDraw()
   }, 5)
 
@@ -46,16 +40,9 @@ export default class Ruler implements Tool {
   }
 
   renderCanvas = (canvasElement: CanvasElement, layer: Konva.Layer): void => {
-    this.rulerCreator = new RulerCreator(
-      canvasElement.tool.size || this.size,
-      canvasElement.tool.colour || this.colour
-    )
-    const result = this.rulerCreator.create(canvasElement, layer)
-    const pos = {
-      x: canvasElement.data[2],
-      y: canvasElement.data[3]
-    }
-    this.rulerCreator.move(canvasElement, layer, pos, result.line, result.text, result.circle)
+    this.rulerCreator = new RulerCreator(canvasElement.tool.size || this.size, canvasElement.tool.colour || this.colour)
+    this.rulerCreator.create(canvasElement, layer)
+    this.rulerCreator.move(canvasElement, layer, { x: canvasElement.data[2], y: canvasElement.data[3] })
     layer.batchDraw()
   }
 

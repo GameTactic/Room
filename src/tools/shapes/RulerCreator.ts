@@ -6,35 +6,33 @@ export default class RulerCreator implements Shape {
   private line: Konva.Line
   private text: Konva.Text
   private circle: Konva.Circle
+  private group: Konva.Group
   private readonly mapRatio: number
   constructor (public size: number,
                public colour: string) {
     this.line = new Konva.Line()
     this.text = new Konva.Text()
     this.circle = new Konva.Circle()
+    this.group = new Konva.Group()
     this.mapRatio = 1
   }
 
-  create = (canvasElement: CanvasElement, layer: Konva.Layer): CreateRuler => {
-    this.line = this.createLineElement(canvasElement)
-    this.text = this.createTextElement(canvasElement)
-    this.circle = this.createCircleElement(canvasElement)
-    layer.add(this.circle)
-    layer.add(this.text)
-    layer.add(this.line)
-    return {
-      circle: this.circle,
-      line: this.line,
-      text: this.text
-    }
+  create = (canvasElement: CanvasElement, layer: Konva.Layer): void => {
+    this.group = new Konva.Group()
+    this.group.id(canvasElement.id).add(
+      this.line = this.createLineElement(canvasElement),
+      this.text = this.createTextElement(canvasElement),
+      this.circle = this.createCircleElement(canvasElement)
+    )
+    layer.add(this.group)
   }
 
-  move = (canvasElement: CanvasElement, layer: Konva.Layer, pos: Position, line: Konva.Line, text: Konva.Text, circle: Konva.Circle): void => {
-    circle.radius(this.calcRadius(canvasElement.data[0], canvasElement.data[1], pos.x, pos.y))
-    text.text(this.getText(this.calcRadius(canvasElement.data[0], canvasElement.data[1], pos.x, pos.y)))
+  move = (canvasElement: CanvasElement, layer: Konva.Layer, pos: Position): void => {
+    this.circle.radius(this.calcRadius(canvasElement.data[0], canvasElement.data[1], pos.x, pos.y))
+    this.text.text(this.getText(this.calcRadius(canvasElement.data[0], canvasElement.data[1], pos.x, pos.y)))
     const textPos = this.calcTextPosition(canvasElement.data[0], canvasElement.data[1], pos.x, pos.y)
-    text.x(textPos.x).y(textPos.y)
-    line.points([canvasElement.data[0], canvasElement.data[1], pos.x, pos.y])
+    this.text.x(textPos.x).y(textPos.y)
+    this.line.points([canvasElement.data[0], canvasElement.data[1], pos.x, pos.y])
   }
 
   createLineElement = (canvasElement: CanvasElement, colour?: string, size?: number): Konva.Shape & Konva.Line => {
@@ -51,6 +49,7 @@ export default class RulerCreator implements Shape {
 
   createTextElement = (canvasElement: CanvasElement, text?: string, colour?: string): Konva.Shape & Konva.Text => {
     return new Konva.Text({
+      id: canvasElement.id,
       x: canvasElement.data[0],
       y: canvasElement.data[1],
       text: text || '0 m',
@@ -103,12 +102,6 @@ export default class RulerCreator implements Shape {
 
   // eslint-disable-next-line
   [key: string]: any;
-}
-
-export interface CreateRuler {
-  circle: Konva.Circle;
-  line: Konva.Line;
-  text: Konva.Text;
 }
 
 export interface Position {
