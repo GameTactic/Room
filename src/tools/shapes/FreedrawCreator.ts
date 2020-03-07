@@ -4,20 +4,23 @@ import { Shape } from '@/tools/shapes/Shape'
 
 export default class FreedrawCreator implements Shape {
   private freedraw: Konva.Line
+  private group: Konva.Group
   constructor (public size?: number,
                public colour?: string) {
     this.freedraw = new Konva.Line()
+    this.group = new Konva.Group()
   }
 
-  create = (canvasElement: CanvasElement, layer: Konva.Layer): Konva.Line => {
-    this.freedraw = this.createFreedrawElement(canvasElement)
-    layer.add(this.freedraw)
-    return this.freedraw
+  create = (canvasElement: CanvasElement, layer: Konva.Layer): void => {
+    this.group.id(canvasElement.id).add(
+      this.freedraw = this.createFreedrawElement(canvasElement)
+    )
+    layer.add(this.group)
   }
 
   // eslint-disable-next-line
-  move = (canvasElement: CanvasElement, layer: Konva.Layer, freedraw: Konva.Line): void => {
-    freedraw.points(canvasElement.data)
+  move = (canvasElement: CanvasElement, layer: Konva.Layer): void => {
+    this.freedraw.points(canvasElement.data)
   }
 
   createFreedrawElement = (canvasElement: CanvasElement, colour?: string, size?: number): Konva.Shape & Konva.Line => {
@@ -25,8 +28,8 @@ export default class FreedrawCreator implements Shape {
       globalCompositeOperation: 'source-over',
       lineJoin: 'bevel',
       points: canvasElement.data,
-      stroke: colour || this.colour,
-      strokeWidth: size || this.size,
+      stroke: colour || canvasElement.tool.colour || this.colour,
+      strokeWidth: size || canvasElement.tool.size || this.size,
       bezier: true,
       lineCap: 'round',
       id: canvasElement.id
