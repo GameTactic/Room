@@ -6,6 +6,7 @@ export default class CircleCreator implements Shape {
   private line: Konva.Line
   private circle: Konva.Circle
   private group: Konva.Group
+  private readonly hitStroke: number = 10
   private stroke: number[][] = [[0, 0], [30, 10]]
   constructor (public size?: number,
                public colour?: string,
@@ -48,6 +49,7 @@ export default class CircleCreator implements Shape {
       strokeWidth: size || canvasElement.tool.size || this.size,
       lineCap: 'mitter',
       id: canvasElement.id,
+      hitStrokeWidth: this.hitStroke,
       dash: this.stroke[strokeStyle || canvasElement.tool.strokeStyle || this.strokeStyle || 0]
     })
   }
@@ -62,6 +64,7 @@ export default class CircleCreator implements Shape {
       radius: radius || 0,
       x: canvasElement.data[0],
       y: canvasElement.data[1],
+      hitStrokeWidth: this.hitStroke,
       dash: this.stroke[strokeStyle || canvasElement.tool.strokeStyle || this.strokeStyle || 0]
     })
   }
