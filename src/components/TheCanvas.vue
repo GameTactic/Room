@@ -38,7 +38,6 @@ export default class TheCanvas extends Vue {
     @Action(`tools/${ToolsAction.ENABLE}`) enable!: () => void
     @Action(`tools/${ToolsAction.ENABLE_TOOL}`) enableTool!: (name: string) => void
     @Getter(`tools/${ToolGetters.ENABLED_TOOL}`) enabledTool!: Tool
-    @Getter(`tools/${ToolGetters.TOOL}`) tool!: (name: string) => Tool
     @Getter(`tools/${ToolGetters.ENABLED}`) enabled!: boolean
     @Getter(`tools/${ToolGetters.TOOLS}`) tools!: Tool[]
     @Sockets.Getter(SocketGetters.SOCKET) socket!: WebSocket

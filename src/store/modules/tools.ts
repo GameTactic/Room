@@ -67,7 +67,7 @@ const ToolModule: Module<ToolState, {}> = {
         new Erase('erase', false),
         new Line('line', 5, '#FF0000FF', 'line', 0, false),
         new Circle('circle', 5, '#FF000080', false, true, '#AA0000FF', 0),
-        new Ruler('ruler', 5, '#c2c4bd80', true)
+        new Ruler('ruler', 5, '#C2C4BD80', true)
       ]
     }
   },
