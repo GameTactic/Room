@@ -6,6 +6,7 @@ export default class CircleCreator implements Shape {
   private line: Konva.Line
   private circle: Konva.Circle
   private group: Konva.Group
+  private readonly hitStroke: number = 10
   private stroke: number[][] = [[0, 0], [30, 10]]
   constructor (public size?: number,
                public colour?: string,
@@ -19,7 +20,6 @@ export default class CircleCreator implements Shape {
   }
 
   create = (canvasElement: CanvasElement, layer: Konva.Layer): void => {
-    this.updateFields(canvasElement)
     this.group = new Konva.Group()
     if (this.showRadius && canvasElement.tool.showRadius) {
       layer.add(this.group.id(canvasElement.id).add(
@@ -48,6 +48,7 @@ export default class CircleCreator implements Shape {
       strokeWidth: size || canvasElement.tool.size || this.size,
       lineCap: 'mitter',
       id: canvasElement.id,
+      hitStrokeWidth: this.hitStroke,
       dash: this.stroke[strokeStyle || canvasElement.tool.strokeStyle || this.strokeStyle || 0]
     })
   }
@@ -62,6 +63,7 @@ export default class CircleCreator implements Shape {
       radius: radius || 0,
       x: canvasElement.data[0],
       y: canvasElement.data[1],
+      hitStrokeWidth: this.hitStroke,
       dash: this.stroke[strokeStyle || canvasElement.tool.strokeStyle || this.strokeStyle || 0]
     })
   }
@@ -72,14 +74,6 @@ export default class CircleCreator implements Shape {
     return Math.sqrt(a + b)
   }
 
-  updateFields = (canvasElement: CanvasElement): void => {
-    this.strokeStyle = canvasElement.tool.strokeStyle
-    this.colour = canvasElement.tool.colour
-    this.outlineColour = canvasElement.tool.outlineColour
-    this.showRadius = canvasElement.tool.showRadius
-    this.temporary = canvasElement.temporary
-    this.size = canvasElement.tool.size
-  }
   // eslint-disable-next-line
   [key: string]: any;
 }

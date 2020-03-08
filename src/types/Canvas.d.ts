@@ -12,7 +12,6 @@ export type VueKonvaStage = Konva.Stage & Vue & {
 export interface CanvasElement {
   id: string;
   tool: Tool;
-  temporary: boolean;
   data: number[];
   layerId: string;
   jti: string;

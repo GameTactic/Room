@@ -9,7 +9,8 @@ export default class FreeDraw implements Tool {
   private freedrawCreator: FreedrawCreator
   constructor (public readonly name: string,
                public size: number,
-               public colour: string) {
+               public colour: string,
+               public temporary: boolean) {
     this.freedrawCreator = new FreedrawCreator()
   }
 
@@ -20,7 +21,8 @@ export default class FreeDraw implements Tool {
     canvasElement.tool = {
       name: this.name,
       size: this.size,
-      colour: this.colour
+      colour: this.colour,
+      temporary: this.temporary
     }
     this.freedrawCreator = new FreedrawCreator(this.size, this.colour)
     this.freedrawCreator.create(canvasElement, layer)
@@ -54,9 +56,9 @@ export default class FreeDraw implements Tool {
       tool: {
         name: 'freedraw',
         colour: this.colour,
-        size: this.size
+        size: this.size,
+        temporary: this.temporary
       },
-      temporary: false,
       data: canvasElement.data
     }
     socket.send(JSON.stringify(data))

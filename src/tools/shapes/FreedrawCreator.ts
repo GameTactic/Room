@@ -5,6 +5,7 @@ import { Shape } from '@/tools/shapes/Shape'
 export default class FreedrawCreator implements Shape {
   private freedraw: Konva.Line
   private group: Konva.Group
+  private readonly hitStroke: number = 10
   constructor (public size?: number,
                public colour?: string) {
     this.freedraw = new Konva.Line()
@@ -32,6 +33,7 @@ export default class FreedrawCreator implements Shape {
       strokeWidth: size || canvasElement.tool.size || this.size,
       bezier: true,
       lineCap: 'round',
+      hitStrokeWidth: this.hitStroke,
       id: canvasElement.id
     })
   }

@@ -8,6 +8,7 @@ export default class LineCreator implements Shape {
   private tBar: Konva.Line
   private group: Konva.Group
   private stroke: number[][]
+  private readonly hitStroke: number = 10
   constructor (public size?: number,
                public colour?: string,
                public strokeStyle?: number) {
@@ -106,10 +107,11 @@ export default class LineCreator implements Shape {
     return new Konva.Line({
       globalCompositeOperation: 'source-over',
       points: canvasElement.data,
-      stroke: colour || canvasElement.tool.colour || this.colour || '#FF0000',
+      stroke: colour || canvasElement.tool.colour || this.colour,
       strokeWidth: size || canvasElement.tool.size || this.size || 5,
       lineCap: 'mitter',
       id: canvasElement.id,
+      hitStrokeWidth: this.hitStroke,
       dash: this.stroke[canvasElement.tool.strokeStyle || this.strokeStyle || 0]
     })
   }
@@ -119,9 +121,10 @@ export default class LineCreator implements Shape {
     return new Konva.Line({
       globalCompositeOperation: 'source-over',
       points: point,
-      stroke: colour || canvasElement.tool.colour || this.colour || '#FF0000',
+      stroke: colour || canvasElement.tool.colour || this.colour,
       strokeWidth: size || canvasElement.tool.size || this.size || 5,
       lineCap: 'mitter',
+      hitStrokeWidth: this.hitStroke,
       id: canvasElement.id
     })
   }
@@ -130,10 +133,11 @@ export default class LineCreator implements Shape {
     return new Konva.Arrow({
       globalCompositeOperation: 'source-over',
       points: canvasElement.data,
-      stroke: colour || canvasElement.tool.colour || this.colour || '#FF0000',
+      stroke: colour || canvasElement.tool.colour || this.colour,
       strokeWidth: size || canvasElement.tool.size || this.size || 5,
       lineCap: 'mitter',
       id: canvasElement.id,
+      hitStrokeWidth: this.hitStroke,
       dash: this.stroke[canvasElement.tool.strokeStyle || this.strokeStyle || 0],
       fill: canvasElement.tool.colour || this.colour
     })
