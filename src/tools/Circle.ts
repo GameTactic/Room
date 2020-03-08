@@ -6,8 +6,6 @@ import throttle from 'lodash.throttle'
 import CircleCreator from '@/tools/shapes/CircleCreator'
 
 export default class Circle implements Tool {
-  private circle: Konva.Circle
-  private line?: Konva.Line
   private circleCreator: CircleCreator
   constructor (public readonly name: string,
                public size: number,
@@ -17,8 +15,6 @@ export default class Circle implements Tool {
                public outlineColour: string,
                public strokeStyle: number
   ) {
-    this.circle = new Konva.Circle()
-    this.line = new Konva.Line()
     this.circleCreator = new CircleCreator()
   }
 
@@ -26,22 +22,23 @@ export default class Circle implements Tool {
   mouseDownAction = (e: Konva.KonvaPointerEvent, canvasElement: CanvasElement, layer: Konva.Layer, _socket: WebSocket): void => {
     canvasElement.data = [e.evt.x, e.evt.y]
     canvasElement.id = uuid()
-    canvasElement.tool.strokeStyle = this.strokeStyle
-    canvasElement.tool.showRadius = this.showRadius
-    canvasElement.tool.outlineColour = this.outlineColour
+    canvasElement.tool = {
+      name: this.name,
+      size: this.size,
+      colour: this.colour,
+      showRadius: this.showRadius,
+      outlineColour: this.outlineColour,
+      strokeStyle: this.strokeStyle,
+      temporary: this.temporary
+    }
     this.circleCreator = new CircleCreator(this.size, this.colour, this.outlineColour, this.strokeStyle, this.temporary, this.showRadius)
-    const result = this.circleCreator.create(canvasElement, layer)
-    this.line = result.line
-    this.circle = result.circle
+    this.circleCreator.create(canvasElement, layer)
   }
 
   // eslint-disable-next-line
   mouseMoveAction = throttle((e: Konva.KonvaPointerEvent, canvasElement: CanvasElement, layer: Konva.Layer, _socket: WebSocket): void => {
-    const pos = {
-      x: e.evt.x,
-      y: e.evt.y
-    }
-    this.circleCreator.move(canvasElement, layer, pos, this.circle, this.line)
+    const pos = { x: e.evt.x, y: e.evt.y }
+    this.circleCreator.move(canvasElement, layer, pos)
     layer.batchDraw()
   }, 10)
 
@@ -56,15 +53,12 @@ export default class Circle implements Tool {
       canvasElement.tool.colour || this.colour,
       canvasElement.tool.outlineColour || this.outlineColour,
       canvasElement.tool.strokeStyle || this.strokeStyle,
-      canvasElement.temporary || this.temporary,
+      canvasElement.tool.temporary || this.temporary,
       canvasElement.tool.showRadius || this.showRadius
     )
-    const result = this.circleCreator.create(canvasElement, layer)
-    const pos = {
-      x: canvasElement.data[2],
-      y: canvasElement.data[3]
-    }
-    this.circleCreator.move(canvasElement, layer, pos, result.circle, result.line)
+    this.circleCreator.create(canvasElement, layer)
+    const pos = { x: canvasElement.data[2], y: canvasElement.data[3] }
+    this.circleCreator.move(canvasElement, layer, pos)
     layer.batchDraw()
   }
 
@@ -79,9 +73,9 @@ export default class Circle implements Tool {
         size: this.size,
         showRadius: this.showRadius,
         strokeStyle: this.strokeStyle,
-        outlineColour: this.outlineColour
+        outlineColour: this.outlineColour,
+        temporary: this.temporary
       },
-      temporary: this.temporary,
       data: canvasElement.data
     }
     socket.send(JSON.stringify(data))

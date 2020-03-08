@@ -5,35 +5,55 @@ import uuid from 'uuid'
 
 export default class Erase implements Tool {
   // eslint-disable-next-line no-useless-constructor
-  constructor (public readonly name: string) {
+  constructor (public readonly name: string,
+               public readonly temporary: boolean) {
   }
   // eslint-disable-next-line
-  mouseDownAction = (e: Konva.KonvaPointerEvent, CanvasElement: CanvasElement, layer: Konva.Layer, socket: WebSocket): void => {
-
+  mouseDownAction = (e: Konva.KonvaPointerEvent, canvasElement: CanvasElement, layer: Konva.Layer, socket: WebSocket): void => {
+    canvasElement.data = [e.evt.x, e.evt.y]
+    canvasElement.id = uuid()
+    canvasElement.tool = {
+      name: this.name,
+      erase: undefined,
+      temporary: false
+    }
   }
   // eslint-disable-next-line
-  mouseMoveAction = (e: Konva.KonvaPointerEvent, CanvasElement: CanvasElement, layer: Konva.Layer, socket: WebSocket): void => {
-
-  }
-  // eslint-disable-next-line
-  mouseUpAction = (e: Konva.KonvaPointerEvent, CanvasElement: CanvasElement, layer: Konva.Layer, socket: WebSocket): void => {
+  mouseMoveAction = (e: Konva.KonvaPointerEvent, canvasElement: CanvasElement, layer: Konva.Layer, socket: WebSocket): void => {
 
   }
 
-  // eslint-disable-next-line
+  mouseUpAction = (e: Konva.KonvaPointerEvent, canvasElement: CanvasElement, layer: Konva.Layer, socket: WebSocket): void => {
+    const groupId = this.eraseGroup(layer, (e.target.parent?.attrs.id))
+    if (groupId) {
+      canvasElement.tool.erase = groupId
+      this.sendToWebSocket(canvasElement, socket)
+    }
+  }
+
+  eraseGroup = (layer: Konva.Layer, groupId?: string): string | void => {
+    if (groupId) {
+      const group: Konva.Collection<Konva.Node> = layer.getChildren(node => node.attrs.id === groupId)
+      group.each(child => child.destroy())
+      layer.batchDraw()
+      return groupId
+    }
+  }
+
   renderCanvas = (canvasElement: CanvasElement, layer: Konva.Layer): void => {
-  // TODO: Render eraser
+    this.eraseGroup(layer, canvasElement.tool.erase)
   }
 
   sendToWebSocket = (canvasElement: CanvasElement, socket: WebSocket) => {
     const data: CanvasElement = {
       jti: 'SAM',
-      id: uuid(),
+      id: canvasElement.id,
       layerId: canvasElement.layerId,
       tool: {
-        name: 'erase'
+        name: 'erase',
+        erase: canvasElement.tool.erase,
+        temporary: this.temporary
       },
-      temporary: true,
       data: canvasElement.data
     }
     socket.send(JSON.stringify(data))
