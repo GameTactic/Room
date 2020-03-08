@@ -61,15 +61,17 @@ const CanvasModule: Module<CanvasState, {}> = {
       const foundTool: Tool | undefined = payload.rootState.tools.tools.find((tool: Tool) => tool.name === payload.tool.name)
       state.canvasElements.push({ ...payload, tool: { ...payload.tool, renderCanvas: foundTool?.renderCanvas } })
     },
-    [CanvasMutation.REMOVE_CANVAS_ELEMENT] (state: CanvasState, id: string) {
-      let foundElementIndex = -1
-      const foundElement = state.canvasElements.find((canvasElement: CanvasElement, index: number) => {
-        foundElementIndex = index
-        return canvasElement.id === id
-      })
-      if (foundElementIndex && foundElement) {
-        state.canvasElementsHistory = state.canvasElementsHistory.concat(foundElement)
-        state.canvasElements = state.canvasElements.splice(foundElementIndex, 1)
+    [CanvasMutation.REMOVE_CANVAS_ELEMENT] (state: CanvasState, id?: string) {
+      if (id) {
+        let foundElementIndex = -1
+        const foundElement = state.canvasElements.find((canvasElement: CanvasElement, index: number) => {
+          foundElementIndex = index
+          return canvasElement.id === id
+        })
+        if (foundElementIndex > -1 && foundElement) {
+          state.canvasElementsHistory = state.canvasElementsHistory.concat(foundElement)
+          state.canvasElements.splice(foundElementIndex, 1)
+        }
       }
     },
     [CanvasMutation.REDO_CANVAS_ELEMENT] (state: CanvasState, jti: string) {

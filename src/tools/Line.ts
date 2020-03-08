@@ -20,13 +20,13 @@ export default class Line implements Tool {
   mouseDownAction = (e: Konva.KonvaPointerEvent, canvasElement: CanvasElement, layer: Konva.Layer, _socket: WebSocket): void => {
     canvasElement.data = [e.evt.x, e.evt.y]
     canvasElement.id = uuid()
-    canvasElement.temporary = this.temporary
     canvasElement.tool = {
       name: this.name,
       colour: this.colour,
       size: this.size,
       endStyle: this.endStyle,
-      strokeStyle: this.strokeStyle
+      strokeStyle: this.strokeStyle,
+      temporary: this.temporary
     }
     this.lineCreator = new LineCreator(this.size, this.colour, this.strokeStyle)
     this.lineCreator['create' + this.endStyle.toUpperCase()](canvasElement, layer)
@@ -64,9 +64,9 @@ export default class Line implements Tool {
         colour: this.colour,
         size: this.size,
         strokeStyle: this.strokeStyle,
-        endStyle: this.endStyle
+        endStyle: this.endStyle,
+        temporary: this.temporary
       },
-      temporary: this.temporary,
       data: canvasElement.data
     }
     socket.send(JSON.stringify(data))

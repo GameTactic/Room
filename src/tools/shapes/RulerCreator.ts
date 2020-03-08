@@ -7,6 +7,7 @@ export default class RulerCreator implements Shape {
   private text: Konva.Text
   private circle: Konva.Circle
   private group: Konva.Group
+  private readonly hitStroke: number = 10
   private readonly mapRatio: number
   constructor (public size: number,
                public colour: string) {
@@ -43,6 +44,7 @@ export default class RulerCreator implements Shape {
       strokeWidth: size || this.size,
       lineCap: 'mitter',
       id: canvasElement.id,
+      hitStrokeWidth: this.hitStroke,
       dash: [15, 5]
     })
   }
@@ -55,6 +57,7 @@ export default class RulerCreator implements Shape {
       text: text || '0 m',
       fontSize: 20,
       fontFamily: 'Calibri',
+      hitStrokeWidth: this.hitStroke,
       fill: colour || this.colour
     })
   }
@@ -66,13 +69,14 @@ export default class RulerCreator implements Shape {
       stroke: colour || this.colour,
       strokeWidth: stroke || this.size,
       radius: radius || 0,
+      hitStrokeWidth: this.hitStroke,
       x: canvasElement.data[0],
       y: canvasElement.data[1]
     })
   }
 
   calcTextPosition = (x1: number, y1: number, x2: number, y2: number): Position => {
-    if ((x1 - x2) === 0 || (y1 - y2) === 0) {
+    if ((x1 - x2) === 0 && (y1 - y2) === 0) {
       return {
         x: x1,
         y: y1

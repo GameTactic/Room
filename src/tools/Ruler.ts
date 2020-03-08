@@ -18,11 +18,11 @@ export default class Ruler implements Tool {
   mouseDownAction = (e: Konva.KonvaPointerEvent, canvasElement: CanvasElement, layer: Konva.Layer, _socket: WebSocket): void => {
     canvasElement.data = [e.evt.x, e.evt.y]
     canvasElement.id = uuid()
-    canvasElement.temporary = this.temporary
     canvasElement.tool = {
       name: this.name,
       size: this.size,
-      colour: this.colour
+      colour: this.colour,
+      temporary: this.temporary
     }
     this.rulerCreator.create(canvasElement, layer)
   }
@@ -54,9 +54,9 @@ export default class Ruler implements Tool {
       tool: {
         name: 'ruler',
         colour: this.colour,
-        size: this.size
+        size: this.size,
+        temporary: this.temporary
       },
-      temporary: this.temporary,
       data: canvasElement.data
     }
     socket.send(JSON.stringify(data))

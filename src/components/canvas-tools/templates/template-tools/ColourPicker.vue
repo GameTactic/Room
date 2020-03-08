@@ -22,11 +22,11 @@ import { Component, Vue } from 'vue-property-decorator'
 
 export default class ColourPicker extends Vue {
   swatches = [
-    ['#FF0000', '#AA0000', '#550000'],
-    ['#FFFF00', '#AAAA00', '#555500'],
-    ['#00FF00', '#00AA00', '#005500'],
-    ['#00FFFF', '#00AAAA', '#005555'],
-    ['#0000FF', '#0000AA', '#000055']
+    ['#FF0000FF', '#AA0000FF', '#550000FF'],
+    ['#FFFF00FF', '#AAAA00FF', '#555500FF'],
+    ['#00FF00FF', '#00AA00FF', '#005500FF'],
+    ['#00FFFFFF', '#00AAAAFF', '#005555FF'],
+    ['#0000FFFF', '#0000AAFF', '#000055FF']
   ];
 
   onColourPickerHandler (colour: string) {
