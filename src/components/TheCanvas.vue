@@ -43,7 +43,9 @@ export default class TheCanvas extends Vue {
     @Sockets.Getter(SocketGetters.SOCKET) socket!: WebSocket
     @Sockets.Action(SocketActions.SEND_IF_OPEN) send!: (message: string) => void
     @Action(`canvas/${CanvasAction.ADD_CANVAS_ELEMENT}`) addCanvasElement!: (canvasElement: CanvasElement) => void
+    @Action(`canvas/${CanvasAction.REMOVE_CANVAS_ELEMENT}`) removeCanvasElement!: (id?: string) => void
     @Getter(`canvas/${CanvasGetters.CANVAS_ELEMENTS}`) canvasElements!: CanvasElement[]
+    @Getter(`canvas/${CanvasGetters.CANVAS_ELEMENTS_HISTORY}`) canvasElementsHistory!: CanvasElement[]
 
     stageSize = {
       width: window.innerWidth,
@@ -57,9 +59,9 @@ export default class TheCanvas extends Vue {
       tool: {
         name: '',
         colour: '',
-        size: 0
+        size: 0,
+        temporary: false
       },
-      temporary: false,
       layerId: Math.random().toString(36)
     }
 
@@ -83,13 +85,17 @@ export default class TheCanvas extends Vue {
         try {
           const canvasElement: CanvasElement = JSON.parse(data.data).payload
           if (canvasElement.layerId !== this.$data.canvasElement.layerId) {
-            if (canvasElement.temporary) {
+            if (canvasElement.tool.temporary) {
               const foundTool = this.tools.find((tool: Tool) => tool.name === canvasElement.tool.name)
               if (foundTool && foundTool.renderCanvas) {
                 foundTool.renderCanvas(canvasElement, this.layerNode)
               }
             } else {
-              this.addCanvasElement(canvasElement)
+              if (canvasElement.tool.name === 'erase') {
+                this.removeCanvasElement(canvasElement.tool.erase)
+              } else {
+                this.addCanvasElement(canvasElement)
+              }
               this.renderShapes()
             }
           }
@@ -105,6 +111,18 @@ export default class TheCanvas extends Vue {
       this.canvasElements.forEach((canvasElement: CanvasElement) => {
         if (canvasElement.tool.renderCanvas && !this.layerNode.find((shape: Konva.Shape) => shape.attrs.id === canvasElement.id).length) {
           canvasElement.tool.renderCanvas(canvasElement, this.layerNode)
+        }
+      })
+      this.layerNode.getChildren().forEach((group: Konva.Group) => {
+        if (!this.canvasElements.find((canvasElement: CanvasElement) => canvasElement.id === group.attrs.id)) {
+          const eraser = this.tools.find((tool: Tool) => tool.name === 'erase')
+          if (eraser && eraser.renderCanvas) {
+            const canvasElement = this.canvasElementsHistory.find((canvasElement: CanvasElement) => canvasElement.id === group.attrs.id)
+            if (canvasElement) {
+              canvasElement.tool.erase = group.attrs.id
+              eraser.renderCanvas(canvasElement, this.layerNode)
+            }
+          }
         }
       })
     }
@@ -125,12 +143,23 @@ export default class TheCanvas extends Vue {
     onMouseUpHandler (e: Konva.KonvaPointerEvent): void {
       if (this.enabledTool?.mouseUpAction && this.enabled) {
         this.disable()
-        this.enabledTool.mouseUpAction(e, this.$data.canvasElement, this.layerNode, this.socket)
-        this.addCanvasElement({
-          ...this.$data.canvasElement,
-          tool: { ...this.enabledTool },
-          temporary: false
-        })
+        if (this.enabledTool.name !== 'erase') {
+          this.enabledTool.mouseUpAction(e, this.$data.canvasElement, this.layerNode, this.socket)
+        }
+        if (!this.enabledTool.temporary) {
+          if (this.enabledTool.name === 'erase') {
+            if (e.target.parent?.attrs.id) {
+              this.removeCanvasElement(e.target.parent?.attrs.id)
+              this.enabledTool.mouseUpAction(e, this.$data.canvasElement, this.layerNode, this.socket)
+            }
+          } else {
+            this.addCanvasElement({
+              ...this.$data.canvasElement,
+              tool: { ...this.enabledTool },
+              temporary: false
+            })
+          }
+        }
         this.renderShapes()
       }
     }
