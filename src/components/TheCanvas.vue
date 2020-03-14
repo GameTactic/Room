@@ -116,7 +116,6 @@ export default class TheCanvas extends Vue {
               const foundElement = this.canvasElements.find((element: CanvasElement) => element.id === canvasElement.id)
               if (foundElement) {
                 foundElement.tracker = (foundElement.tracker === Tracker.ADDITION ? Tracker.REMOVAL : Tracker.ADDITION)
-                this.addCanvasElementHistory(canvasElement)
               }
             } else if (canvasElement.tool.name === 'erase' && canvasElement.tool.erase) {
               canvasElement.tool.erase.forEach((groupId: string) => {
@@ -195,6 +194,7 @@ export default class TheCanvas extends Vue {
             tool: { ...this.enabledTool },
             temporary: false
           })
+          this.addCanvasElementHistory({ ...this.$data.canvasElement })
         }
       }
       this.renderShapes()

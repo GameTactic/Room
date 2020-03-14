@@ -69,7 +69,6 @@ const CanvasModule: Module<CanvasState, {}> = {
       payload.jti = 'SAM'
       const foundTool: Tool | undefined = payload.rootState.tools.tools.find((tool: Tool) => tool.name === payload.tool.name)
       state.canvasElements.push({ ...payload, tool: { ...payload.tool, renderCanvas: foundTool?.renderCanvas } })
-      state.canvasElementsHistory.push({ ...payload })
     },
     [CanvasMutation.ADD_CANVAS_ELEMENT_HISTORY] (state: CanvasState, payload: CanvasElement) {
       payload.jti = 'SAM'
