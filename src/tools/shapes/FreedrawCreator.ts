@@ -6,13 +6,15 @@ export default class FreedrawCreator implements Shape {
   private freedraw: Konva.Line
   private group: Konva.Group
   private readonly hitStroke: number = 10
-  constructor (public size?: number,
+  constructor (public temporary: boolean,
+               public size?: number,
                public colour?: string) {
     this.freedraw = new Konva.Line()
     this.group = new Konva.Group()
   }
 
   create = (canvasElement: CanvasElement, layer: Konva.Layer): void => {
+    this.group.attrs.temporary = this.temporary
     this.group.id(canvasElement.id).add(
       this.freedraw = this.createFreedrawElement(canvasElement)
     )

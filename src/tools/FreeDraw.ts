@@ -1,4 +1,4 @@
-import { Tool } from '@/tools/Tool'
+import { Tool, Tracker } from '@/tools/Tool'
 import Konva from 'konva'
 import { CanvasElement } from '@/types/Canvas'
 import uuid from 'uuid'
@@ -11,7 +11,7 @@ export default class FreeDraw implements Tool {
                public size: number,
                public colour: string,
                public temporary: boolean) {
-    this.freedrawCreator = new FreedrawCreator()
+    this.freedrawCreator = new FreedrawCreator(this.temporary)
   }
 
   // eslint-disable-next-line
@@ -24,7 +24,7 @@ export default class FreeDraw implements Tool {
       colour: this.colour,
       temporary: this.temporary
     }
-    this.freedrawCreator = new FreedrawCreator(this.size, this.colour)
+    this.freedrawCreator = new FreedrawCreator(this.temporary, this.size, this.colour)
     this.freedrawCreator.create(canvasElement, layer)
   }
 
@@ -41,6 +41,7 @@ export default class FreeDraw implements Tool {
 
   renderCanvas = (canvasElement: CanvasElement, layer: Konva.Layer): void => {
     this.freedrawCreator = new FreedrawCreator(
+      canvasElement.tool.temporary || this.temporary,
       canvasElement.tool.size || this.size,
       canvasElement.tool.colour || this.colour
     )
@@ -59,7 +60,9 @@ export default class FreeDraw implements Tool {
         size: this.size,
         temporary: this.temporary
       },
-      data: canvasElement.data
+      data: canvasElement.data,
+      tracker: Tracker.ADDITION,
+      change: false
     }
     socket.send(JSON.stringify(data))
   }
