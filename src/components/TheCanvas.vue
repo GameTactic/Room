@@ -15,8 +15,8 @@
 <script lang="ts">
 import { Prop } from 'vue-property-decorator'
 import Component from 'vue-class-component'
-import { Tool } from '@/tools/Tool'
-import { VueKonvaLayer, VueKonvaStage, CanvasElement } from '@/types/Canvas'
+import { Tool, Tracker } from '@/tools/Tool'
+import { CanvasElement, VueKonvaLayer, VueKonvaStage } from '@/types/Canvas'
 import Vue from 'vue'
 import { Namespaces } from '@/store'
 import { Action, Getter, namespace } from 'vuex-class'
@@ -24,6 +24,8 @@ import { ToolGetters, ToolsAction } from '@/store/modules/tools'
 import { CanvasAction, CanvasGetters } from '@/store/modules/canvas'
 import Konva from 'konva'
 import { SocketActions, SocketGetters } from '@/store/modules/socket'
+import { EventBus } from '@/event-bus'
+import UndoRedo from '@/tools/UndoRedo'
 
 const Tools = namespace(Namespaces.TOOLS)
 const Sockets = namespace(Namespaces.SOCKET)
@@ -33,166 +35,247 @@ const Sockets = namespace(Namespaces.SOCKET)
 })
 
 export default class TheCanvas extends Vue {
-    @Prop() private id!: string
-    @Tools.Action(ToolsAction.DISABLE) disable!: () => void
-    @Action(`tools/${ToolsAction.ENABLE}`) enable!: () => void
-    @Action(`tools/${ToolsAction.ENABLE_TOOL}`) enableTool!: (name: string) => void
-    @Getter(`tools/${ToolGetters.ENABLED_TOOL}`) enabledTool!: Tool
-    @Getter(`tools/${ToolGetters.ENABLED}`) enabled!: boolean
-    @Getter(`tools/${ToolGetters.TOOLS}`) tools!: Tool[]
-    @Sockets.Getter(SocketGetters.SOCKET) socket!: WebSocket
-    @Sockets.Action(SocketActions.SEND_IF_OPEN) send!: (message: string) => void
-    @Action(`canvas/${CanvasAction.ADD_CANVAS_ELEMENT}`) addCanvasElement!: (canvasElement: CanvasElement) => void
-    @Action(`canvas/${CanvasAction.REMOVE_CANVAS_ELEMENT}`) removeCanvasElement!: (id?: string) => void
-    @Getter(`canvas/${CanvasGetters.CANVAS_ELEMENTS}`) canvasElements!: CanvasElement[]
-    @Getter(`canvas/${CanvasGetters.CANVAS_ELEMENTS_HISTORY}`) canvasElementsHistory!: CanvasElement[]
+  @Prop() private id!: string
+  @Tools.Action(ToolsAction.DISABLE) disable!: () => void
+  @Action(`tools/${ToolsAction.ENABLE}`) enable!: () => void
+  @Action(`tools/${ToolsAction.ENABLE_TOOL}`) enableTool!: (name: string) => void
+  @Getter(`tools/${ToolGetters.ENABLED_TOOL}`) enabledTool!: Tool
+  @Getter(`tools/${ToolGetters.ENABLED}`) enabled!: boolean
+  @Getter(`tools/${ToolGetters.TOOLS}`) tools!: Tool[]
+  @Sockets.Getter(SocketGetters.SOCKET) socket!: WebSocket
+  @Sockets.Action(SocketActions.SEND_IF_OPEN) send!: (message: string) => void
+  @Action(`canvas/${CanvasAction.ADD_CANVAS_ELEMENT}`) addCanvasElement!: (canvasElement: CanvasElement) => void
+  @Action(`canvas/${CanvasAction.ADD_CANVAS_ELEMENT_HISTORY}`) addCanvasElementHistory!: (canvasElement: CanvasElement) => void
+  @Action(`canvas/${CanvasAction.HIDE_CANVAS_ELEMENT}`) hideCanvasElement!: (id?: string) => void
+  @Getter(`canvas/${CanvasGetters.CANVAS_ELEMENTS}`) canvasElements!: CanvasElement[]
+  @Getter(`canvas/${CanvasGetters.CANVAS_ELEMENTS_HISTORY}`) canvasElementsHistory!: CanvasElement[]
 
-    stageSize = {
-      width: window.innerWidth,
-      height: window.innerHeight
-    }
+  stageSize = {
+    width: window.innerWidth,
+    height: window.innerHeight
+  }
 
-    canvasElement: CanvasElement = {
-      jti: 'SAM',
-      id: '',
-      data: [],
-      tool: {
-        name: '',
-        colour: '',
-        size: 0,
-        temporary: false
-      },
-      layerId: Math.random().toString(36)
-    }
+  canvasElement: CanvasElement = {
+    jti: 'SAM',
+    id: '',
+    data: [],
+    tool: {
+      name: '',
+      colour: '',
+      size: 0,
+      temporary: false
+    },
+    layerId: Math.random().toString(36),
+    tracker: Tracker.ADDITION,
+    change: false
+  }
 
-    $refs!: {
-      layer: VueKonvaLayer;
-      stage: VueKonvaStage;
-    }
+  $refs!: {
+    layer: VueKonvaLayer;
+    stage: VueKonvaStage;
+  }
 
-    created () {
-      window.addEventListener('resize', (e) => {
-        const currentTarget = e.currentTarget as Window
-        if (currentTarget) {
-          this.$data.stageSize = {
-            width: currentTarget.innerWidth,
-            height: currentTarget.innerHeight
-          }
+  created () {
+    window.addEventListener('resize', (e) => {
+      const currentTarget = e.currentTarget as Window
+      if (currentTarget) {
+        this.$data.stageSize = {
+          width: currentTarget.innerWidth,
+          height: currentTarget.innerHeight
         }
-      }, true)
-
-      this.socket.onmessage = (data: MessageEvent) => {
-        try {
-          const canvasElement: CanvasElement = JSON.parse(data.data).payload
-          if (canvasElement.layerId !== this.$data.canvasElement.layerId) {
-            if (canvasElement.tool.temporary) {
-              const foundTool = this.tools.find((tool: Tool) => tool.name === canvasElement.tool.name)
-              if (foundTool && foundTool.renderCanvas) {
-                foundTool.renderCanvas(canvasElement, this.layerNode)
-              }
-            } else {
-              if (canvasElement.tool.name === 'erase') {
-                this.removeCanvasElement(canvasElement.tool.erase)
-              } else {
-                this.addCanvasElement(canvasElement)
-              }
-              this.renderShapes()
-            }
-          }
-        } catch (err) { }
       }
-    }
+    }, true)
 
-    beforeDestroy () {
-      window.removeEventListener('resize', () => null)
-    }
-
-    renderShapes (): void {
-      this.canvasElements.forEach((canvasElement: CanvasElement) => {
-        if (canvasElement.tool.renderCanvas && !this.layerNode.find((shape: Konva.Shape) => shape.attrs.id === canvasElement.id).length) {
-          canvasElement.tool.renderCanvas(canvasElement, this.layerNode)
-        }
-      })
-      this.layerNode.getChildren().forEach((group: Konva.Group) => {
-        if (!this.canvasElements.find((canvasElement: CanvasElement) => canvasElement.id === group.attrs.id)) {
-          const eraser = this.tools.find((tool: Tool) => tool.name === 'erase')
-          if (eraser && eraser.renderCanvas) {
-            const canvasElement = this.canvasElementsHistory.find((canvasElement: CanvasElement) => canvasElement.id === group.attrs.id)
-            if (canvasElement) {
-              canvasElement.tool.erase = group.attrs.id
-              eraser.renderCanvas(canvasElement, this.layerNode)
-            }
-          }
-        }
-      })
-    }
-
-    onMouseDownHandler (e: Konva.KonvaPointerEvent): void {
-      if (this.enabledTool?.mouseDownAction) {
-        this.enable()
-        this.enabledTool.mouseDownAction(e, this.$data.canvasElement, this.layerNode, this.socket)
+    window.addEventListener('keydown', (e) => {
+      if (e.ctrlKey && e.key === 'z') {
+        EventBus.$emit('undoRedo', 'undo')
+      } else if (e.ctrlKey && e.key === 'y') {
+        EventBus.$emit('undoRedo', 'redo')
       }
-    }
+    })
 
-    onMouseMoveHandler (e: Konva.KonvaPointerEvent): void {
-      if (this.enabledTool?.mouseMoveAction && this.enabled) {
-        this.enabledTool.mouseMoveAction(e, this.$data.canvasElement, this.layerNode, this.socket)
+    EventBus.$on('undoRedo', (undoRedo: string) => {
+      const data: CanvasElement | void = this[undoRedo]()
+      if (data) {
+        this.socket.send(JSON.stringify(data))
+        this.renderShapes()
       }
-    }
+    })
 
-    onMouseUpHandler (e: Konva.KonvaPointerEvent): void {
-      if (this.enabledTool?.mouseUpAction && this.enabled) {
-        this.disable()
-        if (this.enabledTool.name !== 'erase') {
-          this.enabledTool.mouseUpAction(e, this.$data.canvasElement, this.layerNode, this.socket)
-        }
-        if (!this.enabledTool.temporary) {
-          if (this.enabledTool.name === 'erase') {
-            if (e.target.parent?.attrs.id) {
-              this.removeCanvasElement(e.target.parent?.attrs.id)
-              this.enabledTool.mouseUpAction(e, this.$data.canvasElement, this.layerNode, this.socket)
+    this.socket.onmessage = (data: MessageEvent) => {
+      try {
+        const canvasElement: CanvasElement = JSON.parse(data.data).payload
+        if (canvasElement.layerId !== this.$data.canvasElement.layerId) {
+          if (canvasElement.tool.temporary) {
+            const foundTool = this.tools.find((tool: Tool) => tool.name === canvasElement.tool.name)
+            if (foundTool && foundTool.renderCanvas) {
+              foundTool.renderCanvas(canvasElement, this.layerNode)
             }
           } else {
-            this.addCanvasElement({
-              ...this.$data.canvasElement,
-              tool: { ...this.enabledTool },
-              temporary: false
-            })
+            if (canvasElement.change) {
+              const foundElement = this.canvasElements.find((element: CanvasElement) => element.id === canvasElement.id)
+              if (foundElement) {
+                foundElement.tracker = (foundElement.tracker === Tracker.ADDITION ? Tracker.REMOVAL : Tracker.ADDITION)
+                this.addCanvasElementHistory(canvasElement)
+              }
+            } else if (canvasElement.tool.name === 'erase' && canvasElement.tool.erase) {
+              canvasElement.tool.erase.forEach((groupId: string) => {
+                this.hideCanvasElement(groupId)
+              })
+            } else {
+              this.addCanvasElement(canvasElement)
+            }
           }
         }
         this.renderShapes()
+      } catch (err) { }
+    }
+  }
+
+  beforeDestroy () {
+    window.removeEventListener('resize', () => null)
+  }
+
+  renderShapes (): void {
+    this.canvasElements.forEach((canvasElement: CanvasElement) => {
+      if (canvasElement.tool.renderCanvas) {
+        if (canvasElement.tracker === Tracker.ADDITION) {
+          if (!this.layerNode.find((shape: Konva.Shape) => shape.attrs.id === canvasElement.id).length) {
+            canvasElement.tool.renderCanvas(canvasElement, this.layerNode)
+          }
+        } else if (canvasElement.tracker === Tracker.REMOVAL) {
+          if (this.layerNode.find((shape: Konva.Shape) => shape.attrs.id === canvasElement.id).length) {
+            const group = this.layerNode.find((shape: Konva.Shape) => shape.attrs.id === canvasElement.id)[0]
+            const eraser = this.tools.find((tool: Tool) => tool.name === 'erase')
+            if (eraser && eraser.eraseGroup) {
+              eraser.eraseGroup(this.layerNode, [group.attrs.id])
+            }
+          }
+        }
+      }
+    })
+    this.layerNode.getChildren().forEach((group: Konva.Group) => {
+      if (!this.canvasElements.find((canvasElement: CanvasElement) => canvasElement.id === group.attrs.id) && !group.attrs.temporary) {
+        const eraser = this.tools.find((tool: Tool) => tool.name === 'erase')
+        if (eraser && eraser.eraseGroup) {
+          eraser.eraseGroup(this.layerNode, [group.attrs.id])
+        }
+      }
+    })
+  }
+
+  onMouseDownHandler (e: Konva.KonvaPointerEvent): void {
+    if (this.enabledTool?.mouseDownAction) {
+      this.enable()
+      this.enabledTool.mouseDownAction(e, this.$data.canvasElement, this.layerNode, this.socket)
+    }
+  }
+
+  onMouseMoveHandler (e: Konva.KonvaPointerEvent): void {
+    if (this.enabledTool?.mouseMoveAction && this.enabled) {
+      this.enabledTool.mouseMoveAction(e, this.$data.canvasElement, this.layerNode, this.socket)
+    }
+  }
+
+  onMouseUpHandler (e: Konva.KonvaPointerEvent): void {
+    if (this.enabledTool?.mouseUpAction && this.enabled) {
+      this.disable()
+      if (this.enabledTool.name !== 'erase') {
+        this.enabledTool.mouseUpAction(e, this.$data.canvasElement, this.layerNode, this.socket)
+      }
+      if (!this.enabledTool.temporary) {
+        if (this.enabledTool.name === 'erase' && this.$data.canvasElement.tool.erase) {
+          this.$data.canvasElement.tool.erase.forEach((groupId: string) => {
+            this.hideCanvasElement(groupId)
+          })
+          this.enabledTool.mouseUpAction(e, this.$data.canvasElement, this.layerNode, this.socket)
+        } else {
+          this.addCanvasElement({
+            ...this.$data.canvasElement,
+            tool: { ...this.enabledTool },
+            temporary: false
+          })
+        }
+      }
+      this.renderShapes()
+    }
+  }
+
+  redo (): CanvasElement | void {
+    const undoRedo = new UndoRedo()
+    const foundElement = undoRedo.findRedo([...this.canvasElementsHistory])
+    if (foundElement) {
+      const canvasElement = this.canvasElements.find((canvasElement: CanvasElement) => canvasElement.id === foundElement.id)
+      if (canvasElement) {
+        canvasElement.tracker = (canvasElement.tracker === Tracker.ADDITION ? Tracker.REMOVAL : Tracker.ADDITION)
+        const newElement: CanvasElement = {
+          id: canvasElement.id,
+          tool: canvasElement.tool,
+          data: canvasElement.data,
+          layerId: canvasElement.layerId,
+          jti: canvasElement.jti,
+          tracker: Tracker.REDO,
+          change: true
+        }
+        this.addCanvasElementHistory(newElement)
+        return newElement
       }
     }
+  }
 
-    get stageNode () {
-      return this.$refs.stage.getNode()
+  undo (): CanvasElement | void {
+    const undoRedo = new UndoRedo()
+    const foundElement = undoRedo.findUndo([...this.canvasElementsHistory])
+    if (foundElement) {
+      const canvasElement = this.canvasElements.find((canvasElement: CanvasElement) => canvasElement.id === foundElement.id)
+      if (canvasElement) {
+        canvasElement.tracker = (canvasElement.tracker === Tracker.ADDITION ? Tracker.REMOVAL : Tracker.ADDITION)
+        const newElement: CanvasElement = {
+          id: canvasElement.id,
+          tool: canvasElement.tool,
+          data: canvasElement.data,
+          layerId: canvasElement.layerId,
+          jti: canvasElement.jti,
+          tracker: Tracker.UNDO,
+          change: true
+        }
+        this.addCanvasElementHistory(newElement)
+        return newElement
+      }
     }
+  }
 
-    get layerNode () {
-      return this.$refs.layer.getNode()
-    }
+  get stageNode () {
+    return this.$refs.stage.getNode()
+  }
+
+  get layerNode () {
+    return this.$refs.layer.getNode()
+  }
+  // eslint-disable-next-line
+  [key: string]: any
 }
 </script>
 <style scoped lang="scss">
-  .konva-stage {
-    background-color: white;
-    position: absolute;
-    /* These are FA icons and might need replacing. */
-    &.ping::v-deep canvas {
-      cursor: pointer;
-    }
-    &.line::v-deep canvas {
-      cursor: url('~@/assets/cursor/pen.png'), auto;
-    }
-    &.freedraw::v-deep canvas {
-      cursor: url('~@/assets/cursor/pen.png'), auto;
-    }
-    &.erase::v-deep canvas {
-      cursor: url('~@/assets/cursor/eraser.png'), auto;
-    }
-    &.circle::v-deep canvas {
-      cursor: url('~@/assets/cursor/circle.png'), auto;
-    }
-    /* Extra Tools Here */
+.konva-stage {
+  background-color: white;
+  position: absolute;
+  /* These are FA icons and might need replacing. */
+  &.ping::v-deep canvas {
+    cursor: pointer;
   }
+  &.line::v-deep canvas {
+    cursor: url('~@/assets/cursor/pen.png'), auto;
+  }
+  &.freedraw::v-deep canvas {
+    cursor: url('~@/assets/cursor/pen.png'), auto;
+  }
+  &.erase::v-deep canvas {
+    cursor: url('~@/assets/cursor/eraser.png'), auto;
+  }
+  &.circle::v-deep canvas {
+    cursor: url('~@/assets/cursor/circle.png'), auto;
+  }
+  /* Extra Tools Here */
+}
 </style>

@@ -1,4 +1,4 @@
-import { Tool } from '@/tools/Tool'
+import { Tool, Tracker } from '@/tools/Tool'
 import Konva from 'konva'
 import { CanvasElement } from '@/types/Canvas'
 import throttle from 'lodash.throttle'
@@ -11,7 +11,7 @@ export default class Ping implements Tool {
                public readonly size: number,
                public readonly colour: string,
                public readonly temporary: boolean) {
-    this.pingCreator = new PingCreator(this.size, this.colour)
+    this.pingCreator = new PingCreator(this.temporary, this.size, this.colour)
   }
 
   mouseDownAction = (e: Konva.KonvaPointerEvent, canvasElement: CanvasElement, layer: Konva.Layer, socket: WebSocket): void => {
@@ -41,8 +41,9 @@ export default class Ping implements Tool {
 
   renderCanvas = (canvasElement: CanvasElement, layer: Konva.Layer): void => {
     this.pingCreator = new PingCreator(
-      canvasElement.tool.size,
-      canvasElement.tool.colour
+      canvasElement.tool.temporary || this.temporary,
+      canvasElement.tool.size || this.size,
+      canvasElement.tool.colour || this.colour
     )
     this.pingCreator.create(canvasElement, layer)
   }
@@ -58,7 +59,9 @@ export default class Ping implements Tool {
         size: this.size,
         temporary: this.temporary
       },
-      data: canvasElement.data
+      data: canvasElement.data,
+      tracker: Tracker.ADDITION,
+      change: false
     }
     socket.send(JSON.stringify(data))
   }
