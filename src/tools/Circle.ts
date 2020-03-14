@@ -1,4 +1,4 @@
-import { Tool } from '@/tools/Tool'
+import { Tool, Tracker } from '@/tools/Tool'
 import Konva from 'konva'
 import { CanvasElement } from '@/types/Canvas'
 import uuid from 'uuid'
@@ -15,7 +15,7 @@ export default class Circle implements Tool {
                public outlineColour: string,
                public strokeStyle: number
   ) {
-    this.circleCreator = new CircleCreator()
+    this.circleCreator = new CircleCreator(this.temporary)
   }
 
   // eslint-disable-next-line
@@ -31,7 +31,7 @@ export default class Circle implements Tool {
       strokeStyle: this.strokeStyle,
       temporary: this.temporary
     }
-    this.circleCreator = new CircleCreator(this.size, this.colour, this.outlineColour, this.strokeStyle, this.temporary, this.showRadius)
+    this.circleCreator = new CircleCreator(this.temporary, this.size, this.colour, this.outlineColour, this.strokeStyle, this.showRadius)
     this.circleCreator.create(canvasElement, layer)
   }
 
@@ -49,11 +49,11 @@ export default class Circle implements Tool {
 
   renderCanvas = (canvasElement: CanvasElement, layer: Konva.Layer): void => {
     this.circleCreator = new CircleCreator(
+      canvasElement.tool.temporary || this.temporary,
       canvasElement.tool.size || this.size,
       canvasElement.tool.colour || this.colour,
       canvasElement.tool.outlineColour || this.outlineColour,
       canvasElement.tool.strokeStyle || this.strokeStyle,
-      canvasElement.tool.temporary || this.temporary,
       canvasElement.tool.showRadius || this.showRadius
     )
     this.circleCreator.create(canvasElement, layer)
@@ -76,7 +76,9 @@ export default class Circle implements Tool {
         outlineColour: this.outlineColour,
         temporary: this.temporary
       },
-      data: canvasElement.data
+      data: canvasElement.data,
+      tracker: Tracker.ADDITION,
+      change: false
     }
     socket.send(JSON.stringify(data))
   }

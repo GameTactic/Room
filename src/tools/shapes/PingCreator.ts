@@ -7,13 +7,15 @@ export default class PingCreator implements Shape {
   private readonly period = 500
   private ping: Konva.Circle
   private group: Konva.Group
-  constructor (public size?: number,
+  constructor (public temporary: boolean,
+               public size?: number,
                public colour?: string) {
     this.ping = new Konva.Circle()
     this.group = new Konva.Group()
   }
 
   create = (canvasElement: CanvasElement, layer: Konva.Layer): void => {
+    this.group.attrs.temporary = this.temporary
     this.group.id(canvasElement.id).add(
       this.ping = this.createPingElement(canvasElement)
     )
