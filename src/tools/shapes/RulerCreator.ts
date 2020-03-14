@@ -9,7 +9,8 @@ export default class RulerCreator implements Shape {
   private group: Konva.Group
   private readonly hitStroke: number = 10
   private readonly mapRatio: number
-  constructor (public size: number,
+  constructor (public temporary: boolean,
+               public size: number,
                public colour: string) {
     this.line = new Konva.Line()
     this.text = new Konva.Text()
@@ -20,6 +21,7 @@ export default class RulerCreator implements Shape {
 
   create = (canvasElement: CanvasElement, layer: Konva.Layer): void => {
     this.group = new Konva.Group()
+    this.group.attrs.temporary = this.temporary
     this.group.id(canvasElement.id).add(
       this.line = this.createLineElement(canvasElement),
       this.text = this.createTextElement(canvasElement),

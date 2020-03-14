@@ -8,11 +8,11 @@ export default class CircleCreator implements Shape {
   private group: Konva.Group
   private readonly hitStroke: number = 10
   private stroke: number[][] = [[0, 0], [30, 10]]
-  constructor (public size?: number,
+  constructor (public temporary: boolean,
+               public size?: number,
                public colour?: string,
                public outlineColour?: string,
                public strokeStyle?: number,
-               public temporary?: boolean,
                public showRadius?: boolean) {
     this.line = new Konva.Line()
     this.circle = new Konva.Circle()
@@ -21,6 +21,7 @@ export default class CircleCreator implements Shape {
 
   create = (canvasElement: CanvasElement, layer: Konva.Layer): void => {
     this.group = new Konva.Group()
+    this.group.attrs.temporary = this.temporary
     if (this.showRadius && canvasElement.tool.showRadius) {
       layer.add(this.group.id(canvasElement.id).add(
         this.circle = this.createCircleElement(canvasElement),

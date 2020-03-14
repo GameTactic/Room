@@ -1,4 +1,4 @@
-import { Tool } from '@/tools/Tool'
+import { Tool, Tracker } from '@/tools/Tool'
 import Konva from 'konva'
 import LineCreator from '@/tools/shapes/LineCreator'
 import { CanvasElement } from '@/types/Canvas'
@@ -13,7 +13,7 @@ export default class Line implements Tool {
                public endStyle: string,
                public strokeStyle: number,
                public temporary: boolean) {
-    this.lineCreator = new LineCreator()
+    this.lineCreator = new LineCreator(this.temporary)
   }
 
   // eslint-disable-next-line
@@ -28,7 +28,7 @@ export default class Line implements Tool {
       strokeStyle: this.strokeStyle,
       temporary: this.temporary
     }
-    this.lineCreator = new LineCreator(this.size, this.colour, this.strokeStyle)
+    this.lineCreator = new LineCreator(this.temporary, this.size, this.colour, this.strokeStyle)
     this.lineCreator['create' + this.endStyle.toUpperCase()](canvasElement, layer)
   }
 
@@ -46,6 +46,7 @@ export default class Line implements Tool {
 
   renderCanvas = (canvasElement: CanvasElement, layer: Konva.Layer): void => {
     this.lineCreator = new LineCreator(
+      canvasElement.tool.temporary || this.temporary,
       canvasElement.tool.size || this.size,
       canvasElement.tool.colour || this.colour,
       canvasElement.tool.strokeStyle || this.strokeStyle
@@ -67,7 +68,9 @@ export default class Line implements Tool {
         endStyle: this.endStyle,
         temporary: this.temporary
       },
-      data: canvasElement.data
+      data: canvasElement.data,
+      tracker: Tracker.ADDITION,
+      change: false
     }
     socket.send(JSON.stringify(data))
   }
