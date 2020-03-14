@@ -1,11 +1,11 @@
 <template>
   <v-btn
+    :disabled="isDisabled"
     class="undoBtn"
     icon
     elevation="2"
-    @click="onButtonClickHandler"
     text
-    :disabled="isDisabled"
+    @click="onButtonClickHandler"
   >
     <v-icon dense color="black">{{icon}}</v-icon>
   </v-btn>
