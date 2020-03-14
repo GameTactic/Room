@@ -1,6 +1,5 @@
 import { ActionContext, Module } from 'vuex'
 import { Tool } from '@/tools/Tool'
-import { CanvasElement } from '@/types/Canvas'
 import Ping from '@/tools/Ping'
 import FreeDraw from '@/tools/FreeDraw'
 import Erase from '@/tools/Erase'
@@ -34,7 +33,6 @@ export interface ToolState {
   enabledTool?: Tool;
   enabled: boolean;
   tools: Tool[];
-  history: CanvasElement[];
 }
 
 export enum ToolsMutation {
@@ -60,7 +58,6 @@ const ToolModule: Module<ToolState, {}> = {
     return {
       enabledTool: undefined,
       enabled: false,
-      history: [],
       tools: [
         new Ping('ping', 5, '#005555FF', true),
         new FreeDraw('freedraw', 5, '#FF0000FF', false),
