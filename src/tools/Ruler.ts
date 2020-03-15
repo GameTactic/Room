@@ -34,20 +34,26 @@ export default class Ruler implements Tool {
     layer.batchDraw()
   }, 5)
 
-  mouseUpAction = (e: Konva.KonvaPointerEvent, canvasElement: CanvasElement, _layer: Konva.Layer, socket: WebSocket): void => {
-    canvasElement.data = canvasElement.data.concat([e.evt.x, e.evt.y])
-    this.sendToWebSocket(canvasElement, socket)
+  mouseUpAction = (e: Konva.KonvaPointerEvent, canvasElement: CanvasElement, layer: Konva.Layer, socket: WebSocket): void => {
+    if (canvasElement.tool.temporary) {
+      this.rulerCreator.destroy(canvasElement, layer)
+    } else {
+      canvasElement.data = canvasElement.data.concat([e.evt.x, e.evt.y])
+      this.sendToWebSocket(canvasElement, socket)
+    }
   }
 
   renderCanvas = (canvasElement: CanvasElement, layer: Konva.Layer): void => {
-    this.rulerCreator = new RulerCreator(
-      canvasElement.tool.temporary || this.temporary,
-      canvasElement.tool.size || this.size,
-      canvasElement.tool.colour || this.colour
-    )
-    this.rulerCreator.create(canvasElement, layer)
-    this.rulerCreator.move(canvasElement, layer, { x: canvasElement.data[2], y: canvasElement.data[3] })
-    layer.batchDraw()
+    if (!canvasElement.tool.temporary) {
+      this.rulerCreator = new RulerCreator(
+        canvasElement.tool.temporary || this.temporary,
+        canvasElement.tool.size || this.size,
+        canvasElement.tool.colour || this.colour
+      )
+      this.rulerCreator.create(canvasElement, layer)
+      this.rulerCreator.move(canvasElement, layer, { x: canvasElement.data[2], y: canvasElement.data[3] })
+      layer.batchDraw()
+    }
   }
 
   sendToWebSocket = (canvasElement: CanvasElement, socket: WebSocket) => {
