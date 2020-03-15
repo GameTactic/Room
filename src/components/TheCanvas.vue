@@ -21,7 +21,7 @@ import Vue from 'vue'
 import { Namespaces } from '@/store'
 import { Action, Getter, namespace } from 'vuex-class'
 import { ToolGetters, ToolsAction } from '@/store/modules/tools'
-import { CanvasAction, CanvasGetters } from '@/store/modules/canvas'
+import { CanvasAction, CanvasGetters, HideCanvasElementInterface } from '@/store/modules/canvas'
 import Konva from 'konva'
 import { SocketActions, SocketGetters } from '@/store/modules/socket'
 import { EventBus } from '@/event-bus'
@@ -46,7 +46,7 @@ export default class TheCanvas extends Vue {
   @Sockets.Action(SocketActions.SEND_IF_OPEN) send!: (message: string) => void
   @Action(`canvas/${CanvasAction.ADD_CANVAS_ELEMENT}`) addCanvasElement!: (canvasElement: CanvasElement) => void
   @Action(`canvas/${CanvasAction.ADD_CANVAS_ELEMENT_HISTORY}`) addCanvasElementHistory!: (canvasElement: CanvasElement) => void
-  @Action(`canvas/${CanvasAction.HIDE_CANVAS_ELEMENT}`) hideCanvasElement!: (id?: string) => void
+  @Action(`canvas/${CanvasAction.HIDE_CANVAS_ELEMENT}`) hideCanvasElement!: (payload: HideCanvasElementInterface) => void
   @Getter(`canvas/${CanvasGetters.CANVAS_ELEMENTS}`) canvasElements!: CanvasElement[]
   @Getter(`canvas/${CanvasGetters.CANVAS_ELEMENTS_HISTORY}`) canvasElementsHistory!: CanvasElement[]
 
@@ -67,7 +67,8 @@ export default class TheCanvas extends Vue {
     },
     layerId: Math.random().toString(36),
     tracker: Tracker.ADDITION,
-    change: false
+    change: false,
+    hasMoved: false
   }
 
   $refs!: {
@@ -119,7 +120,7 @@ export default class TheCanvas extends Vue {
               }
             } else if (canvasElement.tool.name === 'erase' && canvasElement.tool.erase) {
               canvasElement.tool.erase.forEach((groupId: string) => {
-                this.hideCanvasElement(groupId)
+                this.hideCanvasElement({ fromSocket: true, id: groupId })
               })
             } else {
               this.addCanvasElement(canvasElement)
@@ -185,16 +186,18 @@ export default class TheCanvas extends Vue {
       if (!this.enabledTool.temporary) {
         if (this.enabledTool.name === 'erase' && this.$data.canvasElement.tool.erase) {
           this.$data.canvasElement.tool.erase.forEach((groupId: string) => {
-            this.hideCanvasElement(groupId)
+            this.hideCanvasElement({ fromSocket: false, id: groupId })
           })
           this.enabledTool.mouseUpAction(e, this.$data.canvasElement, this.layerNode, this.socket)
         } else {
-          this.addCanvasElement({
-            ...this.$data.canvasElement,
-            tool: { ...this.enabledTool },
-            temporary: false
-          })
-          this.addCanvasElementHistory({ ...this.$data.canvasElement })
+          if (this.$data.canvasElement.hasMoved) {
+            this.addCanvasElement({
+              ...this.$data.canvasElement,
+              tool: { ...this.enabledTool },
+              temporary: false
+            })
+            this.addCanvasElementHistory({ ...this.$data.canvasElement })
+          }
         }
       }
       this.renderShapes()
@@ -215,7 +218,8 @@ export default class TheCanvas extends Vue {
           layerId: canvasElement.layerId,
           jti: canvasElement.jti,
           tracker: Tracker.REDO,
-          change: true
+          change: true,
+          hasMoved: true
         }
         this.addCanvasElementHistory(newElement)
         return newElement
@@ -237,7 +241,8 @@ export default class TheCanvas extends Vue {
           layerId: canvasElement.layerId,
           jti: canvasElement.jti,
           tracker: Tracker.UNDO,
-          change: true
+          change: true,
+          hasMoved: true
         }
         this.addCanvasElementHistory(newElement)
         return newElement

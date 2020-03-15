@@ -19,6 +19,11 @@ export enum CanvasAction {
   ADD_CANVAS_ELEMENT_HISTORY = 'addCanvasElementHistory'
 }
 
+export interface HideCanvasElementInterface {
+  fromSocket: boolean;
+  id: string;
+}
+
 export enum CanvasGetters {
   CANVAS_ELEMENTS = 'canvasElements',
   CANVAS_ELEMENTS_HISTORY = 'canvasElementsHistory'
@@ -56,12 +61,14 @@ const CanvasModule: Module<CanvasState, {}> = {
     [CanvasMutation.SET_CANVAS_ELEMENT] (state: CanvasState, payload: CanvasElement[]) {
       state.canvasElements = [...payload]
     },
-    [CanvasMutation.HIDE_CANVAS_ELEMENT] (state: CanvasState, id?: string) {
-      if (id) {
-        const foundElement = state.canvasElements.find((canvasElement: CanvasElement) => canvasElement.id === id)
+    [CanvasMutation.HIDE_CANVAS_ELEMENT] (state: CanvasState, payload: HideCanvasElementInterface) {
+      if (payload.id) {
+        const foundElement = state.canvasElements.find((canvasElement: CanvasElement) => canvasElement.id === payload.id)
         if (foundElement) {
           foundElement.tracker = Tracker.REMOVAL
-          state.canvasElementsHistory.push({ ...foundElement })
+          if (!payload.fromSocket) {
+            state.canvasElementsHistory.push({ ...foundElement })
+          }
         }
       }
     },
@@ -82,8 +89,8 @@ const CanvasModule: Module<CanvasState, {}> = {
     [CanvasAction.ADD_CANVAS_ELEMENT] (context: CursorActionContext, payload: CanvasElement) {
       context.commit('ADD_CANVAS_ELEMENT', { ...payload, rootState: context.rootState })
     },
-    [CanvasAction.HIDE_CANVAS_ELEMENT] (context: CursorActionContext, id: string) {
-      context.commit('HIDE_CANVAS_ELEMENT', id)
+    [CanvasAction.HIDE_CANVAS_ELEMENT] (context: CursorActionContext, payload: HideCanvasElementInterface) {
+      context.commit('HIDE_CANVAS_ELEMENT', payload)
     },
     [CanvasAction.ADD_CANVAS_ELEMENT_HISTORY] (context: CursorActionContext, payload: CanvasElement) {
       context.commit('ADD_CANVAS_ELEMENT_HISTORY', { ...payload })

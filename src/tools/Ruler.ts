@@ -19,6 +19,7 @@ export default class Ruler implements Tool {
   mouseDownAction = (e: Konva.KonvaPointerEvent, canvasElement: CanvasElement, layer: Konva.Layer, _socket: WebSocket): void => {
     canvasElement.data = [e.evt.x, e.evt.y]
     canvasElement.id = uuid()
+    canvasElement.hasMoved = false
     canvasElement.tool = {
       name: this.name,
       size: this.size,
@@ -31,13 +32,16 @@ export default class Ruler implements Tool {
 
   // eslint-disable-next-line
   mouseMoveAction = throttle((e: Konva.KonvaPointerEvent, canvasElement: CanvasElement, layer: Konva.Layer, socket: WebSocket): void => {
+    if (!canvasElement.hasMoved) {
+      canvasElement.hasMoved = true
+    }
     const pos = { x: e.evt.x, y: e.evt.y }
     this.rulerCreator.move(canvasElement, layer, pos)
     layer.batchDraw()
   }, 5)
 
   mouseUpAction = (e: Konva.KonvaPointerEvent, canvasElement: CanvasElement, layer: Konva.Layer, socket: WebSocket): void => {
-    if (canvasElement.tool.temporary) {
+    if (canvasElement.tool.temporary || !canvasElement.hasMoved) {
       this.rulerCreator.destroy(canvasElement, layer)
     } else {
       canvasElement.data = canvasElement.data.concat([e.evt.x, e.evt.y])
@@ -46,7 +50,7 @@ export default class Ruler implements Tool {
   }
 
   renderCanvas = (canvasElement: CanvasElement, layer: Konva.Layer): void => {
-    if (!canvasElement.tool.temporary) {
+    if (!canvasElement.tool.temporary && canvasElement.hasMoved) {
       this.rulerCreator = new RulerCreator(
         canvasElement.tool.temporary || this.temporary,
         canvasElement.tool.size || this.size,
@@ -73,7 +77,8 @@ export default class Ruler implements Tool {
       },
       data: canvasElement.data,
       tracker: Tracker.ADDITION,
-      change: false
+      change: false,
+      hasMoved: canvasElement.hasMoved
     }
     socket.send(JSON.stringify(data))
   }
