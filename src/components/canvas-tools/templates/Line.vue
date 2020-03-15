@@ -114,7 +114,7 @@ export default class PopoutButton extends Vue {
   }
 
   get lineColour (): string {
-    return this.findTool('line').colour || '#FF0000FF'
+    return this.findTool('line').colour || '#CE0000FF'
   }
 
   get lineEndStyle (): string {

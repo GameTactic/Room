@@ -22,11 +22,11 @@ import { Component, Vue } from 'vue-property-decorator'
 
 export default class ColourPicker extends Vue {
   swatches = [
-    ['#FF0000FF', '#AA0000FF', '#550000FF'],
-    ['#FFFF00FF', '#AAAA00FF', '#555500FF'],
-    ['#00FF00FF', '#00AA00FF', '#005500FF'],
-    ['#00FFFFFF', '#00AAAAFF', '#005555FF'],
-    ['#0000FFFF', '#0000AAFF', '#000055FF']
+    ['#CE0000FF', '#D74E09FF'],
+    ['#F2BB05FF', '#08A045FF'],
+    ['#4392F1FF', '#3349F4FF'],
+    ['#40476DFF', '#792387FF'],
+    ['#F7FFF7FF', '#080F0FFF']
   ];
 
   onColourPickerHandler (colour: string) {
@@ -38,5 +38,8 @@ export default class ColourPicker extends Vue {
 <style scoped lang="scss">
 .v-color-picker__controls {
   display: none;
+}
+.v-color-picker__color > div {
+  border: 1px solid #6D6D6D4D !important;
 }
 </style>

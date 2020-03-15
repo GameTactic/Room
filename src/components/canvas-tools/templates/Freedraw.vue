@@ -45,7 +45,7 @@ export default class PopoutButton extends Vue {
   }
 
   get penColour (): string {
-    return this.findTool('freedraw').colour || '#FF0000FF'
+    return this.findTool('freedraw').colour || '#CE0000FF'
   }
 
   set penColour (newValue: string) {

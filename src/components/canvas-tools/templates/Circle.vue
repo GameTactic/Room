@@ -95,7 +95,7 @@ export default class PopoutButton extends Vue {
   }
 
   get circleColour (): string {
-    return this.findTool('circle').colour || '#FF0000FF'
+    return this.findTool('circle').colour || '#CE0000FF'
   }
 
   set circleColour (newValue: string) {
@@ -103,7 +103,7 @@ export default class PopoutButton extends Vue {
   }
 
   get circleOutlineColour (): string {
-    return this.findTool('circle').outlineColour || '#FF0000FF'
+    return this.findTool('circle').outlineColour || '#CE0000FF'
   }
 
   set circleOutlineColour (newValue: string) {

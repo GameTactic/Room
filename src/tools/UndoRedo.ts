@@ -50,7 +50,7 @@ export default class UndoRedo {
           jti: lastElement.jti,
           tool: lastElement.tool,
           change: true,
-          hasMoved: true,
+          hasMoved: true
         }
       } else if (lastElement.tracker === Tracker.REDO) {
         let foundElementIndex = -1
