@@ -10,8 +10,9 @@ export default class Ruler implements Tool {
   constructor (public readonly name: string,
                public size: number,
                public colour: string,
-               public temporary: boolean) {
-    this.rulerCreator = new RulerCreator(this.temporary, this.size, this.colour)
+               public temporary: boolean,
+               public showCircle: boolean) {
+    this.rulerCreator = new RulerCreator(this.temporary, this.size, this.colour, this.showCircle)
   }
 
   // eslint-disable-next-line
@@ -22,7 +23,8 @@ export default class Ruler implements Tool {
       name: this.name,
       size: this.size,
       colour: this.colour,
-      temporary: this.temporary
+      temporary: this.temporary,
+      showCircle: this.showCircle
     }
     this.rulerCreator.create(canvasElement, layer)
   }
@@ -48,7 +50,8 @@ export default class Ruler implements Tool {
       this.rulerCreator = new RulerCreator(
         canvasElement.tool.temporary || this.temporary,
         canvasElement.tool.size || this.size,
-        canvasElement.tool.colour || this.colour
+        canvasElement.tool.colour || this.colour,
+        canvasElement.tool.showCircle || this.showCircle
       )
       this.rulerCreator.create(canvasElement, layer)
       this.rulerCreator.move(canvasElement, layer, { x: canvasElement.data[2], y: canvasElement.data[3] })
@@ -65,7 +68,8 @@ export default class Ruler implements Tool {
         name: 'ruler',
         colour: this.colour,
         size: this.size,
-        temporary: this.temporary
+        temporary: this.temporary,
+        showCircle: this.showCircle
       },
       data: canvasElement.data,
       tracker: Tracker.ADDITION,

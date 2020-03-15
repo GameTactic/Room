@@ -43,8 +43,12 @@ export default class Circle implements Tool {
   }, 10)
 
   mouseUpAction = (e: Konva.KonvaPointerEvent, canvasElement: CanvasElement, layer: Konva.Layer, socket: WebSocket): void => {
-    canvasElement.data = canvasElement.data.concat([e.evt.x, e.evt.y])
-    this.sendToWebSocket(canvasElement, socket)
+    if (canvasElement.tool.temporary) {
+      this.circleCreator.destroy(canvasElement, layer)
+    } else {
+      canvasElement.data = canvasElement.data.concat([e.evt.x, e.evt.y])
+      this.sendToWebSocket(canvasElement, socket)
+    }
   }
 
   renderCanvas = (canvasElement: CanvasElement, layer: Konva.Layer): void => {

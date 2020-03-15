@@ -1,16 +1,21 @@
 <template>
-  <div>
-    <v-container>
-      <v-row>
-        <v-spacer></v-spacer>
-        <v-switch
-          v-model="rulerTemporary"
-          :label="rulerTemporary ? 'Temporary' : 'Permanent'"
-        ></v-switch>
-        <v-spacer></v-spacer>
-      </v-row>
-    </v-container>
-  </div>
+  <v-card class="flex-fill">
+    <v-card-actions row class="pb-0 px-2">
+      <v-spacer></v-spacer>
+      <v-switch
+        v-model="rulerTemporary"
+        class="mt-0"
+        :label="rulerTemporary ? 'Temporary' : 'Permanent'"
+      ></v-switch>
+      <v-spacer></v-spacer>
+      <v-switch
+        v-model="rulerShowCircle"
+        class="mt-0"
+        :label="rulerShowCircle ? 'Circle' : 'Line'"
+      ></v-switch>
+      <v-spacer></v-spacer>
+    </v-card-actions>
+  </v-card>
 </template>
 
 <script lang="ts">
@@ -29,6 +34,7 @@ const Tools = namespace(Namespaces.TOOLS)
 export default class PopoutButton extends Vue {
   @Tools.Getter(ToolGetters.TOOL) findTool!: (name: string) => Tool
   @Tools.Action(ToolsAction.SET_TEMPORARY) setTemporary!: (temporary: boolean) => void
+  @Tools.Action(ToolsAction.SET_SHOW_CIRCLE) setShowCircle!: (showCircle: boolean) => void
 
   get rulerTemporary (): boolean {
     return this.findTool('ruler').temporary || false
@@ -36,6 +42,14 @@ export default class PopoutButton extends Vue {
 
   set rulerTemporary (newValue: boolean) {
     this.setTemporary(newValue)
+  }
+
+  get rulerShowCircle (): boolean {
+    return this.findTool('ruler').showCircle || false
+  }
+
+  set rulerShowCircle (newValue: boolean) {
+    this.setShowCircle(newValue)
   }
 }
 

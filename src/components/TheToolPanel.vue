@@ -2,8 +2,8 @@
   <div class="btn-toggle-box ma-0 pa-0">
     <v-btn-toggle class="flex-column">
       <tool-container :id="id" icon="fa-map-pin" toolname="ping" :popout="false" />
-      <tool-container :id="id" icon="fa-pen" toolname="freedraw" :popout="true"><freedraw-template /></tool-container>
       <tool-container :id="id" icon="fa-eraser" toolname="erase" :popout="false"></tool-container>
+      <tool-container :id="id" icon="fa-pen" toolname="freedraw" :popout="true"><freedraw-template /></tool-container>
       <tool-container :id="id" icon="fa-slash" toolname="line" :popout="true"><line-template /></tool-container>
       <tool-container :id="id" icon="far fa-circle" toolname="circle" :popout="true"><circle-template /></tool-container>
       <tool-container :id="id" icon="fa-ruler" toolname="ruler" :popout="true"><ruler-template /></tool-container>

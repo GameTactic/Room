@@ -40,8 +40,12 @@ export default class Line implements Tool {
   }, 5)
 
   mouseUpAction = (e: Konva.KonvaPointerEvent, canvasElement: CanvasElement, _layer: Konva.Layer, socket: WebSocket): void => {
-    canvasElement.data = canvasElement.data.concat([e.evt.x, e.evt.y])
-    this.sendToWebSocket(canvasElement, socket)
+    if (canvasElement.tool.temporary) {
+      this.lineCreator.destroy(canvasElement, _layer)
+    } else {
+      canvasElement.data = canvasElement.data.concat([e.evt.x, e.evt.y])
+      this.sendToWebSocket(canvasElement, socket)
+    }
   }
 
   renderCanvas = (canvasElement: CanvasElement, layer: Konva.Layer): void => {

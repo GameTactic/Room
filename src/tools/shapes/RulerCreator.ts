@@ -11,7 +11,8 @@ export default class RulerCreator implements Shape {
   private readonly mapRatio: number
   constructor (public temporary: boolean,
                public size: number,
-               public colour: string) {
+               public colour: string,
+               public showCircle: boolean) {
     this.line = new Konva.Line()
     this.text = new Konva.Text()
     this.circle = new Konva.Circle()
@@ -22,16 +23,25 @@ export default class RulerCreator implements Shape {
   create = (canvasElement: CanvasElement, layer: Konva.Layer): void => {
     this.group = new Konva.Group()
     this.group.attrs.temporary = this.temporary
-    this.group.id(canvasElement.id).add(
-      this.line = this.createLineElement(canvasElement),
-      this.text = this.createTextElement(canvasElement),
-      this.circle = this.createCircleElement(canvasElement)
-    )
+    if (this.showCircle && canvasElement.tool.showCircle) {
+      this.group.id(canvasElement.id).add(
+        this.line = this.createLineElement(canvasElement),
+        this.text = this.createTextElement(canvasElement),
+        this.circle = this.createCircleElement(canvasElement)
+      )
+    } else {
+      this.group.id(canvasElement.id).add(
+        this.line = this.createLineElement(canvasElement),
+        this.text = this.createTextElement(canvasElement)
+      )
+    }
     layer.add(this.group)
   }
 
   move = (canvasElement: CanvasElement, layer: Konva.Layer, pos: Position): void => {
-    this.circle.radius(this.calcRadius(canvasElement.data[0], canvasElement.data[1], pos.x, pos.y))
+    if (canvasElement.tool.showCircle && this.circle !== undefined) {
+      this.circle.radius(this.calcRadius(canvasElement.data[0], canvasElement.data[1], pos.x, pos.y))
+    }
     this.text.text(this.getText(this.calcRadius(canvasElement.data[0], canvasElement.data[1], pos.x, pos.y)))
     const textPos = this.calcTextPosition(canvasElement.data[0], canvasElement.data[1], pos.x, pos.y)
     this.text.x(textPos.x).y(textPos.y)

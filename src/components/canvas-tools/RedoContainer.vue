@@ -1,10 +1,9 @@
 <template>
   <v-btn
     :disabled="isDisabled"
-    class="undoBtn"
+    class="redoBtn"
     icon
-    elevation="2"
-    text
+    elevation="0"
     @click="onButtonClickHandler"
   >
     <v-icon dense color="black">{{icon}}</v-icon>
@@ -52,15 +51,16 @@ export default class RedoContainer extends Vue {
 .rotate90 {
   transform: rotate(-90deg);
 }
-.undoBtn {
+.redoBtn {
   background-color: white;
   padding: 0 12px;
   height: 48px;
   min-height: 0;
   min-width: 48px;
   color: rgba(0, 0, 0, 0.54);
-  border-radius: 4px;
-  border-style: solid;
-  border-width: thin;
+  border-radius: 0 !important;
+  border-color: rgba(0, 0, 0, 0.12) !important;
+  border-style:solid;
+  border-width:0.4px 1.5px 1.5px 1.5px !important;
 }
 </style>
