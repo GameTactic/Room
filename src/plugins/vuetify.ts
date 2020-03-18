@@ -14,6 +14,8 @@ import Vuetify, {
   VSpacer,
   VBtn,
   VIcon,
+  VCardSubtitle,
+  VTooltip,
   VCol,
   VBtnToggle,
   VMenu,
@@ -41,9 +43,11 @@ Vue.use(Vuetify, {
     VContainer,
     VRow,
     VImg,
+    VTooltip,
     VDivider,
     VToolbar,
     VItemGroup,
+    VCardSubtitle,
     VSpacer,
     VBtn,
     VIcon,
@@ -71,6 +75,11 @@ Vue.use(Vuetify, {
 const opts: Record<string, any> = {
   icons: {
     iconfont: 'fa' // 'mdi' || 'mdiSvg' || 'md' || 'fa' || 'fa4'
+  },
+  theme: {
+    options: {
+      customProperties: true
+    }
   }
 }
 

@@ -12,6 +12,7 @@ export default class Erase implements Tool {
   mouseDownAction = (e: Konva.KonvaPointerEvent, canvasElement: CanvasElement, layer: Konva.Layer, socket: WebSocket): void => {
     canvasElement.data = [e.evt.x, e.evt.y]
     canvasElement.id = uuid()
+    canvasElement.hasMoved = true
     canvasElement.tool = {
       name: this.name,
       erase: [],
@@ -82,7 +83,8 @@ export default class Erase implements Tool {
       },
       data: canvasElement.data,
       tracker: Tracker.ADDITION,
-      change: false
+      change: false,
+      hasMoved: true
     }
     socket.send(JSON.stringify(data))
   }

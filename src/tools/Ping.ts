@@ -29,6 +29,7 @@ export default class Ping implements Tool {
   triggerPing = (e: Konva.KonvaPointerEvent, canvasElement: CanvasElement, layer: Konva.Layer, socket: WebSocket): void => {
     canvasElement.data = [e.evt.x, e.evt.y]
     canvasElement.id = uuid()
+    canvasElement.hasMoved = true
     canvasElement.tool = {
       name: this.name,
       colour: this.colour,
@@ -61,7 +62,8 @@ export default class Ping implements Tool {
       },
       data: canvasElement.data,
       tracker: Tracker.ADDITION,
-      change: false
+      change: false,
+      hasMoved: true
     }
     socket.send(JSON.stringify(data))
   }
