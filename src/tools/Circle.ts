@@ -22,6 +22,7 @@ export default class Circle implements Tool {
   mouseDownAction = (e: Konva.KonvaPointerEvent, canvasElement: CanvasElement, layer: Konva.Layer, _socket: WebSocket): void => {
     canvasElement.data = [e.evt.x, e.evt.y]
     canvasElement.id = uuid()
+    canvasElement.hasMoved = false
     canvasElement.tool = {
       name: this.name,
       size: this.size,
@@ -37,29 +38,38 @@ export default class Circle implements Tool {
 
   // eslint-disable-next-line
   mouseMoveAction = throttle((e: Konva.KonvaPointerEvent, canvasElement: CanvasElement, layer: Konva.Layer, _socket: WebSocket): void => {
+    if (!canvasElement.hasMoved) {
+      canvasElement.hasMoved = true
+    }
     const pos = { x: e.evt.x, y: e.evt.y }
     this.circleCreator.move(canvasElement, layer, pos)
     layer.batchDraw()
   }, 10)
 
   mouseUpAction = (e: Konva.KonvaPointerEvent, canvasElement: CanvasElement, layer: Konva.Layer, socket: WebSocket): void => {
-    canvasElement.data = canvasElement.data.concat([e.evt.x, e.evt.y])
-    this.sendToWebSocket(canvasElement, socket)
+    if (canvasElement.tool.temporary || !canvasElement.hasMoved) {
+      this.circleCreator.destroy(canvasElement, layer)
+    } else {
+      canvasElement.data = canvasElement.data.concat([e.evt.x, e.evt.y])
+      this.sendToWebSocket(canvasElement, socket)
+    }
   }
 
   renderCanvas = (canvasElement: CanvasElement, layer: Konva.Layer): void => {
-    this.circleCreator = new CircleCreator(
-      canvasElement.tool.temporary || this.temporary,
-      canvasElement.tool.size || this.size,
-      canvasElement.tool.colour || this.colour,
-      canvasElement.tool.outlineColour || this.outlineColour,
-      canvasElement.tool.strokeStyle || this.strokeStyle,
-      canvasElement.tool.showRadius || this.showRadius
-    )
-    this.circleCreator.create(canvasElement, layer)
-    const pos = { x: canvasElement.data[2], y: canvasElement.data[3] }
-    this.circleCreator.move(canvasElement, layer, pos)
-    layer.batchDraw()
+    if (canvasElement.hasMoved && !canvasElement.tool.temporary) {
+      this.circleCreator = new CircleCreator(
+        canvasElement.tool.temporary || this.temporary,
+        canvasElement.tool.size || this.size,
+        canvasElement.tool.colour || this.colour,
+        canvasElement.tool.outlineColour || this.outlineColour,
+        canvasElement.tool.strokeStyle || this.strokeStyle,
+        canvasElement.tool.showRadius || this.showRadius
+      )
+      this.circleCreator.create(canvasElement, layer)
+      const pos = { x: canvasElement.data[2], y: canvasElement.data[3] }
+      this.circleCreator.move(canvasElement, layer, pos)
+      layer.batchDraw()
+    }
   }
 
   sendToWebSocket = (canvasElement: CanvasElement, socket: WebSocket) => {
@@ -78,7 +88,8 @@ export default class Circle implements Tool {
       },
       data: canvasElement.data,
       tracker: Tracker.ADDITION,
-      change: false
+      change: false,
+      hasMoved: canvasElement.hasMoved
     }
     socket.send(JSON.stringify(data))
   }

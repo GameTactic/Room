@@ -3,7 +3,7 @@
     :disabled="isDisabled"
     class="undoBtn"
     icon
-    elevation="2"
+    elevation=""
     text
     @click="onButtonClickHandler"
   >
@@ -59,8 +59,9 @@ export default class UndoContainer extends Vue {
   min-height: 0;
   min-width: 48px;
   color: rgba(0, 0, 0, 0.54);
-  border-radius: 4px;
-  border-style: solid;
-  border-width: thin;
+  border-radius: 0px;
+  border-color: rgba(0, 0, 0, 0.12) !important;
+  border-style:solid;
+  border-width:0.4px 1.5px 0.5px 1.5px !important;
 }
 </style>
