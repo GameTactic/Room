@@ -10,44 +10,57 @@ export default class Ruler implements Tool {
   constructor (public readonly name: string,
                public size: number,
                public colour: string,
-               public temporary: boolean) {
-    this.rulerCreator = new RulerCreator(this.temporary, this.size, this.colour)
+               public temporary: boolean,
+               public showCircle: boolean) {
+    this.rulerCreator = new RulerCreator(this.temporary, this.size, this.colour, this.showCircle)
   }
 
   // eslint-disable-next-line
   mouseDownAction = (e: Konva.KonvaPointerEvent, canvasElement: CanvasElement, layer: Konva.Layer, _socket: WebSocket): void => {
     canvasElement.data = [e.evt.x, e.evt.y]
     canvasElement.id = uuid()
+    canvasElement.hasMoved = false
     canvasElement.tool = {
       name: this.name,
       size: this.size,
       colour: this.colour,
-      temporary: this.temporary
+      temporary: this.temporary,
+      showCircle: this.showCircle
     }
     this.rulerCreator.create(canvasElement, layer)
   }
 
   // eslint-disable-next-line
   mouseMoveAction = throttle((e: Konva.KonvaPointerEvent, canvasElement: CanvasElement, layer: Konva.Layer, socket: WebSocket): void => {
+    if (!canvasElement.hasMoved) {
+      canvasElement.hasMoved = true
+    }
     const pos = { x: e.evt.x, y: e.evt.y }
     this.rulerCreator.move(canvasElement, layer, pos)
     layer.batchDraw()
   }, 5)
 
-  mouseUpAction = (e: Konva.KonvaPointerEvent, canvasElement: CanvasElement, _layer: Konva.Layer, socket: WebSocket): void => {
-    canvasElement.data = canvasElement.data.concat([e.evt.x, e.evt.y])
-    this.sendToWebSocket(canvasElement, socket)
+  mouseUpAction = (e: Konva.KonvaPointerEvent, canvasElement: CanvasElement, layer: Konva.Layer, socket: WebSocket): void => {
+    if (canvasElement.tool.temporary || !canvasElement.hasMoved) {
+      this.rulerCreator.destroy(canvasElement, layer)
+    } else {
+      canvasElement.data = canvasElement.data.concat([e.evt.x, e.evt.y])
+      this.sendToWebSocket(canvasElement, socket)
+    }
   }
 
   renderCanvas = (canvasElement: CanvasElement, layer: Konva.Layer): void => {
-    this.rulerCreator = new RulerCreator(
-      canvasElement.tool.temporary || this.temporary,
-      canvasElement.tool.size || this.size,
-      canvasElement.tool.colour || this.colour
-    )
-    this.rulerCreator.create(canvasElement, layer)
-    this.rulerCreator.move(canvasElement, layer, { x: canvasElement.data[2], y: canvasElement.data[3] })
-    layer.batchDraw()
+    if (!canvasElement.tool.temporary && canvasElement.hasMoved) {
+      this.rulerCreator = new RulerCreator(
+        canvasElement.tool.temporary || this.temporary,
+        canvasElement.tool.size || this.size,
+        canvasElement.tool.colour || this.colour,
+        canvasElement.tool.showCircle || this.showCircle
+      )
+      this.rulerCreator.create(canvasElement, layer)
+      this.rulerCreator.move(canvasElement, layer, { x: canvasElement.data[2], y: canvasElement.data[3] })
+      layer.batchDraw()
+    }
   }
 
   sendToWebSocket = (canvasElement: CanvasElement, socket: WebSocket) => {
@@ -59,11 +72,13 @@ export default class Ruler implements Tool {
         name: 'ruler',
         colour: this.colour,
         size: this.size,
-        temporary: this.temporary
+        temporary: this.temporary,
+        showCircle: this.showCircle
       },
       data: canvasElement.data,
       tracker: Tracker.ADDITION,
-      change: false
+      change: false,
+      hasMoved: canvasElement.hasMoved
     }
     socket.send(JSON.stringify(data))
   }

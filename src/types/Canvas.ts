@@ -17,4 +17,5 @@ export interface CanvasElement {
   jti: string;
   tracker: Tracker;
   change: boolean;
+  hasMoved: boolean;
 }

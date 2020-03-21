@@ -1,34 +1,80 @@
 <template>
-  <div>
-    <colour-picker :value.sync="lineColour" />
-    <size-picker :value.sync="lineSize"></size-picker>
-    <v-radio-group v-model="lineEndStyle" row>
-      <v-spacer></v-spacer>
-      <v-radio class="mr-0" name="endStyle" on-icon="fa-arrow-right" off-icon="fa-arrow-right" :value="'arrow'"></v-radio>
-      <v-spacer></v-spacer>
-      <v-radio class="mr-0" name="endStyle" on-icon="fa-slash" off-icon="fa-slash" :value="'line'"></v-radio>
-      <v-spacer></v-spacer>
-      <v-radio class="mr-0" name="endStyle" on-icon="fa-ruler-combined" off-icon="fa-ruler-combined" :value="'tBar'"></v-radio>
-      <v-spacer></v-spacer>
-    </v-radio-group>
-    <v-radio-group v-model="lineStrokeStyle" row>
-      <v-spacer></v-spacer>
-      <v-radio class="mr-0" name="endStyle" on-icon="fa-minus" off-icon="fa-minus" :value="0"></v-radio>
-      <v-spacer></v-spacer>
-      <v-radio class="mr-0" name="endStyle" on-icon="fa-ellipsis-h" off-icon="fa-ellipsis-h" :value="1"></v-radio>
-      <v-spacer></v-spacer>
-    </v-radio-group>
-    <v-container>
+  <v-card>
+    <v-card-subtitle class="pb-0 pl-5">
+      Colour
+    </v-card-subtitle>
+    <v-card-actions class="py-0">
+      <colour-picker :value.sync="lineColour" />
+    </v-card-actions>
+    <v-card-subtitle class="py-0 pl-5">
+      Size
+    </v-card-subtitle>
+    <v-card-actions class="py-0">
+      <size-picker class="px-2" :value.sync="lineSize"></size-picker>
+    </v-card-actions>
+    <v-card-subtitle class="py-0 pl-5">
+      End style
+    </v-card-subtitle>
+    <v-card-actions class="pb-0">
+      <v-radio-group v-model="lineEndStyle" row class="mt-1 px-3 flex-fill">
+        <v-spacer></v-spacer>
+        <v-tooltip top>
+          <template v-slot:activator="{ on }">
+            <v-radio v-on="on" class="mr-0" name="endStyle" on-icon="fa-arrow-right" off-icon="fa-arrow-right" :value="'arrow'"></v-radio>
+          </template>
+          <span>Arrow</span>
+        </v-tooltip>
+        <v-spacer></v-spacer>
+        <v-tooltip top>
+          <template v-slot:activator="{ on }">
+            <v-radio v-on="on" class="mr-0" name="endStyle" on-icon="fa-slash" off-icon="fa-slash" :value="'line'"></v-radio>
+          </template>
+          <span>Line</span>
+        </v-tooltip>
+        <v-spacer></v-spacer>
+        <v-tooltip top>
+          <template v-slot:activator="{ on }">
+            <v-radio v-on="on" class="mr-0" name="endStyle" on-icon="fa-ruler-combined" off-icon="fa-ruler-combined" :value="'tBar'"></v-radio>
+          </template>
+          <span>T Bar</span>
+        </v-tooltip>
+        <v-spacer></v-spacer>
+      </v-radio-group>
+    </v-card-actions>
+    <v-card-subtitle class="py-0 pl-5">
+      Stroke style
+    </v-card-subtitle>
+    <v-card-actions class="pb-0">
+      <v-radio-group v-model="lineStrokeStyle" row class="mt-1 px-3 flex-fill">
+        <v-spacer></v-spacer>
+        <v-tooltip top>
+          <template v-slot:activator="{ on }">
+            <v-radio v-on="on" class="mr-0" name="strokeStyle" on-icon="fa-minus" off-icon="fa-minus" :value="0"></v-radio>
+          </template>
+          <span>Normal Line</span>
+        </v-tooltip>
+        <v-spacer></v-spacer>
+        <v-tooltip top>
+          <template v-slot:activator="{ on }">
+            <v-radio v-on="on" class="mr-0" name="strokeStyle" on-icon="fa-ellipsis-h" off-icon="fa-ellipsis-h" :value="1"></v-radio>
+          </template>
+          <span>Dashed Line</span>
+        </v-tooltip>
+        <v-spacer></v-spacer>
+      </v-radio-group>
+    </v-card-actions>
+    <v-card-actions class="py-0 px-2">
       <v-row>
         <v-spacer></v-spacer>
         <v-switch
           v-model="lineTemporary"
+          class="mt-0"
           :label="lineTemporary ? 'Temporary' : 'Permanent'"
         ></v-switch>
         <v-spacer></v-spacer>
       </v-row>
-    </v-container>
-  </div>
+    </v-card-actions>
+  </v-card>
 </template>
 
 <script lang="ts">
@@ -68,7 +114,7 @@ export default class PopoutButton extends Vue {
   }
 
   get lineColour (): string {
-    return this.findTool('line').colour || '#FF0000FF'
+    return this.findTool('line').colour || '#CE0000FF'
   }
 
   get lineEndStyle (): string {

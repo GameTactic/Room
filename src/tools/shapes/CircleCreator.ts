@@ -75,6 +75,12 @@ export default class CircleCreator implements Shape {
     return Math.sqrt(a + b)
   }
 
+  destroy = (canvasElement: CanvasElement, layer: Konva.Layer): void => {
+    const group: Konva.Collection<Konva.Node> = layer.getChildren(node => node.attrs.id === this.group.attrs.id)
+    group.each(child => child.destroy())
+    layer.batchDraw()
+  }
+
   // eslint-disable-next-line
   [key: string]: any;
 }
