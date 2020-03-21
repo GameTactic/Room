@@ -8,16 +8,16 @@ export default class UndoRedo {
       if (lastElement.tracker === Tracker.ADDITION || lastElement.tracker === Tracker.REMOVAL) {
         return lastElement
       } else if (lastElement.tracker === Tracker.REDO) {
-        const canvasElement: CanvasElement = {
+        return {
           id: lastElement.id,
           layerId: lastElement.layerId,
           tracker: Tracker.UNDO,
           data: lastElement.data,
           jti: lastElement.jti,
           tool: lastElement.tool,
-          change: true
+          change: true,
+          hasMoved: true
         }
-        return canvasElement
       } else if (lastElement.tracker === Tracker.UNDO) {
         let foundElementIndex = -1
         const copy = [...canvasElementsHistory]
@@ -42,16 +42,16 @@ export default class UndoRedo {
       if (lastElement.tracker === Tracker.ADDITION || lastElement.tracker === Tracker.REMOVAL) {
         return undefined
       } else if (lastElement.tracker === Tracker.UNDO) {
-        const canvasElement: CanvasElement = {
+        return {
           id: lastElement.id,
           layerId: lastElement.layerId,
           tracker: Tracker.REDO,
           data: lastElement.data,
           jti: lastElement.jti,
           tool: lastElement.tool,
-          change: true
+          change: true,
+          hasMoved: true
         }
-        return canvasElement
       } else if (lastElement.tracker === Tracker.REDO) {
         let foundElementIndex = -1
         const copy = [...canvasElementsHistory]
