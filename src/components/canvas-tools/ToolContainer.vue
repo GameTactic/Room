@@ -7,17 +7,23 @@
     offset-x
     ref="menu"
   >
-    <template v-slot:activator="{ on }">
+    <template v-slot:activator="{ on: menu }">
       <div>
-        <v-btn
-          :class="[isEnabledClass, 'borderBtn']"
-          icon
-          tile
-          elevation="0"
-          @click="onButtonClickHandler"
-        >
-          <v-icon dense>{{icon}}</v-icon>
-        </v-btn>
+        <v-tooltip right nudge-right="10">
+          <template v-slot:activator="{ on: tooltip }">
+            <v-btn
+              :class="[isEnabledClass, 'borderBtn']"
+              icon
+              tile
+              v-on="tooltip"
+              elevation="0"
+              @click="onButtonClickHandler"
+            >
+              <v-icon dense>{{icon}}</v-icon>
+            </v-btn>
+          </template>
+          <span>{{ toolName }}</span>
+        </v-tooltip>
         <v-btn
           x-small
           :class="['tools-caret-down', isEnabledButtonClass]"
@@ -25,7 +31,7 @@
           elevation="0"
           tile
           absolute
-          v-on="on"
+          v-on="menu"
           @click="onButtonClickHandler"
         >
           <v-icon color="white" x-small>{{ getIsActive() ? 'fa-chevron-left' : 'fa-chevron-right'}}</v-icon>
@@ -36,15 +42,20 @@
       <slot>Default Content For Slot</slot>
     </v-sheet>
   </v-menu>
-  <v-btn
-    :class="[isEnabledClass, 'borderBtn']"
-    v-else
-    icon
-    elevation="0"
-    @click="onButtonClickHandler"
-  >
-    <v-icon dense :color="iconColour">{{icon}}</v-icon>
-  </v-btn>
+  <v-tooltip right v-else nudge-right="10">
+    <template v-slot:activator="{ on: tooltip1 }">
+      <v-btn
+        :class="[isEnabledClass, 'borderBtn']"
+        icon
+        elevation="0"
+        v-on="tooltip1"
+        @click="onButtonClickHandler"
+      >
+        <v-icon dense :color="iconColour">{{icon}}</v-icon>
+      </v-btn>
+    </template>
+    <span>{{ toolName }}</span>
+  </v-tooltip>
 </template>
 
 <script lang="ts">
@@ -80,6 +91,10 @@ getIsActive (): boolean {
   return this.$data.isActive
 }
 
+get toolName (): string {
+  return this.toolname.charAt(0).toUpperCase() + this.toolname.slice(1)
+}
+
 get iconColour (): string {
   return (this.enabledTool?.name === this.toolname) ? 'white' : 'black'
 }
@@ -104,7 +119,7 @@ onButtonClickHandler () {
 }
 
 interface MenuElement extends Vue {
-isActive: boolean;
+  isActive: boolean;
 }
 
 </script>

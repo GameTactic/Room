@@ -4,13 +4,13 @@
       Colour
     </v-card-subtitle>
     <v-card-actions class="py-0">
-      <colour-picker :value.sync="penColour" />
+      <colour-picker :value.sync="textColour" />
     </v-card-actions>
     <v-card-subtitle class="py-0 pl-5">
       Size
     </v-card-subtitle>
     <v-card-actions class="py-0">
-      <size-picker class="px-2" :value.sync="penSize"></size-picker>
+      <size-picker class="px-2" :value.sync="textSize"></size-picker>
     </v-card-actions>
   </v-card>
 </template>
@@ -36,19 +36,19 @@ export default class PopoutButton extends Vue {
   @Tools.Action(ToolsAction.SET_COLOUR) setColour!: (colour: string) => void
   @Tools.Action(ToolsAction.SET_SIZE) setSize!: (size: number) => void
 
-  get penSize () {
-    return this.findTool('freedraw').size || 5
+  get textSize () {
+    return this.findTool('text').size || 5
   }
 
-  set penSize (newValue: number) {
+  set textSize (newValue: number) {
     this.setSize(newValue)
   }
 
-  get penColour (): string {
-    return this.findTool('freedraw').colour || '#CE0000FF'
+  get textColour (): string {
+    return this.findTool('text').colour || '#CE0000FF'
   }
 
-  set penColour (newValue: string) {
+  set textColour (newValue: string) {
     this.setColour(newValue)
   }
 }

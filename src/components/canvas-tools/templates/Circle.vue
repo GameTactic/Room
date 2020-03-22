@@ -87,7 +87,7 @@ export default class PopoutButton extends Vue {
   @Tools.Action(ToolsAction.SET_STROKE_STYLE) setStrokeStyle!: (strokeStyle: number) => void
 
   get circleSize () {
-    return this.findTool('circle').size || 3
+    return this.findTool('circle').size || 5
   }
 
   set circleSize (newValue: number) {
