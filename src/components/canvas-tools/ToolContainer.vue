@@ -119,7 +119,11 @@ onButtonClickHandler () {
 }
 
 interface MenuElement extends Vue {
+<<<<<<< HEAD
   isActive: boolean;
+=======
+isActive: boolean;
+>>>>>>> 252d84be689242240af8e2a4d88cb68a95d1e38d
 }
 
 </script>
