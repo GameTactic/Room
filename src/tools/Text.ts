@@ -40,25 +40,20 @@ export default class Text implements Tool {
     this.textCreator.create(canvasElement, layer)
     const textArea = this.textCreator.createTextArea(canvasElement, layer)
     const canvasElementCopy = { ...canvasElement }
-    let removed = false
-    textArea.addEventListener('keydown', (e) => {
+    const keyBoardEvent = (e: KeyboardEvent) => {
       if (e.key === 'Enter' && !e.shiftKey) {
         canvasElementCopy.tool.textString = textArea.value
-        if (!removed) {
-          textArea.remove()
-          removed = true
-        }
+        textArea.blur()
         EventBus.$emit('addText', canvasElementCopy)
       }
-    })
-    textArea.addEventListener('focusout', () => {
+    }
+    const focusOutEvent = () => {
       canvasElementCopy.tool.textString = textArea.value
-      if (!removed) {
-        textArea.remove()
-        removed = true
-      }
+      textArea.remove()
       EventBus.$emit('addText', canvasElementCopy)
-    })
+    }
+    textArea.addEventListener('keydown', keyBoardEvent)
+    textArea.addEventListener('focusout', focusOutEvent)
   }
 
   renderCanvas = (canvasElement: CanvasElement, layer: Konva.Layer): void => {

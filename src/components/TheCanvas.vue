@@ -126,10 +126,6 @@ export default class TheCanvas extends Vue {
       }
     })
 
-    EventBus.$on('focusOut', (canvasElement: CanvasElement) => {
-      this.deleteCanvasElement(canvasElement)
-    })
-
     this.socket.onmessage = (data: MessageEvent) => {
       try {
         const canvasElement: CanvasElement = JSON.parse(data.data).payload

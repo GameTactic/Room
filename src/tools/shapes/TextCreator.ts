@@ -84,6 +84,7 @@ export default class TextCreator implements Shape {
     textArea.style.resize = 'none'
     textArea.style.lineHeight = this.text.lineHeight().toString()
     textArea.style.fontFamily = this.text.fontFamily()
+    textArea.spellcheck = false
     textArea.style.height = (layer.getHeight() - this.text.getAbsolutePosition().y) + 'px'
     return textArea
   }
