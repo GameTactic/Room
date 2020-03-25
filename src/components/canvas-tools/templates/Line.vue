@@ -102,7 +102,7 @@ export default class PopoutButton extends Vue {
   @Tools.Action(ToolsAction.SET_TEMPORARY) setTemporary!: (temporary: boolean) => void
 
   get lineSize () {
-    return this.findTool('line').size || 3
+    return this.findTool('line').size || 5
   }
 
   set lineSize (newValue: number) {

@@ -1,14 +1,20 @@
 <template>
-  <v-btn
-    :disabled="isDisabled"
-    class="undoBtn"
-    icon
-    elevation=""
-    text
-    @click="onButtonClickHandler"
-  >
-    <v-icon dense color="black">{{icon}}</v-icon>
-  </v-btn>
+  <v-tooltip right nudge-right="10">
+    <template v-slot:activator="{ on }">
+      <v-btn
+        :disabled="isDisabled"
+        class="undoBtn"
+        icon
+        elevation=""
+        v-on="on"
+        text
+        @click="onButtonClickHandler"
+      >
+        <v-icon dense color="black">{{icon}}</v-icon>
+      </v-btn>
+    </template>
+    <span>Undo</span>
+  </v-tooltip>
 </template>
 
 <script lang="ts">

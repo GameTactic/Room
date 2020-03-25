@@ -18,6 +18,7 @@ export interface Tool {
   showCircle?: boolean;
   outlineColour?: string;
   erase?: string[];
+  textString?: string;
   mouseDownAction?: MouseDownAction;
   mouseMoveAction?: MouseMoveAction;
   mouseUpAction?: MouseUpAction;

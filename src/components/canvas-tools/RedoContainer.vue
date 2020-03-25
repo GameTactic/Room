@@ -1,13 +1,19 @@
 <template>
-  <v-btn
-    :disabled="isDisabled"
-    class="redoBtn"
-    icon
-    elevation="0"
-    @click="onButtonClickHandler"
-  >
-    <v-icon dense color="black">{{icon}}</v-icon>
-  </v-btn>
+  <v-tooltip right nudge-right="10">
+    <template v-slot:activator="{ on }">
+      <v-btn
+        :disabled="isDisabled"
+        class="redoBtn"
+        icon
+        v-on="on"
+        elevation="0"
+        @click="onButtonClickHandler"
+      >
+        <v-icon dense color="black">{{icon}}</v-icon>
+      </v-btn>
+    </template>
+    <span>Redo</span>
+  </v-tooltip>
 </template>
 
 <script lang="ts">

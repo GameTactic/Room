@@ -51,6 +51,7 @@ export default class extends Vue {
   .full-width-height {
     width: 100%;
     height: 100%;
+    overflow-x: hidden;
   }
 
   @media (max-width: 575px) {

@@ -47,6 +47,7 @@ export default class TheCanvas extends Vue {
   @Action(`canvas/${CanvasAction.ADD_CANVAS_ELEMENT}`) addCanvasElement!: (canvasElement: CanvasElement) => void
   @Action(`canvas/${CanvasAction.ADD_CANVAS_ELEMENT_HISTORY}`) addCanvasElementHistory!: (canvasElement: CanvasElement) => void
   @Action(`canvas/${CanvasAction.HIDE_CANVAS_ELEMENT}`) hideCanvasElement!: (payload: HideCanvasElementInterface) => void
+  @Action(`canvas/${CanvasAction.DELETE_CANVAS_ELEMENT}`) deleteCanvasElement!: (canvasElement: CanvasElement) => void
   @Getter(`canvas/${CanvasGetters.CANVAS_ELEMENTS}`) canvasElements!: CanvasElement[]
   @Getter(`canvas/${CanvasGetters.CANVAS_ELEMENTS_HISTORY}`) canvasElementsHistory!: CanvasElement[]
 
@@ -100,6 +101,28 @@ export default class TheCanvas extends Vue {
       if (data) {
         this.socket.send(JSON.stringify(data))
         this.renderShapes()
+      }
+    })
+
+    EventBus.$on('addText', (canvasElement: CanvasElement) => {
+      if (canvasElement.tool.textString && canvasElement.tool.textString?.length > 0) {
+        const foundNode: Konva.Collection<Konva.Group> = this.layerNode.getChildren().find((group: Konva.Group) => group.attrs.id === canvasElement.id)
+        const foundElement = this.canvasElements.find((element: CanvasElement) => element.id === canvasElement.id)
+        if (foundElement && foundNode) {
+          const group: Konva.Group | undefined = foundNode.toArray().find((group: Konva.Group) => group.attrs.id === canvasElement.id)
+          const textElement: Konva.Text | undefined = group?.findOne<Konva.Text>((node: Konva.Text) => node)
+          if (textElement) {
+            textElement.text(canvasElement.tool.textString)
+            if (textElement.getTextWidth() > (this.layerNode.getWidth() - textElement.getAbsolutePosition().x)) {
+              textElement.width(this.layerNode.getWidth() - textElement.getAbsolutePosition().x)
+            }
+            foundElement.tool.textString = canvasElement.tool.textString
+            this.layerNode.batchDraw()
+            this.socket.send(JSON.stringify(canvasElement))
+          }
+        }
+      } else {
+        this.deleteCanvasElement(canvasElement)
       }
     })
 
