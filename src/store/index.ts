@@ -18,7 +18,7 @@ export enum Namespaces {
   AUTH = 'authentication'
 }
 
-export default new Vuex.Store<{}>({
+export default new Vuex.Store<any>({
   modules: {
     [Namespaces.TOOLS]: ToolModule,
     [Namespaces.CURSOR]: CursorModule,

@@ -8,23 +8,21 @@
         tile
         flat
       >
-        <div>
-          Content
-        </div>
+        <wows-panel v-if="roomState.game.name === 'wows'" :clickedItem="clickedItem" :teams="teams" />
+        <wot-panel v-if="roomState.game.name === 'wot'" :clickedItem="clickedItem" :teams="teams" />
       </v-card>
       <v-navigation-drawer
         class="custom-navigation-drawer"
         mini-variant
-        mini-variant-width="56"
+        mini-variant-width="50"
         permanent
       >
         <div>
           <v-list-item class="px-2">
             <v-list-item-avatar>
-              <v-img :src="images[roomState.game]"></v-img>
+              <v-img :src="images[roomState.game.name]"></v-img>
             </v-list-item-avatar>
           </v-list-item>
-
           <v-divider></v-divider>
           <div>
             <v-list
@@ -32,14 +30,25 @@
               nav
             >
               <v-list-item
-                v-for="item in items"
+                v-for="(item, index) in items"
                 class="custom-list-item-center"
                 :key="item.title"
                 :title="item.title"
-                @click="onItemClickHandler"
+                @click="onItemClickHandler(item.title)"
               >
                 <v-list-item-action>
-                  <v-icon :color="item.color">{{ item.icon }}</v-icon>
+                  <v-badge
+                    v-if="index"
+                    :content="item.noOfEntities"
+                  >
+                    <v-icon :color="item.color">{{ item.icon }}</v-icon>
+                  </v-badge>
+                  <v-icon
+                    v-else
+                    :color="item.color"
+                  >
+                    {{ item.icon }}
+                  </v-icon>
                 </v-list-item-action>
 
                 <v-list-item-content>
@@ -66,42 +75,61 @@
 import { Component, Prop, Vue } from 'vue-property-decorator'
 import { RoomGetters, RoomState } from '@/store/modules/room'
 import { Getter } from 'vuex-class'
+import { WowsPanel, WotPanel } from './entity-panel'
+
+export interface MenuItem {
+  title: string;
+  icon: string;
+  color?: string;
+  noOfEntities?: number;
+}
 
 @Component({
-  name: 'TheEntityPanel'
+  name: 'TheEntityPanel',
+  components: {
+    WowsPanel,
+    WotPanel
+  }
 })
 export default class MapButtons extends Vue {
   @Prop() private id!: string;
-  @Getter(`room/${RoomGetters.ROOM_STATE}`) roomState!: RoomState
+  @Getter(`room/${RoomGetters.ROOM_STATE}`) roomState!: RoomState;
 
   show = false
 
-  items = [
-    { title: 'Add', icon: 'fa-plus' },
-    { title: 'Team 1', icon: 'fa-users', color: 'green' },
-    { title: 'Team 2', icon: 'fa-users', color: 'red' }
+  teams: MenuItem[] = [
+    { title: 'Team 1', icon: 'fa-users', color: 'green', noOfEntities: 0 },
+    { title: 'Team 2', icon: 'fa-users', color: 'red', noOfEntities: 0 }
   ]
+
+  items: MenuItem[] = [
+    { title: 'Add', icon: 'fa-plus' },
+    ...this.teams
+  ]
+
+  clickedItem = 'Add'
 
   images = {
     wows: require('@/assets/wows-icon.png'),
     wot: require('@/assets/wot-icon.png')
   }
 
-  onItemClickHandler () {
+  onItemClickHandler (title: string) {
     this.show = true
+    this.clickedItem = title
   }
 }
 </script>
 <style scoped lang="scss">
 .custom-card-minimised {
   right: 0;
-  height: 500px;
   margin-top: 0.25rem;
   position: fixed;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
   transition: width 1s;
+  height: 650px;
 
   >div {
     margin: 0;
@@ -131,7 +159,7 @@ export default class MapButtons extends Vue {
 
 .custom-card-expanded > div > div {
   display: flex;
-  max-width: 300px;
+  max-width: 250px;
 }
 
 .custom-navigation-drawer {
@@ -161,7 +189,8 @@ export default class MapButtons extends Vue {
 }
 
 .custom-list-item-center {
-  padding: 0px;
+  padding-top: 0px;
+  padding-bottom: 0px;
   justify-content: center;
 
   &:hover::before {

@@ -37,17 +37,15 @@ interface CanvasState {
 }
 
 interface RootState extends CanvasElement {
-  rootState: {
-    canvas: CanvasState;
-    cursor: CursorState;
-    socket: SocketState;
-    tools: ToolState;
-  };
+  canvas: CanvasState;
+  cursor: CursorState;
+  socket: SocketState;
+  tools: ToolState;
 }
 
-type CursorActionContext = ActionContext<CanvasState, {}>
+type CursorActionContext = ActionContext<CanvasState, RootState>
 
-const CanvasModule: Module<CanvasState, {}> = {
+const CanvasModule: Module<CanvasState, RootState> = {
   namespaced: true,
   state () {
     return {
@@ -84,8 +82,9 @@ const CanvasModule: Module<CanvasState, {}> = {
       }
     },
     [CanvasMutation.ADD_CANVAS_ELEMENT] (state: CanvasState, payload: RootState) {
+      // console.log('payload', payload); //eslint-disable-line
       payload.jti = 'SAM'
-      const foundTool: Tool | undefined = payload.rootState.tools.tools.find((tool: Tool) => tool.name === payload.tool.name)
+      const foundTool: Tool | undefined = payload.tools.tools.find((tool: Tool) => tool.name === payload.tool.name)
       state.canvasElements.push({ ...payload, tool: { ...payload.tool, renderCanvas: foundTool?.renderCanvas } })
     },
     [CanvasMutation.ADD_CANVAS_ELEMENT_HISTORY] (state: CanvasState, payload: CanvasElement) {
@@ -98,7 +97,7 @@ const CanvasModule: Module<CanvasState, {}> = {
       context.commit('SET_CANVAS_ELEMENT', payload)
     },
     [CanvasAction.ADD_CANVAS_ELEMENT] (context: CursorActionContext, payload: CanvasElement) {
-      context.commit('ADD_CANVAS_ELEMENT', { ...payload, rootState: context.rootState })
+      context.commit('ADD_CANVAS_ELEMENT', { ...payload, tools: context.rootState.tools })
     },
     [CanvasAction.HIDE_CANVAS_ELEMENT] (context: CursorActionContext, payload: HideCanvasElementInterface) {
       context.commit('HIDE_CANVAS_ELEMENT', payload)
