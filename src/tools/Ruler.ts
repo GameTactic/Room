@@ -3,19 +3,16 @@ import Konva from 'konva'
 import { CanvasElement } from '@/types/Canvas'
 import uuid from 'uuid'
 import throttle from 'lodash.throttle'
-import CircleCreator from '@/tools/shapes/CircleCreator'
+import RulerCreator from '@/tools/shapes/RulerCreator'
 
-export default class Circle implements Tool {
-  private circleCreator: CircleCreator
+export default class Ruler implements Tool {
+  private rulerCreator: RulerCreator
   constructor (public readonly name: string,
                public size: number,
                public colour: string,
                public temporary: boolean,
-               public showRadius: boolean,
-               public outlineColour: string,
-               public strokeStyle: number
-  ) {
-    this.circleCreator = new CircleCreator(this.temporary)
+               public showCircle: boolean) {
+    this.rulerCreator = new RulerCreator(this.temporary, this.size, this.colour, this.showCircle)
   }
 
   // eslint-disable-next-line
@@ -27,28 +24,25 @@ export default class Circle implements Tool {
       name: this.name,
       size: this.size,
       colour: this.colour,
-      showRadius: this.showRadius,
-      outlineColour: this.outlineColour,
-      strokeStyle: this.strokeStyle,
-      temporary: this.temporary
+      temporary: this.temporary,
+      showCircle: this.showCircle
     }
-    this.circleCreator = new CircleCreator(this.temporary, this.size, this.colour, this.outlineColour, this.strokeStyle, this.showRadius)
-    this.circleCreator.create(canvasElement, layer)
+    this.rulerCreator.create(canvasElement, layer)
   }
 
   // eslint-disable-next-line
-  mouseMoveAction = throttle((e: Konva.KonvaPointerEvent, canvasElement: CanvasElement, layer: Konva.Layer, _socket: WebSocket): void => {
+  mouseMoveAction = throttle((e: Konva.KonvaPointerEvent, canvasElement: CanvasElement, layer: Konva.Layer, socket: WebSocket): void => {
     if (!canvasElement.hasMoved) {
       canvasElement.hasMoved = true
     }
     const pos = { x: e.evt.x, y: e.evt.y }
-    this.circleCreator.move(canvasElement, layer, pos)
+    this.rulerCreator.move(canvasElement, layer, pos)
     layer.batchDraw()
-  }, 10)
+  }, 5)
 
   mouseUpAction = (e: Konva.KonvaPointerEvent, canvasElement: CanvasElement, layer: Konva.Layer, socket: WebSocket): void => {
     if (canvasElement.tool.temporary || !canvasElement.hasMoved) {
-      this.circleCreator.destroy(canvasElement, layer)
+      this.rulerCreator.destroy(canvasElement, layer)
     } else {
       canvasElement.data = canvasElement.data.concat([e.evt.x, e.evt.y])
       this.sendToWebSocket(canvasElement, socket)
@@ -56,18 +50,15 @@ export default class Circle implements Tool {
   }
 
   renderCanvas = (canvasElement: CanvasElement, layer: Konva.Layer): void => {
-    if (canvasElement.hasMoved && !canvasElement.tool.temporary) {
-      this.circleCreator = new CircleCreator(
+    if (!canvasElement.tool.temporary && canvasElement.hasMoved) {
+      this.rulerCreator = new RulerCreator(
         canvasElement.tool.temporary || this.temporary,
         canvasElement.tool.size || this.size,
         canvasElement.tool.colour || this.colour,
-        canvasElement.tool.outlineColour || this.outlineColour,
-        canvasElement.tool.strokeStyle || this.strokeStyle,
-        canvasElement.tool.showRadius || this.showRadius
+        canvasElement.tool.showCircle || this.showCircle
       )
-      this.circleCreator.create(canvasElement, layer)
-      const pos = { x: canvasElement.data[2], y: canvasElement.data[3] }
-      this.circleCreator.move(canvasElement, layer, pos)
+      this.rulerCreator.create(canvasElement, layer)
+      this.rulerCreator.move(canvasElement, layer, { x: canvasElement.data[2], y: canvasElement.data[3] })
       layer.batchDraw()
     }
   }
@@ -78,13 +69,11 @@ export default class Circle implements Tool {
       id: canvasElement.id,
       layerId: canvasElement.layerId,
       tool: {
-        name: 'circle',
+        name: 'ruler',
         colour: this.colour,
         size: this.size,
-        showRadius: this.showRadius,
-        strokeStyle: this.strokeStyle,
-        outlineColour: this.outlineColour,
-        temporary: this.temporary
+        temporary: this.temporary,
+        showCircle: this.showCircle
       },
       data: canvasElement.data,
       tracker: Tracker.ADDITION,
