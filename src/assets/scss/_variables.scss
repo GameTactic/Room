@@ -5,3 +5,7 @@ $app-fontsize: 16px;
 $room-background: #f1f2f2;
 $room-navbar: #255bd6;
 $room-navbar-text: white;
+
+:export {
+ roomNavbar: $room-navbar;
+}

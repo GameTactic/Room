@@ -7,7 +7,6 @@ import { EventBus } from '@/event-bus'
 
 export default class Text implements Tool {
   private textCreator: TextCreator
-  private textArea?: HTMLTextAreaElement
   constructor (public readonly name: string,
                public size: number,
                public colour: string,
