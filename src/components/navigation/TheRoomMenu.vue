@@ -48,9 +48,7 @@ export default class TheRoomMenu extends Vue {
     title: 'Manage the rooms settings'
   }]
 
-  roomMenuItemsClickHandler (item: RoomMenuItem) {
-    console.log('CLICKED', item)
-  }
+  roomMenuItemsClickHandler (item: RoomMenuItem) { }
 }
 
 </script>

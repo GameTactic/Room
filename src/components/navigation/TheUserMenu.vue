@@ -45,9 +45,7 @@ export default class TheUserMenu extends Vue {
     title: 'Logout of your logged in account'
   }]
 
-  userMenuItemsClickHandler (item: UserMenuItem) {
-    console.log('CLICKED', item)
-  }
+  userMenuItemsClickHandler (item: UserMenuItem) { }
 }
 
 </script>
