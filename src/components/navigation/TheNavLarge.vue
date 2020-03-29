@@ -1,38 +1,38 @@
 <template>
   <v-row class="navbar-row">
-    <v-col xl="2" lg="2" md="3" sm="6" cols="12" order-md="1" order="1">
-      <v-toolbar dense class="navbar-toolbar-left">
-        <v-icon color="#FFFFFF">fa-anchor</v-icon>
-        <h2>GameTactic</h2>
-        <v-spacer />
-      </v-toolbar>
-    </v-col>
-    <v-col xl="8" lg="7" md="5" sm="12" cols="12" order-md="2" order="3">
-      <v-toolbar dense flat class="navbar-toolbar-center justify-center">
-        <v-spacer />
-        <div>Tactic editing tools</div>
-        <v-spacer />
-      </v-toolbar>
-     </v-col>
-     <v-col xl="2" lg="3" md="4" sm="6" cols="12" order-md="3" order="2">
-      <v-toolbar dense class="navbar-toolbar-right">
-        <v-btn dark icon title="Save your room">
-          <v-icon>fa-save</v-icon>
-        </v-btn>
-        More buttons inc Sign In / Out
-        <v-spacer />
-      </v-toolbar>
-    </v-col>
+    <v-toolbar dense class="navbar-toolbar-left">
+      <v-icon color="#FFFFFF">fa-anchor</v-icon>
+      <h2>GameTactic</h2>
+      <v-spacer />
+    </v-toolbar>
+    <v-toolbar dense flat class="navbar-toolbar-center justify-center">
+      <v-spacer />
+      <div>Tactic editing tools</div>
+      <v-spacer />
+    </v-toolbar>
+    <v-toolbar dense class="navbar-toolbar-right">
+      <v-btn dark icon title="Save your room">
+        <v-icon>fa-save</v-icon>
+      </v-btn>
+      <the-room-menu />
+      <the-user-menu />
+    </v-toolbar>
   </v-row>
 </template>
 
 <script lang="ts">
 import { Component, Prop, Vue } from 'vue-property-decorator'
+import TheRoomMenu from './TheRoomMenu.vue'
+import TheUserMenu from './TheUserMenu.vue'
 
 @Component({
-  name: 'TheNavExtraLarge'
+  name: 'TheNavLarge',
+  components: {
+    TheRoomMenu,
+    TheUserMenu
+  }
 })
-export default class TheNavExtraLarge extends Vue {
+export default class TheNavLarge extends Vue {
   @Prop() private id!: string;
 }
 
@@ -73,10 +73,11 @@ header.navbar-toolbar-left.navbar-toolbar-left.navbar-toolbar-left {
 }
 
 .navbar-toolbar-right.navbar-toolbar-right.navbar-toolbar-right {
+  justify-content: flex-end;
   background-color: $room-navbar;
   color: $room-navbar-text;
   position: relative;
-  flex: 0 1 250px;
+  flex: 0 1;
   z-index: 100;
   &:after {
     content: '';
