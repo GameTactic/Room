@@ -30,7 +30,7 @@ export default class TheApp extends Vue {
     let ships: Ship[] = []
     ships = ships.concat(Object.values(response.data.data))
     if (pageTotal > 1) {
-      for (let i = 2; i < pageTotal + 1; i++) {
+      for (let i = 2; i <= pageTotal; i++) {
         const response: WowsShipsApiResponse = await axios.get(`https://api.worldofwarships.eu/wows/encyclopedia/ships/?page_no=${i}&application_id=d84a218b4fec37003e799f13777bf880`)
         ships = ships.concat(Object.values(response.data.data))
       }

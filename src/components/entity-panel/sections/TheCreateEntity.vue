@@ -89,7 +89,7 @@ import Component from 'vue-class-component'
 import axios from 'axios'
 import Games from '@/mixins/Games'
 import { ShipItem, ShipField } from '../../../types/Games/Wows'
-import { SavedField } from '../../../types/Games'
+import { SavedField } from '../../../types/Games/index'
 import { MenuItem } from '../../TheEntityPanel.vue'
 
 @Component({

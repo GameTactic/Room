@@ -93,7 +93,7 @@ export interface MenuItem {
 })
 export default class MapButtons extends Vue {
   @Prop() private id!: string;
-  @Getter(`room/${RoomGetters.ROOM_STATE}`) roomState!: RoomState;
+  @Getter(`room/${RoomGetters.ROOM_STATE}`) private readonly roomState!: RoomState;
 
   show = false
 
