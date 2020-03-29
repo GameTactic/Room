@@ -88,9 +88,9 @@ import { Prop } from 'vue-property-decorator'
 import Component from 'vue-class-component'
 import axios from 'axios'
 import Games from '@/mixins/Games'
-import { ShipItem, ShipField } from '../../../types/Games/Wows'
-import { SavedField } from '../../../types/Games/index'
-import { MenuItem } from '../../TheEntityPanel.vue'
+import { ShipItem, ShipField } from '@/types/Games/Wows'
+import { SavedField } from '@/types/Games/Index.ts'
+import { MenuItem } from '@/components/TheEntityPanel.vue'
 
 @Component({
   name: 'TheCreateEntity',

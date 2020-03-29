@@ -13,10 +13,10 @@
 import { Component, Prop, Vue } from 'vue-property-decorator'
 import { RoomGetters, RoomState, Ship } from '@/store/modules/room'
 import { Getter } from 'vuex-class'
-import { MenuItem } from '../../TheEntityPanel.vue'
-import { SavedField } from '@/types/Games/index'
+import { MenuItem } from '@/components/TheEntityPanel.vue'
+import { SavedField } from '@/types/Games/Index.ts'
 import { ShipField, ShipItem } from '@/types/Games/Wows'
-import TheCreateEntity from '../sections/TheCreateEntity.vue'
+import TheCreateEntity from '@/components/entity-panel/sections/TheCreateEntity.vue'
 
 @Component({
   name: 'WOWS',
