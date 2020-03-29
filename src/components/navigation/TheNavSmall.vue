@@ -8,7 +8,8 @@
         <v-btn dark icon title="Save your room">
           <v-icon>fa-save</v-icon>
         </v-btn>
-        More buttons inc Sign In / Out
+        <the-room-menu />
+        <the-user-menu />
       </v-toolbar>
     </v-col>
     <v-col cols="12">
@@ -23,9 +24,15 @@
 
 <script lang="ts">
 import { Component, Prop, Vue } from 'vue-property-decorator'
+import TheRoomMenu from './TheRoomMenu.vue'
+import TheUserMenu from './TheUserMenu.vue'
 
 @Component({
-  name: 'TheNavSmall'
+  name: 'TheNavSmall',
+  components: {
+    TheRoomMenu,
+    TheUserMenu
+  }
 })
 export default class TheNavSmall extends Vue {
   @Prop() private id!: string;
