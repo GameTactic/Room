@@ -39,4 +39,8 @@ export default class FreedrawCreator implements Shape {
       id: canvasElement.id
     })
   }
+
+  getGroup = (): Konva.Group => {
+    return this.group
+  }
 }

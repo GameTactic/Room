@@ -5,19 +5,12 @@ export default class UndoRedo {
   findUndo (canvasElementsHistory: CanvasElement[]): CanvasElement | void {
     const lastElement = canvasElementsHistory[(canvasElementsHistory.length - 1)]
     if (lastElement) {
-      if (lastElement.tracker === Tracker.ADDITION || lastElement.tracker === Tracker.REMOVAL) {
+      if (lastElement.tracker === Tracker.ADDITION || lastElement.tracker === Tracker.REMOVAL || lastElement.tracker === Tracker.MOVE) {
         return lastElement
       } else if (lastElement.tracker === Tracker.REDO) {
-        return {
-          id: lastElement.id,
-          layerId: lastElement.layerId,
-          tracker: Tracker.UNDO,
-          data: lastElement.data,
-          jti: lastElement.jti,
-          tool: lastElement.tool,
-          change: true,
-          hasMoved: true
-        }
+        const copy = [...canvasElementsHistory]
+        copy.splice(copy.length - 1, 1)
+        return this.findRedo(copy)
       } else if (lastElement.tracker === Tracker.UNDO) {
         let foundElementIndex = -1
         const copy = [...canvasElementsHistory]
@@ -39,19 +32,10 @@ export default class UndoRedo {
   findRedo (canvasElementsHistory: CanvasElement[]): CanvasElement | void {
     const lastElement = canvasElementsHistory[(canvasElementsHistory.length - 1)]
     if (lastElement) {
-      if (lastElement.tracker === Tracker.ADDITION || lastElement.tracker === Tracker.REMOVAL) {
-        return undefined
-      } else if (lastElement.tracker === Tracker.UNDO) {
-        return {
-          id: lastElement.id,
-          layerId: lastElement.layerId,
-          tracker: Tracker.REDO,
-          data: lastElement.data,
-          jti: lastElement.jti,
-          tool: lastElement.tool,
-          change: true,
-          hasMoved: true
-        }
+      if (lastElement.tracker === Tracker.UNDO) {
+        const copy = [...canvasElementsHistory]
+        copy.splice(copy.length - 1, 1)
+        return this.findUndo(copy)
       } else if (lastElement.tracker === Tracker.REDO) {
         let foundElementIndex = -1
         const copy = [...canvasElementsHistory]
@@ -66,6 +50,8 @@ export default class UndoRedo {
           copy.splice((copy.length - 1), 1)
           return this.findRedo(copy)
         }
+      } else {
+        return undefined
       }
     }
   }

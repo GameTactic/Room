@@ -94,4 +94,8 @@ export default class TextCreator implements Shape {
     this.textArea.focus()
     return this.textArea
   }
+
+  getGroup = (): Konva.Group => {
+    return this.group
+  }
 }

@@ -13,6 +13,7 @@ export default class Erase implements Tool {
     canvasElement.data = [e.evt.x, e.evt.y]
     canvasElement.id = uuid()
     canvasElement.hasMoved = true
+    canvasElement.tracker = Tracker.REMOVAL
     canvasElement.tool = {
       name: this.name,
       erase: [],
@@ -84,7 +85,8 @@ export default class Erase implements Tool {
       data: canvasElement.data,
       tracker: Tracker.ADDITION,
       change: false,
-      hasMoved: true
+      hasMoved: true,
+      position: canvasElement.position
     }
     socket.send(JSON.stringify(data))
   }

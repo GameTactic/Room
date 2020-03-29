@@ -20,6 +20,7 @@ export default class Text implements Tool {
   mouseDownAction = (e: Konva.KonvaPointerEvent, canvasElement: CanvasElement, layer: Konva.Layer, _socket: WebSocket): void => {
     canvasElement.data = [e.evt.x, e.evt.y]
     canvasElement.id = uuid()
+    canvasElement.tracker = Tracker.ADDITION
     canvasElement.hasMoved = true
     canvasElement.tool = {
       name: this.name,
@@ -38,6 +39,7 @@ export default class Text implements Tool {
   mouseUpAction = (e: Konva.KonvaPointerEvent, canvasElement: CanvasElement, layer: Konva.Layer, socket: WebSocket): void => {
     this.textCreator = new TextCreator(this.temporary, this.size, this.colour)
     this.textCreator.create(canvasElement, layer)
+    canvasElement.position = this.textCreator.getGroup().position()
     const textArea = this.textCreator.createTextArea(canvasElement, layer)
     const canvasElementCopy = { ...canvasElement }
     const keyBoardEvent = (e: KeyboardEvent) => {
@@ -84,7 +86,8 @@ export default class Text implements Tool {
       data: canvasElement.data,
       tracker: Tracker.ADDITION,
       change: false,
-      hasMoved: canvasElement.hasMoved
+      hasMoved: canvasElement.hasMoved,
+      position: canvasElement.position
     }
     socket.send(JSON.stringify(data))
   }

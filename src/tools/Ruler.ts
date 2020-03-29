@@ -20,6 +20,7 @@ export default class Ruler implements Tool {
     canvasElement.data = [e.evt.x, e.evt.y]
     canvasElement.id = uuid()
     canvasElement.hasMoved = false
+    canvasElement.tracker = Tracker.ADDITION
     canvasElement.tool = {
       name: this.name,
       size: this.size,
@@ -28,6 +29,7 @@ export default class Ruler implements Tool {
       showCircle: this.showCircle
     }
     this.rulerCreator.create(canvasElement, layer)
+    canvasElement.position = this.rulerCreator.getGroup().position()
   }
 
   // eslint-disable-next-line
@@ -78,7 +80,8 @@ export default class Ruler implements Tool {
       data: canvasElement.data,
       tracker: Tracker.ADDITION,
       change: false,
-      hasMoved: canvasElement.hasMoved
+      hasMoved: canvasElement.hasMoved,
+      position: canvasElement.position
     }
     socket.send(JSON.stringify(data))
   }

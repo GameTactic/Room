@@ -23,6 +23,7 @@ export default class Circle implements Tool {
     canvasElement.data = [e.evt.x, e.evt.y]
     canvasElement.id = uuid()
     canvasElement.hasMoved = false
+    canvasElement.tracker = Tracker.ADDITION
     canvasElement.tool = {
       name: this.name,
       size: this.size,
@@ -34,6 +35,7 @@ export default class Circle implements Tool {
     }
     this.circleCreator = new CircleCreator(this.temporary, this.size, this.colour, this.outlineColour, this.strokeStyle, this.showRadius)
     this.circleCreator.create(canvasElement, layer)
+    canvasElement.position = this.circleCreator.getGroup().position()
   }
 
   // eslint-disable-next-line
@@ -89,7 +91,8 @@ export default class Circle implements Tool {
       data: canvasElement.data,
       tracker: Tracker.ADDITION,
       change: false,
-      hasMoved: canvasElement.hasMoved
+      hasMoved: canvasElement.hasMoved,
+      position: canvasElement.position
     }
     socket.send(JSON.stringify(data))
   }

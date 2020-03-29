@@ -20,6 +20,7 @@ export default class Line implements Tool {
   mouseDownAction = (e: Konva.KonvaPointerEvent, canvasElement: CanvasElement, layer: Konva.Layer, _socket: WebSocket): void => {
     canvasElement.data = [e.evt.x, e.evt.y]
     canvasElement.id = uuid()
+    canvasElement.tracker = Tracker.ADDITION
     canvasElement.hasMoved = false
     canvasElement.tool = {
       name: this.name,
@@ -31,6 +32,7 @@ export default class Line implements Tool {
     }
     this.lineCreator = new LineCreator(this.temporary, this.size, this.colour, this.strokeStyle)
     this.lineCreator['create' + this.endStyle.toUpperCase()](canvasElement, layer)
+    canvasElement.position = this.lineCreator.getGroup().position()
   }
 
   // eslint-disable-next-line
@@ -81,7 +83,8 @@ export default class Line implements Tool {
       data: canvasElement.data,
       tracker: Tracker.ADDITION,
       change: false,
-      hasMoved: canvasElement.hasMoved
+      hasMoved: canvasElement.hasMoved,
+      position: canvasElement.position
     }
     socket.send(JSON.stringify(data))
   }

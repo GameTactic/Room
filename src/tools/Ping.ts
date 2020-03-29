@@ -30,6 +30,7 @@ export default class Ping implements Tool {
     canvasElement.data = [e.evt.x, e.evt.y]
     canvasElement.id = uuid()
     canvasElement.hasMoved = true
+    canvasElement.tracker = Tracker.ADDITION
     canvasElement.tool = {
       name: this.name,
       colour: this.colour,
@@ -37,6 +38,7 @@ export default class Ping implements Tool {
       temporary: this.temporary
     }
     this.pingCreator.create(canvasElement, layer)
+    canvasElement.position = this.pingCreator.getGroup().position()
     this.sendToWebSocket(canvasElement, socket)
   }
 
@@ -63,7 +65,8 @@ export default class Ping implements Tool {
       data: canvasElement.data,
       tracker: Tracker.ADDITION,
       change: false,
-      hasMoved: true
+      hasMoved: true,
+      position: canvasElement.position
     }
     socket.send(JSON.stringify(data))
   }

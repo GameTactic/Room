@@ -47,4 +47,8 @@ export default class PingCreator implements Shape {
       layer.batchDraw()
     }, this.period)
   }
+
+  getGroup = (): Konva.Group => {
+    return this.group
+  }
 }

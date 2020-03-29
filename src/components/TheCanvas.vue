@@ -1,3 +1,7 @@
+import {Tracker} from "@/tools/Tool";
+import {Tracker} from "@/tools/Tool";
+import {Tracker} from "@/tools/Tool";
+import {Tracker} from "@/tools/Tool";
 <template>
   <v-stage
     ref="stage"
@@ -69,7 +73,8 @@ export default class TheCanvas extends Vue {
     layerId: Math.random().toString(36),
     tracker: Tracker.ADDITION,
     change: false,
-    hasMoved: false
+    hasMoved: false,
+    position: { x: 0, y: 0 }
   }
 
   $refs!: {
@@ -99,6 +104,7 @@ export default class TheCanvas extends Vue {
     EventBus.$on('undoRedo', (undoRedo: string) => {
       const data: CanvasElement | void = this[undoRedo]()
       if (data) {
+        console.log(data)
         this.socket.send(JSON.stringify(data))
         this.renderShapes()
       }
@@ -139,7 +145,11 @@ export default class TheCanvas extends Vue {
             if (canvasElement.change) {
               const foundElement = this.canvasElements.find((element: CanvasElement) => element.id === canvasElement.id)
               if (foundElement) {
-                foundElement.tracker = (foundElement.tracker === Tracker.ADDITION ? Tracker.REMOVAL : Tracker.ADDITION)
+                if (canvasElement.tracker !== Tracker.MOVE) {
+                  foundElement.tracker = (foundElement.tracker === Tracker.ADDITION ? Tracker.REMOVAL : Tracker.ADDITION)
+                } else {
+                  foundElement.position = canvasElement.position
+                }
               }
             } else if (canvasElement.tool.name === 'erase' && canvasElement.tool.erase) {
               canvasElement.tool.erase.forEach((groupId: string) => {
@@ -165,6 +175,11 @@ export default class TheCanvas extends Vue {
         if (canvasElement.tracker === Tracker.ADDITION) {
           if (!this.layerNode.find((shape: Konva.Shape) => shape.attrs.id === canvasElement.id).length) {
             canvasElement.tool.renderCanvas(canvasElement, this.layerNode)
+          } else {
+            const group = this.layerNode.findOne((shape: Konva.Group) => shape.attrs.id === canvasElement.id)
+            if (group && (group.position().x !== canvasElement.position.x || group.position().y !== canvasElement.position.y)) {
+              group.position(canvasElement.position)
+            }
           }
         } else if (canvasElement.tracker === Tracker.REMOVAL) {
           if (this.layerNode.find((shape: Konva.Shape) => shape.attrs.id === canvasElement.id).length) {
@@ -185,6 +200,7 @@ export default class TheCanvas extends Vue {
         }
       }
     })
+    this.layerNode.batchDraw()
   }
 
   onMouseDownHandler (e: Konva.KonvaPointerEvent): void {
@@ -212,6 +228,17 @@ export default class TheCanvas extends Vue {
             this.hideCanvasElement({ fromSocket: false, id: groupId })
           })
           this.enabledTool.mouseUpAction(e, this.$data.canvasElement, this.layerNode, this.socket)
+        } else if (this.$data.canvasElement.tracker === Tracker.MOVE) {
+          const foundElement = this.canvasElements.find((canvasElement: CanvasElement) => canvasElement.id === this.$data.canvasElement.id)
+          if (foundElement) {
+            const previousPosition = { ...foundElement.position }
+            foundElement.position = this.$data.canvasElement.position
+            this.$data.canvasElement.position = {
+              x: this.$data.canvasElement.position.x - previousPosition.x,
+              y: this.$data.canvasElement.position.y - previousPosition.y
+            }
+            this.addCanvasElementHistory({ ...this.$data.canvasElement })
+          }
         } else {
           if (this.$data.canvasElement.hasMoved) {
             this.addCanvasElement({
@@ -233,7 +260,14 @@ export default class TheCanvas extends Vue {
     if (foundElement) {
       const canvasElement = this.canvasElements.find((canvasElement: CanvasElement) => canvasElement.id === foundElement.id)
       if (canvasElement) {
-        canvasElement.tracker = (canvasElement.tracker === Tracker.ADDITION ? Tracker.REMOVAL : Tracker.ADDITION)
+        if (foundElement.tracker !== Tracker.MOVE) {
+          canvasElement.tracker = (canvasElement.tracker === Tracker.ADDITION ? Tracker.REMOVAL : Tracker.ADDITION)
+        } else {
+          canvasElement.position = {
+            x: canvasElement.position.x + foundElement.position.x,
+            y: canvasElement.position.y + foundElement.position.y
+          }
+        }
         const newElement: CanvasElement = {
           id: canvasElement.id,
           tool: canvasElement.tool,
@@ -242,9 +276,11 @@ export default class TheCanvas extends Vue {
           jti: canvasElement.jti,
           tracker: Tracker.REDO,
           change: true,
-          hasMoved: true
+          hasMoved: true,
+          position: canvasElement.position
         }
-        this.addCanvasElementHistory(newElement)
+        this.addCanvasElementHistory({ ...newElement })
+        newElement.tracker = foundElement.tracker
         return newElement
       }
     }
@@ -256,7 +292,13 @@ export default class TheCanvas extends Vue {
     if (foundElement) {
       const canvasElement = this.canvasElements.find((canvasElement: CanvasElement) => canvasElement.id === foundElement.id)
       if (canvasElement) {
-        canvasElement.tracker = (canvasElement.tracker === Tracker.ADDITION ? Tracker.REMOVAL : Tracker.ADDITION)
+        if (foundElement.tracker !== Tracker.MOVE) {
+          canvasElement.tracker = (canvasElement.tracker === Tracker.ADDITION ? Tracker.REMOVAL : Tracker.ADDITION)
+        } else {
+          canvasElement.position = {
+            x: (canvasElement.position.x - foundElement.position.x),
+            y: (canvasElement.position.y - foundElement.position.y) }
+        }
         const newElement: CanvasElement = {
           id: canvasElement.id,
           tool: canvasElement.tool,
@@ -265,9 +307,11 @@ export default class TheCanvas extends Vue {
           jti: canvasElement.jti,
           tracker: Tracker.UNDO,
           change: true,
-          hasMoved: true
+          hasMoved: true,
+          position: canvasElement.position
         }
-        this.addCanvasElementHistory(newElement)
+        this.addCanvasElementHistory({ ...newElement })
+        newElement.tracker = foundElement.tracker
         return newElement
       }
     }
@@ -291,6 +335,9 @@ export default class TheCanvas extends Vue {
   /* These are FA icons and might need replacing. */
   &.ping::v-deep canvas {
     cursor: pointer;
+  }
+  &.move::v-deep canvas {
+    cursor: move;
   }
   &.line::v-deep canvas {
     cursor: url('~@/assets/cursor/pen.png'), auto;

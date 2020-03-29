@@ -32,5 +32,6 @@ export enum Tracker {
   ADDITION = 'addition',
   REMOVAL = 'removal',
   UNDO = 'undo',
-  REDO = 'redo'
+  REDO = 'redo',
+  MOVE = 'move'
 }
