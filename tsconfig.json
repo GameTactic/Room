@@ -33,7 +33,7 @@
     "src/**/*.tsx",
     "src/**/*.vue",
     "tests/**/*.ts",
-    "tests/**/*.tsx", "src/plugins/vuetify.ts", "src/router/index.js",
+    "tests/**/*.tsx", "src/plugins/vuetify.ts", "src/router/index.js", "src/types/Games",
   ],
   "exclude": [
     "node_modules",

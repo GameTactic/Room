@@ -35,7 +35,6 @@ import Vuetify, {
   VColorPicker,
   VSlider,
   VSelect,
-  VSwitch,
   VNavigationDrawer,
   VTextField
 } from 'vuetify/lib'
@@ -75,7 +74,6 @@ Vue.use(Vuetify, {
     VColorPicker,
     VSlider,
     VSelect,
-    VSwitch,
     VNavigationDrawer,
     VTextField
   },
@@ -88,9 +86,9 @@ const opts: Record<string, any> = {
     iconfont: 'fa' // 'mdi' || 'mdiSvg' || 'md' || 'fa' || 'fa4'
   },
   theme: {
-	options: {
-		customProperties: true
-	},
+    options: {
+      customProperties: true
+    },
     themes: {
       light: {
         primary: colours.roomNavbar
