@@ -104,7 +104,6 @@ export default class TheCanvas extends Vue {
     EventBus.$on('undoRedo', (undoRedo: string) => {
       const data: CanvasElement | void = this[undoRedo]()
       if (data) {
-        console.log(data)
         this.socket.send(JSON.stringify(data))
         this.renderShapes()
       }
