@@ -1,3 +1,4 @@
+import { GameInfo, Ship } from '@/store/modules/room';
 
 interface ShipItem {
   text: string;
@@ -19,4 +20,31 @@ interface ShipField {
     showIcon: boolean;
   };
 }
-export { ShipItem, ShipField }
+
+interface WowsShipsApiResponse {
+  data: {
+    status: string;
+    meta: {
+      count: number;
+      page_total: number;
+      total: number;
+      limit: number;
+      page: number;
+    };
+    data: {
+      [key: string]: Ship;
+    };
+  };
+}
+
+interface WowsShipInfoApiResponse {
+  data: {
+    status: string;
+    meta: {
+      count: number;
+    };
+    data: GameInfo;
+  };
+}
+
+export { ShipItem, ShipField, WowsShipsApiResponse, WowsShipInfoApiResponse }

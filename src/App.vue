@@ -9,33 +9,8 @@ import Component from 'vue-class-component'
 import Vue from 'vue'
 import { Action } from 'vuex-class'
 import { RoomAction, Game, Locale, GameName, Ship, GameInfo } from '@/store/modules/room'
+import { WowsShipsApiResponse, WowsShipInfoApiResponse } from '@/types/Games/Wows'
 import axios from 'axios'
-
-interface WowsShipsApiResponse {
-  data: {
-    status: string;
-    meta: {
-      count: number;
-      page_total: number;
-      total: number;
-      limit: number;
-      page: number;
-    };
-    data: {
-      [key: string]: Ship;
-    };
-  };
-}
-
-interface WowsShipInfoApiResponse {
-  data: {
-    status: string;
-    meta: {
-      count: number;
-    };
-    data: GameInfo;
-  };
-}
 
 @Component({
   name: 'TheApp'
