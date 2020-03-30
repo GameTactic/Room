@@ -1,11 +1,12 @@
-import { Tool, Tracker } from '@/tools/Tool'
+import { EraseInterface, Tracker } from '@/tools/Tool'
 import Konva from 'konva'
 import { CanvasElement } from '@/types/Canvas'
 import uuid from 'uuid'
 
-export default class Erase implements Tool {
+export default class Erase implements EraseInterface {
   // eslint-disable-next-line no-useless-constructor
   constructor (public readonly name: string,
+               public erase: string[],
                public readonly temporary: boolean) {
   }
   // eslint-disable-next-line
@@ -13,9 +14,10 @@ export default class Erase implements Tool {
     canvasElement.data = [e.evt.x, e.evt.y]
     canvasElement.id = uuid()
     canvasElement.hasMoved = true
+    canvasElement.tracker = Tracker.REMOVAL
     canvasElement.tool = {
       name: this.name,
-      erase: [],
+      erase: this.erase,
       temporary: false
     }
     if (e.target.parent?.attrs.id && canvasElement.tool.erase) {
@@ -77,14 +79,15 @@ export default class Erase implements Tool {
       id: canvasElement.id,
       layerId: canvasElement.layerId,
       tool: {
-        name: 'erase',
+        name: this.name,
         erase: canvasElement.tool.erase,
         temporary: this.temporary
       },
       data: canvasElement.data,
-      tracker: Tracker.ADDITION,
+      tracker: Tracker.REMOVAL,
       change: false,
-      hasMoved: true
+      hasMoved: true,
+      position: canvasElement.position
     }
     socket.send(JSON.stringify(data))
   }

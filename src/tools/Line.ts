@@ -1,11 +1,11 @@
-import { Tool, Tracker } from '@/tools/Tool'
+import { LineInterface, Tracker } from '@/tools/Tool'
 import Konva from 'konva'
 import LineCreator from '@/tools/shapes/LineCreator'
 import { CanvasElement } from '@/types/Canvas'
 import uuid from 'uuid'
 import throttle from 'lodash.throttle'
 
-export default class Line implements Tool {
+export default class Line implements LineInterface {
   private lineCreator: LineCreator
   constructor (public readonly name: string,
                public size: number,
@@ -13,13 +13,19 @@ export default class Line implements Tool {
                public endStyle: string,
                public strokeStyle: number,
                public temporary: boolean) {
-    this.lineCreator = new LineCreator(this.temporary)
+    this.lineCreator = new LineCreator(
+      this.temporary,
+      this.size,
+      this.colour,
+      this.strokeStyle
+    )
   }
 
   // eslint-disable-next-line
   mouseDownAction = (e: Konva.KonvaPointerEvent, canvasElement: CanvasElement, layer: Konva.Layer, _socket: WebSocket): void => {
     canvasElement.data = [e.evt.x, e.evt.y]
     canvasElement.id = uuid()
+    canvasElement.tracker = Tracker.ADDITION
     canvasElement.hasMoved = false
     canvasElement.tool = {
       name: this.name,
@@ -29,8 +35,14 @@ export default class Line implements Tool {
       strokeStyle: this.strokeStyle,
       temporary: this.temporary
     }
-    this.lineCreator = new LineCreator(this.temporary, this.size, this.colour, this.strokeStyle)
+    this.lineCreator = new LineCreator(
+      this.temporary,
+      this.size,
+      this.colour,
+      this.strokeStyle
+    )
     this.lineCreator['create' + this.endStyle.toUpperCase()](canvasElement, layer)
+    canvasElement.position = this.lineCreator.getGroup().position()
   }
 
   // eslint-disable-next-line
@@ -71,7 +83,7 @@ export default class Line implements Tool {
       id: canvasElement.id,
       layerId: canvasElement.layerId,
       tool: {
-        name: 'line',
+        name: this.name,
         colour: this.colour,
         size: this.size,
         strokeStyle: this.strokeStyle,
@@ -81,7 +93,8 @@ export default class Line implements Tool {
       data: canvasElement.data,
       tracker: Tracker.ADDITION,
       change: false,
-      hasMoved: canvasElement.hasMoved
+      hasMoved: canvasElement.hasMoved,
+      position: canvasElement.position
     }
     socket.send(JSON.stringify(data))
   }

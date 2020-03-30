@@ -1,17 +1,21 @@
-import { Tool, Tracker } from '@/tools/Tool'
+import { PingInterface, Tracker } from '@/tools/Tool'
 import Konva from 'konva'
 import { CanvasElement } from '@/types/Canvas'
 import throttle from 'lodash.throttle'
 import uuid from 'uuid'
 import PingCreator from '@/tools/shapes/PingCreator'
 
-export default class Ping implements Tool {
+export default class Ping implements PingInterface {
   private pingCreator: PingCreator
   constructor (public readonly name: string,
                public readonly size: number,
                public readonly colour: string,
                public readonly temporary: boolean) {
-    this.pingCreator = new PingCreator(this.temporary, this.size, this.colour)
+    this.pingCreator = new PingCreator(
+      this.temporary,
+      this.size,
+      this.colour
+    )
   }
 
   mouseDownAction = (e: Konva.KonvaPointerEvent, canvasElement: CanvasElement, layer: Konva.Layer, socket: WebSocket): void => {
@@ -30,6 +34,7 @@ export default class Ping implements Tool {
     canvasElement.data = [e.evt.x, e.evt.y]
     canvasElement.id = uuid()
     canvasElement.hasMoved = true
+    canvasElement.tracker = Tracker.ADDITION
     canvasElement.tool = {
       name: this.name,
       colour: this.colour,
@@ -37,6 +42,7 @@ export default class Ping implements Tool {
       temporary: this.temporary
     }
     this.pingCreator.create(canvasElement, layer)
+    canvasElement.position = this.pingCreator.getGroup().position()
     this.sendToWebSocket(canvasElement, socket)
   }
 
@@ -55,7 +61,7 @@ export default class Ping implements Tool {
       id: canvasElement.id,
       layerId: canvasElement.layerId,
       tool: {
-        name: 'ping',
+        name: this.name,
         colour: this.colour,
         size: this.size,
         temporary: this.temporary
@@ -63,7 +69,8 @@ export default class Ping implements Tool {
       data: canvasElement.data,
       tracker: Tracker.ADDITION,
       change: false,
-      hasMoved: true
+      hasMoved: true,
+      position: canvasElement.position
     }
     socket.send(JSON.stringify(data))
   }

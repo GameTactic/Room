@@ -1,22 +1,21 @@
 import Konva from 'konva'
 import { CanvasElement } from '@/types/Canvas'
-import { Shape } from '@/tools/shapes/Shape'
+import Shape, { LineCreatorInterface } from '@/tools/shapes/Shape'
 
-export default class LineCreator implements Shape {
+export default class LineCreator extends Shape implements LineCreatorInterface {
   private line: Konva.Line
   private arrow: Konva.Arrow
   private tBar: Konva.Line
-  private group: Konva.Group
   private stroke: number[][]
   private readonly hitStroke: number = 10
   constructor (public temporary: boolean,
-               public size?: number,
-               public colour?: string,
-               public strokeStyle?: number) {
+               public size: number,
+               public colour: string,
+               public strokeStyle: number) {
+    super()
     this.line = new Konva.Line()
     this.arrow = new Konva.Arrow()
     this.tBar = new Konva.Line()
-    this.group = new Konva.Group()
     this.stroke = [
       [0, 0],
       [30, 10]
