@@ -14,7 +14,7 @@ export interface ShapeInterface {
   [key: string]: any;
 }
 
-export interface CircleCreatorInterface extends ShapeInterface{
+export interface CircleCreatorInterface extends ShapeInterface {
   size: number;
   colour: string;
   outlineColour: string;
@@ -22,29 +22,29 @@ export interface CircleCreatorInterface extends ShapeInterface{
   showRadius: boolean;
 }
 
-export interface FreeDrawCreatorInterface extends ShapeInterface{
+export interface FreeDrawCreatorInterface extends ShapeInterface {
   size: number;
   colour: string;
 }
 
-export interface LineCreatorInterface extends ShapeInterface{
+export interface LineCreatorInterface extends ShapeInterface {
   size: number;
   colour: string;
   strokeStyle: number;
 }
 
-export interface PingCreatorInterface extends ShapeInterface{
+export interface PingCreatorInterface extends ShapeInterface {
   size: number;
   colour: string;
 }
 
-export interface RulerCreatorInterface extends ShapeInterface{
+export interface RulerCreatorInterface extends ShapeInterface {
   size: number;
   colour: string;
   showCircle: boolean;
 }
 
-export interface TextCreatorInterface extends ShapeInterface{
+export interface TextCreatorInterface extends ShapeInterface {
   size: number;
   colour: string;
   textString: string;
