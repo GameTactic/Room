@@ -1,32 +1,37 @@
-import { Tool, Tracker } from '@/tools/Tool'
+import { TextInterface, Tracker } from '@/tools/Tool'
 import Konva from 'konva'
 import { CanvasElement } from '@/types/Canvas'
 import uuid from 'uuid'
 import TextCreator from '@/tools/shapes/TextCreator'
 import { EventBus } from '@/event-bus'
 
-export default class Text implements Tool {
+export default class Text implements TextInterface {
   private textCreator: TextCreator
-  private textArea?: HTMLTextAreaElement
   constructor (public readonly name: string,
                public size: number,
                public colour: string,
                public temporary: boolean,
                public textString: string) {
-    this.textCreator = new TextCreator(this.temporary, this.size, this.colour)
+    this.textCreator = new TextCreator(
+      this.temporary,
+      this.size,
+      this.colour,
+      this.textString
+    )
   }
 
   // eslint-disable-next-line
   mouseDownAction = (e: Konva.KonvaPointerEvent, canvasElement: CanvasElement, layer: Konva.Layer, _socket: WebSocket): void => {
     canvasElement.data = [e.evt.x, e.evt.y]
     canvasElement.id = uuid()
+    canvasElement.tracker = Tracker.ADDITION
     canvasElement.hasMoved = true
     canvasElement.tool = {
       name: this.name,
       size: this.size,
       colour: this.colour,
       temporary: this.temporary,
-      textString: ''
+      textString: this.textString
     }
   }
 
@@ -36,15 +41,19 @@ export default class Text implements Tool {
 
   // eslint-disable-next-line
   mouseUpAction = (e: Konva.KonvaPointerEvent, canvasElement: CanvasElement, layer: Konva.Layer, socket: WebSocket): void => {
-    this.textCreator = new TextCreator(this.temporary, this.size, this.colour)
+    this.textCreator = new TextCreator(
+      this.temporary,
+      this.size,
+      this.colour,
+      this.textString
+    )
     this.textCreator.create(canvasElement, layer)
+    canvasElement.position = this.textCreator.getGroup().position()
     const textArea = this.textCreator.createTextArea(canvasElement, layer)
     const canvasElementCopy = { ...canvasElement }
     const keyBoardEvent = (e: KeyboardEvent) => {
       if (e.key === 'Enter' && !e.shiftKey) {
-        canvasElementCopy.tool.textString = textArea.value
         textArea.blur()
-        EventBus.$emit('addText', canvasElementCopy)
       }
     }
     const focusOutEvent = () => {
@@ -52,6 +61,10 @@ export default class Text implements Tool {
       textArea.remove()
       EventBus.$emit('addText', canvasElementCopy)
     }
+    const onClickEvent = () => {
+      textArea.blur()
+    }
+    textArea.addEventListener('mousedown', onClickEvent)
     textArea.addEventListener('keydown', keyBoardEvent)
     textArea.addEventListener('focusout', focusOutEvent)
   }
@@ -75,7 +88,7 @@ export default class Text implements Tool {
       id: canvasElement.id,
       layerId: canvasElement.layerId,
       tool: {
-        name: 'text',
+        name: this.name,
         colour: this.colour,
         size: this.size,
         temporary: this.temporary,
@@ -84,7 +97,8 @@ export default class Text implements Tool {
       data: canvasElement.data,
       tracker: Tracker.ADDITION,
       change: false,
-      hasMoved: canvasElement.hasMoved
+      hasMoved: canvasElement.hasMoved,
+      position: canvasElement.position
     }
     socket.send(JSON.stringify(data))
   }

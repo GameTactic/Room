@@ -82,7 +82,6 @@ const CanvasModule: Module<CanvasState, RootState> = {
       }
     },
     [CanvasMutation.ADD_CANVAS_ELEMENT] (state: CanvasState, payload: RootState) {
-      // console.log('payload', payload); //eslint-disable-line
       payload.jti = 'SAM'
       const foundTool: Tool | undefined = payload.tools.tools.find((tool: Tool) => tool.name === payload.tool.name)
       state.canvasElements.push({ ...payload, tool: { ...payload.tool, renderCanvas: foundTool?.renderCanvas } })

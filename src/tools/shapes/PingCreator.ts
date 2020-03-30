@@ -1,17 +1,16 @@
 import Konva from 'konva'
 import { CanvasElement } from '@/types/Canvas'
-import { Shape } from '@/tools/shapes/Shape'
+import Shape, { PingCreatorInterface } from '@/tools/shapes/Shape'
 
-export default class PingCreator implements Shape {
+export default class PingCreator extends Shape implements PingCreatorInterface {
   private readonly amplitude = 25
   private readonly period = 500
   private ping: Konva.Circle
-  private group: Konva.Group
   constructor (public temporary: boolean,
-               public size?: number,
-               public colour?: string) {
+               public size: number,
+               public colour: string) {
+    super()
     this.ping = new Konva.Circle()
-    this.group = new Konva.Group()
   }
 
   create = (canvasElement: CanvasElement, layer: Konva.Layer): void => {

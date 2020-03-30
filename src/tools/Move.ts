@@ -1,42 +1,31 @@
-import { FreeDrawInterface, Tracker } from '@/tools/Tool'
+import { MoveInterface, Tracker } from '@/tools/Tool'
 import Konva from 'konva'
 import { CanvasElement } from '@/types/Canvas'
-import uuid from 'uuid'
 import throttle from 'lodash.throttle'
-import FreedrawCreator from '@/tools/shapes/FreedrawCreator'
 
-export default class FreeDraw implements FreeDrawInterface {
-  private freedrawCreator: FreedrawCreator
+export default class Move implements MoveInterface {
+  private group: Konva.Group
   constructor (public readonly name: string,
-               public size: number,
-               public colour: string,
+               public moveGroup: Konva.Group,
                public temporary: boolean) {
-    this.freedrawCreator = new FreedrawCreator(
-      this.temporary,
-      this.size,
-      this.colour
-    )
+    this.group = moveGroup
   }
 
   // eslint-disable-next-line
   mouseDownAction = (e: Konva.KonvaPointerEvent, canvasElement: CanvasElement, layer: Konva.Layer, _socket: WebSocket): void => {
     canvasElement.data = [e.evt.x, e.evt.y]
-    canvasElement.id = uuid()
     canvasElement.hasMoved = false
-    canvasElement.tracker = Tracker.ADDITION
+    canvasElement.tracker = Tracker.MOVE
+    canvasElement.id = ''
     canvasElement.tool = {
       name: this.name,
-      size: this.size,
-      colour: this.colour,
       temporary: this.temporary
     }
-    this.freedrawCreator = new FreedrawCreator(
-      this.temporary,
-      this.size,
-      this.colour
-    )
-    this.freedrawCreator.create(canvasElement, layer)
-    canvasElement.position = this.freedrawCreator.getGroup().position()
+    const group = e.target.parent
+    if (group instanceof Konva.Group) {
+      this.group = group
+      canvasElement.id = this.group.attrs.id
+    }
   }
 
   // eslint-disable-next-line
@@ -44,27 +33,28 @@ export default class FreeDraw implements FreeDrawInterface {
     if (!canvasElement.hasMoved) {
       canvasElement.hasMoved = true
     }
-    canvasElement.data = canvasElement.data.concat([e.evt.x, e.evt.y])
-    this.freedrawCreator.move(canvasElement, layer)
-    layer.batchDraw()
+    if (canvasElement.id !== '') {
+      const pos = { x: (e.evt.x - canvasElement.data[0]), y: (e.evt.y - canvasElement.data[1]) }
+      this.group.move(pos)
+      layer.batchDraw()
+      canvasElement.data = [e.evt.x, e.evt.y]
+    }
   }, 0)
 
   mouseUpAction = (e: Konva.KonvaPointerEvent, canvasElement: CanvasElement, _layer: Konva.Layer, socket: WebSocket): void => {
-    if (canvasElement.hasMoved) {
+    if (canvasElement.hasMoved && canvasElement.id !== '') {
+      canvasElement.position = { x: this.group.position().x, y: this.group.position().y }
       this.sendToWebSocket(canvasElement, socket)
     }
   }
 
+  // eslint-disable-next-line
   renderCanvas = (canvasElement: CanvasElement, layer: Konva.Layer): void => {
-    if (canvasElement.hasMoved) {
-      this.freedrawCreator = new FreedrawCreator(
-        canvasElement.tool.temporary || this.temporary,
-        canvasElement.tool.size || this.size,
-        canvasElement.tool.colour || this.colour
-      )
-      this.freedrawCreator.create(canvasElement, layer)
-      layer.batchDraw()
+    const group = layer.findOne((group: Konva.Group) => group.attrs.id === canvasElement.id)
+    if (group) {
+      group.move({ x: canvasElement.data[0], y: canvasElement.data[1] })
     }
+    layer.batchDraw()
   }
 
   sendToWebSocket = (canvasElement: CanvasElement, socket: WebSocket) => {
@@ -74,13 +64,12 @@ export default class FreeDraw implements FreeDrawInterface {
       layerId: canvasElement.layerId,
       tool: {
         name: this.name,
-        colour: this.colour,
-        size: this.size,
+        moveGroup: this.moveGroup,
         temporary: this.temporary
       },
       data: canvasElement.data,
-      tracker: Tracker.ADDITION,
-      change: false,
+      tracker: Tracker.MOVE,
+      change: true,
       hasMoved: canvasElement.hasMoved,
       position: canvasElement.position
     }
