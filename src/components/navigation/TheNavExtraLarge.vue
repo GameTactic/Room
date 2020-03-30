@@ -2,15 +2,15 @@
   <v-row class="navbar-row">
     <v-col xl="2" lg="2" md="3" sm="6" cols="12" order-md="1" order="1">
       <v-toolbar dense class="navbar-toolbar-left">
-        <v-icon color="#FFFFFF">fa-anchor</v-icon>
-        <h2>GameTactic</h2>
+        <v-img max-width="240" max-height="45" src="https://i.imgur.com/8U02bLM.png"></v-img>
         <v-spacer />
       </v-toolbar>
     </v-col>
     <v-col xl="8" lg="7" md="5" sm="12" cols="12" order-md="2" order="3">
       <v-toolbar dense flat class="navbar-toolbar-center justify-center">
         <v-spacer />
-        <div>Tactic editing tools</div>
+        <div><strong><i class="fas fa-plus"></i></strong></div>
+        <div><strong><i class="fas fa-minus"></i></strong></div>
         <v-spacer />
       </v-toolbar>
      </v-col>
@@ -56,15 +56,21 @@ header.navbar-toolbar-left.navbar-toolbar-left.navbar-toolbar-left {
     margin: 0.25rem;
   }
   &:after {
-    content: '';
+content: "";
     position: absolute;
     right: -96px;
-    top: 0px;
-    width: 0;
-    height: 0;
-    border-style: solid;
-    border-width: 0 48px 48px;
-    border-color: transparent transparent transparent $room-navbar;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    -webkit-transform-origin: 100% 0;
+    -ms-transform-origin: 100% 0;
+    transform-origin: 100% 0;
+    -webkit-transform: skew(-45deg);
+    -ms-transform: skew(-45deg);
+    transform: skew(-45deg);
+    z-index: -1;
+    background: #00154f;
+    box-shadow: 7px 3px 5px 0px #aaaaaa;
   }
 }
 
@@ -79,15 +85,21 @@ header.navbar-toolbar-left.navbar-toolbar-left.navbar-toolbar-left {
   flex: 0 1 250px;
   z-index: 100;
   &:after {
-    content: '';
+content: "";
     position: absolute;
     left: -48px;
     top: 0;
-    width: 0;
-    height: 0;
-    border-style: solid;
-    border-width:  48px 0px 0px 48px;
-    border-color: $room-navbar transparent;
+    width: 100%;
+    height: 100%;
+    -webkit-transform-origin: 100% 0;
+    -ms-transform-origin: 100% 0;
+    transform-origin: 100% 0;
+    -webkit-transform: skew(45deg);
+    -ms-transform: skew(45deg);
+    transform: skew(45deg);
+    z-index: -1;
+    background: #00154f;
+    box-shadow: -7px 3px 5px 0px #aaaaaa;
   }
 }
 
