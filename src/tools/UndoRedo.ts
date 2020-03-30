@@ -5,9 +5,7 @@ export default class UndoRedo {
   findUndo (canvasElementsHistory: CanvasElement[]): CanvasElement | void {
     const lastElement = canvasElementsHistory[(canvasElementsHistory.length - 1)]
     if (lastElement) {
-      if (lastElement.tracker !== Tracker.UNDO && lastElement.tracker !== Tracker.REDO) {
-        return lastElement
-      } else if (lastElement.tracker === Tracker.REDO) {
+      if (lastElement.tracker === Tracker.REDO) {
         const copy = [...canvasElementsHistory]
         copy.pop()
         return this.findRedo(copy)
@@ -25,6 +23,8 @@ export default class UndoRedo {
           copy.pop()
           return this.findUndo(copy)
         }
+      } else {
+        return lastElement
       }
     }
   }
