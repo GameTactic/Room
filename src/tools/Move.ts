@@ -51,7 +51,6 @@ export default class FreeDraw implements Tool {
   // eslint-disable-next-line
   renderCanvas = (canvasElement: CanvasElement, layer: Konva.Layer): void => {
     const group = layer.findOne((group: Konva.Group) => group.attrs.id === canvasElement.id)
-    console.log(canvasElement.id)
     if (group) {
       group.move({ x: canvasElement.data[0], y: canvasElement.data[1] })
     }
