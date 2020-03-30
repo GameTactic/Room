@@ -16,6 +16,7 @@ export default class FreeDraw implements Tool {
     canvasElement.data = [e.evt.x, e.evt.y]
     canvasElement.hasMoved = false
     canvasElement.tracker = Tracker.MOVE
+    canvasElement.id = ''
     canvasElement.tool = {
       name: this.name,
       temporary: this.temporary
@@ -32,14 +33,16 @@ export default class FreeDraw implements Tool {
     if (!canvasElement.hasMoved) {
       canvasElement.hasMoved = true
     }
-    const pos = { x: (e.evt.x - canvasElement.data[0]), y: (e.evt.y - canvasElement.data[1]) }
-    this.group.move(pos)
-    layer.batchDraw()
-    canvasElement.data = [e.evt.x, e.evt.y]
+    if (canvasElement.id !== '') {
+      const pos = { x: (e.evt.x - canvasElement.data[0]), y: (e.evt.y - canvasElement.data[1]) }
+      this.group.move(pos)
+      layer.batchDraw()
+      canvasElement.data = [e.evt.x, e.evt.y]
+    }
   }, 0)
 
   mouseUpAction = (e: Konva.KonvaPointerEvent, canvasElement: CanvasElement, _layer: Konva.Layer, socket: WebSocket): void => {
-    if (canvasElement.hasMoved) {
+    if (canvasElement.hasMoved && canvasElement.id !== '') {
       canvasElement.position = { x: this.group.position().x, y: this.group.position().y }
       this.sendToWebSocket(canvasElement, socket)
     }
