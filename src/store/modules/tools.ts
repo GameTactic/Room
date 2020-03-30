@@ -8,6 +8,7 @@ import Line from '@/tools/Line'
 import Ruler from '@/tools/Ruler'
 import Text from '@/tools/Text'
 import Move from '@/tools/Move'
+import Konva from 'konva'
 
 export enum ToolGetters {
   ENABLED_TOOL = 'enabledTool',
@@ -65,12 +66,12 @@ const ToolModule: Module<ToolState, {}> = {
       tools: [
         new Ping('ping', 5, '#005555FF', true),
         new FreeDraw('freedraw', 5, '#CE0000FF', false),
-        new Erase('erase', false),
+        new Erase('erase', [], false),
         new Line('line', 5, '#CE0000FF', 'line', 0, false),
         new Circle('circle', 5, '#CE000080', false, true, '#CE0000FF', 0),
         new Ruler('ruler', 5, '#C2C4BD80', true, true),
-        new Text('text', 5, '#CE0000FF', false, 'Write text here'),
-        new Move('move', false)
+        new Text('text', 5, '#CE0000FF', false, ''),
+        new Move('move', new Konva.Group(), false)
       ]
     }
   },

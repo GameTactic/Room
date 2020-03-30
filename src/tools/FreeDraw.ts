@@ -1,17 +1,21 @@
-import { Tool, Tracker } from '@/tools/Tool'
+import { FreeDrawInterface, Tracker } from '@/tools/Tool'
 import Konva from 'konva'
 import { CanvasElement } from '@/types/Canvas'
 import uuid from 'uuid'
 import throttle from 'lodash.throttle'
 import FreedrawCreator from '@/tools/shapes/FreedrawCreator'
 
-export default class FreeDraw implements Tool {
+export default class FreeDraw implements FreeDrawInterface {
   private freedrawCreator: FreedrawCreator
   constructor (public readonly name: string,
                public size: number,
                public colour: string,
                public temporary: boolean) {
-    this.freedrawCreator = new FreedrawCreator(this.temporary)
+    this.freedrawCreator = new FreedrawCreator(
+      this.temporary,
+      this.size,
+      this.colour
+    )
   }
 
   // eslint-disable-next-line
@@ -26,7 +30,11 @@ export default class FreeDraw implements Tool {
       colour: this.colour,
       temporary: this.temporary
     }
-    this.freedrawCreator = new FreedrawCreator(this.temporary, this.size, this.colour)
+    this.freedrawCreator = new FreedrawCreator(
+      this.temporary,
+      this.size,
+      this.colour
+    )
     this.freedrawCreator.create(canvasElement, layer)
     canvasElement.position = this.freedrawCreator.getGroup().position()
   }
@@ -65,7 +73,7 @@ export default class FreeDraw implements Tool {
       id: canvasElement.id,
       layerId: canvasElement.layerId,
       tool: {
-        name: 'freedraw',
+        name: this.name,
         colour: this.colour,
         size: this.size,
         temporary: this.temporary

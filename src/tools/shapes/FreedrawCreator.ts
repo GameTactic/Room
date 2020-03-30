@@ -1,16 +1,15 @@
 import Konva from 'konva'
 import { CanvasElement } from '@/types/Canvas'
-import { Shape } from '@/tools/shapes/Shape'
+import Shape, { FreeDrawCreatorInterface } from '@/tools/shapes/Shape'
 
-export default class FreedrawCreator implements Shape {
+export default class FreedrawCreator extends Shape implements FreeDrawCreatorInterface {
   private freedraw: Konva.Line
-  private group: Konva.Group
   private readonly hitStroke: number = 10
   constructor (public temporary: boolean,
-               public size?: number,
-               public colour?: string) {
+               public size: number,
+               public colour: string) {
+    super()
     this.freedraw = new Konva.Line()
-    this.group = new Konva.Group()
   }
 
   create = (canvasElement: CanvasElement, layer: Konva.Layer): void => {
@@ -39,6 +38,4 @@ export default class FreedrawCreator implements Shape {
       id: canvasElement.id
     })
   }
-
-  getGroup = (): Konva.Group => this.group
 }

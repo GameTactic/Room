@@ -1,18 +1,23 @@
-import { Tool, Tracker } from '@/tools/Tool'
+import { RulerInterface, Tracker } from '@/tools/Tool'
 import Konva from 'konva'
 import { CanvasElement } from '@/types/Canvas'
 import uuid from 'uuid'
 import throttle from 'lodash.throttle'
 import RulerCreator from '@/tools/shapes/RulerCreator'
 
-export default class Ruler implements Tool {
+export default class Ruler implements RulerInterface {
   private rulerCreator: RulerCreator
   constructor (public readonly name: string,
                public size: number,
                public colour: string,
                public temporary: boolean,
                public showCircle: boolean) {
-    this.rulerCreator = new RulerCreator(this.temporary, this.size, this.colour, this.showCircle)
+    this.rulerCreator = new RulerCreator(
+      this.temporary,
+      this.size,
+      this.colour,
+      this.showCircle
+    )
   }
 
   // eslint-disable-next-line
@@ -71,7 +76,7 @@ export default class Ruler implements Tool {
       id: canvasElement.id,
       layerId: canvasElement.layerId,
       tool: {
-        name: 'ruler',
+        name: this.name,
         colour: this.colour,
         size: this.size,
         temporary: this.temporary,

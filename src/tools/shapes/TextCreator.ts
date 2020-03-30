@@ -1,18 +1,17 @@
 import Konva from 'konva'
 import { CanvasElement } from '@/types/Canvas'
-import { Shape } from '@/tools/shapes/Shape'
+import Shape, { TextCreatorInterface } from '@/tools/shapes/Shape'
 
-export default class TextCreator implements Shape {
+export default class TextCreator extends Shape implements TextCreatorInterface {
   private text: Konva.Text
-  private group: Konva.Group
   private textArea: HTMLTextAreaElement
   private readonly hitStroke: number = 10
   constructor (public temporary: boolean,
-               public size?: number,
-               public colour?: string,
-               public textString?: string) {
+               public size: number,
+               public colour: string,
+               public textString: string) {
+    super()
     this.text = new Konva.Text()
-    this.group = new Konva.Group()
     document.body.append(
       this.textArea = document.createElement('textarea')
     )
@@ -94,6 +93,4 @@ export default class TextCreator implements Shape {
     this.textArea.focus()
     return this.textArea
   }
-
-  getGroup = (): Konva.Group => this.group
 }

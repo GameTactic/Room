@@ -1,11 +1,11 @@
-import { Tool, Tracker } from '@/tools/Tool'
+import { CircleInterface, Tracker } from '@/tools/Tool'
 import Konva from 'konva'
 import { CanvasElement } from '@/types/Canvas'
 import uuid from 'uuid'
 import throttle from 'lodash.throttle'
 import CircleCreator from '@/tools/shapes/CircleCreator'
 
-export default class Circle implements Tool {
+export default class Circle implements CircleInterface {
   private circleCreator: CircleCreator
   constructor (public readonly name: string,
                public size: number,
@@ -15,7 +15,13 @@ export default class Circle implements Tool {
                public outlineColour: string,
                public strokeStyle: number
   ) {
-    this.circleCreator = new CircleCreator(this.temporary)
+    this.circleCreator = new CircleCreator(
+      this.temporary,
+      this.size,
+      this.colour,
+      this.outlineColour,
+      this.strokeStyle,
+      this.showRadius)
   }
 
   // eslint-disable-next-line
@@ -33,7 +39,14 @@ export default class Circle implements Tool {
       strokeStyle: this.strokeStyle,
       temporary: this.temporary
     }
-    this.circleCreator = new CircleCreator(this.temporary, this.size, this.colour, this.outlineColour, this.strokeStyle, this.showRadius)
+    this.circleCreator = new CircleCreator(
+      this.temporary,
+      this.size,
+      this.colour,
+      this.outlineColour,
+      this.strokeStyle,
+      this.showRadius
+    )
     this.circleCreator.create(canvasElement, layer)
     canvasElement.position = this.circleCreator.getGroup().position()
   }
@@ -80,7 +93,7 @@ export default class Circle implements Tool {
       id: canvasElement.id,
       layerId: canvasElement.layerId,
       tool: {
-        name: 'circle',
+        name: this.name,
         colour: this.colour,
         size: this.size,
         showRadius: this.showRadius,

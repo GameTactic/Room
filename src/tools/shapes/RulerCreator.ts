@@ -1,22 +1,21 @@
 import Konva from 'konva'
 import { CanvasElement } from '@/types/Canvas'
-import { Shape } from '@/tools/shapes/Shape'
+import Shape, { RulerCreatorInterface } from '@/tools/shapes/Shape'
 
-export default class RulerCreator implements Shape {
+export default class RulerCreator extends Shape implements RulerCreatorInterface {
   private line: Konva.Line
   private text: Konva.Text
   private circle: Konva.Circle
-  private group: Konva.Group
   private readonly hitStroke: number = 10
   private readonly mapRatio: number
   constructor (public temporary: boolean,
                public size: number,
                public colour: string,
                public showCircle: boolean) {
+    super()
     this.line = new Konva.Line()
     this.text = new Konva.Text()
     this.circle = new Konva.Circle()
-    this.group = new Konva.Group()
     this.mapRatio = 1
   }
 
@@ -123,8 +122,6 @@ export default class RulerCreator implements Shape {
   }
   // eslint-disable-next-line
   [key: string]: any;
-
-  getGroup = (): Konva.Group => this.group
 }
 
 export interface Position {

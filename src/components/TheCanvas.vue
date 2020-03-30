@@ -65,10 +65,7 @@ export default class TheCanvas extends Vue {
     id: '',
     data: [],
     tool: {
-      name: '',
-      colour: '',
-      size: 0,
-      temporary: false
+      name: ''
     },
     layerId: Math.random().toString(36),
     tracker: Tracker.ADDITION,

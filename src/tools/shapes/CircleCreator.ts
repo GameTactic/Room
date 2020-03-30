@@ -1,22 +1,21 @@
 import Konva from 'konva'
 import { CanvasElement } from '@/types/Canvas'
-import { Shape } from '@/tools/shapes/Shape'
+import Shape, { CircleCreatorInterface } from '@/tools/shapes/Shape'
 
-export default class CircleCreator implements Shape {
+export default class CircleCreator extends Shape implements CircleCreatorInterface {
   private line: Konva.Line
   private circle: Konva.Circle
-  private group: Konva.Group
   private readonly hitStroke: number = 10
   private stroke: number[][] = [[0, 0], [30, 10]]
   constructor (public temporary: boolean,
-               public size?: number,
-               public colour?: string,
-               public outlineColour?: string,
-               public strokeStyle?: number,
-               public showRadius?: boolean) {
+               public size: number,
+               public colour: string,
+               public outlineColour: string,
+               public strokeStyle: number,
+               public showRadius: boolean) {
+    super()
     this.line = new Konva.Line()
     this.circle = new Konva.Circle()
-    this.group = new Konva.Group()
   }
 
   create = (canvasElement: CanvasElement, layer: Konva.Layer): void => {
@@ -83,8 +82,6 @@ export default class CircleCreator implements Shape {
 
   // eslint-disable-next-line
   [key: string]: any;
-
-  getGroup = (): Konva.Group => this.group
 }
 
 export interface Position {

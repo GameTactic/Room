@@ -1,14 +1,14 @@
-import { Tool, Tracker } from '@/tools/Tool'
+import { MoveInterface, Tracker } from '@/tools/Tool'
 import Konva from 'konva'
 import { CanvasElement } from '@/types/Canvas'
 import throttle from 'lodash.throttle'
 
-export default class FreeDraw implements Tool {
-  // eslint-disable-next-line
+export default class Move implements MoveInterface {
   private group: Konva.Group
   constructor (public readonly name: string,
+               public moveGroup: Konva.Group,
                public temporary: boolean) {
-    this.group = new Konva.Group()
+    this.group = moveGroup
   }
 
   // eslint-disable-next-line
@@ -63,7 +63,8 @@ export default class FreeDraw implements Tool {
       id: canvasElement.id,
       layerId: canvasElement.layerId,
       tool: {
-        name: 'move',
+        name: this.name,
+        moveGroup: this.moveGroup,
         temporary: this.temporary
       },
       data: canvasElement.data,
