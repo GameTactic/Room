@@ -35,8 +35,6 @@ interface UserMenuItem {
   name: 'TheUserMenu'
 })
 export default class TheUserMenu extends Vue {
-  @Prop() private id!: string;
-
   userMenuItems: UserMenuItem[] = [{
     text: 'Login',
     title: 'Login to save your progress'

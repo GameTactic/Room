@@ -7,7 +7,7 @@
     </v-toolbar>
     <v-toolbar dense flat class="navbar-toolbar-center justify-center">
       <v-spacer />
-      <div>Tactic editing tools</div>
+      <the-canvas-tools />
       <v-spacer />
     </v-toolbar>
     <v-toolbar dense class="navbar-toolbar-right">
@@ -24,12 +24,14 @@
 import { Component, Prop, Vue } from 'vue-property-decorator'
 import TheRoomMenu from './TheRoomMenu.vue'
 import TheUserMenu from './TheUserMenu.vue'
+import TheCanvasTools from './TheCanvasTools.vue'
 
 @Component({
   name: 'TheNavLarge',
   components: {
     TheRoomMenu,
-    TheUserMenu
+    TheUserMenu,
+    TheCanvasTools
   }
 })
 export default class TheNavLarge extends Vue {
