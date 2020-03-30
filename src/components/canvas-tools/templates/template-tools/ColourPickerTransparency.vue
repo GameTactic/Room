@@ -16,17 +16,17 @@
 import { Component, Vue } from 'vue-property-decorator'
 
 @Component({
-  name: 'ColourPicker',
+  name: 'ColourPickerTransparency',
   props: ['value']
 })
 
-export default class ColourPicker extends Vue {
+export default class ColourPickerTransparency extends Vue {
   swatches = [
-    ['#CE0000FF', '#D74E09FF'],
-    ['#F2BB05FF', '#08A045FF'],
-    ['#4392F1FF', '#3349F4FF'],
-    ['#40476DFF', '#792387FF'],
-    ['#F7FFF7FF', '#080F0FFF']
+    ['#CE000080', '#D74E0980'],
+    ['#F2BB0580', '#08A04580'],
+    ['#4392F180', '#3349F480'],
+    ['#40476D80', '#79238780'],
+    ['#F7FFF780', '#080F0F80']
   ];
 
   onColourPickerHandler (colour: string) {
@@ -38,8 +38,5 @@ export default class ColourPicker extends Vue {
 <style scoped lang="scss">
 .v-color-picker__controls {
   display: none;
-}
-.v-color-picker__color > div {
-  border: 1px solid #6D6D6D4D !important;
 }
 </style>

@@ -9,7 +9,8 @@ export default class LineCreator implements Shape {
   private group: Konva.Group
   private stroke: number[][]
   private readonly hitStroke: number = 10
-  constructor (public size?: number,
+  constructor (public temporary: boolean,
+               public size?: number,
                public colour?: string,
                public strokeStyle?: number) {
     this.line = new Konva.Line()
@@ -24,6 +25,7 @@ export default class LineCreator implements Shape {
 
   createLINE = (canvasElement: CanvasElement, layer: Konva.Layer): void => {
     this.group = new Konva.Group()
+    this.group.attrs.temporary = this.temporary
     this.group.id(canvasElement.id).add(
       this.line = this.createLineElement(canvasElement)
     )
@@ -141,6 +143,12 @@ export default class LineCreator implements Shape {
       dash: this.stroke[canvasElement.tool.strokeStyle || this.strokeStyle || 0],
       fill: canvasElement.tool.colour || this.colour
     })
+  }
+
+  destroy = (canvasElement: CanvasElement, layer: Konva.Layer): void => {
+    const group: Konva.Collection<Konva.Node> = layer.getChildren(node => node.attrs.id === this.group.attrs.id)
+    group.each(child => child.destroy())
+    layer.batchDraw()
   }
 
   // eslint-disable-next-line

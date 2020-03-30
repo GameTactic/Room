@@ -7,7 +7,7 @@
   :min="1"
   :step="1"
   ticks="always"
-  @input="onColourPickerHandler"
+  @input="onSizePickerHandler"
 />
 </template>
 
@@ -20,7 +20,7 @@ import { Component, Vue } from 'vue-property-decorator'
 })
 
 export default class SizePicker extends Vue {
-  onColourPickerHandler (size: number) {
+  onSizePickerHandler (size: number) {
     this.$emit('update:value', size)
   }
 }

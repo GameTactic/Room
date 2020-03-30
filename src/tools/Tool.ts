@@ -1,5 +1,5 @@
 import Konva from 'konva'
-import { CanvasElement } from '@/types/Canvas';
+import { CanvasElement } from '@/types/Canvas'
 
 export type MouseDownAction = (e: Konva.KonvaPointerEvent, canvasElement: CanvasElement, layer: Konva.Layer, socket: WebSocket) => void;
 export type MouseMoveAction = (e: Konva.KonvaPointerEvent, canvasElement: CanvasElement, layer: Konva.Layer, socket: WebSocket) => void;
@@ -15,12 +15,22 @@ export interface Tool {
   endStyle?: string;
   strokeStyle?: number;
   showRadius?: boolean;
+  showCircle?: boolean;
   outlineColour?: string;
-  erase?: string;
+  erase?: string[];
+  textString?: string;
   mouseDownAction?: MouseDownAction;
   mouseMoveAction?: MouseMoveAction;
   mouseUpAction?: MouseUpAction;
   renderCanvas?: RenderCanvas;
   sendToWebSocket?: SendToWebSocket;
+  // eslint-disable-next-line
   [key: string]: any;
+}
+
+export enum Tracker {
+  ADDITION = 'addition',
+  REMOVAL = 'removal',
+  UNDO = 'undo',
+  REDO = 'redo'
 }

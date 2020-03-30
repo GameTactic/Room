@@ -1,12 +1,12 @@
 import { ActionContext, Module } from 'vuex'
 import { Tool } from '@/tools/Tool'
-import { CanvasElement } from '@/types/Canvas'
 import Ping from '@/tools/Ping'
 import FreeDraw from '@/tools/FreeDraw'
 import Erase from '@/tools/Erase'
 import Circle from '@/tools/Circle'
 import Line from '@/tools/Line'
 import Ruler from '@/tools/Ruler'
+import Text from '@/tools/Text'
 
 export enum ToolGetters {
   ENABLED_TOOL = 'enabledTool',
@@ -25,6 +25,7 @@ export enum ToolsAction {
   SET_SIZE = 'setSize',
   SET_END_STYLE = 'setEndStyle',
   SET_SHOW_RADIUS = 'setShowRadius',
+  SET_SHOW_CIRCLE = 'setShowCircle',
   SET_OUTLINE_COLOUR = 'setOutlineColour',
   SET_TEMPORARY = 'setTemporary',
   SET_STROKE_STYLE = 'setStrokeStyle'
@@ -34,7 +35,6 @@ export interface ToolState {
   enabledTool?: Tool;
   enabled: boolean;
   tools: Tool[];
-  history: CanvasElement[];
 }
 
 export enum ToolsMutation {
@@ -47,6 +47,7 @@ export enum ToolsMutation {
   SET_SIZE = 'SET_SIZE',
   SET_END_STYLE = 'SET_END_STYLE',
   SET_SHOW_RADIUS = 'SET_SHOW_RADIUS',
+  SET_SHOW_CIRCLE = 'SET_SHOW_CIRCLE',
   SET_OUTLINE_COLOUR = 'SET_OUTLINE_COLOUR',
   SET_TEMPORARY = 'SET_TEMPORARY',
   SET_STROKE_STYLE = 'SET_STROKE_STYLE'
@@ -60,14 +61,14 @@ const ToolModule: Module<ToolState, {}> = {
     return {
       enabledTool: undefined,
       enabled: false,
-      history: [],
       tools: [
         new Ping('ping', 5, '#005555FF', true),
-        new FreeDraw('freedraw', 5, '#FF0000FF', false),
+        new FreeDraw('freedraw', 5, '#CE0000FF', false),
         new Erase('erase', false),
-        new Line('line', 5, '#FF0000FF', 'line', 0, false),
-        new Circle('circle', 5, '#FF000080', false, true, '#AA0000FF', 0),
-        new Ruler('ruler', 5, '#C2C4BD80', true)
+        new Line('line', 5, '#CE0000FF', 'line', 0, false),
+        new Circle('circle', 5, '#CE000080', false, true, '#CE0000FF', 0),
+        new Ruler('ruler', 5, '#C2C4BD80', true, true),
+        new Text('text', 5, '#CE0000FF', false, 'Write text here')
       ]
     }
   },
@@ -127,6 +128,11 @@ const ToolModule: Module<ToolState, {}> = {
         state.enabledTool.showRadius = showRadius
       }
     },
+    [ToolsMutation.SET_SHOW_CIRCLE] (state: ToolState, showCircle: boolean) {
+      if (state.enabledTool) {
+        state.enabledTool.showCircle = showCircle
+      }
+    },
     [ToolsMutation.SET_TEMPORARY] (state: ToolState, temporary: boolean) {
       if (state.enabledTool) {
         state.enabledTool.temporary = temporary
@@ -168,6 +174,9 @@ const ToolModule: Module<ToolState, {}> = {
     },
     [ToolsAction.SET_SHOW_RADIUS] (context: ToolActionContext, showRadius: boolean) {
       context.commit(ToolsMutation.SET_SHOW_RADIUS, showRadius)
+    },
+    [ToolsAction.SET_SHOW_CIRCLE] (context: ToolActionContext, showCircle: boolean) {
+      context.commit(ToolsMutation.SET_SHOW_CIRCLE, showCircle)
     },
     [ToolsAction.SET_TEMPORARY] (context: ToolActionContext, temporarily: boolean) {
       context.commit(ToolsMutation.SET_TEMPORARY, temporarily)

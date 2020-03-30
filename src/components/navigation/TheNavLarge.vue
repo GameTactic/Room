@@ -1,35 +1,41 @@
 <template>
   <v-row class="navbar-row">
-    <v-col cols="12">
-      <v-toolbar dense class="navbar-toolbar-left">
-        <v-icon color="#FFFFFF">fa-anchor</v-icon>
-        <h2>GameTactic</h2>
-        <v-spacer />
-        <v-btn dark icon title="Save your room">
-          <v-icon>fa-save</v-icon>
-        </v-btn>
-        More buttons inc Sign In / Out
-      </v-toolbar>
-    </v-col>
-    <v-col cols="12">
-      <v-toolbar dense flat class="navbar-toolbar-center justify-center">
-        <v-spacer />
-        <div>Tactic editing tools</div>
-        <v-spacer />
-      </v-toolbar>
-     </v-col>
+    <v-toolbar dense class="navbar-toolbar-left">
+      <v-icon color="#FFFFFF">fa-anchor</v-icon>
+      <h2>GameTactic</h2>
+      <v-spacer />
+    </v-toolbar>
+    <v-toolbar dense flat class="navbar-toolbar-center justify-center">
+      <v-spacer />
+      <div>Tactic editing tools</div>
+      <v-spacer />
+    </v-toolbar>
+    <v-toolbar dense class="navbar-toolbar-right">
+      <v-btn dark icon title="Save your room">
+        <v-icon>fa-save</v-icon>
+      </v-btn>
+      <the-room-menu />
+      <the-user-menu />
+    </v-toolbar>
   </v-row>
 </template>
 
 <script lang="ts">
 import { Component, Prop, Vue } from 'vue-property-decorator'
+import TheRoomMenu from './TheRoomMenu.vue'
+import TheUserMenu from './TheUserMenu.vue'
 
 @Component({
-  name: 'TheNavExtraSmall'
+  name: 'TheNavLarge',
+  components: {
+    TheRoomMenu,
+    TheUserMenu
+  }
 })
-export default class TheNavExtraSmall extends Vue {
+export default class TheNavLarge extends Vue {
   @Prop() private id!: string;
 }
+
 </script>
 <style scoped lang="scss">
 .navbar-row {
@@ -67,10 +73,11 @@ header.navbar-toolbar-left.navbar-toolbar-left.navbar-toolbar-left {
 }
 
 .navbar-toolbar-right.navbar-toolbar-right.navbar-toolbar-right {
+  justify-content: flex-end;
   background-color: $room-navbar;
   color: $room-navbar-text;
   position: relative;
-  flex: 0 1 250px;
+  flex: 0 1;
   z-index: 100;
   &:after {
     content: '';
