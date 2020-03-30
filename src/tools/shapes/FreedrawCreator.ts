@@ -40,7 +40,5 @@ export default class FreedrawCreator implements Shape {
     })
   }
 
-  getGroup = (): Konva.Group => {
-    return this.group
-  }
+  getGroup = (): Konva.Group => this.group
 }

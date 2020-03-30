@@ -121,13 +121,10 @@ export default class RulerCreator implements Shape {
     group.each(child => child.destroy())
     layer.batchDraw()
   }
-
-  getGroup = (): Konva.Group => {
-    return this.group
-  }
-
   // eslint-disable-next-line
   [key: string]: any;
+
+  getGroup = (): Konva.Group => this.group
 }
 
 export interface Position {

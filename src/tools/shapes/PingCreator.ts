@@ -48,7 +48,5 @@ export default class PingCreator implements Shape {
     }, this.period)
   }
 
-  getGroup = (): Konva.Group => {
-    return this.group
-  }
+  getGroup = (): Konva.Group => this.group
 }

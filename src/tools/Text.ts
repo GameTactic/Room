@@ -43,9 +43,7 @@ export default class Text implements Tool {
     const canvasElementCopy = { ...canvasElement }
     const keyBoardEvent = (e: KeyboardEvent) => {
       if (e.key === 'Enter' && !e.shiftKey) {
-        canvasElementCopy.tool.textString = textArea.value
         textArea.blur()
-        EventBus.$emit('addText', canvasElementCopy)
       }
     }
     const focusOutEvent = () => {
@@ -53,6 +51,10 @@ export default class Text implements Tool {
       textArea.remove()
       EventBus.$emit('addText', canvasElementCopy)
     }
+    const onClickEvent = (e: MouseEvent) => {
+      textArea.blur()
+    }
+    textArea.addEventListener('mousedown', onClickEvent)
     textArea.addEventListener('keydown', keyBoardEvent)
     textArea.addEventListener('focusout', focusOutEvent)
   }

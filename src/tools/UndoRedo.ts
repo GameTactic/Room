@@ -9,7 +9,7 @@ export default class UndoRedo {
         return lastElement
       } else if (lastElement.tracker === Tracker.REDO) {
         const copy = [...canvasElementsHistory]
-        copy.splice(copy.length - 1, 1)
+        copy.pop()
         return this.findRedo(copy)
       } else if (lastElement.tracker === Tracker.UNDO) {
         let foundElementIndex = -1
@@ -22,7 +22,7 @@ export default class UndoRedo {
         }
         if (foundElementIndex >= 0) {
           copy.splice(foundElementIndex, 1)
-          copy.splice((copy.length - 1), 1)
+          copy.pop()
           return this.findUndo(copy)
         }
       }
@@ -34,7 +34,7 @@ export default class UndoRedo {
     if (lastElement) {
       if (lastElement.tracker === Tracker.UNDO) {
         const copy = [...canvasElementsHistory]
-        copy.splice(copy.length - 1, 1)
+        copy.pop()
         return this.findUndo(copy)
       } else if (lastElement.tracker === Tracker.REDO) {
         let foundElementIndex = -1
@@ -47,7 +47,7 @@ export default class UndoRedo {
         }
         if (foundElementIndex >= 0) {
           copy.splice(foundElementIndex, 1)
-          copy.splice((copy.length - 1), 1)
+          copy.pop()
           return this.findRedo(copy)
         }
       } else {

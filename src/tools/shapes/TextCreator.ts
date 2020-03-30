@@ -95,7 +95,5 @@ export default class TextCreator implements Shape {
     return this.textArea
   }
 
-  getGroup = (): Konva.Group => {
-    return this.group
-  }
+  getGroup = (): Konva.Group => this.group
 }
