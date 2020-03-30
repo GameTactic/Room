@@ -2,14 +2,15 @@
   <v-row class="navbar-row">
     <v-col cols="12">
       <v-toolbar dense class="navbar-toolbar-left">
-        <v-icon color="#FFFFFF">fa-anchor</v-icon>
-        <h2>GameTactic</h2>
+        <v-img max-width="240" max-height="45" :src="require('@/assets/logo.png')"></v-img>
         <v-spacer />
         <v-btn dark icon title="Save your room">
           <v-icon>fa-save</v-icon>
         </v-btn>
-        <the-room-menu />
-        <the-user-menu />
+        <div>
+          <the-room-menu />
+          <the-user-menu />
+        </div>
       </v-toolbar>
     </v-col>
     <v-col cols="12">
@@ -41,6 +42,7 @@ export default class TheNavSmall extends Vue {
 <style scoped lang="scss">
 .navbar-row {
   margin: 0px;
+  position: fixed;
    div {
     padding: 0px;
   }
@@ -89,6 +91,10 @@ header.navbar-toolbar-left.navbar-toolbar-left.navbar-toolbar-left {
     border-style: solid;
     border-width:  48px 0px 0px 48px;
     border-color: $room-navbar transparent;
+  }
+  > div {
+    justify-content: flex-end;
+    margin-right: 10px;
   }
 }
 

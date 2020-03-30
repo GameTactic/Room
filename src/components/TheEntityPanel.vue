@@ -110,7 +110,7 @@ export default class MapButtons extends Vue {
   clickedItem = 'Add'
 
   images = {
-    wows: require('@/assets/wows-icon.png'),
+    wows: require('@/assets/wows-icon2.png'),
     wot: require('@/assets/wot-icon.png')
   }
 
@@ -122,8 +122,8 @@ export default class MapButtons extends Vue {
 </script>
 <style scoped lang="scss">
 .custom-card-minimised {
+  top: 50px;
   right: 0;
-  margin-top: 0.25rem;
   position: fixed;
   display: flex;
   flex-direction: column;
@@ -195,6 +195,12 @@ export default class MapButtons extends Vue {
 
   &:hover::before {
     background-color: white;
+  }
+}
+
+@media screen and (max-width: 1199px) {
+  .custom-card-minimised {
+    top: 100px;
   }
 }
 </style>

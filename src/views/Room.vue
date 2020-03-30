@@ -3,8 +3,8 @@
     <the-canvas :id="id"/>
     <the-nav-large class="the-nav-large" :id="id"/>
     <the-nav-small class="the-nav-small" :id="id"/>
-    <the-tool-panel :id="id"/>
-    <the-entity-panel :id="id"/>
+    <the-tool-panel class="custom-hide-on-mobile" :id="id"/>
+    <the-entity-panel  class="custom-hide-on-mobile" :id="id"/>
   </div>
 </template>
 
@@ -49,6 +49,12 @@ export default class extends Vue {
     width: 100%;
     height: 100%;
     overflow-x: hidden;
+  }
+
+  @media (max-width: 599px) {
+    .custom-hide-on-mobile {
+      display: none;
+    }
   }
 
   @media (max-width: 1199px) {
