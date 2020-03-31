@@ -236,7 +236,7 @@ export default class TheCreateEntity extends Games {
 }
 
 .custom-list-item-avatar {
-  background-color: $room-navbar;
+  background-color: $room-primary;
   >img {
     padding: 2px;
   }

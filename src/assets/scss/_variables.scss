@@ -2,10 +2,10 @@
 $app-fontsize: 16px;
 
 // Room colours
-$room-background: #f1f2f2;
-$room-navbar: #00154f;
-$room-navbar-text: white;
+$room-secondary: #f1f2f2;
+$room-primary: #2d468e;
+$room-text: white;
 
 :export {
- roomNavbar: $room-navbar;
+ roomPrimary: $room-primary;
 }

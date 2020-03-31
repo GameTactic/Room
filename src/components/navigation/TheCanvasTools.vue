@@ -1,14 +1,14 @@
 <template>
-  <div>
-    <v-btn-toggle>
+  <div class="custom-canvas-tools-container">
+    <v-btn-toggle dense group>
       <v-btn
         tile
-        dense
         icon
-        small
-        title="Zoom out"
+        color="primary"
+        max-height="40"
+        title="Zoom in"
       >
-        <v-icon>fa-plus</v-icon>
+        <v-icon small>fa-plus</v-icon>
       </v-btn>
       <small
         class="custom-zoom-percentage-button"
@@ -17,34 +17,34 @@
       </small>
       <v-btn
         tile
-        dense
         icon
-        small
-        title="Zoom in"
-      >
-        <v-icon>fa-minus</v-icon>
-      </v-btn>
-      <v-autocomplete
-        :items="[]"
-        :search-input.sync="search"
-        class="body-1"
         color="primary"
-        hide-no-data
-        hide-selected
-        label="Search for your map"
-        placeholder="Start typing to Search"
-        autocomplete="new-password"
-        return-object
+        max-height="40"
+        title="Zoom out"
       >
-        <template v-slot>
-          <!-- <v-list-item-avatar size="29" class="custom-list-item-avatar">
-            <img :src="data.item.image">
-          </v-list-item-avatar> -->
-          <v-list-item-content class="custom-list-item-content">
-            <v-list-item-title>Text</v-list-item-title>
-          </v-list-item-content>
-        </template>
-      </v-autocomplete>
+        <v-icon small>fa-minus</v-icon>
+      </v-btn>
+    </v-btn-toggle>
+    <v-divider vertical />
+    <v-btn-toggle dense group>
+      <v-btn
+        tile
+        icon
+        color="primary"
+        max-height="40"
+        title="Move canvas"
+      >
+        <v-icon small>fa-hand-paper</v-icon>
+      </v-btn>
+      <v-btn
+        tile
+        icon
+        color="primary"
+        max-height="40"
+        title="Center the canvas"
+      >
+        <v-icon small>fa-border-all</v-icon>
+      </v-btn>
     </v-btn-toggle>
   </div>
 </template>
@@ -65,11 +65,13 @@ export default class TheCanvasTools extends Vue {
 .custom-zoom-percentage-button {
   display: flex;
   align-items: center;
-  background-color: #f5f5f5;
-  border-right: 1px solid grey;
-  border-bottom: 1px solid grey;
-  border-color: rgba(0, 0, 0, 0.12);
   padding-right: 0.25rem;
   padding-left: 0.25rem;
 }
+
+.custom-canvas-tools-container {
+  display: flex;
+  border: 1px solid rgba(0, 0, 0, 0.12);
+}
+
 </style>

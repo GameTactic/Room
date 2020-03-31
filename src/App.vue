@@ -51,7 +51,7 @@ export default class TheApp extends Vue {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   height:100vh;
-  background-color: $room-background;
+  background-color: $room-secondary;
   font-size: $app-fontsize;
 }
 </style>

@@ -1,14 +1,11 @@
 <template>
   <v-row class="navbar-row">
     <v-toolbar dense class="navbar-toolbar-left">
-      <v-icon color="#FFFFFF">fa-anchor</v-icon>
-      <h2>GameTactic</h2>
+      <v-img max-width="240" max-height="45" :src="require('@/assets/logo.png')"></v-img>
       <v-spacer />
     </v-toolbar>
     <v-toolbar dense flat class="navbar-toolbar-center justify-center">
-      <v-spacer />
       <the-canvas-tools />
-      <v-spacer />
     </v-toolbar>
     <v-toolbar dense class="navbar-toolbar-right">
       <v-btn dark icon title="Save your room">
@@ -37,22 +34,23 @@ import TheCanvasTools from './TheCanvasTools.vue'
 export default class TheNavLarge extends Vue {
   @Prop() private id!: string;
 }
-
 </script>
-<style scoped lang="scss">
+<style lang="scss">
 .navbar-row {
   margin: 0px;
-   div {
+  position: fixed;
+  width: 100%;
+  div {
     padding: 0px;
   }
 }
-
 header.navbar-toolbar-left.navbar-toolbar-left.navbar-toolbar-left {
-  background-color: $room-navbar;
-  color: $room-navbar-text;
+  background-color: $room-primary;
+  color: $room-text;
   position: relative;
-  flex: 0 1 100px;
+  flex: 0 1;
   z-index: 100;
+
   h2 {
     white-space: nowrap;
     margin: 0.25rem;
@@ -60,40 +58,55 @@ header.navbar-toolbar-left.navbar-toolbar-left.navbar-toolbar-left {
   &:after {
     content: '';
     position: absolute;
-    right: -96px;
+    right: -50px;
     top: 0px;
-    width: 0;
-    height: 0;
-    border-style: solid;
-    border-width: 0 48px 48px;
-    border-color: transparent transparent transparent $room-navbar;
+    width: 100%;
+    height: 100%;
+    -webkit-transform-origin: 100% 0;
+    -ms-transform-origin: 100% 0;
+    transform-origin: 100% 0;
+    -webkit-transform: skew(-45deg);
+    -ms-transform: skew(-45deg);
+    transform: skew(-45deg);
+    z-index: -1;
+    background: $room-primary;
+    box-shadow: 7px 3px 5px 0px #aaaaaa;
   }
 }
-
 .navbar-toolbar-center {
   color: black;
+  >div {
+    justify-content: center;
+  }
 }
-
 .navbar-toolbar-right.navbar-toolbar-right.navbar-toolbar-right {
-  justify-content: flex-end;
-  background-color: $room-navbar;
-  color: $room-navbar-text;
+  background-color: $room-primary;
+  color: $room-text;
   position: relative;
-  flex: 0 1;
+  flex: 0 1 250px;
   z-index: 100;
   &:after {
     content: '';
     position: absolute;
     left: -48px;
     top: 0;
-    width: 0;
-    height: 0;
-    border-style: solid;
-    border-width:  48px 0px 0px 48px;
-    border-color: $room-navbar transparent;
+    width: 100%;
+    height: 100%;
+    -webkit-transform-origin: 100% 0;
+    -ms-transform-origin: 100% 0;
+    transform-origin: 100% 0;
+    -webkit-transform: skew(45deg);
+    -ms-transform: skew(45deg);
+    transform: skew(45deg);
+    z-index: -1;
+    background: $room-primary;
+    box-shadow: -7px 3px 5px 0px #aaaaaa;
+  }
+  div {
+    justify-content: flex-end;
+    margin-right: 10px;
   }
 }
-
 @media screen and (max-width: 960px) {
   .navbar-toolbar-left, .navbar-toolbar-right  {
     flex: 1 1 auto;
@@ -102,5 +115,4 @@ header.navbar-toolbar-left.navbar-toolbar-left.navbar-toolbar-left {
     }
   }
 }
-
 </style>
