@@ -12,7 +12,7 @@
         <v-tooltip right nudge-right="10">
           <template v-slot:activator="{ on: tooltip }">
             <v-btn
-              :class="[isEnabledClass, 'borderBtn']"
+              :class="[isEnabledClass, 'border-btn']"
               icon
               tile
               v-on="tooltip"
@@ -32,7 +32,7 @@
           tile
           absolute
           v-on="menu"
-          @click="onButtonClickHandler"
+          @click="onButtonClickHandlerCaret"
         >
           <v-icon color="white" x-small>{{ getIsActive() ? 'fa-chevron-left' : 'fa-chevron-right'}}</v-icon>
         </v-btn>
@@ -45,7 +45,7 @@
   <v-tooltip right v-else nudge-right="10">
     <template v-slot:activator="{ on: tooltip1 }">
       <v-btn
-        :class="[isEnabledClass, 'borderBtn']"
+        :class="[isEnabledClass, 'border-btn']"
         icon
         elevation="0"
         v-on="tooltip1"
@@ -76,46 +76,55 @@ const Tools = namespace(Namespaces.TOOLS)
   }
 })
 export default class ToolContainer extends Vue {
-@Prop() private id!: string
-@Prop() private icon!: string
-@Prop() private popout!: boolean
-@Prop() private toolname!: string
-@Tools.Action(ToolsAction.ENABLE_TOOL) enableTool!: (toolName: string) => void
-@Tools.Getter(ToolGetters.ENABLED_TOOL) enabledTool?: Tool
+  @Prop() private id!: string
+  @Prop() private icon!: string
+  @Prop() private popout!: boolean
+  @Prop() private toolname!: string
+  @Tools.Action(ToolsAction.ENABLE_TOOL) enableTool!: (toolName: string) => void
+  @Tools.Action(ToolsAction.DISABLE_TOOL) disableTool!: () => void
+  @Tools.Getter(ToolGetters.ENABLED_TOOL) enabledTool?: Tool
 
-getIsActive (): boolean {
-  const menu = this.$refs['menu'] as MenuElement
-  if (menu) {
-    this.$data.isActive = menu.isActive
+  getIsActive (): boolean {
+    const menu = this.$refs['menu'] as MenuElement
+    if (menu) {
+      this.$data.isActive = menu.isActive
+    }
+    return this.$data.isActive
   }
-  return this.$data.isActive
-}
 
-get toolName (): string {
-  return this.toolname.charAt(0).toUpperCase() + this.toolname.slice(1)
-}
-
-get iconColour (): string {
-  return (this.enabledTool?.name === this.toolname) ? 'white' : 'black'
-}
-
-get isEnabledClass (): string {
-  return (this.enabledTool?.name === this.toolname) ? 'v-btn--active' : ''
-}
-
-get isEnabledButtonClass (): string {
-  if (this.$data.isActive) {
-    return 'px-3'
-  } else {
-    return 'px-0'
+  get toolName (): string {
+    return this.toolname.charAt(0).toUpperCase() + this.toolname.slice(1)
   }
-}
 
-onButtonClickHandler () {
-  if (this.enabledTool?.name !== this.toolname) {
-    this.enableTool(this.toolname)
+  get iconColour (): string {
+    return (this.enabledTool?.name === this.toolname) ? 'white' : 'black'
   }
-}
+
+  get isEnabledClass (): string {
+    return (this.enabledTool?.name === this.toolname) ? 'v-btn--active' : 'custom-btn-disabled'
+  }
+
+  get isEnabledButtonClass (): string {
+    if (this.$data.isActive) {
+      return 'px-3'
+    } else {
+      return 'px-0'
+    }
+  }
+
+  onButtonClickHandler () {
+    if (this.enabledTool?.name !== this.toolname) {
+      this.enableTool(this.toolname)
+    } else {
+      this.disableTool()
+    }
+  }
+
+  onButtonClickHandlerCaret () {
+    if (this.enabledTool?.name !== this.toolname) {
+      this.enableTool(this.toolname)
+    }
+  }
 }
 
 interface MenuElement extends Vue {
@@ -149,7 +158,16 @@ interface MenuElement extends Vue {
 .v-btn--active {
   background-color: $room-primary;
 }
-.borderBtn {
+.custom-btn-disabled::before {
+  opacity: 0 !important;
+}
+.custom-btn-disabled {
+  background-color: rgba(0, 0, 0, 0) !important;
+}
+.custom-btn-disabled .v-icon {
+  color: var(--v-primary-base) !important;
+}
+.border-btn {
   border-color: rgba(0, 0, 0, 0.12) !important;
   border-style:solid;
   border-radius: 0 !important;

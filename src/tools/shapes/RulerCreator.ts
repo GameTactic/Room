@@ -114,12 +114,6 @@ export default class RulerCreator extends Shape implements RulerCreatorInterface
   getText = (radius: number): string => {
     return Math.floor(radius * this.mapRatio) + ' m'
   }
-
-  destroy = (canvasElement: CanvasElement, layer: Konva.Layer): void => {
-    const group: Konva.Collection<Konva.Node> = layer.getChildren(node => node.attrs.id === this.group.attrs.id)
-    group.each(child => child.destroy())
-    layer.batchDraw()
-  }
   // eslint-disable-next-line
   [key: string]: any;
 }

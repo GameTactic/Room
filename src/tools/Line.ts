@@ -56,16 +56,19 @@ export default class Line implements LineInterface {
   }, 5)
 
   mouseUpAction = (e: Konva.KonvaPointerEvent, canvasElement: CanvasElement, _layer: Konva.Layer, socket: WebSocket): void => {
-    if (canvasElement.tool.temporary || !canvasElement.hasMoved) {
+    if (!canvasElement.hasMoved) {
       this.lineCreator.destroy(canvasElement, _layer)
     } else {
+      if (canvasElement.tool.temporary) {
+        this.lineCreator.runTemporaryAnimation(this.lineCreator.getGroup(), _layer)
+      }
       canvasElement.data = canvasElement.data.concat([e.evt.x, e.evt.y])
       this.sendToWebSocket(canvasElement, socket)
     }
   }
 
   renderCanvas = (canvasElement: CanvasElement, layer: Konva.Layer): void => {
-    if (!canvasElement.tool.temporary && canvasElement.hasMoved) {
+    if (canvasElement.hasMoved) {
       this.lineCreator = new LineCreator(
         canvasElement.tool.temporary || this.temporary,
         canvasElement.tool.size || this.size,
@@ -74,6 +77,9 @@ export default class Line implements LineInterface {
       )
       this.lineCreator['create' + canvasElement.tool.endStyle?.toUpperCase()](canvasElement, layer)
       layer.batchDraw()
+      if (canvasElement.tool.temporary) {
+        this.lineCreator.runTemporaryAnimation(this.lineCreator.getGroup(), layer)
+      }
     }
   }
 

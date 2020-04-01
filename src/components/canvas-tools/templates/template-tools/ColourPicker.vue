@@ -5,6 +5,7 @@
     mode="hexa"
     show-swatches
     hide-canvas
+    class="color-picker-border"
     flat
     hide-inputs
     hide-mode-switch
@@ -22,10 +23,10 @@ import { Component, Vue } from 'vue-property-decorator'
 
 export default class ColourPicker extends Vue {
   swatches = [
-    ['#CE0000FF', '#D74E09FF'],
-    ['#F2BB05FF', '#08A045FF'],
-    ['#4392F1FF', '#3349F4FF'],
-    ['#40476DFF', '#792387FF'],
+    ['#CE0000FF', '#40476DFF'],
+    ['#D74E09FF', '#792387FF'],
+    ['#F2BB05FF', '#3349F4FF'],
+    ['#08A045FF', '#4392F1FF'],
     ['#F7FFF7FF', '#080F0FFF']
   ];
 
@@ -35,11 +36,12 @@ export default class ColourPicker extends Vue {
 }
 </script>
 
-<style scoped lang="scss">
+<style lang="scss">
 .v-color-picker__controls {
   display: none;
 }
-.v-color-picker__color > div {
+.color-picker-border .v-color-picker__color div {
   border: 1px solid #6D6D6D4D !important;
+  border-radius: 2px;
 }
 </style>
