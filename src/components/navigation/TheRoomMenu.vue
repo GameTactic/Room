@@ -1,14 +1,14 @@
 <template>
   <v-menu offset-y>
     <template v-slot:activator="{ on: menu }">
-      <v-tooltip bottom>
+      <v-tooltip bottom nudge-bottom="10">
         <template v-slot:activator="{ on: tooltip }">
           <v-btn
             dark
             icon
             v-on="{ ...tooltip, ...menu }"
           >
-            <v-icon>fa-cogs</v-icon>
+            <v-icon size="20">fa-cog</v-icon>
           </v-btn>
         </template>
         <span>Settings</span>

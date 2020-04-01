@@ -8,7 +8,7 @@
             icon
             v-on="{ ...tooltip, ...menu }"
           >
-            <v-icon>fa-user-circle</v-icon>
+            <v-icon size="20">fa-user-circle</v-icon>
           </v-btn>
         </template>
         <span>Sign in / Sign out</span>

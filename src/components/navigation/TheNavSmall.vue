@@ -2,21 +2,21 @@
   <v-row class="navbar-row">
     <v-col cols="12">
       <v-toolbar dense class="navbar-toolbar-left">
-        <v-img class="mx-8" max-width="160" max-height="45" :src="require('@/assets/logo.png')"></v-img>
+        <v-img class="ml-4 mr-12" max-width="160" max-height="45" :src="require('@/assets/logo.png')"></v-img>
         <v-spacer />
-        <v-tooltip bottom>
+        <div>
+        <v-tooltip bottom nudge-bottom="10">
           <template v-slot:activator="{ on }">
             <v-btn
               dark
               icon
               v-on="on"
             >
-              <v-icon>fa-save</v-icon>
+              <v-icon size="20">fa-save</v-icon>
             </v-btn>
           </template>
           <span>Save room</span>
         </v-tooltip>
-        <div>
           <the-room-menu />
           <the-user-menu />
         </div>
