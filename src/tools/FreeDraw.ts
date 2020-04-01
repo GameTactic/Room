@@ -49,8 +49,13 @@ export default class FreeDraw implements FreeDrawInterface {
     layer.batchDraw()
   }, 0)
 
-  mouseUpAction = (e: Konva.KonvaPointerEvent, canvasElement: CanvasElement, _layer: Konva.Layer, socket: WebSocket): void => {
-    if (canvasElement.hasMoved) {
+  mouseUpAction = (e: Konva.KonvaPointerEvent, canvasElement: CanvasElement, layer: Konva.Layer, socket: WebSocket): void => {
+    if (!canvasElement.hasMoved) {
+      this.freedrawCreator.destroy(canvasElement, layer)
+    } else {
+      if (canvasElement.tool.temporary) {
+        this.freedrawCreator.runTemporaryAnimation(this.freedrawCreator.getGroup(), layer)
+      }
       this.sendToWebSocket(canvasElement, socket)
     }
   }
@@ -64,6 +69,9 @@ export default class FreeDraw implements FreeDrawInterface {
       )
       this.freedrawCreator.create(canvasElement, layer)
       layer.batchDraw()
+      if (canvasElement.tool.temporary) {
+        this.freedrawCreator.runTemporaryAnimation(this.freedrawCreator.getGroup(), layer)
+      }
     }
   }
 

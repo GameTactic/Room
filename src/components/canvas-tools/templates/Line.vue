@@ -69,7 +69,7 @@
         <v-switch
           v-model="lineTemporary"
           class="mt-0"
-          :label="lineTemporary ? 'Temporary' : 'Permanent'"
+          :label="lineTemporary ? 'Permanent' : 'Temporary'"
         ></v-switch>
         <v-spacer></v-spacer>
       </v-row>
@@ -134,11 +134,11 @@ export default class PopoutButton extends Vue {
   }
 
   get lineTemporary (): boolean {
-    return this.findTool('line').temporary || false
+    return !this.findTool('line').temporary || false
   }
 
   set lineTemporary (newValue: boolean) {
-    this.setTemporary(newValue)
+    this.setTemporary(!newValue)
   }
 }
 

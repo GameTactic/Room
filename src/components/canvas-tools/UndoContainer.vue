@@ -23,7 +23,7 @@ import { Getter } from 'vuex-class'
 import { CanvasGetters } from '@/store/modules/canvas'
 import { CanvasElement } from '@/types/Canvas'
 import { EventBus } from '@/event-bus'
-import UndoRedo from '@/tools/UndoRedo'
+import HandleUndoRedo from '@/Util/HandleUndoRedo'
 
 @Component({
   name: 'UndoContainer.vue'
@@ -33,13 +33,14 @@ export default class UndoContainer extends Vue {
     @Prop() private icon!: string
     @Prop() private toolname!: string
     @Getter(`canvas/${CanvasGetters.CANVAS_ELEMENTS_HISTORY}`) canvasElementsHistory!: CanvasElement[]
+    @Getter(`canvas/${CanvasGetters.CANVAS_ELEMENTS}`) canvasElements!: CanvasElement[]
 
     onButtonClickHandler () {
-      EventBus.$emit('undoRedo', this.toolname)
+      EventBus.$emit('undoRedo', (this.toolname.charAt(0).toUpperCase() + this.toolname.slice(1)))
     }
 
     get isDisabled (): boolean {
-      const undoRedo = new UndoRedo()
+      const undoRedo = new HandleUndoRedo(this.canvasElementsHistory, this.canvasElements)
       return (undoRedo.findUndo([...this.canvasElementsHistory]) === undefined)
     }
 }

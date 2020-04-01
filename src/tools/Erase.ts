@@ -20,56 +20,40 @@ export default class Erase implements EraseInterface {
       erase: this.erase,
       temporary: false
     }
-    if (e.target.parent?.attrs.id && canvasElement.tool.erase) {
-      if (!canvasElement.tool.erase.includes(e.target.parent?.attrs.id)) {
-        canvasElement.tool.erase.push(e.target.parent?.attrs.id)
-      }
-    }
-    this.hideGroup(layer, canvasElement.tool.erase)
+    this.findAndHide(e, canvasElement, layer)
   }
   // eslint-disable-next-line
   mouseMoveAction = (e: Konva.KonvaPointerEvent, canvasElement: CanvasElement, layer: Konva.Layer, socket: WebSocket): void => {
-    if (e.target.parent?.attrs.id && canvasElement.tool.erase) {
-      if (!canvasElement.tool.erase.includes(e.target.parent?.attrs.id)) {
-        canvasElement.tool.erase.push(e.target.parent?.attrs.id)
-      }
-    }
-    this.hideGroup(layer, canvasElement.tool.erase)
+    this.findAndHide(e, canvasElement, layer)
   }
 
   mouseUpAction = (e: Konva.KonvaPointerEvent, canvasElement: CanvasElement, layer: Konva.Layer, socket: WebSocket): void => {
-    const groupId = this.eraseGroup(layer, canvasElement.tool.erase)
-    if (groupId) {
-      canvasElement.tool.erase = groupId
-      this.sendToWebSocket(canvasElement, socket)
-    }
+    this.findAndHide(e, canvasElement, layer)
+    this.sendToWebSocket(canvasElement, socket)
   }
 
-  hideGroup = (layer: Konva.Layer, group?: string[]) => {
+  hideGroup = (layer: Konva.Layer, group?: string[]): void => {
     if (group) {
       group.forEach((groupId: string) => {
         const group: Konva.Collection<Konva.Node> = layer.getChildren(node => node.attrs.id === groupId)
         group.each(child => child.hide())
         layer.batchDraw()
       })
-      return group
     }
   }
 
-  eraseGroup = (layer: Konva.Layer, group?: string[]): string[] | void => {
-    if (group) {
-      group.forEach((groupId: string) => {
-        const group: Konva.Collection<Konva.Node> = layer.getChildren(node => node.attrs.id === groupId)
-        group.each(child => child.destroy())
-        layer.batchDraw()
-      })
-      return group
+  findAndHide = (e: Konva.KonvaPointerEvent, canvasElement: CanvasElement, layer: Konva.Layer): void => {
+    if (e.target.parent?.attrs.id && canvasElement.tool.erase) {
+      if (!canvasElement.tool.erase.includes(e.target.parent?.attrs.id)) {
+        canvasElement.tool.erase.push(e.target.parent?.attrs.id)
+      }
     }
+    this.hideGroup(layer, canvasElement.tool.erase)
   }
 
   renderCanvas = (canvasElement: CanvasElement, layer: Konva.Layer): void => {
     if (canvasElement.tracker === Tracker.REMOVAL) {
-      this.eraseGroup(layer, canvasElement.tool.erase)
+      this.hideGroup(layer, canvasElement.tool.erase)
     }
   }
 
