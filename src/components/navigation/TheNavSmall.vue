@@ -15,9 +15,7 @@
     </v-col>
     <v-col cols="12">
       <v-toolbar dense flat class="navbar-toolbar-center justify-center">
-        <v-spacer />
-        <div>Tactic editing tools</div>
-        <v-spacer />
+        <the-canvas-tools />
       </v-toolbar>
      </v-col>
   </v-row>
@@ -27,12 +25,14 @@
 import { Component, Prop, Vue } from 'vue-property-decorator'
 import TheRoomMenu from './TheRoomMenu.vue'
 import TheUserMenu from './TheUserMenu.vue'
+import TheCanvasTools from './TheCanvasTools.vue'
 
 @Component({
   name: 'TheNavSmall',
   components: {
     TheRoomMenu,
-    TheUserMenu
+    TheUserMenu,
+    TheCanvasTools
   }
 })
 export default class TheNavSmall extends Vue {
@@ -47,57 +47,35 @@ export default class TheNavSmall extends Vue {
     padding: 0px;
   }
 }
-
 header.navbar-toolbar-left.navbar-toolbar-left.navbar-toolbar-left {
-  background-color: $room-navbar;
-  color: $room-navbar-text;
+  background-color: $room-primary;
+  color: $room-text;
   position: relative;
   flex: 0 1 100px;
   z-index: 100;
+
   h2 {
     white-space: nowrap;
     margin: 0.25rem;
   }
-  &:after {
-    content: '';
-    position: absolute;
-    right: -96px;
-    top: 0px;
-    width: 0;
-    height: 0;
-    border-style: solid;
-    border-width: 0 48px 48px;
-    border-color: transparent transparent transparent $room-navbar;
-  }
 }
-
 .navbar-toolbar-center {
   color: black;
+  >div {
+    justify-content: center;
+  }
 }
-
 .navbar-toolbar-right.navbar-toolbar-right.navbar-toolbar-right {
-  background-color: $room-navbar;
-  color: $room-navbar-text;
+  background-color: $room-primary;
+  color: $room-text;
   position: relative;
   flex: 0 1 250px;
   z-index: 100;
-  &:after {
-    content: '';
-    position: absolute;
-    left: -48px;
-    top: 0;
-    width: 0;
-    height: 0;
-    border-style: solid;
-    border-width:  48px 0px 0px 48px;
-    border-color: $room-navbar transparent;
-  }
   > div {
     justify-content: flex-end;
     margin-right: 10px;
   }
 }
-
 @media screen and (max-width: 960px) {
   .navbar-toolbar-left, .navbar-toolbar-right  {
     flex: 1 1 auto;
@@ -106,5 +84,3 @@ header.navbar-toolbar-left.navbar-toolbar-left.navbar-toolbar-left {
     }
   }
 }
-
-</style>

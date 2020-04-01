@@ -136,7 +136,7 @@ interface MenuElement extends Vue {
   border-radius: 0px 8px 8px 0px;
   width:14px;
   height: 44px;
-  background-color: var(--v-primary-base);
+  background-color: $room-primary;
   color: white;
   transition:0.2s ease-in-out;
 }
@@ -147,7 +147,7 @@ interface MenuElement extends Vue {
   color: white !important;
 }
 .v-btn--active {
-  background-color: var(--v-primary-base);
+  background-color: $room-primary;
 }
 .borderBtn {
   border-color: rgba(0, 0, 0, 0.12) !important;

@@ -35,8 +35,6 @@ interface RoomMenuItem {
   name: 'TheRoomMenu'
 })
 export default class TheRoomMenu extends Vue {
-  @Prop() private id!: string;
-
   roomMenuItems: RoomMenuItem[] = [{
     text: 'New Tactic',
     title: 'Create a new tactic within your room'

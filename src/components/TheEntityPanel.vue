@@ -152,7 +152,7 @@ export default class MapButtons extends Vue {
   }
 
   button {
-    color: $room-navbar-text !important;
+    color: $room-text !important;
     margin: 0.5rem;
   }
 }
@@ -163,10 +163,10 @@ export default class MapButtons extends Vue {
 }
 
 .custom-navigation-drawer {
-  background-color: $room-navbar;
+  background-color: $room-primary;
 
   i {
-    color: $room-navbar-text;
+    color: $room-text;
   }
 
   >div >div {
