@@ -28,6 +28,7 @@
 </template>
 
 <script lang="ts">
+// eslint-disable-next-line
 import { Component, Prop, Vue } from 'vue-property-decorator'
 
 interface UserMenuItem {
@@ -47,6 +48,7 @@ export default class TheUserMenu extends Vue {
     title: 'Logout of your logged in account'
   }]
 
+  // eslint-disable-next-line
   userMenuItemsClickHandler (item: UserMenuItem) {
     // do stuff
   }
