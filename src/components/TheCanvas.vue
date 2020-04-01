@@ -1,16 +1,16 @@
-import {Tracker} from "@/tools/Tool";
-import {Tracker} from "@/tools/Tool";
-import {Tracker} from "@/tools/Tool";
-import {Tracker} from "@/tools/Tool";
 <template>
   <v-stage
     ref="stage"
+    id="stage"
     class="konva-stage"
     :class="[enabledTool ? enabledTool.name : '']"
     :config="stageSize"
     @mousedown="onMouseDownHandler"
     @mouseup="onMouseUpHandler"
     @mousemove="onMouseMoveHandler"
+    @touchstart="onTouchDownHandler"
+    @touchmove="onTouchMoveHandler"
+    @touchend="onTouchUpHandler"
   >
     <v-layer ref="layer" :config="{ id: canvasElement.layerId }" />
   </v-stage>
@@ -30,6 +30,8 @@ import Konva from 'konva'
 import { SocketActions, SocketGetters } from '@/store/modules/socket'
 import { EventBus } from '@/event-bus'
 import UndoRedo from '@/tools/UndoRedo'
+import PointerEventMapper from '@/Util/PointerEventMapper'
+import { KonvaPointerEvent } from 'konva/types/PointerEvents'
 
 const Tools = namespace(Namespaces.TOOLS)
 const Sockets = namespace(Namespaces.SOCKET)
@@ -190,10 +192,7 @@ export default class TheCanvas extends Vue {
     })
     this.layerNode.getChildren().forEach((group: Konva.Group) => {
       if (!this.canvasElements.find((canvasElement: CanvasElement) => canvasElement.id === group.attrs.id) && !group.attrs.temporary) {
-        const eraser = this.tools.find((tool: Tool) => tool.name === 'erase')
-        if (eraser && eraser.eraseGroup) {
-          eraser.eraseGroup(this.layerNode, [group.attrs.id])
-        }
+        group.getChildren().each(child => child.destroy())
       }
     })
     this.layerNode.batchDraw()
@@ -313,6 +312,18 @@ export default class TheCanvas extends Vue {
     }
   }
 
+  onTouchDownHandler = (event: TouchEvent): void => {
+    this.onMouseDownHandler(PointerEventMapper.touchEventMapper(event) as KonvaPointerEvent)
+  }
+
+  onTouchMoveHandler = (event: TouchEvent): void => {
+    this.onMouseMoveHandler(PointerEventMapper.touchEventMapper(event) as KonvaPointerEvent)
+  }
+
+  onTouchUpHandler = (event: TouchEvent): void => {
+    this.onMouseUpHandler(PointerEventMapper.touchEventMapper(event) as KonvaPointerEvent)
+  }
+
   get stageNode () {
     return this.$refs.stage.getNode()
   }
@@ -326,6 +337,7 @@ export default class TheCanvas extends Vue {
 </script>
 <style scoped lang="scss">
 .konva-stage {
+  touch-action: none;
   background-color: white;
   position: absolute;
   /* These are FA icons and might need replacing. */

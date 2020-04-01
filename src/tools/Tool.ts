@@ -13,7 +13,7 @@ export interface Tool {
   [key: string]: any
 }
 
-export interface ToolClassInterface {
+export interface ToolClassInterface extends Tool {
   mouseDownAction: MouseDownAction;
   mouseMoveAction: MouseMoveAction;
   mouseUpAction: MouseUpAction;

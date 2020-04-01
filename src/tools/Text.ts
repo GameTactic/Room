@@ -52,18 +52,14 @@ export default class Text implements TextInterface {
     const textArea = this.textCreator.createTextArea(canvasElement, layer)
     const canvasElementCopy = { ...canvasElement }
     const keyBoardEvent = (e: KeyboardEvent) => {
-      if (e.key === 'Enter' && !e.shiftKey) {
-        textArea.blur()
-      }
+      if (e.key === 'Enter' && !e.shiftKey) { textArea.blur() }
     }
     const focusOutEvent = () => {
       canvasElementCopy.tool.textString = textArea.value
       textArea.remove()
       EventBus.$emit('addText', canvasElementCopy)
     }
-    const onClickEvent = () => {
-      textArea.blur()
-    }
+    const onClickEvent = () => { textArea.blur() }
     textArea.addEventListener('mousedown', onClickEvent)
     textArea.addEventListener('keydown', keyBoardEvent)
     textArea.addEventListener('focusout', focusOutEvent)
@@ -79,6 +75,9 @@ export default class Text implements TextInterface {
       )
       this.textCreator.create(canvasElement, layer)
       layer.batchDraw()
+      if (canvasElement.tool.temporary) {
+        this.textCreator.runTemporaryAnimation(this.textCreator.getGroup(), layer)
+      }
     }
   }
 
