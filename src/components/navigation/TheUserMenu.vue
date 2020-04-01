@@ -1,14 +1,18 @@
 <template>
   <v-menu offset-y>
-    <template v-slot:activator="{ on }">
-      <v-btn
-        title="Login or Logout of your account"
-        dark
-        icon
-        v-on="on"
-      >
-        <v-icon>fa-user-circle</v-icon>
-      </v-btn>
+    <template v-slot:activator="{ on: menu }">
+      <v-tooltip bottom>
+        <template v-slot:activator="{ on: tooltip }">
+          <v-btn
+            dark
+            icon
+            v-on="{ ...tooltip, ...menu }"
+          >
+            <v-icon>fa-user-circle</v-icon>
+          </v-btn>
+        </template>
+        <span>Sign in / Sign out</span>
+      </v-tooltip>
     </template>
     <v-list>
       <v-list-item

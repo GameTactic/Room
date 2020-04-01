@@ -1,14 +1,18 @@
 <template>
   <v-menu offset-y>
-    <template v-slot:activator="{ on }">
-      <v-btn
-        title="Room and tactic settings"
-        dark
-        icon
-        v-on="on"
-      >
-        <v-icon>fa-cogs</v-icon>
-      </v-btn>
+    <template v-slot:activator="{ on: menu }">
+      <v-tooltip bottom>
+        <template v-slot:activator="{ on: tooltip }">
+          <v-btn
+            dark
+            icon
+            v-on="{ ...tooltip, ...menu }"
+          >
+            <v-icon>fa-cogs</v-icon>
+          </v-btn>
+        </template>
+        <span>Settings</span>
+      </v-tooltip>
     </template>
     <v-list>
       <v-list-item

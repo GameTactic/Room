@@ -29,37 +29,45 @@
               dense
               nav
             >
-              <v-list-item
+              <v-tooltip
+                left
                 v-for="(item, index) in items"
-                class="custom-list-item-center"
                 :key="item.title"
                 :title="item.title"
-                @click="onItemClickHandler(item.title)"
               >
-                <v-list-item-action>
-                  <v-badge
-                    v-if="index"
-                    :content="item.noOfEntities"
+                <template v-slot:activator="{ on }">
+                  <v-list-item
+                    v-on="on"
+                    class="custom-list-item-center"
+                    @click="onItemClickHandler(item.title)"
                   >
-                    <v-icon :color="item.color">{{ item.icon }}</v-icon>
-                  </v-badge>
-                  <v-icon
-                    v-else
-                    :color="item.color"
-                  >
-                    {{ item.icon }}
-                  </v-icon>
-                </v-list-item-action>
+                    <v-list-item-action>
+                      <v-badge
+                        v-if="index"
+                        :content="item.noOfEntities"
+                      >
+                        <v-icon :color="item.color">{{ item.icon }}</v-icon>
+                      </v-badge>
+                      <v-icon
+                        v-else
+                        :color="item.color"
+                      >
+                        {{ item.icon }}
+                      </v-icon>
+                    </v-list-item-action>
 
-                <v-list-item-content>
-                  <v-list-item-title>{{ item.title }}</v-list-item-title>
-                </v-list-item-content>
-              </v-list-item>
+                    <v-list-item-content>
+                      <v-list-item-title>{{ item.title }}</v-list-item-title>
+                    </v-list-item-content>
+                  </v-list-item>
+                </template>
+                <span>{{ item.title }}</span>
+              </v-tooltip>
             </v-list>
             <v-btn
+              text
               small
               icon
-              tile
               @click="show = !show"
             >
               <v-icon>{{ show ? 'fa-chevron-right' : 'fa-chevron-left' }}</v-icon>

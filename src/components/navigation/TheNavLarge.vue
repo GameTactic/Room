@@ -1,16 +1,25 @@
 <template>
   <v-row class="navbar-row">
     <v-toolbar dense class="navbar-toolbar-left">
-      <v-img max-width="240" max-height="45" :src="require('@/assets/logo.png')"></v-img>
+      <v-img class="mx-8" max-width="160" max-height="45" :src="require('@/assets/logo.png')"></v-img>
       <v-spacer />
     </v-toolbar>
     <v-toolbar dense flat class="navbar-toolbar-center justify-center">
       <the-canvas-tools />
     </v-toolbar>
     <v-toolbar dense class="navbar-toolbar-right">
-      <v-btn dark icon title="Save your room">
-        <v-icon>fa-save</v-icon>
-      </v-btn>
+      <v-tooltip bottom>
+        <template v-slot:activator="{ on }">
+          <v-btn
+            dark
+            icon
+            v-on="on"
+          >
+            <v-icon>fa-save</v-icon>
+          </v-btn>
+        </template>
+        <span>Save room</span>
+      </v-tooltip>
       <the-room-menu />
       <the-user-menu />
     </v-toolbar>
