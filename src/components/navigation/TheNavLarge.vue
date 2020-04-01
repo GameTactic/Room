@@ -5,9 +5,7 @@
       <v-spacer />
     </v-toolbar>
     <v-toolbar dense flat class="navbar-toolbar-center justify-center">
-      <v-spacer />
-      <div>Tactic editing tools</div>
-      <v-spacer />
+      <the-canvas-tools />
     </v-toolbar>
     <v-toolbar dense class="navbar-toolbar-right">
       <v-btn dark icon title="Save your room">
@@ -23,36 +21,36 @@
 import { Component, Prop, Vue } from 'vue-property-decorator'
 import TheRoomMenu from './TheRoomMenu.vue'
 import TheUserMenu from './TheUserMenu.vue'
+import TheCanvasTools from './TheCanvasTools.vue'
 
 @Component({
   name: 'TheNavLarge',
   components: {
     TheRoomMenu,
-    TheUserMenu
+    TheUserMenu,
+    TheCanvasTools
   }
 })
 export default class TheNavLarge extends Vue {
   @Prop() private id!: string;
 }
-
 </script>
 <style lang="scss">
 .navbar-row {
   margin: 0px;
   position: fixed;
   width: 100%;
-  height: 100px;
   div {
     padding: 0px;
   }
 }
-
 header.navbar-toolbar-left.navbar-toolbar-left.navbar-toolbar-left {
-  background-color: $room-navbar;
-  color: $room-navbar-text;
+  background-color: $room-primary;
+  color: $room-text;
   position: relative;
   flex: 0 1;
   z-index: 100;
+
   h2 {
     white-space: nowrap;
     margin: 0.25rem;
@@ -71,18 +69,19 @@ header.navbar-toolbar-left.navbar-toolbar-left.navbar-toolbar-left {
     -ms-transform: skew(-45deg);
     transform: skew(-45deg);
     z-index: -1;
-    background: #00154f;
+    background: $room-primary;
     box-shadow: 7px 3px 5px 0px #aaaaaa;
   }
 }
-
 .navbar-toolbar-center {
   color: black;
+  >div {
+    justify-content: center;
+  }
 }
-
 .navbar-toolbar-right.navbar-toolbar-right.navbar-toolbar-right {
-  background-color: $room-navbar;
-  color: $room-navbar-text;
+  background-color: $room-primary;
+  color: $room-text;
   position: relative;
   flex: 0 1 250px;
   z-index: 100;
@@ -100,7 +99,7 @@ header.navbar-toolbar-left.navbar-toolbar-left.navbar-toolbar-left {
     -ms-transform: skew(45deg);
     transform: skew(45deg);
     z-index: -1;
-    background: #00154f;
+    background: $room-primary;
     box-shadow: -7px 3px 5px 0px #aaaaaa;
   }
   div {
@@ -108,7 +107,6 @@ header.navbar-toolbar-left.navbar-toolbar-left.navbar-toolbar-left {
     margin-right: 10px;
   }
 }
-
 @media screen and (max-width: 960px) {
   .navbar-toolbar-left, .navbar-toolbar-right  {
     flex: 1 1 auto;
@@ -117,5 +115,4 @@ header.navbar-toolbar-left.navbar-toolbar-left.navbar-toolbar-left {
     }
   }
 }
-
 </style>

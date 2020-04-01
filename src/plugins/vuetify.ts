@@ -91,7 +91,7 @@ const opts: Record<string, any> = {
     },
     themes: {
       light: {
-        primary: colours.roomNavbar
+        primary: colours.roomPrimary
       }
     }
   }
