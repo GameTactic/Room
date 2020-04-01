@@ -6,6 +6,7 @@
           <v-btn
             dark
             icon
+            style="margin-right:-8px"
             v-on="{ ...tooltip, ...menu }"
           >
             <v-icon size="20">fa-user-circle</v-icon>

@@ -2,7 +2,7 @@
   <v-row class="navbar-row">
     <v-col cols="12">
       <v-toolbar dense class="navbar-toolbar-left">
-        <v-img class="ml-4 mr-12" max-width="160" max-height="45" :src="require('@/assets/logo.png')"></v-img>
+        <v-img class="ml-3 mr-12" max-width="160" max-height="45" :src="require('@/assets/logo.png')"></v-img>
         <v-spacer />
         <div>
         <v-tooltip bottom nudge-bottom="10">
