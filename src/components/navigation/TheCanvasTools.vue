@@ -1,50 +1,70 @@
 <template>
   <div class="custom-canvas-tools-container">
     <v-btn-toggle dense group>
-      <v-btn
-        tile
-        icon
-        color="primary"
-        max-height="40"
-        title="Zoom in"
-      >
-        <v-icon small>fa-plus</v-icon>
-      </v-btn>
+      <v-tooltip bottom>
+        <template v-slot:activator="{ on }">
+          <v-btn
+            tile
+            icon
+            v-on="on"
+            color="primary"
+            max-height="40"
+          >
+            <v-icon small>fa-plus</v-icon>
+          </v-btn>
+        </template>
+        <span>Zoom in</span>
+      </v-tooltip>
       <small
         class="custom-zoom-percentage-button"
       >
         {{ zoomPercentage }}%
       </small>
-      <v-btn
-        tile
-        icon
-        color="primary"
-        max-height="40"
-        title="Zoom out"
-      >
-        <v-icon small>fa-minus</v-icon>
-      </v-btn>
+      <v-tooltip bottom>
+        <template v-slot:activator="{ on }">
+          <v-btn
+            tile
+            icon
+            v-on="on"
+            color="primary"
+            max-height="40"
+          >
+            <v-icon small>fa-minus</v-icon>
+          </v-btn>
+        </template>
+        <span>Zoom out</span>
+      </v-tooltip>
     </v-btn-toggle>
     <v-divider vertical />
     <v-btn-toggle dense group>
-      <v-btn
-        tile
-        icon
-        color="primary"
-        max-height="40"
-        title="Move canvas"
-      >
-        <v-icon small>fa-hand-paper</v-icon>
-      </v-btn>
-      <v-btn
-        tile
-        icon
-        color="primary"
-        max-height="40"
-        title="Center the canvas"
-      >
-        <v-icon small>fa-border-all</v-icon>
-      </v-btn>
+      <v-tooltip bottom>
+        <template v-slot:activator="{ on }">
+          <v-btn
+            tile
+            icon
+            v-on="on"
+            color="primary"
+            max-height="40"
+          >
+            <v-icon small>fa-hand-paper</v-icon>
+          </v-btn>
+        </template>
+        <span>Move canvas</span>
+      </v-tooltip>
+      <v-tooltip bottom>
+        <template v-slot:activator="{ on }">
+          <v-btn
+            tile
+            icon
+            v-on="on"
+            color="primary"
+            max-height="40"
+          >
+            <v-icon small>fa-border-all</v-icon>
+          </v-btn>
+        </template>
+        <span>Center the canvas</span>
+      </v-tooltip>
     </v-btn-toggle>
   </div>
 </template>
