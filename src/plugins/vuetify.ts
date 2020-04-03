@@ -1,9 +1,12 @@
 import Vue from 'vue'
 import '@fortawesome/fontawesome-free/css/all.css'
+import colours from '@/assets/scss/_variables.scss'
 import Vuetify, {
   VApp,
   VRadio,
   VRadioGroup,
+  VAutocomplete,
+  VBadge,
   VRow,
   VImg,
   VSwitch,
@@ -31,7 +34,9 @@ import Vuetify, {
   VSheet,
   VColorPicker,
   VSlider,
-  VNavigationDrawer
+  VSelect,
+  VNavigationDrawer,
+  VTextField
 } from 'vuetify/lib'
 
 Vue.use(Vuetify, {
@@ -41,6 +46,8 @@ Vue.use(Vuetify, {
     VSwitch,
     VRadio,
     VContainer,
+    VAutocomplete,
+    VBadge,
     VRow,
     VImg,
     VTooltip,
@@ -66,7 +73,9 @@ Vue.use(Vuetify, {
     VSheet,
     VColorPicker,
     VSlider,
-    VNavigationDrawer
+    VSelect,
+    VNavigationDrawer,
+    VTextField
   },
   directives: { }
 })
@@ -79,6 +88,11 @@ const opts: Record<string, any> = {
   theme: {
     options: {
       customProperties: true
+    },
+    themes: {
+      light: {
+        primary: colours.roomPrimary
+      }
     }
   }
 }

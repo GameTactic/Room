@@ -37,7 +37,7 @@ export default class PopoutButton extends Vue {
   @Tools.Action(ToolsAction.SET_SIZE) setSize!: (size: number) => void
 
   get penSize () {
-    return this.findTool('freedraw').size || 3
+    return this.findTool('freedraw').size || 5
   }
 
   set penSize (newValue: number) {

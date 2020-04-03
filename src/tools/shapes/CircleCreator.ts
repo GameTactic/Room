@@ -1,22 +1,21 @@
 import Konva from 'konva'
 import { CanvasElement } from '@/types/Canvas'
-import { Shape } from '@/tools/shapes/Shape'
+import Shape, { CircleCreatorInterface } from '@/tools/shapes/Shape'
 
-export default class CircleCreator implements Shape {
+export default class CircleCreator extends Shape implements CircleCreatorInterface {
   private line: Konva.Line
   private circle: Konva.Circle
-  private group: Konva.Group
   private readonly hitStroke: number = 10
   private stroke: number[][] = [[0, 0], [30, 10]]
   constructor (public temporary: boolean,
-               public size?: number,
-               public colour?: string,
-               public outlineColour?: string,
-               public strokeStyle?: number,
-               public showRadius?: boolean) {
+               public size: number,
+               public colour: string,
+               public outlineColour: string,
+               public strokeStyle: number,
+               public showRadius: boolean) {
+    super()
     this.line = new Konva.Line()
     this.circle = new Konva.Circle()
-    this.group = new Konva.Group()
   }
 
   create = (canvasElement: CanvasElement, layer: Konva.Layer): void => {
@@ -73,12 +72,6 @@ export default class CircleCreator implements Shape {
     const a = Math.pow((x2 - x1), 2)
     const b = Math.pow((y2 - y1), 2)
     return Math.sqrt(a + b)
-  }
-
-  destroy = (canvasElement: CanvasElement, layer: Konva.Layer): void => {
-    const group: Konva.Collection<Konva.Node> = layer.getChildren(node => node.attrs.id === this.group.attrs.id)
-    group.each(child => child.destroy())
-    layer.batchDraw()
   }
 
   // eslint-disable-next-line

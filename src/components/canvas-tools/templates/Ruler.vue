@@ -4,8 +4,8 @@
       <v-spacer></v-spacer>
       <v-switch
         v-model="rulerTemporary"
-        class="mt-0"
-        :label="rulerTemporary ? 'Temporary' : 'Permanent'"
+        class="mt-0 pr-12"
+        :label="rulerTemporary ? 'Permanent' : 'Temporary'"
       ></v-switch>
       <v-spacer></v-spacer>
       <v-switch
@@ -37,11 +37,11 @@ export default class PopoutButton extends Vue {
   @Tools.Action(ToolsAction.SET_SHOW_CIRCLE) setShowCircle!: (showCircle: boolean) => void
 
   get rulerTemporary (): boolean {
-    return this.findTool('ruler').temporary || false
+    return !this.findTool('ruler').temporary || false
   }
 
   set rulerTemporary (newValue: boolean) {
-    this.setTemporary(newValue)
+    this.setTemporary(!newValue)
   }
 
   get rulerShowCircle (): boolean {
