@@ -1,14 +1,19 @@
 <template>
   <v-menu offset-y>
-    <template v-slot:activator="{ on }">
-      <v-btn
-        title="Login or Logout of your account"
-        dark
-        icon
-        v-on="on"
-      >
-        <v-icon>fa-user-circle</v-icon>
-      </v-btn>
+    <template v-slot:activator="{ on: menu }">
+      <v-tooltip bottom>
+        <template v-slot:activator="{ on: tooltip }">
+          <v-btn
+            dark
+            icon
+            style="margin-right:-8px"
+            v-on="{ ...tooltip, ...menu }"
+          >
+            <v-icon size="20">fa-user-circle</v-icon>
+          </v-btn>
+        </template>
+        <span>Sign in / Sign out</span>
+      </v-tooltip>
     </template>
     <v-list>
       <v-list-item
@@ -24,6 +29,7 @@
 </template>
 
 <script lang="ts">
+// eslint-disable-next-line
 import { Component, Prop, Vue } from 'vue-property-decorator'
 
 interface UserMenuItem {
@@ -43,6 +49,7 @@ export default class TheUserMenu extends Vue {
     title: 'Logout of your logged in account'
   }]
 
+  // eslint-disable-next-line
   userMenuItemsClickHandler (item: UserMenuItem) {
     // do stuff
   }
