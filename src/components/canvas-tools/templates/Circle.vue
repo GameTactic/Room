@@ -46,7 +46,7 @@
         <v-switch
           v-model="circleTemporary"
           class="mt-0"
-          :label="circleTemporary ? 'Temporary' : 'Permanent'"
+          :label="circleTemporary ? 'Permanent' : 'Temporary'"
         ></v-switch>
         <v-spacer></v-spacer>
         <v-switch
@@ -87,7 +87,7 @@ export default class PopoutButton extends Vue {
   @Tools.Action(ToolsAction.SET_STROKE_STYLE) setStrokeStyle!: (strokeStyle: number) => void
 
   get circleSize () {
-    return this.findTool('circle').size || 3
+    return this.findTool('circle').size || 5
   }
 
   set circleSize (newValue: number) {
@@ -119,11 +119,11 @@ export default class PopoutButton extends Vue {
   }
 
   get circleTemporary (): boolean {
-    return this.findTool('circle').temporary || false
+    return !this.findTool('circle').temporary || false
   }
 
   set circleTemporary (newValue: boolean) {
-    this.setTemporary(newValue)
+    this.setTemporary(!newValue)
   }
 
   get circleStrokeStyle (): number {

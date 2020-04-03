@@ -1,11 +1,10 @@
-import { Tool, Tracker } from '@/tools/Tool'
+import { CircleInterface, Tracker } from '@/tools/Tool'
 import Konva from 'konva'
 import { CanvasElement } from '@/types/Canvas'
 import uuid from 'uuid'
-import throttle from 'lodash.throttle'
 import CircleCreator from '@/tools/shapes/CircleCreator'
 
-export default class Circle implements Tool {
+export default class Circle implements CircleInterface {
   private circleCreator: CircleCreator
   constructor (public readonly name: string,
                public size: number,
@@ -15,7 +14,13 @@ export default class Circle implements Tool {
                public outlineColour: string,
                public strokeStyle: number
   ) {
-    this.circleCreator = new CircleCreator(this.temporary)
+    this.circleCreator = new CircleCreator(
+      this.temporary,
+      this.size,
+      this.colour,
+      this.outlineColour,
+      this.strokeStyle,
+      this.showRadius)
   }
 
   // eslint-disable-next-line
@@ -23,6 +28,7 @@ export default class Circle implements Tool {
     canvasElement.data = [e.evt.x, e.evt.y]
     canvasElement.id = uuid()
     canvasElement.hasMoved = false
+    canvasElement.tracker = Tracker.ADDITION
     canvasElement.tool = {
       name: this.name,
       size: this.size,
@@ -32,31 +38,40 @@ export default class Circle implements Tool {
       strokeStyle: this.strokeStyle,
       temporary: this.temporary
     }
-    this.circleCreator = new CircleCreator(this.temporary, this.size, this.colour, this.outlineColour, this.strokeStyle, this.showRadius)
+    this.circleCreator = new CircleCreator(
+      this.temporary,
+      this.size,
+      this.colour,
+      this.outlineColour,
+      this.strokeStyle,
+      this.showRadius
+    )
     this.circleCreator.create(canvasElement, layer)
+    canvasElement.position = this.circleCreator.getGroup().position()
   }
 
   // eslint-disable-next-line
-  mouseMoveAction = throttle((e: Konva.KonvaPointerEvent, canvasElement: CanvasElement, layer: Konva.Layer, _socket: WebSocket): void => {
-    if (!canvasElement.hasMoved) {
-      canvasElement.hasMoved = true
-    }
+  mouseMoveAction = (e: Konva.KonvaPointerEvent, canvasElement: CanvasElement, layer: Konva.Layer, _socket: WebSocket): void => {
+    if (!canvasElement.hasMoved) { canvasElement.hasMoved = true }
     const pos = { x: e.evt.x, y: e.evt.y }
     this.circleCreator.move(canvasElement, layer, pos)
     layer.batchDraw()
-  }, 10)
+  }
 
   mouseUpAction = (e: Konva.KonvaPointerEvent, canvasElement: CanvasElement, layer: Konva.Layer, socket: WebSocket): void => {
-    if (canvasElement.tool.temporary || !canvasElement.hasMoved) {
+    if (!canvasElement.hasMoved) {
       this.circleCreator.destroy(canvasElement, layer)
     } else {
+      if (canvasElement.tool.temporary) {
+        this.circleCreator.runTemporaryAnimation(this.circleCreator.getGroup(), layer)
+      }
       canvasElement.data = canvasElement.data.concat([e.evt.x, e.evt.y])
       this.sendToWebSocket(canvasElement, socket)
     }
   }
 
   renderCanvas = (canvasElement: CanvasElement, layer: Konva.Layer): void => {
-    if (canvasElement.hasMoved && !canvasElement.tool.temporary) {
+    if (canvasElement.hasMoved) {
       this.circleCreator = new CircleCreator(
         canvasElement.tool.temporary || this.temporary,
         canvasElement.tool.size || this.size,
@@ -69,6 +84,9 @@ export default class Circle implements Tool {
       const pos = { x: canvasElement.data[2], y: canvasElement.data[3] }
       this.circleCreator.move(canvasElement, layer, pos)
       layer.batchDraw()
+      if (canvasElement.tool.temporary) {
+        this.circleCreator.runTemporaryAnimation(this.circleCreator.getGroup(), layer)
+      }
     }
   }
 
@@ -78,7 +96,7 @@ export default class Circle implements Tool {
       id: canvasElement.id,
       layerId: canvasElement.layerId,
       tool: {
-        name: 'circle',
+        name: this.name,
         colour: this.colour,
         size: this.size,
         showRadius: this.showRadius,
@@ -89,7 +107,8 @@ export default class Circle implements Tool {
       data: canvasElement.data,
       tracker: Tracker.ADDITION,
       change: false,
-      hasMoved: canvasElement.hasMoved
+      hasMoved: canvasElement.hasMoved,
+      position: canvasElement.position
     }
     socket.send(JSON.stringify(data))
   }

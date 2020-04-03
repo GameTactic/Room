@@ -9,6 +9,7 @@ export enum CanvasMutation {
   SET_CANVAS_ELEMENT = 'SET_CANVAS_ELEMENT',
   ADD_CANVAS_ELEMENT = 'ADD_CANVAS_ELEMENT',
   HIDE_CANVAS_ELEMENT = 'HIDE_CANVAS_ELEMENT',
+  DELETE_CANVAS_ELEMENT = 'DELETE_CANVAS_ELEMENT',
   ADD_CANVAS_ELEMENT_HISTORY = 'ADD_CANVAS_ELEMENT_HISTORY',
 }
 
@@ -16,6 +17,7 @@ export enum CanvasAction {
   SET_CANVAS_ELEMENT = 'setCanvasElement',
   ADD_CANVAS_ELEMENT = 'addCanvasElement',
   HIDE_CANVAS_ELEMENT = 'hideCanvasElement',
+  DELETE_CANVAS_ELEMENT = 'deleteCanvasElement',
   ADD_CANVAS_ELEMENT_HISTORY = 'addCanvasElementHistory'
 }
 
@@ -35,17 +37,15 @@ interface CanvasState {
 }
 
 interface RootState extends CanvasElement {
-  rootState: {
-    canvas: CanvasState;
-    cursor: CursorState;
-    socket: SocketState;
-    tools: ToolState;
-  };
+  canvas: CanvasState;
+  cursor: CursorState;
+  socket: SocketState;
+  tools: ToolState;
 }
 
-type CursorActionContext = ActionContext<CanvasState, {}>
+type CursorActionContext = ActionContext<CanvasState, RootState>
 
-const CanvasModule: Module<CanvasState, {}> = {
+const CanvasModule: Module<CanvasState, RootState> = {
   namespaced: true,
   state () {
     return {
@@ -72,9 +72,18 @@ const CanvasModule: Module<CanvasState, {}> = {
         }
       }
     },
+    [CanvasMutation.DELETE_CANVAS_ELEMENT] (state: CanvasState, payload: RootState) {
+      if (payload.id) {
+        const foundElement = state.canvasElements.find((canvasElement: CanvasElement) => canvasElement.id === payload.id)
+        if (foundElement) {
+          const index = state.canvasElements.indexOf(foundElement)
+          state.canvasElements.splice(index, 1)
+        }
+      }
+    },
     [CanvasMutation.ADD_CANVAS_ELEMENT] (state: CanvasState, payload: RootState) {
       payload.jti = 'SAM'
-      const foundTool: Tool | undefined = payload.rootState.tools.tools.find((tool: Tool) => tool.name === payload.tool.name)
+      const foundTool: Tool | undefined = payload.tools.tools.find((tool: Tool) => tool.name === payload.tool.name)
       state.canvasElements.push({ ...payload, tool: { ...payload.tool, renderCanvas: foundTool?.renderCanvas } })
     },
     [CanvasMutation.ADD_CANVAS_ELEMENT_HISTORY] (state: CanvasState, payload: CanvasElement) {
@@ -87,10 +96,13 @@ const CanvasModule: Module<CanvasState, {}> = {
       context.commit('SET_CANVAS_ELEMENT', payload)
     },
     [CanvasAction.ADD_CANVAS_ELEMENT] (context: CursorActionContext, payload: CanvasElement) {
-      context.commit('ADD_CANVAS_ELEMENT', { ...payload, rootState: context.rootState })
+      context.commit('ADD_CANVAS_ELEMENT', { ...payload, tools: context.rootState.tools })
     },
     [CanvasAction.HIDE_CANVAS_ELEMENT] (context: CursorActionContext, payload: HideCanvasElementInterface) {
       context.commit('HIDE_CANVAS_ELEMENT', payload)
+    },
+    [CanvasAction.DELETE_CANVAS_ELEMENT] (context: CursorActionContext, payload: RootState) {
+      context.commit('DELETE_CANVAS_ELEMENT', payload)
     },
     [CanvasAction.ADD_CANVAS_ELEMENT_HISTORY] (context: CursorActionContext, payload: CanvasElement) {
       context.commit('ADD_CANVAS_ELEMENT_HISTORY', { ...payload })
