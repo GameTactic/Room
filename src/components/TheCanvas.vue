@@ -1,13 +1,12 @@
 <template>
   <v-stage
     ref="stage"
-    id="stage"
     class="konva-stage"
     :class="[enabledTool ? enabledTool.name : '']"
-    :config="stageSize"
+    :config="stageConfig"
     @mousedown="onMouseDownHandler"
-    @mouseup="onMouseUpHandler"
     @mousemove="onMouseMoveHandler"
+    @mouseup="onMouseUpHandler"
     @touchstart="onTouchDownHandler"
     @touchmove="onTouchMoveHandler"
     @touchend="onTouchUpHandler"
@@ -29,13 +28,14 @@ import { CanvasAction, CanvasGetters, HideCanvasElementInterface } from '@/store
 import Konva from 'konva'
 import { SocketActions, SocketGetters } from '@/store/modules/socket'
 import { EventBus } from '@/event-bus'
-import PointerEventMapper from '@/Util/PointerEventMapper'
+import PointerEventMapper, { CustomStageConfig, CustomStageEvent } from '@/util/PointerEventMapper'
 import { KonvaPointerEvent } from 'konva/types/PointerEvents'
-import HandleSocketMessage, { SocketHandlerChange } from '@/Util/HandleSocketMessage'
-import HandleRenderShapes from '@/Util/HandleRenderShapes'
-import HandleAddText from '@/Util/HandleAddText'
-import HandleMouseUp, { MouseUpChange } from '@/Util/HandleMouseUp'
-import HandleUndoRedo from '@/Util/HandleUndoRedo'
+import HandleSocketMessage, { SocketHandlerChange } from '@/util/HandleSocketMessage'
+import HandleRenderShapes from '@/util/HandleRenderShapes'
+import HandleMouseUp, { MouseUpChange } from '@/util/HandleMouseUp'
+import HandleUndoRedo from '@/util/HandleUndoRedo'
+import HandleCanvas from '@/util/HandleCanvas'
+import { StageActions, StageGetters } from '@/store/modules/stage'
 
 const Tools = namespace(Namespaces.TOOLS)
 const Sockets = namespace(Namespaces.SOCKET)
@@ -48,6 +48,7 @@ export default class TheCanvas extends Vue {
   @Prop() private id!: string
   @Tools.Action(ToolsAction.DISABLE) disable!: () => void
   @Action(`tools/${ToolsAction.ENABLE}`) enable!: () => void
+  @Action(`tools/${ToolsAction.DISABLE_TOOL}`) disableTool!: () => void
   @Action(`tools/${ToolsAction.ENABLE_TOOL}`) enableTool!: (name: string) => void
   @Getter(`tools/${ToolGetters.ENABLED_TOOL}`) enabledTool!: Tool
   @Getter(`tools/${ToolGetters.ENABLED}`) enabled!: boolean
@@ -60,11 +61,11 @@ export default class TheCanvas extends Vue {
   @Action(`canvas/${CanvasAction.DELETE_CANVAS_ELEMENT}`) deleteCanvasElement!: (canvasElement: CanvasElement) => void
   @Getter(`canvas/${CanvasGetters.CANVAS_ELEMENTS}`) canvasElements!: CanvasElement[]
   @Getter(`canvas/${CanvasGetters.CANVAS_ELEMENTS_HISTORY}`) canvasElementsHistory!: CanvasElement[]
-
-  stageSize = {
-    width: window.innerWidth,
-    height: window.innerHeight
-  }
+  @Getter(`stage/${StageGetters.STAGE_ZOOM}`) stageZoom!: number
+  @Getter(`stage/${StageGetters.STAGE_CONFIG}`) stageConfig!: CustomStageConfig
+  @Action(`stage/${StageActions.SET_CONFIG}`) setStageConfig!: (config: CustomStageConfig) => void
+  @Action(`stage/${StageActions.SET_DIMENSIONS}`) setDimensions!: (dimensions: { width: number; height: number }) => void
+  @Action(`stage/${StageActions.SCALE}`) setScale!: (scale: number) => void
 
   canvasElement: CanvasElement = {
     jti: 'SAM',
@@ -86,22 +87,45 @@ export default class TheCanvas extends Vue {
   }
 
   created () {
-    window.addEventListener('resize', (e) => {
-      const currentTarget = e.currentTarget as Window
-      if (currentTarget) {
-        this.$data.stageSize = {
-          width: currentTarget.innerWidth,
-          height: currentTarget.innerHeight
-        }
-      }
-    }, true)
+    window.onload = () => {
+      this.setStageConfig({
+        scale: {
+          x: 1,
+          y: 1
+        },
+        width: 800,
+        height: 500,
+        initialWidth: 800,
+        initialHeight: 500
+      })
+      const response = HandleCanvas.handleZoom(this.stageNode, this.stageZoom, this.stageConfig, true)
+      this.setStageConfig(response)
+      HandleCanvas.handleCenterCanvas(this.stageElement)
+    }
+
+    window.addEventListener('resize', () => {
+      const response = HandleCanvas.handleZoom(this.stageNode, this.stageZoom, this.stageConfig, false)
+      this.setStageConfig(response)
+      HandleCanvas.handleCenterCanvas(this.stageElement)
+    })
 
     window.addEventListener('keydown', (e) => {
       if (e.ctrlKey && e.key === 'z') {
         EventBus.$emit('undoRedo', 'Undo')
       } else if (e.ctrlKey && e.key === 'y') {
         EventBus.$emit('undoRedo', 'Redo')
+      } else if (e.key === 'Escape') {
+        this.disableTool()
       }
+    })
+
+    EventBus.$on('zoom', () => {
+      const response = HandleCanvas.handleZoom(this.stageNode, this.stageZoom, this.stageConfig, false)
+      this.setStageConfig(response)
+    })
+
+    EventBus.$on('centerCanvas', () => {
+      HandleCanvas.handleCenterCanvas(this.stageElement)
     })
 
     EventBus.$on('undoRedo', (undoRedo: string) => {
@@ -115,15 +139,52 @@ export default class TheCanvas extends Vue {
     })
 
     EventBus.$on('addText', (canvasElement: CanvasElement) => {
-      const handleAddText = new HandleAddText(canvasElement, this.layerNode, this.socket, this.canvasElements)
-      const result = handleAddText.handle()
-      if (!result) {
-        this.deleteCanvasElement(canvasElement)
+      if (this.canvasElement.tool.textString && this.canvasElement.tool.textString?.length > 0) {
+        this.addCanvasElement({ ...canvasElement })
+        this.addCanvasElementHistory(canvasElement)
+        this.socket.send(JSON.stringify(this.canvasElement))
+        this.renderShapes()
       }
     })
 
+    EventBus.$on('mouseDown', (e: MouseEvent) => {
+      this.onMouseDownHandler(PointerEventMapper.mouseEventMapper(e) as KonvaPointerEvent)
+    })
+
+    EventBus.$on('mouseMove', (e: MouseEvent) => {
+      this.onMouseMoveHandler(PointerEventMapper.mouseEventMapper(e) as KonvaPointerEvent)
+    })
+
+    EventBus.$on('mouseUp', (e: MouseEvent) => {
+      this.onMouseUpHandler(PointerEventMapper.mouseEventMapper(e) as KonvaPointerEvent)
+    })
+
+    EventBus.$on('touchMove', (e: TouchEvent) => {
+      this.onTouchMoveHandler(e)
+    })
+
+    EventBus.$on('touchDown', (e: TouchEvent) => {
+      this.onTouchDownHandler(e)
+    })
+
+    EventBus.$on('touchUp', (e: TouchEvent) => {
+      this.onTouchUpHandler(e)
+    })
+
     this.socket.onmessage = (data: MessageEvent) => {
-      const socketMessageHandler = new HandleSocketMessage(JSON.parse(data.data).payload, this.$data.canvasElement, this.tools, this.layerNode, this.canvasElements)
+      const stageEvent: CustomStageEvent = {
+        stage: this.stageNode,
+        stageConfig: this.stageConfig,
+        zoom: this.stageZoom
+      }
+      const socketMessageHandler = new HandleSocketMessage(
+        JSON.parse(data.data).payload,
+        this.$data.canvasElement,
+        this.tools,
+        this.layerNode,
+        this.canvasElements,
+        stageEvent
+      )
       const response = socketMessageHandler.handle()
       if (response) {
         if (response.change === SocketHandlerChange.ADD && response.payload.canvasElement) {
@@ -143,28 +204,41 @@ export default class TheCanvas extends Vue {
   }
 
   renderShapes (): void {
-    const renderShapesHandler = new HandleRenderShapes(this.layerNode, this.canvasElements, this.tools)
+    const stageEvent: CustomStageEvent = {
+      stage: this.stageNode,
+      stageConfig: this.stageConfig,
+      zoom: this.stageZoom
+    }
+    const renderShapesHandler = new HandleRenderShapes(this.layerNode, this.canvasElements, this.canvasElementsHistory, this.tools, stageEvent)
     renderShapesHandler.handle()
   }
 
   onMouseDownHandler (e: Konva.KonvaPointerEvent): void {
+    const event = PointerEventMapper.globalEventMapper(e, this.stageConfig, this.stageZoom, this.stageNode)
     if (this.enabledTool?.mouseDownAction) {
       this.enable()
-      this.enabledTool.mouseDownAction(e, this.$data.canvasElement, this.layerNode, this.socket)
+      this.enabledTool.mouseDownAction(event, this.$data.canvasElement, this.layerNode, this.socket, this.stageZoom)
+    } else if (this.enabledTool?.canvasDownAction) {
+      this.enable()
+      this.enabledTool.canvasDownAction(event, this.stageElement)
     }
   }
 
   onMouseMoveHandler (e: Konva.KonvaPointerEvent): void {
+    const event = PointerEventMapper.globalEventMapper(e, this.stageConfig, this.stageZoom, this.stageNode)
     if (this.enabledTool?.mouseMoveAction && this.enabled) {
-      this.enabledTool.mouseMoveAction(e, this.$data.canvasElement, this.layerNode, this.socket)
+      this.enabledTool.mouseMoveAction(event, this.$data.canvasElement, this.layerNode, this.socket, this.stageZoom)
+    } else if (this.enabledTool?.canvasMoveAction && this.enabled) {
+      this.enabledTool.canvasMoveAction(event, this.stageElement)
     }
   }
 
   onMouseUpHandler (e: Konva.KonvaPointerEvent): void {
+    const event = PointerEventMapper.globalEventMapper(e, this.stageConfig, this.stageZoom, this.stageNode)
     if (this.enabledTool?.mouseUpAction && this.enabled) {
       this.disable()
-      this.enabledTool.mouseUpAction(e, this.$data.canvasElement, this.layerNode, this.socket)
-      const handleMouseUp = new HandleMouseUp(this.$data.canvasElement, this.enabledTool, this.layerNode, this.canvasElements, e, this.socket)
+      this.enabledTool.mouseUpAction(event, this.$data.canvasElement, this.layerNode, this.socket, this.stageZoom)
+      const handleMouseUp = new HandleMouseUp(this.$data.canvasElement, this.enabledTool, this.layerNode, this.canvasElements, event, this.socket)
       const response = handleMouseUp.handle()
       if (response) {
         if (response.change === MouseUpChange.ADD && response.payload.canvasElement) {
@@ -181,6 +255,9 @@ export default class TheCanvas extends Vue {
         }
       }
       this.renderShapes()
+    } else if (this.enabledTool?.canvasUpAction && this.enabled) {
+      this.disable()
+      this.enabledTool.canvasUpAction(event, this.stageElement)
     }
   }
 
@@ -198,6 +275,10 @@ export default class TheCanvas extends Vue {
 
   get stageNode () {
     return this.$refs.stage.getNode()
+  }
+
+  get stageElement () {
+    return this.$refs.stage
   }
 
   get layerNode () {

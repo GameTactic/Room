@@ -1,6 +1,7 @@
 import { CanvasElement } from '@/types/Canvas'
 import { Tool, Tracker } from '@/tools/Tool'
 import Konva from 'konva'
+import { CustomStageEvent } from '@/util/PointerEventMapper'
 
 export interface SocketHandlerCallback {
   change: SocketHandlerChange;
@@ -21,14 +22,15 @@ export default class HandleSocketMessage {
                public currentElement: CanvasElement,
                public tools: Tool[],
                public layer: Konva.Layer,
-               public canvasElements: CanvasElement[]) {
+               public canvasElements: CanvasElement[],
+               public stageEvent: CustomStageEvent) {
   }
 
   handle = (): SocketHandlerCallback | undefined => {
     if (!this.checkIsUndefined()) {
       if (this.canvasElement.layerId !== this.currentElement.layerId) {
         if (this.canvasElement.tool.temporary) {
-          this.renderCanvas(this.tools, this.canvasElement, this.layer)
+          this.renderCanvas(this.tools, this.canvasElement, this.layer, this.stageEvent)
         } else {
           if (this.canvasElement.change) {
             this.handleChange()
@@ -52,10 +54,10 @@ export default class HandleSocketMessage {
     }
   }
 
-  renderCanvas = (tools: Tool[], canvasElement: CanvasElement, layer: Konva.Layer): void => {
-    const foundTool = tools.find((tool: Tool) => tool.name === canvasElement.tool.name)
+  renderCanvas = (tools: Tool[], canvasElement: CanvasElement, layer: Konva.Layer, stageEvent: CustomStageEvent): void => {
+    const foundTool: Tool | undefined = tools.find((tool: Tool) => tool.name === canvasElement.tool.name)
     if (foundTool && foundTool.renderCanvas) {
-      foundTool.renderCanvas(canvasElement, layer)
+      foundTool.renderCanvas(canvasElement, layer, stageEvent)
     }
   }
 

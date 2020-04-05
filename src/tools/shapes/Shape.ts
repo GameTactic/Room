@@ -1,5 +1,6 @@
 import Konva from 'konva'
 import { CanvasElement } from '@/types/Canvas'
+import { CustomEvent, CustomStageEvent } from '@/util/PointerEventMapper'
 
 export default class Shape {
   private readonly decayTime = 1000
@@ -28,6 +29,14 @@ export default class Shape {
     const group: Konva.Collection<Konva.Node> = layer.getChildren(node => node.attrs.id === this.group.attrs.id)
     group.each(child => child.destroy())
     layer.batchDraw()
+  }
+
+  formatX = (num: number, event: CustomEvent | CustomStageEvent): number => {
+    return ((num / event.stageConfig.width) * event.stage.width())
+  }
+
+  formatY = (num: number, event: CustomEvent | CustomStageEvent): number => {
+    return ((num / event.stageConfig.height) * event.stage.height())
   }
 }
 
