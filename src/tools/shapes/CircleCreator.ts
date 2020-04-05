@@ -54,10 +54,9 @@ export default class CircleCreator extends Shape implements CircleCreatorInterfa
   }
 
   createLineElement = (canvasElement: CanvasElement, event: CustomEvent | CustomStageEvent, outlineColour?: string, size?: number, strokeStyle?: number): Konva.Shape & Konva.Line => {
-    const newPoints = canvasElement.data.map((num) => (num % 2) ? this.formatX(num, event) : this.formatY(num, event))
     return new Konva.Line({
       globalCompositeOperation: 'source-over',
-      points: newPoints,
+      points: canvasElement.data.map((num, index) => (index % 2) ? this.formatX(num, event) : this.formatY(num, event)),
       stroke: outlineColour || canvasElement.tool.outlineColour || this.outlineColour,
       strokeWidth: size || canvasElement.tool.size || this.size,
       lineCap: 'mitter',

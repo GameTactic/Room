@@ -129,7 +129,7 @@ export default class LineCreator extends Shape implements LineCreatorInterface {
   createLineElement = (canvasElement: CanvasElement, event: CustomEvent | CustomStageEvent, colour?: string, size?: number): Konva.Shape & Konva.Line => {
     return new Konva.Line({
       globalCompositeOperation: 'source-over',
-      points: canvasElement.data.map((num) => (num % 2) ? this.formatX(num, event) : this.formatY(num, event)),
+      points: canvasElement.data.map((num, index) => (index % 2) ? this.formatX(num, event) : this.formatY(num, event)),
       stroke: colour || canvasElement.tool.colour || this.colour,
       strokeWidth: size || canvasElement.tool.size || this.size || 5,
       lineCap: 'mitter',
@@ -160,7 +160,7 @@ export default class LineCreator extends Shape implements LineCreatorInterface {
   createArrowElement = (canvasElement: CanvasElement, event: CustomEvent | CustomStageEvent, colour?: string, size?: number): Konva.Shape & Konva.Arrow => {
     return new Konva.Arrow({
       globalCompositeOperation: 'source-over',
-      points: canvasElement.data.map((num) => (num % 2) ? this.formatX(num, event) : this.formatY(num, event)),
+      points: canvasElement.data.map((num, index) => (index % 2) ? this.formatX(num, event) : this.formatY(num, event)),
       stroke: colour || canvasElement.tool.colour || this.colour,
       strokeWidth: size || canvasElement.tool.size || this.size || 5,
       lineCap: 'mitter',

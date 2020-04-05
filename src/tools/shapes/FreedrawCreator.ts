@@ -23,16 +23,14 @@ export default class FreedrawCreator extends Shape implements FreeDrawCreatorInt
 
   // eslint-disable-next-line
   move = (canvasElement: CanvasElement, layer: Konva.Layer, event: CustomEvent): void => {
-    const newPoints = canvasElement.data.map((num) => (num % 2) ? this.formatX(num, event) : this.formatY(num, event))
-    this.freedraw.points(newPoints)
+    this.freedraw.points(canvasElement.data.map((num, index) => (index % 2) ? this.formatX(num, event) : this.formatY(num, event)))
   }
 
   createFreedrawElement = (canvasElement: CanvasElement, event: CustomEvent | CustomStageEvent, colour?: string, size?: number): Konva.Shape & Konva.Line => {
-    const newPoints = canvasElement.data.map((num) => (num % 2) ? this.formatX(num, event) : this.formatY(num, event))
     return new Konva.Line({
       globalCompositeOperation: 'source-over',
       lineJoin: 'bevel',
-      points: newPoints,
+      points: canvasElement.data.map((num, index) => (index % 2) ? this.formatX(num, event) : this.formatY(num, event)),
       stroke: colour || canvasElement.tool.colour || this.colour,
       strokeWidth: size || canvasElement.tool.size || this.size,
       bezier: true,

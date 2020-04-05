@@ -54,6 +54,11 @@ export default class Text implements TextInterface {
       )
       const textArea = this.textCreator.createTextArea(canvasElement, layer, event)
       const canvasElementCopy = { ...canvasElement }
+      const inputEvent = () => {
+        if ((textArea.scrollHeight - 1) > textArea.getBoundingClientRect().height) {
+          textArea.value = textArea.value.slice(0, -1)
+        }
+      }
       const keyBoardEvent = (e: KeyboardEvent) => {
         if (e.key === 'Enter' && !e.shiftKey) {
           textArea.blur()
@@ -70,11 +75,7 @@ export default class Text implements TextInterface {
       textArea.addEventListener('mousedown', onClickEvent)
       textArea.addEventListener('keydown', keyBoardEvent)
       textArea.addEventListener('focusout', focusOutEvent)
-      textArea.addEventListener('input', () => {
-        if ((textArea.scrollHeight - 1) > textArea.getBoundingClientRect().height) {
-          textArea.value = textArea.value.slice(0, -1)
-        }
-      })
+      textArea.addEventListener('input', inputEvent)
     }
   }
 

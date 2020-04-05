@@ -72,7 +72,7 @@ export default class RulerCreator extends Shape implements RulerCreatorInterface
   createLineElement = (canvasElement: CanvasElement, event: CustomEvent | CustomStageEvent, colour?: string, size?: number): Konva.Shape & Konva.Line => {
     return new Konva.Line({
       globalCompositeOperation: 'source-over',
-      points: canvasElement.data.map((num) => (num % 2) ? this.formatX(num, event) : this.formatY(num, event)),
+      points: canvasElement.data.map((num, index) => (index % 2) ? this.formatX(num, event) : this.formatY(num, event)),
       stroke: colour || this.colour,
       strokeWidth: size || this.size,
       lineCap: 'mitter',
@@ -126,8 +126,8 @@ export default class RulerCreator extends Shape implements RulerCreatorInterface
         y: y2 + offsetY + (angleY * offset) - (this.text.getHeight() / 2)
       }
       return {
-        x: (response.x >= 0) ? response.x : 0,
-        y: (response.y >= 0) ? response.y : 0
+        x: (response.x > 0) ? response.x : 0,
+        y: (response.y > 0) ? response.y : 0
       }
     }
   }
