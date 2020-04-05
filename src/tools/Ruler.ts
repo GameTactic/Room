@@ -3,6 +3,7 @@ import Konva from 'konva'
 import { CanvasElement } from '@/types/Canvas'
 import uuid from 'uuid'
 import RulerCreator from '@/tools/shapes/RulerCreator'
+import { CustomEvent, CustomStageEvent } from '@/util/PointerEventMapper'
 
 export default class Ruler implements RulerInterface {
   private rulerCreator: RulerCreator
@@ -20,8 +21,8 @@ export default class Ruler implements RulerInterface {
   }
 
   // eslint-disable-next-line
-  mouseDownAction = (e: Konva.KonvaPointerEvent, canvasElement: CanvasElement, layer: Konva.Layer, _socket: WebSocket): void => {
-    canvasElement.data = [e.evt.x, e.evt.y]
+  mouseDownAction = (event: CustomEvent, canvasElement: CanvasElement, layer: Konva.Layer, _socket: WebSocket): void => {
+    canvasElement.data = [event.globalOffset.x, event.globalOffset.y]
     canvasElement.id = uuid()
     canvasElement.hasMoved = false
     canvasElement.tracker = Tracker.ADDITION
@@ -38,33 +39,33 @@ export default class Ruler implements RulerInterface {
       this.colour,
       this.showCircle
     )
-    this.rulerCreator.create(canvasElement, layer)
+    this.rulerCreator.create(canvasElement, layer, event)
     canvasElement.position = this.rulerCreator.getGroup().position()
   }
 
   // eslint-disable-next-line
-  mouseMoveAction = (e: Konva.KonvaPointerEvent, canvasElement: CanvasElement, layer: Konva.Layer, socket: WebSocket): void => {
+  mouseMoveAction = (event: CustomEvent, canvasElement: CanvasElement, layer: Konva.Layer, socket: WebSocket): void => {
     if (!canvasElement.hasMoved) {
       canvasElement.hasMoved = true
     }
-    const pos = { x: e.evt.x, y: e.evt.y }
-    this.rulerCreator.move(canvasElement, layer, pos)
+    const pos = { x: event.globalOffset.x, y: event.globalOffset.y }
+    this.rulerCreator.move(canvasElement, layer, pos, event)
     layer.batchDraw()
   }
 
-  mouseUpAction = (e: Konva.KonvaPointerEvent, canvasElement: CanvasElement, layer: Konva.Layer, socket: WebSocket): void => {
+  mouseUpAction = (event: CustomEvent, canvasElement: CanvasElement, layer: Konva.Layer, socket: WebSocket): void => {
     if (!canvasElement.hasMoved) {
       this.rulerCreator.destroy(canvasElement, layer)
     } else {
       if (canvasElement.tool.temporary) {
         this.rulerCreator.runTemporaryAnimation(this.rulerCreator.getGroup(), layer)
       }
-      canvasElement.data = canvasElement.data.concat([e.evt.x, e.evt.y])
+      canvasElement.data = canvasElement.data.concat([event.globalOffset.x, event.globalOffset.y])
       this.sendToWebSocket(canvasElement, socket)
     }
   }
 
-  renderCanvas = (canvasElement: CanvasElement, layer: Konva.Layer): void => {
+  renderCanvas = (canvasElement: CanvasElement, layer: Konva.Layer, event: CustomEvent | CustomStageEvent): void => {
     if (canvasElement.hasMoved) {
       this.rulerCreator = new RulerCreator(
         canvasElement.tool.temporary || this.temporary,
@@ -72,8 +73,8 @@ export default class Ruler implements RulerInterface {
         canvasElement.tool.colour || this.colour,
         canvasElement.tool.showCircle || this.showCircle
       )
-      this.rulerCreator.create(canvasElement, layer)
-      this.rulerCreator.move(canvasElement, layer, { x: canvasElement.data[2], y: canvasElement.data[3] })
+      this.rulerCreator.create(canvasElement, layer, event)
+      this.rulerCreator.move(canvasElement, layer, { x: canvasElement.data[2], y: canvasElement.data[3] }, event)
       layer.batchDraw()
       if (canvasElement.tool.temporary) {
         this.rulerCreator.runTemporaryAnimation(this.rulerCreator.getGroup(), layer)

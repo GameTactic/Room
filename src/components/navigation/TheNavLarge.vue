@@ -4,7 +4,7 @@
       <v-img class="ml-3 mr-12" max-width="160" max-height="45" :src="require('@/assets/logo.png')"></v-img>
       <v-spacer />
     </v-toolbar>
-    <v-toolbar dense flat class="navbar-toolbar-center justify-center">
+    <v-toolbar dense flat class="navbar-toolbar-center justify-center custom-background-transparent">
       <the-canvas-tools />
     </v-toolbar>
     <v-toolbar dense class="navbar-toolbar-right">
@@ -46,21 +46,23 @@ export default class TheNavLarge extends Vue {
 }
 </script>
 <style lang="scss">
+.theme--light.v-toolbar.custom-background-transparent {
+  background-color:transparent;
+}
 .navbar-row {
-  margin: 0px;
+  margin: 0;
   position: fixed;
   width: 100%;
   div {
-    padding: 0px;
+    padding: 0;
   }
 }
 header.navbar-toolbar-left.navbar-toolbar-left.navbar-toolbar-left {
   background-color: $room-primary;
   color: $room-text;
   position: relative;
-  flex: 0 1;
+  flex: 0 1 250px;
   z-index: 100;
-
   h2 {
     white-space: nowrap;
     margin: 0.25rem;
@@ -69,7 +71,7 @@ header.navbar-toolbar-left.navbar-toolbar-left.navbar-toolbar-left {
     content: '';
     position: absolute;
     right: -50px;
-    top: 0px;
+    top: 0;
     width: 100%;
     height: 100%;
     -webkit-transform-origin: 100% 0;
@@ -80,7 +82,7 @@ header.navbar-toolbar-left.navbar-toolbar-left.navbar-toolbar-left {
     transform: skew(-45deg);
     z-index: -1;
     background: $room-primary;
-    box-shadow: 7px 3px 5px 0px #aaaaaa;
+    box-shadow: 7px 3px 5px 0 #aaaaaa;
   }
 }
 .navbar-toolbar-center {
@@ -98,7 +100,7 @@ header.navbar-toolbar-left.navbar-toolbar-left.navbar-toolbar-left {
   &:after {
     content: '';
     position: absolute;
-    left: -48px;
+    left: -50px;
     top: 0;
     width: 100%;
     height: 100%;

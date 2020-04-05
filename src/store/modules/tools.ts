@@ -1,3 +1,4 @@
+import MoveCanvas from '@/tools/util/MoveCanvas'
 import { ActionContext, Module } from 'vuex'
 import { Tool } from '@/tools/Tool'
 import Ping from '@/tools/Ping'
@@ -71,7 +72,8 @@ const ToolModule: Module<ToolState, {}> = {
         new Circle('circle', 5, '#CE000080', false, true, '#CE0000FF', 0),
         new Ruler('ruler', 3, '#C2C4BD80', false, true),
         new Text('text', 5, '#CE0000FF', false, ''),
-        new Move('move', new Konva.Group(), false)
+        new Move('move', new Konva.Group(), false),
+        new MoveCanvas('moveCanvas')
       ]
     }
   },

@@ -4,6 +4,7 @@ import LineCreator from '@/tools/shapes/LineCreator'
 import { CanvasElement } from '@/types/Canvas'
 import uuid from 'uuid'
 import throttle from 'lodash.throttle'
+import { CustomEvent, CustomStageEvent } from '@/util/PointerEventMapper'
 
 export default class Line implements LineInterface {
   private lineCreator: LineCreator
@@ -22,8 +23,8 @@ export default class Line implements LineInterface {
   }
 
   // eslint-disable-next-line
-  mouseDownAction = (e: Konva.KonvaPointerEvent, canvasElement: CanvasElement, layer: Konva.Layer, _socket: WebSocket): void => {
-    canvasElement.data = [e.evt.x, e.evt.y]
+  mouseDownAction = (event: CustomEvent, canvasElement: CanvasElement, layer: Konva.Layer, _socket: WebSocket): void => {
+    canvasElement.data = [event.globalOffset.x, event.globalOffset.y]
     canvasElement.id = uuid()
     canvasElement.tracker = Tracker.ADDITION
     canvasElement.hasMoved = false
@@ -41,33 +42,33 @@ export default class Line implements LineInterface {
       this.colour,
       this.strokeStyle
     )
-    this.lineCreator['create' + this.endStyle.toUpperCase()](canvasElement, layer)
+    this.lineCreator['create' + this.endStyle.toUpperCase()](canvasElement, layer, event)
     canvasElement.position = this.lineCreator.getGroup().position()
   }
 
   // eslint-disable-next-line
-  mouseMoveAction = throttle((e: Konva.KonvaPointerEvent, canvasElement: CanvasElement, layer: Konva.Layer, socket: WebSocket): void => {
+  mouseMoveAction = throttle((event: CustomEvent, canvasElement: CanvasElement, layer: Konva.Layer, socket: WebSocket): void => {
     if (!canvasElement.hasMoved) {
       canvasElement.hasMoved = true
     }
-    const pos = { x: e.evt.x, y: e.evt.y }
-    this.lineCreator['move' + this.endStyle.toUpperCase()](canvasElement, layer, pos)
+    const pos = { x: event.globalOffset.x, y: event.globalOffset.y }
+    this.lineCreator['move' + this.endStyle.toUpperCase()](canvasElement, layer, pos, event)
     layer.batchDraw()
   }, 5)
 
-  mouseUpAction = (e: Konva.KonvaPointerEvent, canvasElement: CanvasElement, _layer: Konva.Layer, socket: WebSocket): void => {
+  mouseUpAction = (event: CustomEvent, canvasElement: CanvasElement, layer: Konva.Layer, socket: WebSocket): void => {
     if (!canvasElement.hasMoved) {
-      this.lineCreator.destroy(canvasElement, _layer)
+      this.lineCreator.destroy(canvasElement, layer)
     } else {
       if (canvasElement.tool.temporary) {
-        this.lineCreator.runTemporaryAnimation(this.lineCreator.getGroup(), _layer)
+        this.lineCreator.runTemporaryAnimation(this.lineCreator.getGroup(), layer)
       }
-      canvasElement.data = canvasElement.data.concat([e.evt.x, e.evt.y])
+      canvasElement.data = canvasElement.data.concat([event.globalOffset.x, event.globalOffset.y])
       this.sendToWebSocket(canvasElement, socket)
     }
   }
 
-  renderCanvas = (canvasElement: CanvasElement, layer: Konva.Layer): void => {
+  renderCanvas = (canvasElement: CanvasElement, layer: Konva.Layer, event: CustomEvent | CustomStageEvent): void => {
     if (canvasElement.hasMoved) {
       this.lineCreator = new LineCreator(
         canvasElement.tool.temporary || this.temporary,
@@ -75,7 +76,7 @@ export default class Line implements LineInterface {
         canvasElement.tool.colour || this.colour,
         canvasElement.tool.strokeStyle || this.strokeStyle
       )
-      this.lineCreator['create' + canvasElement.tool.endStyle?.toUpperCase()](canvasElement, layer)
+      this.lineCreator['create' + canvasElement.tool.endStyle?.toUpperCase()](canvasElement, layer, event)
       layer.batchDraw()
       if (canvasElement.tool.temporary) {
         this.lineCreator.runTemporaryAnimation(this.lineCreator.getGroup(), layer)
