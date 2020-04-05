@@ -1,6 +1,7 @@
 import Konva from 'konva'
 import { CanvasElement } from '@/types/Canvas'
 import Shape, { LineCreatorInterface } from '@/tools/shapes/Shape'
+import { CustomEvent, CustomStageEvent, Point } from '@/util/PointerEventMapper'
 
 export default class LineCreator extends Shape implements LineCreatorInterface {
   private line: Konva.Line
@@ -22,46 +23,67 @@ export default class LineCreator extends Shape implements LineCreatorInterface {
     ]
   }
 
-  createLINE = (canvasElement: CanvasElement, layer: Konva.Layer): void => {
+  createLINE = (canvasElement: CanvasElement, layer: Konva.Layer, event: CustomEvent | CustomStageEvent): void => {
     this.group = new Konva.Group()
     this.group.attrs.temporary = this.temporary
     this.group.id(canvasElement.id).add(
-      this.line = this.createLineElement(canvasElement)
+      this.line = this.createLineElement(canvasElement, event)
     )
     layer.add(this.group)
   }
 
-  createARROW = (canvasElement: CanvasElement, layer: Konva.Layer): void => {
+  createARROW = (canvasElement: CanvasElement, layer: Konva.Layer, event: CustomEvent | CustomStageEvent): void => {
     this.group = new Konva.Group()
     this.group.id(canvasElement.id).add(
-      this.arrow = this.createArrowElement(canvasElement)
+      this.arrow = this.createArrowElement(canvasElement, event)
     )
     layer.add(this.group)
   }
 
-  createTBAR = (canvasElement: CanvasElement, layer: Konva.Layer): void => {
+  createTBAR = (canvasElement: CanvasElement, layer: Konva.Layer, event: CustomEvent | CustomStageEvent): void => {
     this.group = new Konva.Group()
     this.group.id(canvasElement.id).add(
-      this.line = this.createLineElement(canvasElement),
-      this.tBar = this.createTElement(canvasElement)
+      this.line = this.createLineElement(canvasElement, event),
+      this.tBar = this.createTElement(canvasElement, event)
     )
     layer.add(this.group)
   }
 
   // eslint-disable-next-line
-  moveLINE = (canvasElement: CanvasElement, layer: Konva.Layer, pos: any): void => {
-    this.line.points([canvasElement.data[0], canvasElement.data[1], pos.x, pos.y])
+  moveLINE = (canvasElement: CanvasElement, layer: Konva.Layer, pos: Point, event: CustomEvent | CustomStageEvent): void => {
+    this.line.points([
+      this.formatX(canvasElement.data[0], event),
+      this.formatY(canvasElement.data[1], event),
+      this.formatX(pos.x, event),
+      this.formatY(pos.y, event)
+    ]
+    )
   }
 
   // eslint-disable-next-line
-  moveARROW = (canvasElement: CanvasElement, layer: Konva.Layer, pos: any): void => {
-    this.arrow.points([canvasElement.data[0], canvasElement.data[1], pos.x, pos.y])
+  moveARROW = (canvasElement: CanvasElement, layer: Konva.Layer, pos: Point, event: CustomEvent | CustomStageEvent): void => {
+    this.arrow.points([
+      this.formatX(canvasElement.data[0], event),
+      this.formatY(canvasElement.data[1], event),
+      this.formatX(pos.x, event),
+      this.formatY(pos.y, event)
+    ])
   }
 
   // eslint-disable-next-line
-  moveTBAR = (canvasElement: CanvasElement, layer: Konva.Layer, pos: any): void => {
-    this.tBar.points(this.calcTBar(canvasElement.data[0], canvasElement.data[1], pos.x, pos.y))
-    this.line.points([canvasElement.data[0], canvasElement.data[1], pos.x, pos.y])
+  moveTBAR = (canvasElement: CanvasElement, layer: Konva.Layer, pos: Point, event: CustomEvent | CustomStageEvent): void => {
+    this.tBar.points(this.calcTBar(
+      this.formatX(canvasElement.data[0], event),
+      this.formatY(canvasElement.data[1], event),
+      this.formatX(pos.x, event),
+      this.formatY(pos.y, event)
+    ))
+    this.line.points([
+      this.formatX(canvasElement.data[0], event),
+      this.formatY(canvasElement.data[1], event),
+      this.formatX(pos.x, event),
+      this.formatY(pos.y, event)
+    ])
   }
 
   calcTBar = (x1: number, y1: number, x2: number, y2: number): number[] => {
@@ -104,10 +126,10 @@ export default class LineCreator extends Shape implements LineCreatorInterface {
     }
   }
 
-  createLineElement = (canvasElement: CanvasElement, colour?: string, size?: number): Konva.Shape & Konva.Line => {
+  createLineElement = (canvasElement: CanvasElement, event: CustomEvent | CustomStageEvent, colour?: string, size?: number): Konva.Shape & Konva.Line => {
     return new Konva.Line({
       globalCompositeOperation: 'source-over',
-      points: canvasElement.data,
+      points: canvasElement.data.map((num, index) => (index % 2) ? this.formatX(num, event) : this.formatY(num, event)),
       stroke: colour || canvasElement.tool.colour || this.colour,
       strokeWidth: size || canvasElement.tool.size || this.size || 5,
       lineCap: 'mitter',
@@ -117,8 +139,13 @@ export default class LineCreator extends Shape implements LineCreatorInterface {
     })
   }
 
-  createTElement = (canvasElement: CanvasElement, colour?: string, size?: number): Konva.Shape & Konva.Line => {
-    const point = this.calcTBar(canvasElement.data[0], canvasElement.data[1], canvasElement.data[2], canvasElement.data[3])
+  createTElement = (canvasElement: CanvasElement, event: CustomEvent | CustomStageEvent, colour?: string, size?: number): Konva.Shape & Konva.Line => {
+    const point = this.calcTBar(
+      this.formatX(canvasElement.data[0], event),
+      this.formatY(canvasElement.data[1], event),
+      this.formatX(canvasElement.data[2], event),
+      this.formatY(canvasElement.data[3], event)
+    )
     return new Konva.Line({
       globalCompositeOperation: 'source-over',
       points: point,
@@ -130,10 +157,10 @@ export default class LineCreator extends Shape implements LineCreatorInterface {
     })
   }
 
-  createArrowElement = (canvasElement: CanvasElement, colour?: string, size?: number): Konva.Shape & Konva.Arrow => {
+  createArrowElement = (canvasElement: CanvasElement, event: CustomEvent | CustomStageEvent, colour?: string, size?: number): Konva.Shape & Konva.Arrow => {
     return new Konva.Arrow({
       globalCompositeOperation: 'source-over',
-      points: canvasElement.data,
+      points: canvasElement.data.map((num, index) => (index % 2) ? this.formatX(num, event) : this.formatY(num, event)),
       stroke: colour || canvasElement.tool.colour || this.colour,
       strokeWidth: size || canvasElement.tool.size || this.size || 5,
       lineCap: 'mitter',

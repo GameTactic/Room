@@ -1,6 +1,6 @@
 <template>
   <div class="custom-tool-panel-container btn-toggle-box pa-0">
-    <v-btn-toggle class="flex-column">
+    <v-btn-toggle class="flex-column custom-tool-bar">
       <tool-container :id="id" icon="fa-arrows-alt" toolname="move" :popout="false" />
       <tool-container :id="id" icon="fa-map-pin" toolname="ping" :popout="false" />
       <tool-container :id="id" icon="fa-pen" toolname="freedraw" :popout="true"><freedraw-template /></tool-container>
@@ -51,10 +51,17 @@ export default class TheToolPanel extends Vue {
   top: 50px;
   position: fixed;
 }
-
+.custom-tool-bar {
+  border-radius: 0;
+}
 @media screen and (max-width: 1199px) {
   .btn-toggle-box {
     top: 100px;
   }
+}
+</style>
+<style lang="scss">
+.custom-tool-panel-container .custom-tool-bar > .v-btn.v-btn:first-child {
+  border-top-width: 1.5px !important;
 }
 </style>

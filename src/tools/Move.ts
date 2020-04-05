@@ -1,7 +1,7 @@
 import { MoveInterface, Tracker } from '@/tools/Tool'
 import Konva from 'konva'
 import { CanvasElement } from '@/types/Canvas'
-import throttle from 'lodash.throttle'
+import { CustomEvent, CustomStageEvent } from '@/util/PointerEventMapper'
 
 export default class Move implements MoveInterface {
   private group: Konva.Group
@@ -12,8 +12,8 @@ export default class Move implements MoveInterface {
   }
 
   // eslint-disable-next-line
-  mouseDownAction = (e: Konva.KonvaPointerEvent, canvasElement: CanvasElement, layer: Konva.Layer, _socket: WebSocket): void => {
-    canvasElement.data = [e.evt.x, e.evt.y]
+  mouseDownAction = (event: CustomEvent, canvasElement: CanvasElement, layer: Konva.Layer, _socket: WebSocket): void => {
+    canvasElement.data = [event.globalOffset.x, event.globalOffset.y]
     canvasElement.hasMoved = false
     canvasElement.tracker = Tracker.MOVE
     canvasElement.id = ''
@@ -21,27 +21,29 @@ export default class Move implements MoveInterface {
       name: this.name,
       temporary: this.temporary
     }
-    const group = e.target.parent
-    if (group instanceof Konva.Group) {
-      this.group = group
+    if (event.konvaPointerEvent.target.parent && event.konvaPointerEvent.target.parent instanceof Konva.Group) {
+      this.group = event.konvaPointerEvent.target.parent
       canvasElement.id = this.group.attrs.id
     }
   }
 
   // eslint-disable-next-line
-  mouseMoveAction = throttle((e: Konva.KonvaPointerEvent, canvasElement: CanvasElement, layer: Konva.Layer, socket: WebSocket): void => {
+  mouseMoveAction = (event: CustomEvent, canvasElement: CanvasElement, layer: Konva.Layer, socket: WebSocket): void => {
     if (!canvasElement.hasMoved) {
       canvasElement.hasMoved = true
     }
     if (canvasElement.id !== '') {
-      const pos = { x: (e.evt.x - canvasElement.data[0]), y: (e.evt.y - canvasElement.data[1]) }
-      this.group.move(pos)
+      const pos = { x: (event.globalOffset.x - canvasElement.data[0]), y: (event.globalOffset.y - canvasElement.data[1]) }
+      this.group.move({
+        x: ((pos.x / event.stageConfig.width) * event.stage.width()),
+        y: ((pos.y / event.stageConfig.height) * event.stage.height())
+      })
       layer.batchDraw()
-      canvasElement.data = [e.evt.x, e.evt.y]
+      canvasElement.data = [event.globalOffset.x, event.globalOffset.y]
     }
-  }, 0)
+  }
 
-  mouseUpAction = (e: Konva.KonvaPointerEvent, canvasElement: CanvasElement, _layer: Konva.Layer, socket: WebSocket): void => {
+  mouseUpAction = (event: CustomEvent, canvasElement: CanvasElement, _layer: Konva.Layer, socket: WebSocket): void => {
     if (canvasElement.hasMoved && canvasElement.id !== '') {
       canvasElement.position = { x: this.group.position().x, y: this.group.position().y }
       this.sendToWebSocket(canvasElement, socket)
@@ -49,10 +51,13 @@ export default class Move implements MoveInterface {
   }
 
   // eslint-disable-next-line
-  renderCanvas = (canvasElement: CanvasElement, layer: Konva.Layer): void => {
+  renderCanvas = (canvasElement: CanvasElement, layer: Konva.Layer, event: CustomEvent | CustomStageEvent): void => {
     const group = layer.findOne((group: Konva.Group) => group.attrs.id === canvasElement.id)
     if (group) {
-      group.move({ x: canvasElement.data[0], y: canvasElement.data[1] })
+      group.move({
+        x: ((canvasElement.data[0] / event.stageConfig.width) * event.stage.width()),
+        y: ((canvasElement.data[1] / event.stageConfig.height) * event.stage.height())
+      })
     }
     layer.batchDraw()
   }

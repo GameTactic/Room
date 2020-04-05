@@ -2,6 +2,7 @@ import { EraseInterface, Tracker } from '@/tools/Tool'
 import Konva from 'konva'
 import { CanvasElement } from '@/types/Canvas'
 import uuid from 'uuid'
+import { CustomEvent } from '@/util/PointerEventMapper'
 
 export default class Erase implements EraseInterface {
   // eslint-disable-next-line no-useless-constructor
@@ -10,8 +11,8 @@ export default class Erase implements EraseInterface {
                public readonly temporary: boolean) {
   }
   // eslint-disable-next-line
-  mouseDownAction = (e: Konva.KonvaPointerEvent, canvasElement: CanvasElement, layer: Konva.Layer, socket: WebSocket): void => {
-    canvasElement.data = [e.evt.x, e.evt.y]
+  mouseDownAction = (event: CustomEvent, canvasElement: CanvasElement, layer: Konva.Layer, socket: WebSocket): void => {
+    canvasElement.data = [event.globalOffset.x, event.globalOffset.y]
     canvasElement.id = uuid()
     canvasElement.hasMoved = true
     canvasElement.tracker = Tracker.REMOVAL
@@ -20,15 +21,15 @@ export default class Erase implements EraseInterface {
       erase: this.erase,
       temporary: false
     }
-    this.findAndHide(e, canvasElement, layer)
+    this.findAndHide(event, canvasElement, layer)
   }
   // eslint-disable-next-line
-  mouseMoveAction = (e: Konva.KonvaPointerEvent, canvasElement: CanvasElement, layer: Konva.Layer, socket: WebSocket): void => {
-    this.findAndHide(e, canvasElement, layer)
+  mouseMoveAction = (event: CustomEvent, canvasElement: CanvasElement, layer: Konva.Layer, socket: WebSocket): void => {
+    this.findAndHide(event, canvasElement, layer)
   }
 
-  mouseUpAction = (e: Konva.KonvaPointerEvent, canvasElement: CanvasElement, layer: Konva.Layer, socket: WebSocket): void => {
-    this.findAndHide(e, canvasElement, layer)
+  mouseUpAction = (event: CustomEvent, canvasElement: CanvasElement, layer: Konva.Layer, socket: WebSocket): void => {
+    this.findAndHide(event, canvasElement, layer)
     this.sendToWebSocket(canvasElement, socket)
   }
 
@@ -42,11 +43,10 @@ export default class Erase implements EraseInterface {
     }
   }
 
-  findAndHide = (e: Konva.KonvaPointerEvent, canvasElement: CanvasElement, layer: Konva.Layer): void => {
-    if (e.target.parent?.attrs.id && canvasElement.tool.erase) {
-      if (!canvasElement.tool.erase.includes(e.target.parent?.attrs.id)) {
-        canvasElement.tool.erase.push(e.target.parent?.attrs.id)
-      }
+  findAndHide = (event: CustomEvent, canvasElement: CanvasElement, layer: Konva.Layer): void => {
+    const group = event.konvaPointerEvent.target.parent
+    if (group && group instanceof Konva.Group && group.attrs.id && canvasElement.tool.erase && !canvasElement.tool.erase.includes(group.attrs.id)) {
+      canvasElement.tool.erase.push(group.attrs.id)
     }
     this.hideGroup(layer, canvasElement.tool.erase)
   }
