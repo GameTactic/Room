@@ -1,12 +1,13 @@
 <template>
   <div class="custom-canvas-tools-container">
-    <v-btn-toggle dense group>
+    <v-btn-toggle dense group class="settings-left">
       <v-tooltip bottom>
         <template v-slot:activator="{ on }">
           <v-btn
             tile
             icon
             v-on="on"
+            class="custom-move-disabled"
             color="primary"
             max-height="40"
             @click="zoomInFunction()"
@@ -27,6 +28,7 @@
             tile
             icon
             v-on="on"
+            class="custom-move-disabled"
             color="primary"
             max-height="40"
             @click="zoomOutFunction()"
@@ -37,8 +39,7 @@
         <span>Zoom out</span>
       </v-tooltip>
     </v-btn-toggle>
-    <v-divider vertical />
-    <v-btn-toggle dense group>
+    <v-btn-toggle dense group class="settings-right">
       <v-tooltip bottom>
         <template v-slot:activator="{ on }">
           <v-btn
@@ -61,6 +62,7 @@
             tile
             icon
             v-on="on"
+            class="custom-move-disabled"
             color="primary"
             max-height="40"
             @click="centerCanvas"
@@ -124,28 +126,85 @@ export default class TheCanvasTools extends Vue {
     EventBus.$emit('centerCanvas')
   }
   get isEnabledClass (): string {
-    return (this.enabledTool?.name === 'moveCanvas') ? 'v-btn--active' : 'custom-btn-disabled'
+    return (this.enabledTool?.name === 'moveCanvas') ? 'custom-move-active' : 'custom-move-disabled'
   }
 }
 
 </script>
 <style scoped lang="scss">
-.custom-zoom-percentage-button {
-  display: flex;
-  align-items: center;
-  padding-right: 0.25rem;
-  padding-left: 0.25rem;
-}
-
-.custom-canvas-tools-container {
-  display: flex;
-  border: 1px solid rgba(0, 0, 0, 0.12);
-}
-.custom-btn-disabled:before {
-  opacity: 0 !important;
-}
-.custom-btn-disabled .v-icon {
-  color: var(--v-primary-base) !important;
-}
-
+  .v-btn--active .v-icon {
+    color: $room-primary !important;
+  }
+  .custom-move-active {
+    opacity: 1;
+  }
+  .custom-move-active:hover::before, .custom-move-active::before {
+    opacity: 0.12;
+  }
+  .v-btn:not(.v-btn--text):not(.v-btn--outlined).custom-move-active:before {
+    opacity: 0.18;
+  }
+  .custom-move-disabled::before {
+    opacity: 0 !important;
+  }
+  .custom-move-disabled {
+    background-color: $room-primary;
+  }
+  .custom-move-disabled .v-icon {
+    color: $room-primary;
+  }
+  .custom-zoom-percentage-button {
+    display: flex;
+    align-items: center;
+    padding-right: 0.25rem;
+    padding-left: 0.25rem;
+  }
+  .settings-right:after {
+    content: '';
+    position: absolute;
+    right: -50px;
+    top: 1px;
+    width: 100%;
+    height: 100%;
+    -webkit-transform-origin: 100% 0;
+    -ms-transform-origin: 100% 0;
+    transform-origin: 100% 0;
+    -webkit-transform: skew(-45deg);
+    -ms-transform: skew(-45deg);
+    transform: skew(-45deg);
+    z-index: -1;
+    border-right: 1.5px solid rgba(0, 0, 0, 0.05);
+    border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+    background: white;
+  }
+  .settings-left:after {
+    content: '';
+    position: absolute;
+    left: -50px;
+    top: 1px;
+    width: 100%;
+    height: 100%;
+    -webkit-transform-origin: 100% 0;
+    -ms-transform-origin: 100% 0;
+    transform-origin: 100% 0;
+    -webkit-transform: skew(45deg);
+    -ms-transform: skew(45deg);
+    transform: skew(45deg);
+    z-index: -1;
+    border-left: 1.5px solid rgba(0, 0, 0, 0.05);
+    border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+    background: white;
+  }
+  .custom-canvas-tools-container {
+    display: flex;
+    background-color: white;
+    color: $room-primary;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+  }
+  .custom-btn-disabled:before {
+    opacity: 0 !important;
+  }
+  .custom-btn-disabled .v-icon {
+    color: var(--v-primary-base) !important;
+  }
 </style>

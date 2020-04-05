@@ -47,6 +47,7 @@
       <v-btn
         :class="[isEnabledClass, 'border-btn']"
         icon
+        tile
         elevation="0"
         v-on="tooltip1"
         @click="onButtonClickHandler"
@@ -156,10 +157,13 @@ interface MenuElement extends Vue {
   color: white !important;
 }
 .v-btn--active {
-  background-color: $room-primary;
+  background-color: $room-primary !important;
 }
 .custom-btn-disabled::before {
   opacity: 0 !important;
+}
+.custom-btn-disabled .v-icon{
+  color: $room-primary !important;
 }
 .custom-btn-disabled {
   background-color: rgba(0, 0, 0, 0) !important;

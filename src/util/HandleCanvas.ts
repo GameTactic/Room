@@ -2,25 +2,26 @@ import { VueKonvaStage } from '@/types/Canvas'
 import { CustomStageConfig } from '@/util/PointerEventMapper'
 
 export default class HandleCanvas {
-  private static topOffset = 48
   static handleCenterCanvas = (stage: VueKonvaStage): void => {
+    const topOffset = (window.innerWidth > 1200) ? 100 : 200
     const stageDimensions = { x: stage.$el.getBoundingClientRect().width, y: stage.$el.getBoundingClientRect().height }
-    const windowDimensions = { x: window.innerWidth, y: (window.innerHeight - HandleCanvas.topOffset) }
+    const windowDimensions = { x: window.innerWidth, y: (window.innerHeight - topOffset) }
     const left = (windowDimensions.x - stageDimensions.x) / 2
-    const top = ((windowDimensions.y - stageDimensions.y) / 2) + HandleCanvas.topOffset
+    const top = ((windowDimensions.y - stageDimensions.y) / 2) + (topOffset * 0.75)
     stage.$el.setAttribute('style', 'left: ' + left + 'px; top: ' + top + 'px;')
   }
 
   static handleZoom = (stage: VueKonvaStage, stageZoom: number, stageConfig: CustomStageConfig, onLoad?: boolean): CustomStageConfig => {
+    const topOffset = (window.innerWidth > 1200) ? 100 : 150
     const prev = { width: stage.width(), height: stage.height() }
     const dimensions: { width: number; height: number } = {
       width: stage.width(),
       height: stage.height()
     }
     if (stageConfig.width && stageConfig.height) {
-      if ((window.innerWidth - stageConfig.width) > ((window.innerHeight - HandleCanvas.topOffset) - stageConfig.height)) {
-        dimensions.height = ((window.innerHeight - HandleCanvas.topOffset) * (stageZoom / 100))
-        dimensions.width = ((window.innerHeight - HandleCanvas.topOffset) * (stageConfig.width / stageConfig.height) * (stageZoom / 100))
+      if ((window.innerWidth - stageConfig.width) > ((window.innerHeight - topOffset) - stageConfig.height)) {
+        dimensions.height = ((window.innerHeight - topOffset) * (stageZoom / 100))
+        dimensions.width = ((window.innerHeight - topOffset) * (stageConfig.width / stageConfig.height) * (stageZoom / 100))
       } else {
         dimensions.width = (window.innerWidth * (stageZoom / 100))
         dimensions.height = (window.innerWidth * (stageConfig.height / stageConfig.width) * (stageZoom / 100))

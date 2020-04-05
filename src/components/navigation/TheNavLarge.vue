@@ -61,9 +61,8 @@ header.navbar-toolbar-left.navbar-toolbar-left.navbar-toolbar-left {
   background-color: $room-primary;
   color: $room-text;
   position: relative;
-  flex: 0 1;
+  flex: 0 1 250px;
   z-index: 100;
-
   h2 {
     white-space: nowrap;
     margin: 0.25rem;
@@ -101,7 +100,7 @@ header.navbar-toolbar-left.navbar-toolbar-left.navbar-toolbar-left {
   &:after {
     content: '';
     position: absolute;
-    left: -48px;
+    left: -50px;
     top: 0;
     width: 100%;
     height: 100%;

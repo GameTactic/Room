@@ -64,10 +64,13 @@ export default class RedoContainer extends Vue {
   height: 48px;
   min-height: 0;
   min-width: 48px;
-  color: rgba(0, 0, 0, 0.54);
+  color: $room-primary !important;
   border-radius: 0 !important;
   border-color: rgba(0, 0, 0, 0.12) !important;
   border-style:solid;
   border-width:0.4px 1.5px 1.5px 1.5px !important;
+}
+.redoBtn .v-icon {
+  color: $room-primary !important;
 }
 </style>

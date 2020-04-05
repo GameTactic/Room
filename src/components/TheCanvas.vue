@@ -93,9 +93,9 @@ export default class TheCanvas extends Vue {
           x: 1,
           y: 1
         },
-        width: 500,
+        width: 800,
         height: 500,
-        initialWidth: 500,
+        initialWidth: 800,
         initialHeight: 500
       })
       const response = HandleCanvas.handleZoom(this.stageNode, this.stageZoom, this.stageConfig, true)
