@@ -10,7 +10,7 @@
         text
         @click="onButtonClickHandler"
       >
-        <v-icon dense color="black">{{icon}}</v-icon>
+        <v-icon dense color="primary">{{icon}}</v-icon>
       </v-btn>
     </template>
     <span>Undo</span>
@@ -49,7 +49,7 @@ export default class UndoContainer extends Vue {
 <style scoped lang="scss">
 .v-menu-content-class {
   margin-left: 5px;
-  box-shadow: 0px 4px 4px -3px rgba(0, 0, 0, 0.2), 0px 2px 2px 0px rgba(0, 0, 0, 0.14), 0px 1px 5px 0px rgba(0, 0, 0, 0.12)
+  box-shadow: 0 4px 4px -3px rgba(0, 0, 0, 0.2), 0px 2px 2px 0px rgba(0, 0, 0, 0.14), 0px 1px 5px 0px rgba(0, 0, 0, 0.12)
 }
 .tools-caret-down {
   right:2px;
@@ -65,12 +65,9 @@ export default class UndoContainer extends Vue {
   height: 48px;
   min-height: 0;
   min-width: 48px;
-  border-radius: 0px;
-  border-color: rgba(0, 0, 0, 0.12) !important;
+  border-radius: 0;
+  border-color: rgba(0, 0, 0, 0.12);
   border-style:solid;
-  border-width:0.4px 1.5px 0.5px 1.5px !important;
-}
-.undoBtn .v-icon {
-  color: $room-primary !important;
+  border-width:0.4px 1.5px 0.5px 1.5px !important; // override
 }
 </style>

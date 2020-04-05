@@ -4,7 +4,7 @@ import { VueKonvaStage } from '@/types/Canvas'
 
 export default class PointerEventMapper {
   static touchEventMapper = (event: TouchEvent): object => {
-    const e = event as unknown as CustomTouchEvent
+    const e = event as CustomTouchEvent
     const touches = e.evt.changedTouches
     const first = touches[0]
     let type = ''
@@ -29,12 +29,11 @@ export default class PointerEventMapper {
   }
 
   static mouseEventMapper = (event: MouseEvent): object => {
-    const e = event as unknown as CustomTouchEvent
     return {
       evt: event as PointerEvent,
       target: event.target,
       currentTarget: event.currentTarget,
-      pointerId: e.pointerId,
+      pointerId: 0,
       type: event.type
     }
   }
@@ -48,7 +47,7 @@ export default class PointerEventMapper {
       x: (offset.x / (stageZoom / 100)) / (stage.width() / (stageZoom / 100)),
       y: (offset.y / (stageZoom / 100)) / (stage.height() / (stageZoom / 100))
     }
-    let globalOffset: { x: number; y: number } = {
+    let globalOffset: Point = {
       x: 0,
       y: 0
     }
@@ -72,9 +71,9 @@ export default class PointerEventMapper {
 }
 
 export interface CustomEvent {
-  offset: { x: number; y: number };
-  globalOffsetPercentage: { x: number; y: number };
-  globalOffset: { x: number; y: number };
+  offset: Point;
+  globalOffsetPercentage: Point;
+  globalOffset: Point;
   pointerEvent: PointerEvent;
   stageConfig: CustomStageConfig;
   zoom: number;
@@ -82,8 +81,13 @@ export interface CustomEvent {
   konvaPointerEvent: Konva.KonvaPointerEvent;
 }
 
+export interface Point {
+  x: number;
+  y: number;
+}
+
 export interface CustomStageConfig extends NodeConfig {
-  scale: { x: number; y: number };
+  scale: Point;
   width: number;
   height: number;
   initialWidth: number;

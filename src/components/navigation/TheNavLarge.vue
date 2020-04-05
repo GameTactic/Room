@@ -46,15 +46,15 @@ export default class TheNavLarge extends Vue {
 }
 </script>
 <style lang="scss">
-.custom-background-transparent {
-  background-color:transparent !important;
+.theme--light.v-toolbar.custom-background-transparent {
+  background-color:transparent;
 }
 .navbar-row {
-  margin: 0px;
+  margin: 0;
   position: fixed;
   width: 100%;
   div {
-    padding: 0px;
+    padding: 0;
   }
 }
 header.navbar-toolbar-left.navbar-toolbar-left.navbar-toolbar-left {
@@ -71,7 +71,7 @@ header.navbar-toolbar-left.navbar-toolbar-left.navbar-toolbar-left {
     content: '';
     position: absolute;
     right: -50px;
-    top: 0px;
+    top: 0;
     width: 100%;
     height: 100%;
     -webkit-transform-origin: 100% 0;
@@ -82,7 +82,7 @@ header.navbar-toolbar-left.navbar-toolbar-left.navbar-toolbar-left {
     transform: skew(-45deg);
     z-index: -1;
     background: $room-primary;
-    box-shadow: 7px 3px 5px 0px #aaaaaa;
+    box-shadow: 7px 3px 5px 0 #aaaaaa;
   }
 }
 .navbar-toolbar-center {

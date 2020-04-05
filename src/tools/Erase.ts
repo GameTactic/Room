@@ -44,12 +44,9 @@ export default class Erase implements EraseInterface {
   }
 
   findAndHide = (event: CustomEvent, canvasElement: CanvasElement, layer: Konva.Layer): void => {
-    if (event.konvaPointerEvent.target.parent && event.konvaPointerEvent.target.parent instanceof Konva.Group) {
-      if (event.konvaPointerEvent.target.parent.attrs.id && canvasElement.tool.erase) {
-        if (!canvasElement.tool.erase.includes(event.konvaPointerEvent.target.parent.attrs.id)) {
-          canvasElement.tool.erase.push(event.konvaPointerEvent.target.parent.attrs.id)
-        }
-      }
+    const group = event.konvaPointerEvent.target.parent
+    if (group && group instanceof Konva.Group && group.attrs.id && canvasElement.tool.erase && !canvasElement.tool.erase.includes(group.attrs.id)) {
+      canvasElement.tool.erase.push(group.attrs.id)
     }
     this.hideGroup(layer, canvasElement.tool.erase)
   }

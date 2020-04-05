@@ -1,6 +1,6 @@
 <template>
   <div class="custom-canvas-tools-container">
-    <v-btn-toggle dense group class="settings-left">
+    <v-btn-toggle dense group class="custom-settings-left">
       <v-tooltip bottom>
         <template v-slot:activator="{ on }">
           <v-btn
@@ -39,7 +39,7 @@
         <span>Zoom out</span>
       </v-tooltip>
     </v-btn-toggle>
-    <v-btn-toggle dense group class="settings-right">
+    <v-btn-toggle dense group class="custom-settings-right">
       <v-tooltip bottom>
         <template v-slot:activator="{ on }">
           <v-btn
@@ -133,25 +133,30 @@ export default class TheCanvasTools extends Vue {
 </script>
 <style scoped lang="scss">
   .v-btn--active .v-icon {
-    color: $room-primary !important;
+    color: $room-primary;
   }
   .custom-move-active {
     opacity: 1;
-  }
-  .custom-move-active:hover::before, .custom-move-active::before {
-    opacity: 0.12;
+    &:hover {
+      &::before {
+        opacity: 0.12;
+      }
+    };
+    &:before {
+      opacity: 0.12;
+    };
   }
   .v-btn:not(.v-btn--text):not(.v-btn--outlined).custom-move-active:before {
     opacity: 0.18;
   }
-  .custom-move-disabled::before {
-    opacity: 0 !important;
-  }
   .custom-move-disabled {
     background-color: $room-primary;
-  }
-  .custom-move-disabled .v-icon {
-    color: $room-primary;
+    &:before {
+      opacity: 0 !important; // override
+    };
+    .v-icon {
+      color: $room-primary;
+    }
   }
   .custom-zoom-percentage-button {
     display: flex;
@@ -159,41 +164,34 @@ export default class TheCanvasTools extends Vue {
     padding-right: 0.25rem;
     padding-left: 0.25rem;
   }
-  .settings-right:after {
+  @mixin skewElement {
     content: '';
     position: absolute;
-    right: -50px;
     top: 1px;
     width: 100%;
     height: 100%;
     -webkit-transform-origin: 100% 0;
     -ms-transform-origin: 100% 0;
     transform-origin: 100% 0;
-    -webkit-transform: skew(-45deg);
-    -ms-transform: skew(-45deg);
-    transform: skew(-45deg);
     z-index: -1;
-    border-right: 1.5px solid rgba(0, 0, 0, 0.05);
     border-bottom: 1px solid rgba(0, 0, 0, 0.05);
     background: white;
   }
-  .settings-left:after {
-    content: '';
-    position: absolute;
+  .custom-settings-right:after {
+    @include skewElement;
+    right: -50px;
+    -webkit-transform: skew(-45deg);
+    -ms-transform: skew(-45deg);
+    transform: skew(-45deg);
+    border-right: 1.5px solid rgba(0, 0, 0, 0.05);
+  }
+  .custom-settings-left:after {
+    @include skewElement;
     left: -50px;
-    top: 1px;
-    width: 100%;
-    height: 100%;
-    -webkit-transform-origin: 100% 0;
-    -ms-transform-origin: 100% 0;
-    transform-origin: 100% 0;
     -webkit-transform: skew(45deg);
     -ms-transform: skew(45deg);
     transform: skew(45deg);
-    z-index: -1;
     border-left: 1.5px solid rgba(0, 0, 0, 0.05);
-    border-bottom: 1px solid rgba(0, 0, 0, 0.05);
-    background: white;
   }
   .custom-canvas-tools-container {
     display: flex;
@@ -201,10 +199,12 @@ export default class TheCanvasTools extends Vue {
     color: $room-primary;
     border-bottom: 1px solid rgba(0, 0, 0, 0.05);
   }
-  .custom-btn-disabled:before {
-    opacity: 0 !important;
-  }
-  .custom-btn-disabled .v-icon {
-    color: var(--v-primary-base) !important;
+  .custom-btn-disabled {
+    &:before {
+      opacity: 0;
+    }
+    .v-icon {
+      color: $room-primary;
+    }
   }
 </style>

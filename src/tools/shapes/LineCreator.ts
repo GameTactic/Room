@@ -1,7 +1,7 @@
 import Konva from 'konva'
 import { CanvasElement } from '@/types/Canvas'
 import Shape, { LineCreatorInterface } from '@/tools/shapes/Shape'
-import { CustomEvent, CustomStageEvent } from '@/util/PointerEventMapper'
+import { CustomEvent, CustomStageEvent, Point } from '@/util/PointerEventMapper'
 
 export default class LineCreator extends Shape implements LineCreatorInterface {
   private line: Konva.Line
@@ -50,7 +50,7 @@ export default class LineCreator extends Shape implements LineCreatorInterface {
   }
 
   // eslint-disable-next-line
-  moveLINE = (canvasElement: CanvasElement, layer: Konva.Layer, pos: { x: number; y: number }, event: CustomEvent | CustomStageEvent): void => {
+  moveLINE = (canvasElement: CanvasElement, layer: Konva.Layer, pos: Point, event: CustomEvent | CustomStageEvent): void => {
     this.line.points([
       this.formatX(canvasElement.data[0], event),
       this.formatY(canvasElement.data[1], event),
@@ -61,7 +61,7 @@ export default class LineCreator extends Shape implements LineCreatorInterface {
   }
 
   // eslint-disable-next-line
-  moveARROW = (canvasElement: CanvasElement, layer: Konva.Layer, pos: { x: number; y: number }, event: CustomEvent | CustomStageEvent): void => {
+  moveARROW = (canvasElement: CanvasElement, layer: Konva.Layer, pos: Point, event: CustomEvent | CustomStageEvent): void => {
     this.arrow.points([
       this.formatX(canvasElement.data[0], event),
       this.formatY(canvasElement.data[1], event),
@@ -71,7 +71,7 @@ export default class LineCreator extends Shape implements LineCreatorInterface {
   }
 
   // eslint-disable-next-line
-  moveTBAR = (canvasElement: CanvasElement, layer: Konva.Layer, pos: { x: number; y: number }, event: CustomEvent | CustomStageEvent): void => {
+  moveTBAR = (canvasElement: CanvasElement, layer: Konva.Layer, pos: Point, event: CustomEvent | CustomStageEvent): void => {
     this.tBar.points(this.calcTBar(
       this.formatX(canvasElement.data[0], event),
       this.formatY(canvasElement.data[1], event),

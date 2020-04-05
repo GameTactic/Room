@@ -67,84 +67,45 @@ const StageModule: Module<StageState, {}> = {
     [StageMutations.SET_ZOOM] (state: StageState, newValue: number) {
       if (newValue < state.stageZoomMin) {
         state.stageZoom = state.stageZoomMin
-        state.stageConfig.scale = {
-          x: (state.stageZoom / 100),
-          y: (state.stageZoom / 100)
-        }
-      } else if (newValue > state.stageZoomMax) {
-        state.stageZoom = state.stageZoomMax
-        state.stageConfig.scale = {
-          x: (state.stageZoom / 100),
-          y: (state.stageZoom / 100)
-        }
       } else {
-        state.stageZoom = newValue
-        state.stageConfig.scale = {
-          x: (state.stageZoom / 100),
-          y: (state.stageZoom / 100)
-        }
+        state.stageZoom = (newValue > state.stageZoomMax) ? state.stageZoomMax : newValue
+      }
+      state.stageConfig.scale = {
+        x: (state.stageZoom / 100),
+        y: (state.stageZoom / 100)
       }
     },
     [StageMutations.SET_ZOOM_IN] (state: StageState) {
       const newValue = state.stageZoom + state.stageZoomStep
       if (newValue < state.stageZoomMin) {
         state.stageZoom = state.stageZoomMin
-        state.stageConfig.scale = {
-          x: (state.stageZoom / 100),
-          y: (state.stageZoom / 100)
-        }
-      } else if (newValue > state.stageZoomMax) {
-        state.stageZoom = state.stageZoomMax
-        state.stageConfig.scale = {
-          x: (state.stageZoom / 100),
-          y: (state.stageZoom / 100)
-        }
       } else {
-        state.stageZoom = newValue
-        state.stageConfig.scale = {
-          x: (state.stageZoom / 100),
-          y: (state.stageZoom / 100)
-        }
+        state.stageZoom = (newValue > state.stageZoomMax) ? state.stageZoomMax : newValue
+      }
+      state.stageConfig.scale = {
+        x: (state.stageZoom / 100),
+        y: (state.stageZoom / 100)
       }
     },
     [StageMutations.SET_ZOOM_OUT] (state: StageState) {
       const newValue = state.stageZoom - state.stageZoomStep
       if (newValue < state.stageZoomMin) {
         state.stageZoom = state.stageZoomMin
-        state.stageConfig.scale = {
-          x: (state.stageZoom / 100),
-          y: (state.stageZoom / 100)
-        }
-      } else if (newValue > state.stageZoomMax) {
-        state.stageZoom = state.stageZoomMax
-        state.stageConfig.scale = {
-          x: (state.stageZoom / 100),
-          y: (state.stageZoom / 100)
-        }
       } else {
-        state.stageZoom = newValue
-        state.stageConfig.scale = {
-          x: (state.stageZoom / 100),
-          y: (state.stageZoom / 100)
-        }
+        state.stageZoom = (newValue > state.stageZoomMax) ? state.stageZoomMax : newValue
+      }
+      state.stageConfig.scale = {
+        x: (state.stageZoom / 100),
+        y: (state.stageZoom / 100)
       }
     },
     [StageMutations.SET_CONFIG_SCALE] (state: StageState, newValue: number) {
       if (newValue < (state.stageZoomMin) / 100) {
-        state.stageConfig.scale = {
-          x: (state.stageZoomMin / 100),
-          y: (state.stageZoomMin / 100)
-        }
+        state.stageConfig.scale = { x: (state.stageZoomMin / 100), y: (state.stageZoomMin / 100) }
       } else if (newValue > (state.stageZoomMax) / 100) {
-        state.stageConfig.scale = {
-          x: (state.stageZoomMax / 100),
-          y: (state.stageZoomMax / 100)
-        }
+        state.stageConfig.scale = state.stageConfig.scale = { x: (state.stageZoomMax / 100), y: (state.stageZoomMax / 100) }
       } else {
-        state.stageConfig.scale = {
-          x: newValue,
-          y: newValue
-        }
+        state.stageConfig.scale = { x: newValue, y: newValue }
       }
     },
     [StageMutations.SET_ZOOM_STEP] (state: StageState, newValue: number) {
