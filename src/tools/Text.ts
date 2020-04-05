@@ -4,6 +4,7 @@ import { CanvasElement } from '@/types/Canvas'
 import uuid from 'uuid'
 import TextCreator from '@/tools/shapes/TextCreator'
 import { EventBus } from '@/event-bus'
+import { CustomEvent, CustomStageEvent } from '@/util/PointerEventMapper'
 
 export default class Text implements TextInterface {
   private textCreator: TextCreator
@@ -21,51 +22,63 @@ export default class Text implements TextInterface {
   }
 
   // eslint-disable-next-line
-  mouseDownAction = (e: Konva.KonvaPointerEvent, canvasElement: CanvasElement, layer: Konva.Layer, _socket: WebSocket): void => {
-    canvasElement.data = [e.evt.x, e.evt.y]
-    canvasElement.id = uuid()
-    canvasElement.tracker = Tracker.ADDITION
-    canvasElement.hasMoved = true
-    canvasElement.tool = {
-      name: this.name,
-      size: this.size,
-      colour: this.colour,
-      temporary: this.temporary,
-      textString: this.textString
-    }
+  mouseDownAction = (event: CustomEvent, canvasElement: CanvasElement, layer: Konva.Layer, _socket: WebSocket): void => {
+
   }
 
   // eslint-disable-next-line
-  mouseMoveAction = (e: Konva.KonvaPointerEvent, canvasElement: CanvasElement, layer: Konva.Layer, socket: WebSocket): void => {
+  mouseMoveAction = (event: CustomEvent, canvasElement: CanvasElement, layer: Konva.Layer, socket: WebSocket): void => {
   }
 
   // eslint-disable-next-line
-  mouseUpAction = (e: Konva.KonvaPointerEvent, canvasElement: CanvasElement, layer: Konva.Layer, socket: WebSocket): void => {
-    this.textCreator = new TextCreator(
-      this.temporary,
-      this.size,
-      this.colour,
-      this.textString
-    )
-    this.textCreator.create(canvasElement, layer)
-    canvasElement.position = this.textCreator.getGroup().position()
-    const textArea = this.textCreator.createTextArea(canvasElement, layer)
-    const canvasElementCopy = { ...canvasElement }
-    const keyBoardEvent = (e: KeyboardEvent) => {
-      if (e.key === 'Enter' && !e.shiftKey) { textArea.blur() }
+  mouseUpAction = (event: CustomEvent, canvasElement: CanvasElement, layer: Konva.Layer, socket: WebSocket): void => {
+    const target = event.konvaPointerEvent.target
+    if (target instanceof Konva.Stage || target instanceof Konva.Node) {
+      canvasElement.data = [event.globalOffset.x, event.globalOffset.y]
+      canvasElement.id = uuid()
+      canvasElement.tracker = Tracker.ADDITION
+      canvasElement.hasMoved = true
+      canvasElement.position = { x: 0, y: 0 }
+      canvasElement.tool = {
+        name: this.name,
+        size: this.size,
+        colour: this.colour,
+        temporary: this.temporary,
+        textString: this.textString
+      }
+      this.textCreator = new TextCreator(
+        this.temporary,
+        this.size,
+        this.colour,
+        this.textString
+      )
+      const textArea = this.textCreator.createTextArea(canvasElement, layer, event)
+      const canvasElementCopy = { ...canvasElement }
+      const keyBoardEvent = (e: KeyboardEvent) => {
+        if (e.key === 'Enter' && !e.shiftKey) {
+          textArea.blur()
+        }
+      }
+      const focusOutEvent = () => {
+        canvasElementCopy.tool.textString = textArea.value
+        textArea.remove()
+        EventBus.$emit('addText', canvasElementCopy)
+      }
+      const onClickEvent = () => {
+        textArea.blur()
+      }
+      textArea.addEventListener('mousedown', onClickEvent)
+      textArea.addEventListener('keydown', keyBoardEvent)
+      textArea.addEventListener('focusout', focusOutEvent)
+      textArea.addEventListener('input', () => {
+        if ((textArea.scrollHeight - 1) > textArea.getBoundingClientRect().height) {
+          textArea.value = textArea.value.slice(0, -1)
+        }
+      })
     }
-    const focusOutEvent = () => {
-      canvasElementCopy.tool.textString = textArea.value
-      textArea.remove()
-      EventBus.$emit('addText', canvasElementCopy)
-    }
-    const onClickEvent = () => { textArea.blur() }
-    textArea.addEventListener('mousedown', onClickEvent)
-    textArea.addEventListener('keydown', keyBoardEvent)
-    textArea.addEventListener('focusout', focusOutEvent)
   }
 
-  renderCanvas = (canvasElement: CanvasElement, layer: Konva.Layer): void => {
+  renderCanvas = (canvasElement: CanvasElement, layer: Konva.Layer, event: CustomEvent | CustomStageEvent): void => {
     if (canvasElement.hasMoved) {
       this.textCreator = new TextCreator(
         canvasElement.tool.temporary || this.temporary,
@@ -73,7 +86,7 @@ export default class Text implements TextInterface {
         canvasElement.tool.colour || this.colour,
         canvasElement.tool.textString || this.textString
       )
-      this.textCreator.create(canvasElement, layer)
+      this.textCreator.create(canvasElement, layer, event)
       layer.batchDraw()
       if (canvasElement.tool.temporary) {
         this.textCreator.runTemporaryAnimation(this.textCreator.getGroup(), layer)

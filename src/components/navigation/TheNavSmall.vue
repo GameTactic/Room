@@ -23,7 +23,7 @@
       </v-toolbar>
     </v-col>
     <v-col cols="12">
-      <v-toolbar dense flat class="navbar-toolbar-center justify-center">
+      <v-toolbar dense flat class="navbar-toolbar-center justify-center custom-background-transparent">
         <the-canvas-tools />
       </v-toolbar>
      </v-col>

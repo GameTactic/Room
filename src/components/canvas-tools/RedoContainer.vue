@@ -22,7 +22,7 @@ import { Getter } from 'vuex-class'
 import { CanvasGetters } from '@/store/modules/canvas'
 import { CanvasElement } from '@/types/Canvas'
 import { EventBus } from '@/event-bus'
-import HandleUndoRedo from '@/Util/HandleUndoRedo'
+import HandleUndoRedo from '@/util/HandleUndoRedo'
 
 @Component({
   name: 'RedoContainer.vue'

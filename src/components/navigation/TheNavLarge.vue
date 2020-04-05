@@ -4,7 +4,7 @@
       <v-img class="ml-3 mr-12" max-width="160" max-height="45" :src="require('@/assets/logo.png')"></v-img>
       <v-spacer />
     </v-toolbar>
-    <v-toolbar dense flat class="navbar-toolbar-center justify-center">
+    <v-toolbar dense flat class="navbar-toolbar-center justify-center custom-background-transparent">
       <the-canvas-tools />
     </v-toolbar>
     <v-toolbar dense class="navbar-toolbar-right">
@@ -46,6 +46,9 @@ export default class TheNavLarge extends Vue {
 }
 </script>
 <style lang="scss">
+.custom-background-transparent {
+  background-color:transparent !important;
+}
 .navbar-row {
   margin: 0px;
   position: fixed;

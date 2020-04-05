@@ -4,6 +4,7 @@ import { CanvasElement } from '@/types/Canvas'
 import uuid from 'uuid'
 import throttle from 'lodash.throttle'
 import FreedrawCreator from '@/tools/shapes/FreedrawCreator'
+import { CustomEvent, CustomStageEvent } from '@/util/PointerEventMapper'
 
 export default class FreeDraw implements FreeDrawInterface {
   private freedrawCreator: FreedrawCreator
@@ -19,8 +20,8 @@ export default class FreeDraw implements FreeDrawInterface {
   }
 
   // eslint-disable-next-line
-  mouseDownAction = (e: Konva.KonvaPointerEvent, canvasElement: CanvasElement, layer: Konva.Layer, _socket: WebSocket): void => {
-    canvasElement.data = [e.evt.x, e.evt.y]
+  mouseDownAction = (event: CustomEvent, canvasElement: CanvasElement, layer: Konva.Layer, _socket: WebSocket): void => {
+    canvasElement.data = [event.globalOffset.x, event.globalOffset.y]
     canvasElement.id = uuid()
     canvasElement.hasMoved = false
     canvasElement.tracker = Tracker.ADDITION
@@ -35,21 +36,21 @@ export default class FreeDraw implements FreeDrawInterface {
       this.size,
       this.colour
     )
-    this.freedrawCreator.create(canvasElement, layer)
+    this.freedrawCreator.create(canvasElement, layer, event)
     canvasElement.position = this.freedrawCreator.getGroup().position()
   }
 
   // eslint-disable-next-line
-  mouseMoveAction = throttle((e: Konva.KonvaPointerEvent, canvasElement: CanvasElement, layer: Konva.Layer, socket: WebSocket): void => {
+  mouseMoveAction = throttle((event: CustomEvent, canvasElement: CanvasElement, layer: Konva.Layer, socket: WebSocket): void => {
     if (!canvasElement.hasMoved) {
       canvasElement.hasMoved = true
     }
-    canvasElement.data = canvasElement.data.concat([e.evt.x, e.evt.y])
-    this.freedrawCreator.move(canvasElement, layer)
+    canvasElement.data = canvasElement.data.concat([event.globalOffset.x, event.globalOffset.y])
+    this.freedrawCreator.move(canvasElement, layer, event)
     layer.batchDraw()
   }, 0)
 
-  mouseUpAction = (e: Konva.KonvaPointerEvent, canvasElement: CanvasElement, layer: Konva.Layer, socket: WebSocket): void => {
+  mouseUpAction = (event: CustomEvent, canvasElement: CanvasElement, layer: Konva.Layer, socket: WebSocket): void => {
     if (!canvasElement.hasMoved) {
       this.freedrawCreator.destroy(canvasElement, layer)
     } else {
@@ -60,14 +61,14 @@ export default class FreeDraw implements FreeDrawInterface {
     }
   }
 
-  renderCanvas = (canvasElement: CanvasElement, layer: Konva.Layer): void => {
+  renderCanvas = (canvasElement: CanvasElement, layer: Konva.Layer, event: CustomEvent | CustomStageEvent): void => {
     if (canvasElement.hasMoved) {
       this.freedrawCreator = new FreedrawCreator(
         canvasElement.tool.temporary || this.temporary,
         canvasElement.tool.size || this.size,
         canvasElement.tool.colour || this.colour
       )
-      this.freedrawCreator.create(canvasElement, layer)
+      this.freedrawCreator.create(canvasElement, layer, event)
       layer.batchDraw()
       if (canvasElement.tool.temporary) {
         this.freedrawCreator.runTemporaryAnimation(this.freedrawCreator.getGroup(), layer)

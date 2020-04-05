@@ -1,6 +1,7 @@
 import Konva from 'konva'
 import { CanvasElement } from '@/types/Canvas'
 import Shape, { CircleCreatorInterface } from '@/tools/shapes/Shape'
+import { CustomEvent, CustomStageEvent } from '@/util/PointerEventMapper'
 
 export default class CircleCreator extends Shape implements CircleCreatorInterface {
   private line: Konva.Line
@@ -18,32 +19,45 @@ export default class CircleCreator extends Shape implements CircleCreatorInterfa
     this.circle = new Konva.Circle()
   }
 
-  create = (canvasElement: CanvasElement, layer: Konva.Layer): void => {
+  create = (canvasElement: CanvasElement, layer: Konva.Layer, event: CustomEvent | CustomStageEvent): void => {
     this.group = new Konva.Group()
     this.group.attrs.temporary = this.temporary
     if (this.showRadius && canvasElement.tool.showRadius) {
       layer.add(this.group.id(canvasElement.id).add(
-        this.circle = this.createCircleElement(canvasElement),
-        this.line = this.createLineElement(canvasElement)
+        this.circle = this.createCircleElement(canvasElement, event),
+        this.line = this.createLineElement(canvasElement, event)
       ))
     } else {
       layer.add(this.group.id(canvasElement.id).add(
-        this.circle = this.createCircleElement(canvasElement)
+        this.circle = this.createCircleElement(canvasElement, event)
       ))
     }
   }
   // eslint-disable-next-line
-  move = (canvasElement: CanvasElement, layer: Konva.Layer, pos: Position): void => {
-    this.circle.radius(this.calcRadius(canvasElement.data[0], canvasElement.data[1], pos.x, pos.y))
+  move = (canvasElement: CanvasElement, layer: Konva.Layer, pos: Position, event: CustomEvent | CustomStageEvent): void => {
+    this.circle.radius(
+      this.calcRadius(
+        this.formatX(canvasElement.data[0], event),
+        this.formatY(canvasElement.data[1], event),
+        this.formatX(pos.x, event),
+        this.formatY(pos.y, event)
+      )
+    )
     if (canvasElement.tool.showRadius && this.line !== undefined) {
-      this.line.points([canvasElement.data[0], canvasElement.data[1], pos.x, pos.y])
+      this.line.points([
+        this.formatX(canvasElement.data[0], event),
+        this.formatY(canvasElement.data[1], event),
+        this.formatX(pos.x, event),
+        this.formatY(pos.y, event)]
+      )
     }
   }
 
-  createLineElement = (canvasElement: CanvasElement, outlineColour?: string, size?: number, strokeStyle?: number): Konva.Shape & Konva.Line => {
+  createLineElement = (canvasElement: CanvasElement, event: CustomEvent | CustomStageEvent, outlineColour?: string, size?: number, strokeStyle?: number): Konva.Shape & Konva.Line => {
+    const newPoints = canvasElement.data.map((num) => (num % 2) ? this.formatX(num, event) : this.formatY(num, event))
     return new Konva.Line({
       globalCompositeOperation: 'source-over',
-      points: canvasElement.data,
+      points: newPoints,
       stroke: outlineColour || canvasElement.tool.outlineColour || this.outlineColour,
       strokeWidth: size || canvasElement.tool.size || this.size,
       lineCap: 'mitter',
@@ -53,7 +67,7 @@ export default class CircleCreator extends Shape implements CircleCreatorInterfa
     })
   }
 
-  createCircleElement = (canvasElement: CanvasElement, colour?: string, size?: number, radius?: number, strokeStyle?: number, outlineColour?: string): Konva.Shape & Konva.Circle => {
+  createCircleElement = (canvasElement: CanvasElement, event: CustomEvent | CustomStageEvent, colour?: string, size?: number, radius?: number, strokeStyle?: number, outlineColour?: string): Konva.Shape & Konva.Circle => {
     return new Konva.Circle({
       id: canvasElement.id,
       globalCompositeOperation: 'source-over',
@@ -61,8 +75,8 @@ export default class CircleCreator extends Shape implements CircleCreatorInterfa
       stroke: outlineColour || canvasElement.tool.outlineColour || this.outlineColour,
       strokeWidth: size || canvasElement.tool.size || this.size,
       radius: radius || 0,
-      x: canvasElement.data[0],
-      y: canvasElement.data[1],
+      x: this.formatX(canvasElement.data[0], event),
+      y: this.formatY(canvasElement.data[1], event),
       hitStrokeWidth: this.hitStroke,
       dash: this.stroke[strokeStyle || canvasElement.tool.strokeStyle || this.strokeStyle || 0]
     })

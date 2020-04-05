@@ -1,16 +1,26 @@
 import Konva from 'konva'
-import { CanvasElement } from '@/types/Canvas'
+import { CanvasElement, VueKonvaStage } from '@/types/Canvas'
+import { CustomEvent } from '@/util/PointerEventMapper'
 
-export type MouseDownAction = (e: Konva.KonvaPointerEvent, canvasElement: CanvasElement, layer: Konva.Layer, socket: WebSocket) => void;
-export type MouseMoveAction = (e: Konva.KonvaPointerEvent, canvasElement: CanvasElement, layer: Konva.Layer, socket: WebSocket) => void;
-export type MouseUpAction = (e: Konva.KonvaPointerEvent, canvasElement: CanvasElement, layer: Konva.Layer, socket: WebSocket) => void;
-export type RenderCanvas = (canvasElement: CanvasElement, layer: Konva.Layer) => void;
+export type CanvasDownAction = (event: CustomEvent, stage: VueKonvaStage) => void;
+export type CanvasMoveAction = (event: CustomEvent, stage: VueKonvaStage) => void;
+export type CanvasUpAction = (event: CustomEvent, stage: VueKonvaStage) => void;
+export type MouseDownAction = (event: CustomEvent, canvasElement: CanvasElement, layer: Konva.Layer, socket: WebSocket) => void;
+export type MouseMoveAction = (event: CustomEvent, canvasElement: CanvasElement, layer: Konva.Layer, socket: WebSocket) => void;
+export type MouseUpAction = (event: CustomEvent, canvasElement: CanvasElement, layer: Konva.Layer, socket: WebSocket) => void;
+export type RenderCanvas = (canvasElement: CanvasElement, layer: Konva.Layer, event: CustomEvent) => void;
 export type SendToWebSocket = (canvasElement: CanvasElement, socket: WebSocket) => void;
 
 export interface Tool {
   name: string;
   // eslint-disable-next-line
   [key: string]: any
+}
+
+export interface CanvasToolInterface extends Tool {
+  canvasDownAction: CanvasDownAction;
+  canvasMoveAction: CanvasMoveAction;
+  canvasUpAction: CanvasUpAction;
 }
 
 export interface ToolClassInterface extends Tool {
