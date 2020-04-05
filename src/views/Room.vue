@@ -1,6 +1,11 @@
 <template>
-  <div class="full-width-height">
-    <the-canvas :id="id"/>
+  <div class="full-width-height"
+       ref="app"
+       @mousedown="canvasDown"
+       @mousemove="canvasMove"
+       @mouseup="canvasUp"
+  >
+    <the-canvas ref="stage" :id="id"/>
     <the-nav-large class="the-nav-large" :id="id"/>
     <the-nav-small class="the-nav-small" :id="id"/>
     <the-tool-panel class="custom-hide-on-mobile" :id="id"/>
@@ -19,6 +24,8 @@ import { Prop } from 'vue-property-decorator'
 import Vue from 'vue'
 import { namespace } from 'vuex-class'
 import { Namespaces } from '@/store'
+import { EventBus } from '@/event-bus'
+import { VueKonvaStage } from '@/types/Canvas'
 
 const Socket = namespace(Namespaces.SOCKET)
 
@@ -33,15 +40,38 @@ const Socket = namespace(Namespaces.SOCKET)
     }
   })
 export default class extends Vue {
-    @Prop() id!: string
-    @Socket.Getter('socket') socket!: WebSocket
+  @Prop() id!: string
+  @Socket.Getter('socket') socket!: WebSocket
 
-    created () {
-      this.socket.onopen = () => {
-        // eslint-disable-next-line @typescript-eslint/camelcase
-        this.socket.send(JSON.stringify({ join_room: this.id }))
-      }
+  $refs!: {
+    app: HTMLDivElement;
+    stage: VueKonvaStage;
+  }
+
+  created () {
+    this.socket.onopen = () => {
+      // eslint-disable-next-line @typescript-eslint/camelcase
+      this.socket.send(JSON.stringify({ join_room: this.id }))
     }
+  }
+
+  canvasDown (e: MouseEvent) {
+    if (e.target === this.$refs.app && !(e.target instanceof HTMLCanvasElement)) {
+      EventBus.$emit('mouseDown', e)
+    }
+  }
+
+  canvasMove (e: MouseEvent) {
+    if (e.target === this.$refs.app && !(e.target instanceof HTMLCanvasElement)) {
+      EventBus.$emit('mouseMove', e)
+    }
+  }
+
+  canvasUp (e: MouseEvent) {
+    if (e.target === this.$refs.app && !(e.target instanceof HTMLCanvasElement)) {
+      EventBus.$emit('mouseUp', e)
+    }
+  }
 }
 </script>
 <style scoped lang="scss">

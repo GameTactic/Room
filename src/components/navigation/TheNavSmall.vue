@@ -23,7 +23,7 @@
       </v-toolbar>
     </v-col>
     <v-col cols="12">
-      <v-toolbar dense flat class="navbar-toolbar-center justify-center">
+      <v-toolbar dense flat class="navbar-toolbar-center justify-center custom-background-transparent">
         <the-canvas-tools />
       </v-toolbar>
      </v-col>
@@ -50,10 +50,10 @@ export default class TheNavSmall extends Vue {
 </script>
 <style scoped lang="scss">
 .navbar-row {
-  margin: 0px;
+  margin: 0;
   position: fixed;
    div {
-    padding: 0px;
+    padding: 0;
   }
 }
 header.navbar-toolbar-left.navbar-toolbar-left.navbar-toolbar-left {
@@ -62,7 +62,6 @@ header.navbar-toolbar-left.navbar-toolbar-left.navbar-toolbar-left {
   position: relative;
   flex: 0 1 100px;
   z-index: 100;
-
   h2 {
     white-space: nowrap;
     margin: 0.25rem;
@@ -80,7 +79,7 @@ header.navbar-toolbar-left.navbar-toolbar-left.navbar-toolbar-left {
   position: relative;
   flex: 0 1 250px;
   z-index: 100;
-  > div {
+  >div {
     justify-content: flex-end;
     margin-right: 10px;
   }

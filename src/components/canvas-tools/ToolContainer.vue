@@ -19,7 +19,7 @@
               elevation="0"
               @click="onButtonClickHandler"
             >
-              <v-icon dense>{{icon}}</v-icon>
+              <v-icon dense :color="iconColour">{{icon}}</v-icon>
             </v-btn>
           </template>
           <span>{{ toolName }}</span>
@@ -47,6 +47,7 @@
       <v-btn
         :class="[isEnabledClass, 'border-btn']"
         icon
+        tile
         elevation="0"
         v-on="tooltip1"
         @click="onButtonClickHandler"
@@ -97,7 +98,7 @@ export default class ToolContainer extends Vue {
   }
 
   get iconColour (): string {
-    return (this.enabledTool?.name === this.toolname) ? 'white' : 'black'
+    return (this.enabledTool?.name === this.toolname) ? 'white' : 'primary'
   }
 
   get isEnabledClass (): string {
@@ -152,25 +153,22 @@ interface MenuElement extends Vue {
 .rotate90 {
   transform: rotate(-90deg);
 }
-.v-btn--active .v-icon {
-  color: white !important;
-}
 .v-btn--active {
   background-color: $room-primary;
 }
 .custom-btn-disabled::before {
-  opacity: 0 !important;
+  opacity: 0;
 }
 .custom-btn-disabled {
-  background-color: rgba(0, 0, 0, 0) !important;
+  background-color: rgba(0, 0, 0, 0);
 }
 .custom-btn-disabled .v-icon {
-  color: var(--v-primary-base) !important;
+  color: var(--v-primary-base) !important; // override
 }
 .border-btn {
-  border-color: rgba(0, 0, 0, 0.12) !important;
+  border-color: rgba(0, 0, 0, 0.12);
   border-style:solid;
-  border-radius: 0 !important;
-  border-width:0.4px 1.5px 0.5px 1.5px !important;
+  border-radius: 0;
+  border-width:0.4px 1.5px 0.5px 1.5px !important; // override
 }
 </style>

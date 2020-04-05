@@ -1,6 +1,7 @@
 import { CanvasElement } from '@/types/Canvas'
 import { Tool, Tracker } from '@/tools/Tool'
 import Konva from 'konva'
+import { CustomEvent } from '@/util/PointerEventMapper'
 
 export interface MouseUpCallback {
   change: MouseUpChange;
@@ -24,7 +25,7 @@ export default class HandleMouseUp {
                public enabledTool: Tool,
                public layer: Konva.Layer,
                public canvasElements: CanvasElement[],
-               public e: Konva.KonvaPointerEvent,
+               public event: CustomEvent,
                public socket: WebSocket) {
   }
 
@@ -37,6 +38,8 @@ export default class HandleMouseUp {
             groupIds: this.canvasElement.tool.erase
           }
         }
+      } else if (this.enabledTool.name === 'text') {
+        return undefined
       } else if (this.canvasElement.tracker === Tracker.MOVE) {
         const response = this.handleMove(this.canvasElement)
         if (response) {
@@ -54,8 +57,7 @@ export default class HandleMouseUp {
             payload: {
               canvasElementHistory: { ...this.canvasElement },
               canvasElement: {
-                ...this.canvasElement,
-                tool: { ...this.enabledTool }
+                ...this.canvasElement
               }
             }
           }
