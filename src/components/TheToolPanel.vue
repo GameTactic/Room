@@ -58,10 +58,6 @@ export default class TheToolPanel extends Vue {
 .custom-tool-bar {
   border-radius: 0;
 }
-@media screen and (max-height: 530px) {
-  .btn-toggle-box {
-  }
-}
 </style>
 <style lang="scss">
 .custom-tool-panel-container .custom-tool-bar > .v-btn.v-btn:first-child {

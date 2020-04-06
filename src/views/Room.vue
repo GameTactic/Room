@@ -58,6 +58,7 @@ export default class extends Vue {
   canvasDown (e: MouseEvent) {
     if (e.target === this.$refs.app && !(e.target instanceof HTMLCanvasElement)) {
       EventBus.$emit('mouseDown', e)
+<<<<<<< HEAD
     }
   }
 
@@ -72,6 +73,22 @@ export default class extends Vue {
       EventBus.$emit('mouseUp', e)
     }
   }
+=======
+    }
+  }
+
+  canvasMove (e: MouseEvent) {
+    if (e.target === this.$refs.app && !(e.target instanceof HTMLCanvasElement)) {
+      EventBus.$emit('mouseMove', e)
+    }
+  }
+
+  canvasUp (e: MouseEvent) {
+    if (e.target === this.$refs.app && !(e.target instanceof HTMLCanvasElement)) {
+      EventBus.$emit('mouseUp', e)
+    }
+  }
+>>>>>>> 2918629cd00572446ce3a1f6b1da67e016485c77
 }
 </script>
 <style scoped lang="scss">
