@@ -48,15 +48,18 @@ export default class TheToolPanel extends Vue {
 </script>
 <style scoped lang="scss">
 .btn-toggle-box {
-  top: 50px;
+  top: 48px;
   position: fixed;
+  max-height: calc(100% - 48px);
+  overflow: auto;
+  width: 72px;
+  background: transparent;
 }
 .custom-tool-bar {
   border-radius: 0;
 }
-@media screen and (max-width: 1199px) {
+@media screen and (max-height: 530px) {
   .btn-toggle-box {
-    top: 100px;
   }
 }
 </style>

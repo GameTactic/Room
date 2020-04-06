@@ -1,6 +1,6 @@
 <template>
-  <v-row class="navbar-row">
-    <v-col cols="12">
+  <v-row class="navbar-row custom-not-clickable">
+    <v-col cols="12" class="custom-clickable">
       <v-toolbar dense class="navbar-toolbar-left">
         <v-img class="ml-3 mr-12" max-width="160" max-height="45" :src="require('@/assets/logo.png')"></v-img>
         <v-spacer />
@@ -24,7 +24,7 @@
     </v-col>
     <v-col cols="12">
       <v-toolbar dense flat class="navbar-toolbar-center justify-center custom-background-transparent">
-        <the-canvas-tools />
+        <the-canvas-tools class="custom-clickable" />
       </v-toolbar>
      </v-col>
   </v-row>
@@ -92,3 +92,12 @@ header.navbar-toolbar-left.navbar-toolbar-left.navbar-toolbar-left {
     }
   }
 }
+</style>
+<style lang=scss>
+.custom-clickable {
+  pointer-events: auto;
+}
+.custom-not-clickable {
+  pointer-events: none;
+}
+</style>

@@ -87,6 +87,12 @@ export default class extends Vue {
     }
   }
 
+  @media (max-height: 300px) {
+    .custom-hide-on-mobile {
+      display: none;
+    }
+  }
+
   @media (max-width: 1199px) {
     .the-nav-large {
       display: none;
