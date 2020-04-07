@@ -11,7 +11,7 @@
     @touchmove="onTouchMoveHandler"
     @touchend="onTouchUpHandler"
   >
-    <v-layer ref="layer" :config="{ id: canvasElement.layerId }" />
+    <v-layer ref="layer" :config="{ id: canvasElement.layerId }"></v-layer>
   </v-stage>
 </template>
 
@@ -93,9 +93,9 @@ export default class TheCanvas extends Vue {
           x: 1,
           y: 1
         },
-        width: 800,
+        width: 500,
         height: 500,
-        initialWidth: 800,
+        initialWidth: 500,
         initialHeight: 500
       })
       const response = HandleCanvas.handleZoom(this.stageNode, this.stageZoom, this.stageConfig, true)
