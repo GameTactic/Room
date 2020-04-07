@@ -7,6 +7,7 @@
       <v-card
         tile
         flat
+        class="custom-entity-panel"
       >
         <wows-panel v-if="roomState.game.name === 'wows'" :clickedItem="clickedItem" :teams="teams" />
         <wot-panel v-if="roomState.game.name === 'wot'" :clickedItem="clickedItem" :teams="teams" />
@@ -130,14 +131,14 @@ export default class MapButtons extends Vue {
 </script>
 <style scoped lang="scss">
 .custom-card-minimised {
-  top: 50px;
+  top: 48px;
   right: 0;
   position: fixed;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
   transition: width 1s;
-  height: 650px;
+  height: calc(100% - 48px);
 
   >div {
     margin: 0;
@@ -163,6 +164,11 @@ export default class MapButtons extends Vue {
     color: $room-text !important;
     margin: 0.5rem;
   }
+}
+
+.custom-entity-panel {
+  overflow: scroll;
+  height: calc(100vh - 48px);
 }
 
 .custom-card-expanded > div > div {
@@ -207,8 +213,5 @@ export default class MapButtons extends Vue {
 }
 
 @media screen and (max-width: 1199px) {
-  .custom-card-minimised {
-    top: 100px;
-  }
 }
 </style>

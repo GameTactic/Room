@@ -1,18 +1,18 @@
 <template>
   <v-card>
-    <v-card-subtitle class="pb-0 pl-5">
+    <v-card-subtitle class="pb-0 pl-5 custom-hide-text">
       Colour
     </v-card-subtitle>
     <v-card-actions class="py-0">
       <colour-picker :value.sync="lineColour" />
     </v-card-actions>
-    <v-card-subtitle class="py-0 pl-5">
+    <v-card-subtitle class="py-0 pl-5 custom-hide-text">
       Size
     </v-card-subtitle>
     <v-card-actions class="py-0">
       <size-picker class="px-2" :value.sync="lineSize"></size-picker>
     </v-card-actions>
-    <v-card-subtitle class="py-0 pl-5">
+    <v-card-subtitle class="py-0 pl-5 custom-hide-text">
       End style
     </v-card-subtitle>
     <v-card-actions class="pb-0">
@@ -41,7 +41,7 @@
         <v-spacer></v-spacer>
       </v-radio-group>
     </v-card-actions>
-    <v-card-subtitle class="py-0 pl-5">
+    <v-card-subtitle class="py-0 pl-5 custom-hide-text">
       Stroke style
     </v-card-subtitle>
     <v-card-actions class="pb-0">

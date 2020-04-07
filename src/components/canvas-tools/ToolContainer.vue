@@ -172,3 +172,13 @@ interface MenuElement extends Vue {
   border-width:0.4px 1.5px 0.5px 1.5px !important; // override
 }
 </style>
+<style lang="scss">
+.custom-hide-text {
+  display: block;
+}
+@media screen and (max-height: 450px) {
+  .custom-hide-text {
+    display: none;
+  }
+}
+</style>

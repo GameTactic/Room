@@ -1,12 +1,12 @@
 <template>
   <v-card>
-    <v-card-subtitle class="pb-0 pl-5">
+    <v-card-subtitle class="pb-0 pl-5 custom-hide-text">
       Colour
     </v-card-subtitle>
     <v-card-actions class="py-0">
       <colour-picker :value.sync="textColour" />
     </v-card-actions>
-    <v-card-subtitle class="py-0 pl-5">
+    <v-card-subtitle class="py-0 pl-5 custom-hide-text">
       Size
     </v-card-subtitle>
     <v-card-actions class="py-0">
