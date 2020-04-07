@@ -1,24 +1,24 @@
 <template>
   <v-card>
-    <v-card-subtitle class="pb-0 pl-5">
+    <v-card-subtitle class="pb-0 pl-5 custom-hide-text">
       Fill
     </v-card-subtitle>
     <v-card-actions class="py-0">
       <colour-picker-transparency :value.sync="circleColour" />
     </v-card-actions>
-    <v-card-subtitle class="py-0 pl-5">
+    <v-card-subtitle class="py-0 pl-5 custom-hide-text">
       Size
     </v-card-subtitle>
     <v-card-actions class="py-0">
       <size-picker class="px-2" :value.sync="circleSize"></size-picker>
     </v-card-actions>
-    <v-card-subtitle class="py-0 pl-5">
+    <v-card-subtitle class="py-0 pl-5 custom-hide-text">
       Outline
     </v-card-subtitle>
     <v-card-actions class="py-0">
       <colour-picker :value.sync="circleOutlineColour" />
     </v-card-actions>
-    <v-card-subtitle class="py-0 pl-5">
+    <v-card-subtitle class="py-0 pl-5 custom-hide-text">
       Stroke style
     </v-card-subtitle>
     <v-card-actions class="pb-0">
