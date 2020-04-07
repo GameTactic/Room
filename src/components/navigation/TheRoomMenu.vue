@@ -28,7 +28,7 @@
 </template>
 
 <script lang="ts">
-import { Component, Prop, Vue } from 'vue-property-decorator'
+import { Component, Vue } from 'vue-property-decorator'
 
 interface RoomMenuItem {
   text: string;
@@ -50,6 +50,7 @@ export default class TheRoomMenu extends Vue {
     title: 'Manage the rooms settings'
   }]
 
+  // eslint-disable-next-line
   roomMenuItemsClickHandler (item: RoomMenuItem) {
     // do stuff
   }

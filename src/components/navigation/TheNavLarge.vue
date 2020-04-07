@@ -1,13 +1,13 @@
 <template>
-  <v-row class="navbar-row">
-    <v-toolbar dense class="navbar-toolbar-left">
+  <v-row class="navbar-row custom-not-clickable">
+    <v-toolbar dense class="navbar-toolbar-left custom-clickable">
       <v-img class="ml-3 mr-12" max-width="160" max-height="45" :src="require('@/assets/logo.png')"></v-img>
       <v-spacer />
     </v-toolbar>
-    <v-toolbar dense flat class="navbar-toolbar-center justify-center custom-background-transparent">
-      <the-canvas-tools />
+    <v-toolbar dense flat class="navbar-toolbar-center justify-center custom-not-clickable-large custom-background-transparent">
+      <the-canvas-tools class="custom-clickable"/>
     </v-toolbar>
-    <v-toolbar dense class="navbar-toolbar-right">
+    <v-toolbar dense class="navbar-toolbar-right custom-clickable">
       <v-spacer />
       <v-tooltip bottom nudge-bottom="10">
         <template v-slot:activator="{ on }">
@@ -126,5 +126,10 @@ header.navbar-toolbar-left.navbar-toolbar-left.navbar-toolbar-left {
       display: none;
     }
   }
+}
+</style>
+<style lang="scss">
+  .custom-not-clickable-large, .custom-not-clickable-large > div {
+  pointer-events: none;
 }
 </style>
