@@ -26,14 +26,14 @@
         <v-spacer></v-spacer>
         <v-tooltip top>
           <template v-slot:activator="{ on }">
-            <v-radio v-on="on" class="mr-0" name="strokeStyle" on-icon="$vuetify.icons.normalLine" off-icon="$vuetify.icons.normalLine" :value="0"></v-radio>
+            <v-radio v-on="on" class="mr-0" name="strokeStyle" on-icon="$vuetify.icons.normalLineActive" off-icon="$vuetify.icons.normalLine" :value="0"></v-radio>
           </template>
           <span>Normal Line</span>
         </v-tooltip>
         <v-spacer></v-spacer>
         <v-tooltip top>
           <template v-slot:activator="{ on }">
-            <v-radio v-on="on" class="mr-0" name="strokeStyle" on-icon="$vuetify.icons.dashedLine" off-icon="$vuetify.icons.dashedLine" :value="1"></v-radio>
+            <v-radio v-on="on" class="mr-0" name="strokeStyle" on-icon="$vuetify.icons.dashedLineActive" off-icon="$vuetify.icons.dashedLine" :value="1"></v-radio>
           </template>
           <span>Dashed Line</span>
         </v-tooltip>

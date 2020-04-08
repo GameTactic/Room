@@ -1,5 +1,5 @@
 <template>
-  <svg fill="var(--v-primary-base)" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 633.52 64.1"><title>Dashed Line</title><g id="Layer_2" data-name="Layer 2"><g id="Layer_1-2" data-name="Layer 1"><rect width="183.96" height="64.1" rx="10.28"/><rect x="224.78" width="183.96" height="64.1" rx="10.28"/><rect x="449.56" width="183.96" height="64.1" rx="10.28"/></g></g></svg>
+  <svg id="Layer_1" data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 391.4 80"><title>dashed-line</title><rect width="110.87" height="80" rx="23.9"/><rect x="280.53" width="110.87" height="80" rx="23.9"/><rect x="140.26" width="110.87" height="80" rx="23.9"/></svg>
 </template>
 <script>
 export default {
