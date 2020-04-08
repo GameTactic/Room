@@ -2,7 +2,7 @@
   <v-stage
     ref="stage"
     class="konva-stage"
-    :class="[enabledTool ? enabledTool.name : '']"
+    :class="[enabledTool ? enabledTool.name : '', mouseDown ? 'mouseDown' : '']"
     :config="stageConfig"
     @mousedown="onMouseDownHandler"
     @mousemove="onMouseMoveHandler"
@@ -81,6 +81,8 @@ export default class TheCanvas extends Vue {
     position: { x: 0, y: 0 }
   }
 
+  mouseDown = false;
+
   $refs!: {
     layer: VueKonvaLayer;
     stage: VueKonvaStage;
@@ -156,6 +158,7 @@ export default class TheCanvas extends Vue {
     })
 
     EventBus.$on('mouseUp', (e: MouseEvent) => {
+      this.$data.mouseDown = false
       this.onMouseUpHandler(PointerEventMapper.mouseEventMapper(e) as KonvaPointerEvent)
     })
 
@@ -214,6 +217,7 @@ export default class TheCanvas extends Vue {
   }
 
   onMouseDownHandler (e: Konva.KonvaPointerEvent): void {
+    this.$data.mouseDown = true
     const event = PointerEventMapper.globalEventMapper(e, this.stageConfig, this.stageZoom, this.stageNode)
     if (this.enabledTool?.mouseDownAction) {
       this.enable()
@@ -234,6 +238,7 @@ export default class TheCanvas extends Vue {
   }
 
   onMouseUpHandler (e: Konva.KonvaPointerEvent): void {
+    this.$data.mouseDown = false
     const event = PointerEventMapper.globalEventMapper(e, this.stageConfig, this.stageZoom, this.stageNode)
     if (this.enabledTool?.mouseUpAction && this.enabled) {
       this.disable()
@@ -311,6 +316,12 @@ export default class TheCanvas extends Vue {
   }
   &.circle::v-deep canvas {
     cursor: url('~@/assets/cursor/circle.png'), auto;
+  }
+  &.moveCanvas::v-deep canvas {
+    cursor: grab;
+  }
+  &.moveCanvas.mouseDown::v-deep canvas {
+    cursor: grabbing;
   }
   /* Extra Tools Here */
 }

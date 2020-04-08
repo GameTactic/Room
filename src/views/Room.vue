@@ -1,9 +1,9 @@
 <template>
   <div class="full-width-height"
-       ref="app"
-       @mousedown="canvasDown"
-       @mousemove="canvasMove"
-       @mouseup="canvasUp"
+    ref="app"
+    @mousedown="canvasDown"
+    @mousemove="canvasMove"
+    @mouseup="canvasUp"
   >
     <the-canvas ref="stage" :id="id"/>
     <the-nav-large class="the-nav-large" :id="id"/>
