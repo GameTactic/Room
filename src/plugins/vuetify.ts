@@ -1,6 +1,8 @@
 import Vue from 'vue'
 import '@fortawesome/fontawesome-free/css/all.css'
 import colours from '@/assets/scss/_variables.scss'
+import { DashedLine, NormalLine, TBarHead } from '@/assets/tool-icons'
+
 import Vuetify, {
   VApp,
   VRadio,
@@ -83,7 +85,18 @@ Vue.use(Vuetify, {
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const opts: Record<string, any> = {
   icons: {
-    iconfont: 'fa' // 'mdi' || 'mdiSvg' || 'md' || 'fa' || 'fa4'
+    values: {
+      dashedLine: {
+        component: DashedLine
+      },
+      normalLine: {
+        component: NormalLine
+      },
+      tBarHead: {
+        component: TBarHead
+      }
+    },
+    iconfont: 'fa' // 'mdi' || 'mdiSvg' || 'md' || 'fa' || 'fa4',
   },
   theme: {
     options: {
