@@ -67,7 +67,7 @@
             max-height="40"
             @click="centerCanvas"
           >
-            <v-icon small>fa-border-all</v-icon>
+            <v-icon small>fa-compress-arrows-alt</v-icon>
           </v-btn>
         </template>
         <span>Center the canvas</span>
