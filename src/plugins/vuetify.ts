@@ -1,7 +1,7 @@
 import Vue from 'vue'
 import '@fortawesome/fontawesome-free/css/all.css'
 import colours from '@/assets/scss/_variables.scss'
-import { DashedLine, NormalLine, TBarHead } from '@/assets/tool-icons'
+import { DashedLine, NormalLine, TBarHead, DashedLineActive, NormalLineActive, TBarHeadActive } from '@/assets/tool-icons'
 
 import Vuetify, {
   VApp,
@@ -94,6 +94,15 @@ const opts: Record<string, any> = {
       },
       tBarHead: {
         component: TBarHead
+      },
+      dashedLineActive: {
+        component: DashedLineActive
+      },
+      normalLineActive: {
+        component: NormalLineActive
+      },
+      tBarHeadActive: {
+        component: TBarHeadActive
       }
     },
     iconfont: 'fa' // 'mdi' || 'mdiSvg' || 'md' || 'fa' || 'fa4',

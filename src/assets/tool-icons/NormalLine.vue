@@ -1,5 +1,5 @@
 <template>
-  <svg fill="var(--v-primary-base)" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 639.99 512"><title>Normal Line</title><g id="Layer_2" data-name="Layer 2"><g id="Layer_1-2" data-name="Layer 1"><path d="M45.47,508.63A16,16,0,0,1,23,505.82L3.37,480.55A16,16,0,0,1,6.18,458.1L594.53,3.37A16,16,0,0,1,617,6.18l19.64,25.27a16,16,0,0,1-2.81,22.45L45.47,508.63Z"/></g></g></svg>
+  <svg id="Layer_1" data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 391.4 80"><title>normal-line</title><rect width="391.4" height="80" rx="24.16"/></svg>
 </template>
 <script>
 export default {
