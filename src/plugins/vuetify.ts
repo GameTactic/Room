@@ -30,6 +30,8 @@ import Vuetify, {
   VListItemAvatar,
   VListItemContent,
   VListItemTitle,
+  VListItemIcon,
+  VSubheader,
   VContent,
   VCard,
   VCardActions,
@@ -38,7 +40,10 @@ import Vuetify, {
   VSlider,
   VSelect,
   VNavigationDrawer,
-  VTextField
+  VTextField,
+  VChipGroup,
+  VChip,
+  VSkeletonLoader
 } from 'vuetify/lib'
 
 Vue.use(Vuetify, {
@@ -69,7 +74,9 @@ Vue.use(Vuetify, {
     VListItemAvatar,
     VListItemContent,
     VListItemTitle,
+    VListItemIcon,
     VContent,
+    VSubheader,
     VCard,
     VCardActions,
     VSheet,
@@ -77,7 +84,10 @@ Vue.use(Vuetify, {
     VSlider,
     VSelect,
     VNavigationDrawer,
-    VTextField
+    VTextField,
+    VChipGroup,
+    VChip,
+    VSkeletonLoader
   },
   directives: { }
 })

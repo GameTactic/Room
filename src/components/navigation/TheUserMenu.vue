@@ -1,5 +1,5 @@
 <template>
-  <v-menu offset-y>
+  <v-menu v-if="!mobile" offset-y>
     <template v-slot:activator="{ on: menu }">
       <v-tooltip bottom>
         <template v-slot:activator="{ on: tooltip }">
@@ -26,6 +26,18 @@
       </v-list-item>
     </v-list>
   </v-menu>
+  <v-list v-else dense style="width: 100%;">
+    <v-subheader>User Profile</v-subheader>
+    <v-list-item
+      v-for="item in userMenuItems"
+      :key="item.text"
+      link
+    >
+      <v-list-item-content>
+        <v-list-item-title>{{ item.text }}</v-list-item-title>
+      </v-list-item-content>
+    </v-list-item>
+  </v-list>
 </template>
 
 <script lang="ts">
@@ -41,6 +53,7 @@ interface UserMenuItem {
   name: 'TheUserMenu'
 })
 export default class TheUserMenu extends Vue {
+  @Prop() private mobile!: boolean;
   userMenuItems: UserMenuItem[] = [{
     text: 'Login',
     title: 'Login to save your progress'

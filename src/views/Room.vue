@@ -81,25 +81,19 @@ export default class extends Vue {
     overflow-x: hidden;
   }
 
-  @media (max-width: 599px) {
+  @media (max-width: 899px) {
     .custom-hide-on-mobile {
       display: none;
     }
   }
 
-  @media (max-height: 300px) {
-    .custom-hide-on-mobile {
-      display: none;
-    }
-  }
-
-  @media (max-width: 1199px) {
+  @media (max-width: 899px) {
     .the-nav-large {
       display: none;
     }
   }
 
-  @media (min-width: 1200px) {
+  @media (min-width: 900px) {
     .the-nav-small {
       display: none;
     }
