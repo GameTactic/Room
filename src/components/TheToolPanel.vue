@@ -1,5 +1,5 @@
 <template>
-  <div class="custom-tool-panel-container btn-toggle-box pa-0">
+  <div class="custom-tool-panel-container btn-toggle-box pa-0 pt-1">
     <v-btn-toggle class="flex-column custom-tool-bar">
       <tool-container :id="id" icon="fa-arrows-alt" toolname="move" :popout="false" />
       <tool-container :id="id" icon="fa-map-pin" toolname="ping" :popout="false" />

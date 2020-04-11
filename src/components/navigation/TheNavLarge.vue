@@ -61,7 +61,7 @@ header.navbar-toolbar-left.navbar-toolbar-left.navbar-toolbar-left {
   background-color: $room-primary;
   color: $room-text;
   position: relative;
-  flex: 0 1 250px;
+  flex: 0 1 200px;
   z-index: 100;
   h2 {
     white-space: nowrap;
@@ -89,13 +89,14 @@ header.navbar-toolbar-left.navbar-toolbar-left.navbar-toolbar-left {
   color: black;
   >div {
     justify-content: center;
+    align-items: start;
   }
 }
 .navbar-toolbar-right.navbar-toolbar-right.navbar-toolbar-right {
   background-color: $room-primary;
   color: $room-text;
   position: relative;
-  flex: 0 1 250px;
+  flex: 0 1 200px;
   z-index: 100;
   &:after {
     content: '';
@@ -119,7 +120,7 @@ header.navbar-toolbar-left.navbar-toolbar-left.navbar-toolbar-left {
     margin-right: 10px;
   }
 }
-@media screen and (max-width: 960px) {
+@media screen and (max-width: 860px) {
   .navbar-toolbar-left, .navbar-toolbar-right  {
     flex: 1 1 auto;
     &:after {
