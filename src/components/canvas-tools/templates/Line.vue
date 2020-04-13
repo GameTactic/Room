@@ -1,18 +1,18 @@
 <template>
   <v-card>
-    <v-card-subtitle class="pb-0 pl-5">
+    <v-card-subtitle class="pb-0 pl-5 custom-hide-text">
       Colour
     </v-card-subtitle>
     <v-card-actions class="py-0">
       <colour-picker :value.sync="lineColour" />
     </v-card-actions>
-    <v-card-subtitle class="py-0 pl-5">
+    <v-card-subtitle class="py-0 pl-5 custom-hide-text">
       Size
     </v-card-subtitle>
     <v-card-actions class="py-0">
       <size-picker class="px-2" :value.sync="lineSize"></size-picker>
     </v-card-actions>
-    <v-card-subtitle class="py-0 pl-5">
+    <v-card-subtitle class="py-0 pl-5 custom-hide-text">
       End style
     </v-card-subtitle>
     <v-card-actions class="pb-0">
@@ -27,21 +27,21 @@
         <v-spacer></v-spacer>
         <v-tooltip top>
           <template v-slot:activator="{ on }">
-            <v-radio v-on="on" class="mr-0" name="endStyle" on-icon="fa-slash" off-icon="fa-slash" :value="'line'"></v-radio>
+            <v-radio v-on="on" class="mr-0" name="endStyle" on-icon="$vuetify.icons.normalLineActive" off-icon="$vuetify.icons.normalLine" :value="'line'"></v-radio>
           </template>
           <span>Line</span>
         </v-tooltip>
         <v-spacer></v-spacer>
         <v-tooltip top>
           <template v-slot:activator="{ on }">
-            <v-radio v-on="on" class="mr-0" name="endStyle" on-icon="fa-ruler-combined" off-icon="fa-ruler-combined" :value="'tBar'"></v-radio>
+            <v-radio v-on="on" class="mr-0" name="endStyle" on-icon="$vuetify.icons.tBarHeadActive" off-icon="$vuetify.icons.tBarHead" :value="'tBar'"></v-radio>
           </template>
           <span>T Bar</span>
         </v-tooltip>
         <v-spacer></v-spacer>
       </v-radio-group>
     </v-card-actions>
-    <v-card-subtitle class="py-0 pl-5">
+    <v-card-subtitle class="py-0 pl-5 custom-hide-text">
       Stroke style
     </v-card-subtitle>
     <v-card-actions class="pb-0">
@@ -49,14 +49,14 @@
         <v-spacer></v-spacer>
         <v-tooltip top>
           <template v-slot:activator="{ on }">
-            <v-radio v-on="on" class="mr-0" name="strokeStyle" on-icon="fa-minus" off-icon="fa-minus" :value="0"></v-radio>
+            <v-radio v-on="on" class="mr-0" name="strokeStyle" on-icon="$vuetify.icons.normalLineActive" off-icon="$vuetify.icons.normalLine" :value="0"></v-radio>
           </template>
           <span>Normal Line</span>
         </v-tooltip>
         <v-spacer></v-spacer>
         <v-tooltip top>
           <template v-slot:activator="{ on }">
-            <v-radio v-on="on" class="mr-0" name="strokeStyle" on-icon="fa-ellipsis-h" off-icon="fa-ellipsis-h" :value="1"></v-radio>
+            <v-radio v-on="on" class="mr-0" name="strokeStyle" on-icon="$vuetify.icons.dashedLineActive" off-icon="$vuetify.icons.dashedLine" :value="1"></v-radio>
           </template>
           <span>Dashed Line</span>
         </v-tooltip>

@@ -7,6 +7,7 @@
       <v-card
         tile
         flat
+        class="custom-entity-panel"
       >
         <wows-panel v-if="roomState.game.name === 'wows'" :clickedItem="clickedItem" :teams="teams" />
         <wot-panel v-if="roomState.game.name === 'wot'" :clickedItem="clickedItem" :teams="teams" />
@@ -29,37 +30,45 @@
               dense
               nav
             >
-              <v-list-item
+              <v-tooltip
+                left
                 v-for="(item, index) in items"
-                class="custom-list-item-center"
                 :key="item.title"
                 :title="item.title"
-                @click="onItemClickHandler(item.title)"
               >
-                <v-list-item-action>
-                  <v-badge
-                    v-if="index"
-                    :content="item.noOfEntities"
+                <template v-slot:activator="{ on }">
+                  <v-list-item
+                    v-on="on"
+                    class="custom-list-item-center"
+                    @click="onItemClickHandler(item.title)"
                   >
-                    <v-icon :color="item.color">{{ item.icon }}</v-icon>
-                  </v-badge>
-                  <v-icon
-                    v-else
-                    :color="item.color"
-                  >
-                    {{ item.icon }}
-                  </v-icon>
-                </v-list-item-action>
+                    <v-list-item-action>
+                      <v-badge
+                        v-if="index"
+                        :content="item.noOfEntities"
+                      >
+                        <v-icon :color="item.color">{{ item.icon }}</v-icon>
+                      </v-badge>
+                      <v-icon
+                        v-else
+                        :color="item.color"
+                      >
+                        {{ item.icon }}
+                      </v-icon>
+                    </v-list-item-action>
 
-                <v-list-item-content>
-                  <v-list-item-title>{{ item.title }}</v-list-item-title>
-                </v-list-item-content>
-              </v-list-item>
+                    <v-list-item-content>
+                      <v-list-item-title>{{ item.title }}</v-list-item-title>
+                    </v-list-item-content>
+                  </v-list-item>
+                </template>
+                <span>{{ item.title }}</span>
+              </v-tooltip>
             </v-list>
             <v-btn
+              text
               small
               icon
-              tile
               @click="show = !show"
             >
               <v-icon>{{ show ? 'fa-chevron-right' : 'fa-chevron-left' }}</v-icon>
@@ -122,14 +131,14 @@ export default class MapButtons extends Vue {
 </script>
 <style scoped lang="scss">
 .custom-card-minimised {
-  top: 50px;
+  top: 48px;
   right: 0;
   position: fixed;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
   transition: width 1s;
-  height: 650px;
+  height: calc(100% - 48px);
 
   >div {
     margin: 0;
@@ -155,6 +164,11 @@ export default class MapButtons extends Vue {
     color: $room-text !important;
     margin: 0.5rem;
   }
+}
+
+.custom-entity-panel {
+  overflow: scroll;
+  height: calc(100vh - 48px);
 }
 
 .custom-card-expanded > div > div {
@@ -199,8 +213,5 @@ export default class MapButtons extends Vue {
 }
 
 @media screen and (max-width: 1199px) {
-  .custom-card-minimised {
-    top: 100px;
-  }
 }
 </style>

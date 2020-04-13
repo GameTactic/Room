@@ -2,10 +2,11 @@
 $app-fontsize: 16px;
 
 // Room colours
-$room-secondary: #f1f2f2;
-$room-primary: #2d468e;
+$room-secondary: #F1F2F2;
+$room-primary: unquote($VUE_APP_ROOM_PRIMARY_COLOUR);
 $room-text: white;
 
 :export {
  roomPrimary: $room-primary;
+ roomSecondary: $room-secondary;
 }

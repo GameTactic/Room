@@ -1,14 +1,19 @@
 <template>
-  <v-menu offset-y>
-    <template v-slot:activator="{ on }">
-      <v-btn
-        title="Login or Logout of your account"
-        dark
-        icon
-        v-on="on"
-      >
-        <v-icon>fa-user-circle</v-icon>
-      </v-btn>
+  <v-menu v-if="!mobile" offset-y>
+    <template v-slot:activator="{ on: menu }">
+      <v-tooltip bottom>
+        <template v-slot:activator="{ on: tooltip }">
+          <v-btn
+            dark
+            icon
+            style="margin-right:2px"
+            v-on="{ ...tooltip, ...menu }"
+          >
+            <v-icon size="20">fa-user-circle</v-icon>
+          </v-btn>
+        </template>
+        <span>Sign in / Sign out</span>
+      </v-tooltip>
     </template>
     <v-list>
       <v-list-item
@@ -21,9 +26,22 @@
       </v-list-item>
     </v-list>
   </v-menu>
+  <v-list v-else dense style="width: 100%;">
+    <v-subheader>User Profile</v-subheader>
+    <v-list-item
+      v-for="item in userMenuItems"
+      :key="item.text"
+      link
+    >
+      <v-list-item-content>
+        <v-list-item-title>{{ item.text }}</v-list-item-title>
+      </v-list-item-content>
+    </v-list-item>
+  </v-list>
 </template>
 
 <script lang="ts">
+// eslint-disable-next-line
 import { Component, Prop, Vue } from 'vue-property-decorator'
 
 interface UserMenuItem {
@@ -35,6 +53,7 @@ interface UserMenuItem {
   name: 'TheUserMenu'
 })
 export default class TheUserMenu extends Vue {
+  @Prop() private mobile!: boolean;
   userMenuItems: UserMenuItem[] = [{
     text: 'Login',
     title: 'Login to save your progress'
@@ -43,6 +62,7 @@ export default class TheUserMenu extends Vue {
     title: 'Logout of your logged in account'
   }]
 
+  // eslint-disable-next-line
   userMenuItemsClickHandler (item: UserMenuItem) {
     // do stuff
   }

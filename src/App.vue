@@ -8,7 +8,7 @@
 import Component from 'vue-class-component'
 import Vue from 'vue'
 import { Action } from 'vuex-class'
-import { RoomAction, Game, Locale, GameName, Ship, GameInfo } from '@/store/modules/room'
+import { RoomAction, Game, Locale, GameName, Ship } from '@/store/modules/room'
 import { WowsShipsApiResponse, WowsShipInfoApiResponse } from '@/types/Games/Wows'
 import axios from 'axios'
 
@@ -53,5 +53,8 @@ export default class TheApp extends Vue {
   height:100vh;
   background-color: $room-secondary;
   font-size: $app-fontsize;
+}
+html, .v-application--wrap {
+  overflow: hidden;
 }
 </style>

@@ -1,24 +1,24 @@
 <template>
   <v-card>
-    <v-card-subtitle class="pb-0 pl-5">
+    <v-card-subtitle class="pb-0 pl-5 custom-hide-text">
       Fill
     </v-card-subtitle>
     <v-card-actions class="py-0">
       <colour-picker-transparency :value.sync="circleColour" />
     </v-card-actions>
-    <v-card-subtitle class="py-0 pl-5">
+    <v-card-subtitle class="py-0 pl-5 custom-hide-text">
       Size
     </v-card-subtitle>
     <v-card-actions class="py-0">
       <size-picker class="px-2" :value.sync="circleSize"></size-picker>
     </v-card-actions>
-    <v-card-subtitle class="py-0 pl-5">
+    <v-card-subtitle class="py-0 pl-5 custom-hide-text">
       Outline
     </v-card-subtitle>
     <v-card-actions class="py-0">
       <colour-picker :value.sync="circleOutlineColour" />
     </v-card-actions>
-    <v-card-subtitle class="py-0 pl-5">
+    <v-card-subtitle class="py-0 pl-5 custom-hide-text">
       Stroke style
     </v-card-subtitle>
     <v-card-actions class="pb-0">
@@ -26,14 +26,14 @@
         <v-spacer></v-spacer>
         <v-tooltip top>
           <template v-slot:activator="{ on }">
-            <v-radio v-on="on" class="mr-0" name="strokeStyle" on-icon="fa-minus" off-icon="fa-minus" :value="0"></v-radio>
+            <v-radio v-on="on" class="mr-0" name="strokeStyle" on-icon="$vuetify.icons.normalLineActive" off-icon="$vuetify.icons.normalLine" :value="0"></v-radio>
           </template>
           <span>Normal Line</span>
         </v-tooltip>
         <v-spacer></v-spacer>
         <v-tooltip top>
           <template v-slot:activator="{ on }">
-            <v-radio v-on="on" class="mr-0" name="strokeStyle" on-icon="fa-ellipsis-h" off-icon="fa-ellipsis-h" :value="1"></v-radio>
+            <v-radio v-on="on" class="mr-0" name="strokeStyle" on-icon="$vuetify.icons.dashedLineActive" off-icon="$vuetify.icons.dashedLine" :value="1"></v-radio>
           </template>
           <span>Dashed Line</span>
         </v-tooltip>

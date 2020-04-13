@@ -4,13 +4,14 @@ import { Tool, Tracker } from '@/tools/Tool'
 import { CursorState } from './cursor'
 import { SocketState } from './socket'
 import { ToolState } from './tools'
+import { StageState } from './stage'
 
 export enum CanvasMutation {
   SET_CANVAS_ELEMENT = 'SET_CANVAS_ELEMENT',
   ADD_CANVAS_ELEMENT = 'ADD_CANVAS_ELEMENT',
   HIDE_CANVAS_ELEMENT = 'HIDE_CANVAS_ELEMENT',
   DELETE_CANVAS_ELEMENT = 'DELETE_CANVAS_ELEMENT',
-  ADD_CANVAS_ELEMENT_HISTORY = 'ADD_CANVAS_ELEMENT_HISTORY',
+  ADD_CANVAS_ELEMENT_HISTORY = 'ADD_CANVAS_ELEMENT_HISTORY'
 }
 
 export enum CanvasAction {
@@ -41,6 +42,7 @@ interface RootState extends CanvasElement {
   cursor: CursorState;
   socket: SocketState;
   tools: ToolState;
+  stage: StageState;
 }
 
 type CursorActionContext = ActionContext<CanvasState, RootState>

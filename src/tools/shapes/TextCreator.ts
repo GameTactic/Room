@@ -1,8 +1,11 @@
 import Konva from 'konva'
 import { CanvasElement } from '@/types/Canvas'
 import Shape, { TextCreatorInterface } from '@/tools/shapes/Shape'
+import { CustomEvent, CustomStageEvent } from '@/util/PointerEventMapper'
 
 export default class TextCreator extends Shape implements TextCreatorInterface {
+  private fontFamily = 'arial'
+  private lineHeight = 1
   private text: Konva.Text
   private textArea: HTMLTextAreaElement
   private readonly hitStroke: number = 10
@@ -18,18 +21,15 @@ export default class TextCreator extends Shape implements TextCreatorInterface {
   }
 
   // eslint-disable-next-line
-  create = (canvasElement: CanvasElement, layer: Konva.Layer): void => {
+  create = (canvasElement: CanvasElement, layer: Konva.Layer, event: CustomEvent | CustomStageEvent): void => {
     this.group.attrs.temporary = this.temporary
     this.group.id(canvasElement.id).add(
-      this.text = this.createTextElement(canvasElement)
+      this.text = this.createTextElement(canvasElement, layer, event)
     )
-    if (this.text.getTextWidth() > (layer.getWidth() - this.text.getAbsolutePosition().x)) {
-      this.text.width(layer.getWidth() - this.text.getAbsolutePosition().x)
-    }
     layer.add(this.group)
   }
 
-  createTextElement = (canvasElement: CanvasElement, colour?: string, size?: number, textString?: string): Konva.Shape & Konva.Text => {
+  createTextElement = (canvasElement: CanvasElement, layer: Konva.Layer, event: CustomEvent | CustomStageEvent, colour?: string, size?: number, textString?: string): Konva.Shape & Konva.Text => {
     let fontSize = size || canvasElement.tool.size || this.size
     if (fontSize) {
       fontSize = fontSize * 5
@@ -39,57 +39,51 @@ export default class TextCreator extends Shape implements TextCreatorInterface {
     return new Konva.Text({
       globalCompositeOperation: 'source-over',
       text: textString || canvasElement.tool.textString || this.textString,
-      x: canvasElement.data[0],
-      y: canvasElement.data[1],
+      x: this.formatX(canvasElement.data[0], event),
+      y: this.formatY(canvasElement.data[1], event),
       fill: colour || canvasElement.tool.colour || this.colour,
       fontSize: fontSize,
       hitStrokeWidth: this.hitStroke,
       id: canvasElement.id,
-      wrap: 'word'
+      fontFamily: this.fontFamily,
+      lineHeight: this.lineHeight,
+      width: (layer.getWidth() - (canvasElement.data[0] * event.stageConfig.scale.x)) / event.stageConfig.scale.x,
+      wrap: 'char'
     })
   }
 
-  createText = (canvasElement: CanvasElement, layer: Konva.Layer, textArea?: HTMLTextAreaElement): string | void => {
-    if (textArea) {
-      const textString = textArea.value
-      this.text.setText(textString)
-      textArea.remove()
-      this.group.add(this.text)
-      layer.add(this.group)
-      layer.batchDraw()
-      return textString
+  styleTextArea = (canvasElement: CanvasElement, textArea: HTMLTextAreaElement, layer: Konva.Layer, event: CustomEvent): HTMLTextAreaElement => {
+    let fontSize = canvasElement.tool.size || this.size
+    if (fontSize) {
+      fontSize = fontSize * 5
+    } else {
+      fontSize = 25
     }
-  }
-
-  styleTextArea = (canvasElement: CanvasElement, textArea: HTMLTextAreaElement, layer: Konva.Layer): HTMLTextAreaElement => {
-    // These styles are comming from Konva.Text documentation
     textArea.placeholder = 'Write text here'
     textArea.id = canvasElement.id
     textArea.style.position = 'absolute'
-    textArea.style.top = this.text.getAbsolutePosition().y - 2 + 'px'
-    textArea.style.left = this.text.getAbsolutePosition().x + 'px'
-    textArea.style.color = this.text.fill()
-    textArea.style.textAlign = this.text.align()
+    textArea.style.top = event.pointerEvent.pageY + 'px'
+    textArea.style.left = event.pointerEvent.pageX + 'px'
+    textArea.style.color = canvasElement.tool.colour
     textArea.style.transformOrigin = 'left top'
-    textArea.style.fontSize = this.text.fontSize() + 'px'
+    textArea.style.fontSize = fontSize * (event.stageConfig.width / event.stageConfig.initialWidth) + 'px'
     textArea.style.border = 'none'
     textArea.style.padding = '0px'
-    textArea.style.width = (window.innerWidth - this.text.getAbsolutePosition().x) + 'px'
-    textArea.style.overflowX = 'hidden'
     textArea.style.margin = '0px'
     textArea.style.overflow = 'hidden'
     textArea.style.background = 'none'
     textArea.style.outline = 'none'
     textArea.style.resize = 'none'
-    textArea.style.lineHeight = this.text.lineHeight().toString()
-    textArea.style.fontFamily = this.text.fontFamily()
+    textArea.style.lineHeight = this.lineHeight.toString()
+    textArea.style.fontFamily = this.fontFamily
     textArea.spellcheck = false
-    textArea.style.height = (layer.getHeight() - this.text.getAbsolutePosition().y) + 'px'
+    textArea.style.height = (layer.getHeight() - event.offset.y) + 'px'
+    textArea.style.width = (layer.getWidth() - event.offset.x) + 'px'
     return textArea
   }
 
-  createTextArea = (canvasElement: CanvasElement, layer: Konva.Layer): HTMLTextAreaElement => {
-    this.textArea = this.styleTextArea(canvasElement, this.textArea, layer)
+  createTextArea = (canvasElement: CanvasElement, layer: Konva.Layer, event: CustomEvent): HTMLTextAreaElement => {
+    this.textArea = this.styleTextArea(canvasElement, this.textArea, layer, event)
     this.textArea.focus()
     return this.textArea
   }
