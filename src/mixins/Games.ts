@@ -1,72 +1,36 @@
 import Vue from 'vue'
-import { ShipField } from '@/types/Games/Wows'
-import { SavedField } from '@/types/Games/Index'
+import { Field, Item } from '@/types/Games/Index'
 
 export default class Games extends Vue {
   resolve = (path: string, gameData: any) => path.split('.').reduce((prev: any, curr: any) => prev ? prev[curr] : '', gameData || self)
 
-  findField = (fields: ShipField[], clickedFieldId: string): ShipField | undefined => fields.find((field: ShipField): boolean => field.id === clickedFieldId)
+  findField = (fields: Field[], clickedFieldId: string): Field | undefined => fields.find((field: Field): boolean => field.id === clickedFieldId)
 
-  determinePrependIcon = (fields: ShipField[], clickedField: ShipField): string => {
-    const foundField = this.findField(fields, clickedField.id)
-    if (foundField && foundField.canvas.showIcon) {
-      return foundField.canvas.isVisible ? 'fa-eye-slash' : 'fa-eye'
-    }
-    return ''
-  }
+  findEntity = (entities: Item[], selectedEntityId: number): Item | undefined => entities.find((entity: Item): boolean => entity.value === selectedEntityId)
 
-  onViewFieldHandler = (fields: ShipField[], clickedField: ShipField): void => {
-    const foundField = this.findField(fields, clickedField.id)
-    if (foundField) {
-      foundField.canvas.isVisible = !foundField.canvas.isVisible
-      foundField.saved = false
+  onTextFieldChangeHandler = (entities: Item[], selectedEntityId: number, field: Field, value: string): void => {
+    const foundEntity = this.findEntity(entities, selectedEntityId)
+    if (foundEntity) {
+      foundEntity.data = { ...foundEntity.data, [field.id]: value }
+      field.value = value
     }
   }
 
-  onSaveFieldHandler = (fields: ShipField[], savedFields: SavedField[], field: ShipField, selectedEntityId: string): void => {
-    const foundField = this.findField(fields, field.id)
+  updateField = (fields: Field[], clickedEntity: Item, fieldId: string, property: string, isRate = false) => {
+    const propertyValue = this.resolve(property, clickedEntity.data)
+    const updatedFieldValue = clickedEntity.data?.[fieldId] || ''
+    const foundField = this.findField(fields, fieldId)
     if (foundField) {
-      foundField.saved = true
-    }
-    const foundSavedField = savedFields.find((savedField: SavedField) => savedField.entityId === selectedEntityId && savedField.fieldId === field.id)
-    if (foundSavedField) {
-      foundSavedField.value = field.value
-      foundSavedField.canvasIsVisible = field.canvas.isVisible
-      foundSavedField.canvasShowIcon = field.canvas.showIcon
-    } else {
-      savedFields.push({
-        entityId: selectedEntityId,
-        fieldId: field.id,
-        value: field.value,
-        canvasIsVisible: field.canvas.isVisible,
-        canvasShowIcon: field.canvas.showIcon
-      })
-    }
-  }
-
-  onTextFieldChangeHandler = (fields: ShipField[], field: ShipField, value: string): void => {
-    const foundField = this.findField(fields, field.id)
-    if (foundField) {
-      foundField.value = value
-      foundField.saved = false
-    }
-  }
-
-  updateField = (fields: ShipField[], gameData: any, fieldName: string, property: string, isRate = false) => {
-    const propertyValue = this.resolve(property, gameData)
-    const foundField = this.findField(fields, fieldName)
-    if (foundField) {
-      if (propertyValue) {
-        foundField.value = isRate ? String(Math.floor((60 / propertyValue) * 10) / 10) : propertyValue
-        foundField.hide = false
+      if (updatedFieldValue) {
+        foundField.value = updatedFieldValue
       } else {
-        foundField.hide = true
+        if (propertyValue) {
+          foundField.value = isRate ? String(Math.floor((60 / propertyValue) * 10) / 10) : propertyValue
+        } else {
+          foundField.value = ''
+        }
+        clickedEntity.data = { ...clickedEntity.data, [fieldId]: foundField.value }
       }
-      foundField.saved = undefined
     }
-  }
-
-  fieldSavedColour = (field: ShipField): string => {
-    return field.saved === undefined ? 'grey' : field.saved ? 'green' : 'red'
   }
 }

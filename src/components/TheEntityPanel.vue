@@ -4,78 +4,85 @@
     :elevation="5"
   >
     <v-row>
-      <v-card
-        tile
-        flat
-        class="custom-entity-panel"
-      >
-        <wows-panel v-if="roomState.game.name === 'wows'" :clickedItem="clickedItem" :teams="teams" />
-        <wot-panel v-if="roomState.game.name === 'wot'" :clickedItem="clickedItem" :teams="teams" />
-      </v-card>
-      <v-navigation-drawer
-        class="custom-navigation-drawer"
-        mini-variant
-        mini-variant-width="50"
-        permanent
-      >
-        <div>
-          <v-list-item class="px-2">
-            <v-list-item-avatar>
-              <v-img :src="images[roomState.game.name]"></v-img>
-            </v-list-item-avatar>
-          </v-list-item>
-          <v-divider></v-divider>
+      <v-col class="pt-1" id="entity-panel">
+        <v-card
+          tile
+          class="custom-entity-panel"
+        >
+          <wows-panel v-if="roomState.game.name === 'wows'" :clickedItem="clickedItem" :teams="teams" />
+          <wot-panel v-if="roomState.game.name === 'wot'" :clickedItem="clickedItem" :teams="teams" />
+        </v-card>
+      </v-col>
+      <v-col class="pt-1">
+        <v-navigation-drawer
+          class="custom-navigation-drawer"
+          mini-variant
+          mini-variant-width="50"
+          permanent
+        >
           <div>
-            <v-list
-              dense
-              nav
-            >
-              <v-tooltip
-                left
-                v-for="(item, index) in items"
-                :key="item.title"
-                :title="item.title"
+            <v-list-item class="px-2">
+              <v-list-item-avatar>
+                <v-img :src="images[roomState.game.name]"></v-img>
+              </v-list-item-avatar>
+            </v-list-item>
+            <v-divider></v-divider>
+            <div>
+              <v-list
+                dense
+                nav
               >
-                <template v-slot:activator="{ on }">
-                  <v-list-item
-                    v-on="on"
-                    class="custom-list-item-center"
-                    @click="onItemClickHandler(item.title)"
-                  >
-                    <v-list-item-action>
-                      <v-badge
-                        v-if="index"
-                        :content="item.noOfEntities"
-                      >
-                        <v-icon :color="item.color">{{ item.icon }}</v-icon>
-                      </v-badge>
-                      <v-icon
-                        v-else
-                        :color="item.color"
-                      >
-                        {{ item.icon }}
-                      </v-icon>
-                    </v-list-item-action>
+                <v-tooltip
+                  left
+                  v-for="(item, index) in items"
+                  :key="item.title"
+                  :title="item.title"
+                  :color="item.color"
+                >
+                  <template v-slot:activator="{ on }">
+                    <v-list-item
+                      v-on="on"
+                      dark
+                      active-class="test"
+                      :input-value="clickedItem === item.title"
+                      class="custom-list-item-center"
+                      @click="onItemClickHandler(item.title)"
+                    >
+                      <v-list-item-action>
+                        <v-badge
+                          v-if="index"
+                          :content="item.noOfEntities"
+                        >
+                          <v-icon :color="item.color">{{ item.icon }}</v-icon>
+                        </v-badge>
+                        <v-icon
+                          v-else
+                          :color="item.color"
+                        >
+                          {{ item.icon }}
+                        </v-icon>
+                      </v-list-item-action>
 
-                    <v-list-item-content>
-                      <v-list-item-title>{{ item.title }}</v-list-item-title>
-                    </v-list-item-content>
-                  </v-list-item>
-                </template>
-                <span>{{ item.title }}</span>
-              </v-tooltip>
-            </v-list>
-            <v-btn
-              text
-              small
-              icon
-              @click="show = !show"
-            >
-              <v-icon>{{ show ? 'fa-chevron-right' : 'fa-chevron-left' }}</v-icon>
-            </v-btn>
+                      <v-list-item-content>
+                        <v-list-item-title>{{ item.title }}</v-list-item-title>
+                      </v-list-item-content>
+                    </v-list-item>
+                  </template>
+                  <span>{{ item.title }}</span>
+                </v-tooltip>
+              </v-list>
+              <v-btn
+                text
+                small
+                icon
+                @click="show = !show"
+              >
+                <v-icon>{{ show ? 'fa-chevron-right' : 'fa-chevron-left' }}</v-icon>
+              </v-btn>
+            </div>
           </div>
-        </div>
-      </v-navigation-drawer>
+        </v-navigation-drawer>
+      </v-col>
     </v-row>
   </v-card>
 </template>
@@ -87,6 +94,7 @@ import { Getter } from 'vuex-class'
 import { WowsPanel, WotPanel } from './entity-panel'
 
 export interface MenuItem {
+  id: number;
   title: string;
   icon: string;
   color?: string;
@@ -104,15 +112,15 @@ export default class MapButtons extends Vue {
   @Prop() private id!: string;
   @Getter(`room/${RoomGetters.ROOM_STATE}`) private readonly roomState!: RoomState;
 
-  show = false
+  show = true
 
   teams: MenuItem[] = [
-    { title: 'Team 1', icon: 'fa-users', color: 'green', noOfEntities: 0 },
-    { title: 'Team 2', icon: 'fa-users', color: 'red', noOfEntities: 0 }
+    { id: 1, title: 'Team 1', icon: 'fa-users', color: 'green', noOfEntities: 0 },
+    { id: 2, title: 'Team 2', icon: 'fa-users', color: 'red', noOfEntities: 0 }
   ]
 
   items: MenuItem[] = [
-    { title: 'Add', icon: 'fa-plus' },
+    { id: 0, title: 'Add', icon: 'fa-plus' },
     ...this.teams
   ]
 
@@ -124,21 +132,23 @@ export default class MapButtons extends Vue {
   }
 
   onItemClickHandler (title: string) {
-    this.show = true
-    this.clickedItem = title
+    this.show = title !== this.clickedItem ? true : !this.show
+    if (!this.show) {
+      this.clickedItem = ''
+    } else {
+      this.clickedItem = title
+    }
   }
 }
 </script>
 <style scoped lang="scss">
-.custom-card-minimised {
+.custom-card-minimised>div {
   top: 48px;
   right: 0;
   position: fixed;
   display: flex;
-  flex-direction: column;
   justify-content: space-between;
   transition: width 1s;
-  height: calc(100% - 48px);
 
   >div {
     margin: 0;
@@ -151,7 +161,6 @@ export default class MapButtons extends Vue {
 
       >div:first-child {
         flex-grow: 1;
-        margin: 0.5rem;
       }
 
       >div {
@@ -167,13 +176,24 @@ export default class MapButtons extends Vue {
 }
 
 .custom-entity-panel {
-  overflow: scroll;
-  height: calc(100vh - 48px);
+  overflow-y: auto;
+  overflow-x: hidden;
 }
 
-.custom-card-expanded > div > div {
-  display: flex;
-  max-width: 250px;
+.custom-card-expanded >div >div {
+  >div {
+    display: flex;
+  }
+  &:first-child {
+    padding: 0px;
+    width: 350px;
+  }
+
+  &:last-child {
+    padding: 0px;
+    flex: 0 0 62px;
+    max-width: 62px;
+  }
 }
 
 .custom-navigation-drawer {
@@ -195,7 +215,7 @@ export default class MapButtons extends Vue {
     >div:last-child {
       display: flex;
       flex-direction: column;
-      flex: 1 1 80%;
+      flex: 1 1 100%;
       justify-content: space-between;
       align-items: center;
     }
@@ -211,7 +231,8 @@ export default class MapButtons extends Vue {
     background-color: white;
   }
 }
-
-@media screen and (max-width: 1199px) {
+.test {
+  background-color: rgba(white, 0.001);
+  color: white;
 }
 </style>
