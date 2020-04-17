@@ -211,7 +211,6 @@
 </template>
 <script lang="ts">
 import Vue from 'vue'
-import axios from 'axios'
 import { Prop } from 'vue-property-decorator'
 import Component from 'vue-class-component'
 import { Item, Field } from '@/types/Games/Index'
@@ -231,8 +230,10 @@ export default class TheCreateEntity extends Games {
   @Prop() private clickedItem!: string;
   @Prop() private teams!: MenuItem[];
   @Prop() private entityData!: Item[];
+  @Prop() private entities!: Item[];
   @Prop() private fields!: Field[];
   @Prop() private game!: GameName;
+  @Prop() private autoCompleteOnChangeHandler!: (shipItem: Item) => void
 
   chipColour = 'green'
   entityCardHover = 0
@@ -245,7 +246,6 @@ export default class TheCreateEntity extends Games {
     icon: 'fa-times'
   }]
   isEntityPropertiesShown = false
-  entities: Item[] = []
 
   get updatedEntities (): Item[] {
     return this.entities
@@ -253,6 +253,7 @@ export default class TheCreateEntity extends Games {
 
   set updatedEntities (newValue: Item[]) {
     this.entities = newValue
+    this.$emit('update:entities', newValue)
   }
 
   menuOnMinimiseHandler () {
@@ -261,7 +262,7 @@ export default class TheCreateEntity extends Games {
 
   cardMenuOnClickHandler (clickedEntity: Item, action: string) {
     if (action === 'delete') {
-      this.entities = [...this.entities].filter((entity: Item) => entity.value !== clickedEntity.value)
+      this.$emit('update:entities', [...this.entities].filter((entity: Item) => entity.value !== clickedEntity.value))
     }
   }
 
@@ -279,20 +280,6 @@ export default class TheCreateEntity extends Games {
 
   chipOnClickHandler (color: string) {
     this.$data.chipColour = color
-  }
-
-  async autoCompleteOnChangeHandler (shipItem: Item) {
-    if (this.game === 'wows') {
-      if (shipItem) {
-        this.entities.unshift(shipItem)
-        const response = await axios.get(`https://api.worldofwarships.eu/wows/encyclopedia/shipprofile/?ship_id=${shipItem.value}&application_id=d84a218b4fec37003e799f13777bf880`)
-        const shipData = response.data.data[shipItem.value]
-        const foundNewEntity = this.entities.find((entity: Item) => entity.value === shipItem.value)
-        if (foundNewEntity) {
-          foundNewEntity.data = shipData
-        }
-      }
-    }
   }
 }
 </script>
