@@ -92,6 +92,7 @@ export interface CustomStageConfig extends NodeConfig {
   height: number;
   initialWidth: number;
   initialHeight: number;
+  mapSrc: string;
 }
 
 export interface CustomStageEvent {

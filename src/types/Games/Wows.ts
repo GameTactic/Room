@@ -1,4 +1,4 @@
-import { GameInfo, Ship } from '@/store/modules/room';
+import { GameInfo, Ship } from '@/store/modules/room'
 
 interface ShipItem {
   text: string;

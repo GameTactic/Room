@@ -22,6 +22,7 @@ export enum RoomMutation {
 
 export enum RoomGetters {
   ROOM_STATE = 'roomState',
+  ROOM_MAPS = 'roomMaps'
 }
 
 export interface ShipData {
@@ -100,6 +101,13 @@ export interface ShipData {
   };
 }
 
+export interface Map {
+  desc: string;
+  icon: string;
+  name: string;
+  ratio: number;
+}
+
 export interface Ship {
   description: string;
   price_gold: number;
@@ -160,6 +168,7 @@ export interface GameInfo {
 export interface Game {
   name: GameName;
   ships: Ship[];
+  maps: Map[];
   gameInfo: GameInfo | undefined;
 }
 
@@ -177,13 +186,15 @@ const RoomModule: Module<RoomState, {}> = {
       game: {
         name: GameName['NONE'],
         ships: [],
+        maps: [],
         gameInfo: undefined
       },
       locale: Locale['ENUK']
     }
   },
   getters: {
-    [RoomGetters.ROOM_STATE]: state => ({ game: state.game, locale: state.locale })
+    [RoomGetters.ROOM_STATE]: state => ({ game: state.game, locale: state.locale }),
+    [RoomGetters.ROOM_MAPS]: state => state.game.maps
   },
   mutations: {
     [RoomMutation.SET_GAME] (state: RoomState, payload: Game) {

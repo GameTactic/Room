@@ -31,6 +31,7 @@
       v-for="item in roomMenuItems"
       :key="item.text"
       link
+      @click="roomMenuItemsClickHandler(item)"
     >
       <v-list-item-content>
         <v-list-item-title>{{ item.text }}</v-list-item-title>
@@ -41,10 +42,18 @@
 
 <script lang="ts">
 import { Component, Vue, Prop } from 'vue-property-decorator'
+import { EventBus } from '@/event-bus'
+
+enum RoomMenuEnum {
+  NEW_TACTIC = 'newTactic',
+  MANAGE_TACTIC = 'manageTactic',
+  MANAGE_ROOM = 'manageRoom'
+}
 
 interface RoomMenuItem {
   text: string;
   title: string;
+  type: RoomMenuEnum;
 }
 
 @Component({
@@ -55,18 +64,25 @@ export default class TheRoomMenu extends Vue {
 
   roomMenuItems: RoomMenuItem[] = [{
     text: 'New Tactic',
-    title: 'Create a new tactic within your room'
+    title: 'Create a new tactic within your room',
+    type: RoomMenuEnum.NEW_TACTIC
   }, {
     text: 'Manage Tactics',
-    title: 'Manage your existing tactics within your room'
+    title: 'Manage your existing tactics within your room',
+    type: RoomMenuEnum.MANAGE_TACTIC
   }, {
     text: 'Manage Room',
-    title: 'Manage the rooms settings'
+    title: 'Manage the rooms settings',
+    type: RoomMenuEnum.MANAGE_ROOM
   }]
 
   // eslint-disable-next-line
   roomMenuItemsClickHandler (item: RoomMenuItem) {
-    // do stuff
+    switch (item.type) {
+      case RoomMenuEnum.NEW_TACTIC: EventBus.$emit('openCreateNewTacticOverlay'); break
+      case RoomMenuEnum.MANAGE_ROOM: /* Do something */ break
+      case RoomMenuEnum.MANAGE_TACTIC: /* Do something */ break
+    }
   }
 }
 

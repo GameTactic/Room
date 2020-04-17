@@ -36,6 +36,7 @@ import HandleMouseUp, { MouseUpChange } from '@/util/HandleMouseUp'
 import HandleUndoRedo from '@/util/HandleUndoRedo'
 import HandleCanvas from '@/util/HandleCanvas'
 import { StageActions, StageGetters } from '@/store/modules/stage'
+import MapCanvas from '@/tools/util/MapCanvas'
 
 const Tools = namespace(Namespaces.TOOLS)
 const Sockets = namespace(Namespaces.SOCKET)
@@ -46,6 +47,7 @@ const Sockets = namespace(Namespaces.SOCKET)
 
 export default class TheCanvas extends Vue {
   @Prop() private id!: string
+  @Prop() private propStageConfig!: CustomStageConfig
   @Tools.Action(ToolsAction.DISABLE) disable!: () => void
   @Action(`tools/${ToolsAction.ENABLE}`) enable!: () => void
   @Action(`tools/${ToolsAction.DISABLE_TOOL}`) disableTool!: () => void
@@ -88,23 +90,14 @@ export default class TheCanvas extends Vue {
     stage: VueKonvaStage;
   }
 
-  created () {
-    window.onload = () => {
-      this.setStageConfig({
-        scale: {
-          x: 1,
-          y: 1
-        },
-        width: 500,
-        height: 500,
-        initialWidth: 500,
-        initialHeight: 500
-      })
-      const response = HandleCanvas.handleZoom(this.stageNode, this.stageZoom, this.stageConfig, true)
-      this.setStageConfig(response)
-      HandleCanvas.handleCenterCanvas(this.stageElement)
-    }
+  mounted () {
+    const response = HandleCanvas.handleZoom(this.stageNode, this.stageZoom, this.propStageConfig, true)
+    this.setStageConfig(response)
+    this.setMap(this.stageConfig)
+    HandleCanvas.handleCenterCanvas(this.stageElement)
+  }
 
+  created () {
     window.addEventListener('resize', () => {
       const response = HandleCanvas.handleZoom(this.stageNode, this.stageZoom, this.stageConfig, false)
       this.setStageConfig(response)
@@ -264,6 +257,11 @@ export default class TheCanvas extends Vue {
       this.disable()
       this.enabledTool.canvasUpAction(event, this.stageElement)
     }
+  }
+
+  setMap = (stageConfig: CustomStageConfig): void => {
+    const mapCanvas = new MapCanvas()
+    mapCanvas.setMap(stageConfig, this.layerNode)
   }
 
   onTouchDownHandler = (event: TouchEvent): void => {
