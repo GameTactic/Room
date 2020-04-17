@@ -210,17 +210,12 @@
   </v-menu>
 </template>
 <script lang="ts">
-import Vue from 'vue'
 import { Prop } from 'vue-property-decorator'
 import Component from 'vue-class-component'
 import { Item, Field } from '@/types/Games/Index'
 import { MenuItem } from '@/components/TheEntityPanel.vue'
 import Games from '@/mixins/Games'
 import { GameName } from '../../../store/modules/room'
-
-interface RelatedTargetMouseEvent extends MouseEvent {
-  toElement: any;
-}
 
 @Component({
   name: 'TheCreateEntity',
