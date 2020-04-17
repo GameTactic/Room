@@ -48,8 +48,8 @@ import Vuetify, {
   VChip,
   VSkeletonLoader,
   VInput,
-  VCardText,
-  VCardTitle
+  VCardTitle,
+ VCardText,
 } from 'vuetify/lib'
 
 Vue.use(Vuetify, {

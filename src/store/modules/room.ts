@@ -84,6 +84,7 @@ export enum RoomGetters {
   USER = 'user',
   PRESENTATION = 'presentation',
   IS_PRIVATE = 'isPrivate'
+  ROOM_MAPS = 'roomMaps'
 }
 
 export interface RoomState {
@@ -119,11 +120,6 @@ const RoomModule: Module<RoomState, {}> = {
   getters: {
     [RoomGetters.LOCALE]: state => state.locale,
     [RoomGetters.GAME_NAME]: state => state.game.name,
-    [RoomGetters.GAME_API]: state => state.game.api,
-    [RoomGetters.COLLECTIONS]: state => state.collections,
-    [RoomGetters.COLLECTION]: (state) => (id: string) => state.collections.find((collection: Collection) => collection.id === id),
-    [RoomGetters.TACTICS]: state => state.tactics,
-    [RoomGetters.TACTIC]: (state) => (id: string) => state.tactics.find((tactic: Tactic) => tactic.id === id),
     [RoomGetters.USERS]: state => state.users,
     [RoomGetters.USER]: (state) => (jti: string) => state.users.find((user: User) => user.jti === jti),
     [RoomGetters.PRESENTATION]: state => ({ isPresentationEnabled: state.isPresentationEnabled, presentationEnabledBy: state.presentationEnabledBy }),
