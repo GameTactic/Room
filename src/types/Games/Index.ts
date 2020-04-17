@@ -1,9 +1,20 @@
-interface SavedField {
-  entityId: string;
-  fieldId: string;
-  value: string;
-  canvasIsVisible: boolean;
-  canvasShowIcon: boolean;
+interface Item {
+  text: string;
+  shortText: string;
+  value: number;
+  tier: number;
+  image: string | undefined;
+  data: any;
 }
 
-export { SavedField }
+interface Field {
+  id: string;
+  path: string;
+  value: string;
+  hide: boolean;
+  label: string;
+  placeholder: string;
+  suffix: string;
+}
+
+export { Item, Field }
