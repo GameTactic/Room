@@ -18,5 +18,5 @@ export interface CanvasElement {
   tracker: Tracker;
   change: boolean;
   hasMoved: boolean;
-  position: { x: number, y: number };
+  position: { x: number; y: number };
 }

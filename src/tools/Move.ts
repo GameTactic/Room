@@ -21,7 +21,7 @@ export default class Move implements MoveInterface {
       name: this.name,
       temporary: this.temporary
     }
-    if (event.konvaPointerEvent.target.parent && event.konvaPointerEvent.target.parent instanceof Konva.Group) {
+    if (event.konvaPointerEvent.target.parent && event.konvaPointerEvent.target.parent instanceof Konva.Group && event.konvaPointerEvent.target.parent.attrs.type !== 'map') {
       this.group = event.konvaPointerEvent.target.parent
       canvasElement.id = this.group.attrs.id
     }

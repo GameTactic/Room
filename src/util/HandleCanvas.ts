@@ -3,7 +3,7 @@ import { CustomStageConfig } from '@/util/PointerEventMapper'
 
 export default class HandleCanvas {
   static handleCenterCanvas = (stage: VueKonvaStage): void => {
-    const topOffset = (window.innerWidth > 1200) ? 100 : 200
+    const topOffset = (window.innerWidth > 899) ? 100 : 150
     const stageDimensions = { x: stage.$el.getBoundingClientRect().width, y: stage.$el.getBoundingClientRect().height }
     const windowDimensions = { x: window.innerWidth, y: (window.innerHeight - topOffset) }
     const left = (windowDimensions.x - stageDimensions.x) / 2
@@ -12,7 +12,7 @@ export default class HandleCanvas {
   }
 
   static handleZoom = (stage: VueKonvaStage, stageZoom: number, stageConfig: CustomStageConfig, onLoad?: boolean): CustomStageConfig => {
-    const topOffset = (window.innerWidth > 1200) ? 100 : 150
+    const topOffset = (window.innerWidth > 899) ? 100 : 150
     const prev = { width: stage.width(), height: stage.height() }
     const dimensions: { width: number; height: number } = {
       width: stage.width(),
@@ -45,7 +45,8 @@ export default class HandleCanvas {
       width: dimensions.width,
       height: dimensions.height,
       initialWidth: stageConfig.initialWidth,
-      initialHeight: stageConfig.initialHeight
+      initialHeight: stageConfig.initialHeight,
+      mapSrc: stageConfig.mapSrc
     }
   }
 }

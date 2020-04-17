@@ -15,10 +15,12 @@ export enum StageActions {
   SET_DIMENSIONS = 'setDimensions',
   SET_CONFIG = 'setConfig',
   SET_ZOOM = 'setZoom',
-  SET_ZOOM_STEP = 'setZoomStep'
+  SET_ZOOM_STEP = 'setZoomStep',
+  SET_MAP_SRC = 'setMapSrc'
 }
 
 export enum StageMutations {
+  SET_MAP_SRC = 'SET_MAP_SRC',
   SET_ZOOM = 'SET_ZOOM',
   SET_ZOOM_IN = 'SET_ZOOM_IN',
   SET_ZOOM_OUT = 'SET_ZOOM_OUT',
@@ -51,6 +53,7 @@ const StageModule: Module<StageState, {}> = {
         height: 0,
         initialWidth: 0,
         initialHeight: 0,
+        mapSrc: '',
         scale: {
           x: 1,
           y: 1
@@ -74,6 +77,9 @@ const StageModule: Module<StageState, {}> = {
         x: (state.stageZoom / 100),
         y: (state.stageZoom / 100)
       }
+    },
+    [StageMutations.SET_MAP_SRC] (state: StageState, newMap: string) {
+      state.stageConfig.mapSrc = newMap
     },
     [StageMutations.SET_ZOOM_IN] (state: StageState) {
       const newValue = state.stageZoom + state.stageZoomStep
@@ -143,6 +149,9 @@ const StageModule: Module<StageState, {}> = {
     },
     [StageActions.ZOOM_DEFAULT] (context: StageActionContext) {
       context.commit(StageMutations.SET_ZOOM, 100)
+    },
+    [StageActions.SET_MAP_SRC] (context: StageActionContext) {
+      context.commit(StageMutations.SET_MAP_SRC)
     }
   }
 }

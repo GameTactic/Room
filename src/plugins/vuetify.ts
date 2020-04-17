@@ -33,17 +33,21 @@ import Vuetify, {
   VListItemIcon,
   VSubheader,
   VContent,
+  VOverlay,
   VCard,
   VCardActions,
   VSheet,
   VColorPicker,
   VSlider,
+  VDialog,
   VSelect,
   VNavigationDrawer,
   VTextField,
   VChipGroup,
   VChip,
-  VSkeletonLoader
+  VSkeletonLoader,
+  VInput,
+  VCardTitle
 } from 'vuetify/lib'
 
 Vue.use(Vuetify, {
@@ -56,6 +60,7 @@ Vue.use(Vuetify, {
     VAutocomplete,
     VBadge,
     VRow,
+    VOverlay,
     VImg,
     VTooltip,
     VDivider,
@@ -65,6 +70,7 @@ Vue.use(Vuetify, {
     VSpacer,
     VBtn,
     VIcon,
+    VDialog,
     VCol,
     VBtnToggle,
     VMenu,
@@ -87,7 +93,9 @@ Vue.use(Vuetify, {
     VTextField,
     VChipGroup,
     VChip,
-    VSkeletonLoader
+    VSkeletonLoader,
+    VInput,
+    VCardTitle
   },
   directives: { }
 })

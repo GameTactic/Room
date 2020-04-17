@@ -8,9 +8,10 @@
 import Component from 'vue-class-component'
 import Vue from 'vue'
 import { Action } from 'vuex-class'
-import { RoomAction, Game, Locale, GameName, Ship } from '@/store/modules/room'
+import { RoomAction, Game, Locale, GameName, Ship, Map } from '@/store/modules/room'
 import { WowsShipsApiResponse, WowsShipInfoApiResponse } from '@/types/Games/Wows'
 import axios from 'axios'
+import Maps from '@/types/Games/Wows/Maps'
 
 @Component({
   name: 'TheApp'
@@ -19,7 +20,7 @@ export default class TheApp extends Vue {
   @Action(`room/${RoomAction.SET_GAME}`) setGame!: (game: Game) => void
   @Action(`room/${RoomAction.SET_LOCALE}`) setLocale!: (locale: Locale) => void
   async created () {
-    this.setGame({ name: GameName['WOWS'], ships: [], gameInfo: undefined })
+    this.setGame({ name: GameName['WOWS'], ships: [], maps: [], gameInfo: undefined })
     this.setLocale(Locale['ENUK'])
     this.setGame(await this.getWowsApiData())
   }
@@ -36,10 +37,12 @@ export default class TheApp extends Vue {
       }
     }
     const gameInfo: WowsShipInfoApiResponse = await axios.get('https://api.worldofwarships.eu/wows/encyclopedia/info/?application_id=d84a218b4fec37003e799f13777bf880')
-
+    const mapClass = new Maps()
+    const maps: Map[] = mapClass.getMaps()
     return {
       name: GameName['WOWS'],
       ships: ships,
+      maps: maps,
       gameInfo: gameInfo.data.data
     }
   }

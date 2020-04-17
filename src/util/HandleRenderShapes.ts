@@ -59,7 +59,7 @@ export default class HandleRenderShapes {
   handleLayerNodes = (): void => {
     this.layer.getChildren().each((group) => {
       this.handleEmptyShapes(group as Konva.Group)
-      if (!this.canvasElements.find((canvasElement: CanvasElement) => canvasElement.id === group.attrs.id) && !group.attrs.temporary) {
+      if (!this.canvasElements.find((canvasElement: CanvasElement) => canvasElement.id === group.attrs.id) && !group.attrs.temporary && group.attrs.type !== 'map') {
         group.getChildren().each(child => child.destroy())
       }
     })

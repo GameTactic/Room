@@ -5,11 +5,12 @@
     @mousemove="canvasMove"
     @mouseup="canvasUp"
   >
-    <the-canvas ref="stage" :id="id"/>
+    <the-canvas v-if="loadCanvas" ref="stage" :id="id" :prop-stage-config="stageConfig"/>
     <the-nav-large class="the-nav-large" :id="id"/>
     <the-nav-small class="the-nav-small" :id="id"/>
     <the-tool-panel class="custom-hide-on-mobile" :id="id"/>
     <the-entity-panel  class="custom-hide-on-mobile" :id="id"/>
+    <the-create-new-tactic-overlay :id="id" />
   </div>
 </template>
 
@@ -26,12 +27,15 @@ import { namespace } from 'vuex-class'
 import { Namespaces } from '@/store'
 import { EventBus } from '@/event-bus'
 import { VueKonvaStage } from '@/types/Canvas'
+import TheCreateNewTacticOverlay from '@/components/overlays/TheCreateNewTacticOverlay.vue'
+import { Map } from '@/store/modules/room'
 
 const Socket = namespace(Namespaces.SOCKET)
 
   @Component({
     name: 'Room',
     components: {
+      TheCreateNewTacticOverlay,
       TheNavLarge,
       TheNavSmall,
       TheToolPanel,
@@ -48,11 +52,30 @@ export default class extends Vue {
     stage: VueKonvaStage;
   }
 
+  loadCanvas = false
+
+  stageConfig = {
+    scale: {
+      x: 1,
+      y: 1
+    },
+    width: 760,
+    height: 760,
+    initialWidth: 760,
+    initialHeight: 760,
+    mapSrc: 'https://glossary-wows-global.gcdn.co/icons//spaces/10_NE_big_race_minimap_combined_e163008b1c4bdae55455ac62d7553402cae05ed662d62282aa842022aea767ba.png'
+  }
+
   created () {
     this.socket.onopen = () => {
       // eslint-disable-next-line @typescript-eslint/camelcase
       this.socket.send(JSON.stringify({ join_room: this.id }))
     }
+
+    EventBus.$on('createTactic', (tactic: Tactic) => {
+      this.stageConfig.mapSrc = tactic.map.icon
+      this.loadCanvas = true
+    })
   }
 
   canvasDown (e: MouseEvent) {
@@ -72,6 +95,10 @@ export default class extends Vue {
       EventBus.$emit('mouseUp', e)
     }
   }
+}
+export interface Tactic {
+  name: string;
+  map: Map;
 }
 </script>
 <style scoped lang="scss">
