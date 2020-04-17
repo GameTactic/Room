@@ -1,26 +1,5 @@
 import { GameInfo, Ship } from '@/store/modules/room'
 
-interface ShipItem {
-  text: string;
-  value: number;
-  tier: number;
-  image: string | undefined;
-}
-
-interface ShipField {
-  id: string;
-  value: string;
-  hide: boolean;
-  label: string;
-  placeholder: string;
-  saved: boolean | undefined;
-  suffix: string;
-  canvas: {
-    isVisible: boolean;
-    showIcon: boolean;
-  };
-}
-
 interface WowsShipsApiResponse {
   data: {
     status: string;
@@ -47,4 +26,4 @@ interface WowsShipInfoApiResponse {
   };
 }
 
-export { ShipItem, ShipField, WowsShipsApiResponse, WowsShipInfoApiResponse }
+export { WowsShipsApiResponse, WowsShipInfoApiResponse }
