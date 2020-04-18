@@ -29,7 +29,7 @@ export default class FreedrawCreator extends Shape implements FreeDrawCreatorInt
   createFreedrawElement = (canvasElement: CanvasElement, event: CustomEvent | CustomStageEvent, colour?: string, size?: number): Konva.Shape & Konva.Line => {
     return new Konva.Line({
       globalCompositeOperation: 'source-over',
-      lineJoin: 'bevel',
+      lineJoin: 'round',
       points: canvasElement.data.map((num, index) => (index % 2) ? this.formatX(num, event) : this.formatY(num, event)),
       stroke: colour || canvasElement.tool.colour || this.colour,
       strokeWidth: size || canvasElement.tool.size || this.size,

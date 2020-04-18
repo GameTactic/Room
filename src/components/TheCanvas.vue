@@ -174,6 +174,10 @@ export default class TheCanvas extends Vue {
       this.onTouchUpHandler(e)
     })
 
+    EventBus.$on('entityDragEnd', (e: TouchEvent) => {
+      this.onEntityDragEndHandler(e)
+    })
+
     this.socket.onmessage = (data: MessageEvent) => {
       const stageEvent: CustomStageEvent = {
         stage: this.stageNode,
@@ -276,6 +280,27 @@ export default class TheCanvas extends Vue {
 
   onTouchUpHandler = (event: TouchEvent): void => {
     this.onMouseUpHandler(PointerEventMapper.touchEventMapper(event) as KonvaPointerEvent)
+  }
+
+  onEntityDragEndHandler (e: any): void {
+    const event = PointerEventMapper.globalEventMapper(e, this.stageConfig, this.stageZoom, this.stageNode)
+    const layer = this.layerNode
+    const stage = this.stageNode
+    Konva.Image.fromURL(e.srcElement?.dataset?.image, (image: any) => {
+      image.setAttrs({
+        width: 20,
+        height: 20
+      })
+      const group = new Konva.Group()
+      group.add(image)
+      group.attrs.type = 'sprite'
+      layer.add(group)
+      image.position({
+        x: event.globalOffset.x - 13.5,
+        y: event.globalOffset.y - 13.5
+      })
+      layer.batchDraw()
+    })
   }
 
   get stageNode () {
