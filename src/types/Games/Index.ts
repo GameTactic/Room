@@ -1,6 +1,7 @@
 interface Item {
   text: string;
   shortText: string;
+  type: 'AirCarrier' | 'Battleship' | 'Cruiser'  | 'Destroyer';
   value: number;
   tier: number;
   image: string | undefined;
