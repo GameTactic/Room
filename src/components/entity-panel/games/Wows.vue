@@ -137,6 +137,7 @@ export default class Wows extends Vue {
 
   async autoCompleteOnChangeHandler (shipItem: Item) {
     if (shipItem) {
+      console.log(shipItem)
       this.entities.unshift(shipItem)
       const response = await axios.get(`https://api.worldofwarships.eu/wows/encyclopedia/shipprofile/?ship_id=${shipItem.value}&application_id=d84a218b4fec37003e799f13777bf880`)
       const shipData = response.data.data[shipItem.value]
