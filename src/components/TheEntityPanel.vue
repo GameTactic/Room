@@ -71,14 +71,6 @@
                   <span>{{ item.title }}</span>
                 </v-tooltip>
               </v-list>
-              <v-btn
-                text
-                small
-                icon
-                @click="show = !show"
-              >
-                <v-icon>{{ show ? 'fa-chevron-right' : 'fa-chevron-left' }}</v-icon>
-              </v-btn>
             </div>
           </div>
         </v-navigation-drawer>
@@ -178,6 +170,9 @@ export default class MapButtons extends Vue {
 .custom-entity-panel {
   overflow-y: auto;
   overflow-x: hidden;
+  min-height: 300px;
+  border-bottom-left-radius: 5px;
+  border-top-left-radius: 5px;
 }
 
 .custom-card-expanded >div >div {

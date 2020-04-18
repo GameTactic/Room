@@ -98,6 +98,7 @@ export default class Wows extends Vue {
           text: 'Aircraft Carrier (CV)',
           shortText: 'CV',
           value: 1,
+          type: 'AirCarrier',
           image: 'https://glossary-wows-global.gcdn.co/icons/vehicle/types/AirCarrier/standard_84f55678325d4b492215390a7f0b43008f3947ab201502cd979dcf4c37633cf3.png',
           tier: 0,
           data: {}
@@ -105,6 +106,7 @@ export default class Wows extends Vue {
           text: 'Battleship (BB)',
           shortText: 'BB',
           value: 2,
+          type: 'Battleship',
           image: 'https://glossary-wows-global.gcdn.co/icons/vehicle/types/Battleship/standard_01624cacb82f39f77a4e677a7b9fdf4df20dafd61f971f4b2d3e54c3065e2892.png',
           tier: 0,
           data: {}
@@ -112,12 +114,14 @@ export default class Wows extends Vue {
           text: 'Cruiser (CA)',
           shortText: 'CA',
           value: 3,
+          type: 'Cruiser',
           image: 'https://glossary-wows-global.gcdn.co/icons/vehicle/types/Cruiser/standard_874a3bdc3134b8da4fd6f52186f1b2b682f13ef78688732d3016785c0649a424.png',
           tier: 0,
           data: {}
         }, {
           text: 'Destroyer (DD)',
           shortText: 'DD',
+          type: 'Destroyer',
           value: 4,
           image: 'https://glossary-wows-global.gcdn.co/icons/vehicle/types/Destroyer/standard_357acc9fc0e2f7d98f047c99edffad359a8c45f2093024400fef2b9abbaf3a59.png',
           tier: 0,
@@ -126,6 +130,7 @@ export default class Wows extends Vue {
           text: `${ship.name} (${ship.tier})`,
           shortText: ship.name,
           value: ship.ship_id,
+          type: ship.type as 'Destroyer',
           image: roomStateGameInfo.ship_type_images[ship.type][ship.is_special ? 'image_elite' : ship.is_premium ? 'image_premium' : 'image'],
           tier: ship.tier,
           data: {}

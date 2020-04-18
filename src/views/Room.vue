@@ -1,9 +1,14 @@
 <template>
-  <div class="full-width-height"
+  <div
+    :class="`full-width-height ${dragEnabled ? 'dragEnabled' : ''}`"
     ref="app"
     @mousedown="canvasDown"
     @mousemove="canvasMove"
     @mouseup="canvasUp"
+    @dragstart="onDragStartHandler"
+    @dragenter="onDragEnterHandler"
+    @dragover="onDragOverHandler"
+    @dragend="onDragEndHandler"
   >
     <the-canvas ref="stage" :id="id"/>
     <the-nav-large class="the-nav-large" :id="id"/>
@@ -48,6 +53,8 @@ export default class extends Vue {
     stage: VueKonvaStage;
   }
 
+  dragEnabled = false
+
   created () {
     this.socket.onopen = () => {
       // eslint-disable-next-line @typescript-eslint/camelcase
@@ -72,6 +79,29 @@ export default class extends Vue {
       EventBus.$emit('mouseUp', e)
     }
   }
+
+  onDragStartHandler (e: any) {
+    e.dataTransfer.effectAllowed = 'copyMove'
+    const image = document.createElement('img')
+    image.src = e.srcElement?.dataset?.image
+    // console.log('image', image.src)
+    e.dataTransfer.setDragImage(image, 0, 0)
+    // console.log('e.dataTransfer', e.dataTransfer)
+  }
+
+  onDragEnterHandler (e: any) {
+    e.dataTransfer.dropEffect = 'copy'
+    this.dragEnabled = true
+  }
+
+  onDragOverHandler (e: any) {
+    e.preventDefault()
+  }
+
+  onDragEndHandler (e: DragEvent) {
+    this.dragEnabled = false
+    EventBus.$emit('entityDragEnd', e)
+  }
 }
 </script>
 <style scoped lang="scss">
@@ -79,6 +109,10 @@ export default class extends Vue {
     width: 100%;
     height: 100%;
     overflow-x: hidden;
+
+    &.dragEnabled::v-deep {
+      cursor: move !important;
+    }
   }
 
   @media (max-width: 899px) {
