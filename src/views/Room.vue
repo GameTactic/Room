@@ -1,9 +1,14 @@
 <template>
-  <div class="full-width-height"
+  <div
+    :class="`full-width-height ${dragEnabled ? 'dragEnabled' : ''}`"
     ref="app"
     @mousedown="canvasDown"
     @mousemove="canvasMove"
     @mouseup="canvasUp"
+    @dragstart="onDragStartHandler"
+    @dragenter="onDragEnterHandler"
+    @dragover="onDragOverHandler"
+    @dragend="onDragEndHandler"
   >
     <the-canvas v-if="loadCanvas" ref="stage" :id="id" :prop-stage-config="stageConfig"/>
     <the-nav-large class="the-nav-large" :id="id"/>
@@ -51,7 +56,6 @@ export default class extends Vue {
     app: HTMLDivElement;
     stage: VueKonvaStage;
   }
-
   loadCanvas = false
 
   stageConfig = {
@@ -65,6 +69,7 @@ export default class extends Vue {
     initialHeight: 760,
     mapSrc: 'https://glossary-wows-global.gcdn.co/icons//spaces/10_NE_big_race_minimap_combined_e163008b1c4bdae55455ac62d7553402cae05ed662d62282aa842022aea767ba.png'
   }
+  dragEnabled = false
 
   created () {
     this.socket.onopen = () => {
@@ -95,6 +100,29 @@ export default class extends Vue {
       EventBus.$emit('mouseUp', e)
     }
   }
+
+  onDragStartHandler (e: any) {
+    e.dataTransfer.effectAllowed = 'copyMove'
+    const image = document.createElement('img')
+    image.src = e.srcElement?.dataset?.image
+    // console.log('image', image.src)
+    e.dataTransfer.setDragImage(image, 0, 0)
+    // console.log('e.dataTransfer', e.dataTransfer)
+  }
+
+  onDragEnterHandler (e: any) {
+    e.dataTransfer.dropEffect = 'copy'
+    this.dragEnabled = true
+  }
+
+  onDragOverHandler (e: any) {
+    e.preventDefault()
+  }
+
+  onDragEndHandler (e: DragEvent) {
+    this.dragEnabled = false
+    EventBus.$emit('entityDragEnd', e)
+  }
 }
 export interface Tactic {
   name: string;
@@ -106,6 +134,10 @@ export interface Tactic {
     width: 100%;
     height: 100%;
     overflow-x: hidden;
+
+    &.dragEnabled::v-deep {
+      cursor: move !important;
+    }
   }
 
   @media (max-width: 899px) {

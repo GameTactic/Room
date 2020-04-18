@@ -136,26 +136,11 @@
                       <v-icon small>fa-edit</v-icon>
                     </v-btn>
                   </template>
-                  <v-card
+                  <entity-card
                     v-if="entityData.length"
-                    class="custom-entity-card"
-                    raised
-                    tile
-                    draggable
-                    @mouseover="entityCardOnMouseHoverHandler(entity.value)"
-                  >
-                    <v-container class="pa-1">
-                      <v-row class="text-center mx-0">
-                        <v-col cols="12" class="pa-0">
-                          <img class="custom-entity-card-image" width="40" :src="entity.image">
-                        </v-col>
-                        <v-col cols="12" class="pa-0">
-                          <div class="caption">{{entity.shortText}}</div>
-                          <v-chip v-if="entity.tier" x-small pill>T-{{entity.tier}}</v-chip>
-                        </v-col>
-                      </v-row>
-                    </v-container>
-                  </v-card>
+                    :entity="entity"
+                    :entityCardOnMouseHoverHandler="entityCardOnMouseHoverHandler"
+                  />
                 </v-badge>
               </v-card>
             </v-badge>
@@ -179,6 +164,11 @@
             />
           </v-col>
         </v-row>
+        <v-subheader>
+          <p class="caption">
+            <b>Note</b> Drag and drop cards onto the canvas to create them
+          </p>
+        </v-subheader>
       </v-container>
     </template>
     <v-sheet
@@ -215,11 +205,15 @@ import Component from 'vue-class-component'
 import { Item, Field } from '@/types/Games/Index'
 import { MenuItem } from '@/components/TheEntityPanel.vue'
 import Games from '@/mixins/Games'
-import { GameName } from '../../../store/modules/room'
+import { GameName } from '@/store/modules/room'
+import EntityCard from '../EntityCard.vue'
 
 @Component({
   name: 'TheCreateEntity',
-  mixins: [Games]
+  mixins: [Games],
+  components: {
+    EntityCard
+  }
 })
 export default class TheCreateEntity extends Games {
   @Prop() private clickedItem!: string;
