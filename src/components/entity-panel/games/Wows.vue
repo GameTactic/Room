@@ -145,6 +145,7 @@ export default class Wows extends Vue {
 
   async autoCompleteOnChangeHandler (shipItem: Entity) {
     if (shipItem && !this.entities.find((entity: Entity) => entity.value === shipItem.value)) {
+      console.log(shipItem)
       this.entities.unshift(shipItem)
       const headers: ApiHeader = {
         'Authorization': this.jwt.encoded,
