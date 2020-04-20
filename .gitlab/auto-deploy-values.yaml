@@ -1,5 +1,5 @@
 deploymentApiVersion: apps/v1
-replicaCount: 3
+replicaCount: 1
 strategyType: RollingUpdate
 service:
   externalPort: 80
@@ -12,4 +12,9 @@ ingress:
   modSecurity:
     enabled: true
     secRuleEngine: "DetectionOnly"
-
+hpa:
+  enabled: true
+  minReplicas: 1
+  maxReplicas: 5
+  targetCPUUtilizationPercentage: 60
+podAnnotations: { app.gitlab.com/app: gametactic-room }
