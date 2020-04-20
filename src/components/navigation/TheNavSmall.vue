@@ -1,33 +1,65 @@
 <template>
-  <v-row class="navbar-row custom-not-clickable">
-    <v-col cols="12" class="custom-clickable">
-      <v-toolbar dense class="navbar-toolbar-left">
-        <v-img class="ml-3 mr-12" max-width="160" max-height="45" :src="require('@/assets/logo.png')"></v-img>
-        <v-spacer />
-        <div>
-        <v-tooltip bottom nudge-bottom="10">
-          <template v-slot:activator="{ on }">
+  <span>
+    <v-row class="navbar-row custom-not-clickable">
+      <v-col cols="12" class="custom-clickable">
+        <v-toolbar dense class="navbar-toolbar-left">
+          <v-img class="ml-3 mr-12" max-width="160" max-height="45" :src="require('@/assets/logo.png')"></v-img>
+          <v-spacer />
+          <div>
+            <v-tooltip bottom nudge-bottom="10">
+              <template v-slot:activator="{ on }">
+                <v-btn
+                  dark
+                  icon
+                  v-on="on"
+                >
+                  <v-icon size="20">fa-save</v-icon>
+                </v-btn>
+              </template>
+              <span>Save room</span>
+            </v-tooltip>
             <v-btn
-              dark
+              class="mr-2"
               icon
-              v-on="on"
+              @click.stop="drawer = !drawer"
             >
-              <v-icon size="20">fa-save</v-icon>
+              <v-icon color="white">fa-bars</v-icon>
             </v-btn>
-          </template>
-          <span>Save room</span>
-        </v-tooltip>
-          <the-room-menu />
-          <the-user-menu />
-        </div>
-      </v-toolbar>
-    </v-col>
-    <v-col cols="12">
-      <v-toolbar dense flat class="navbar-toolbar-center justify-center custom-background-transparent">
-        <the-canvas-tools class="custom-clickable" />
-      </v-toolbar>
-     </v-col>
-  </v-row>
+          </div>
+        </v-toolbar>
+      </v-col>
+      <v-col cols="12">
+        <v-toolbar dense flat class="navbar-toolbar-center justify-center custom-background-transparent">
+          <the-canvas-tools class="custom-clickable" :mobile="true"/>
+        </v-toolbar>
+      </v-col>
+    </v-row>
+    <v-navigation-drawer
+      v-model="drawer"
+      absolute
+      right
+      temporary
+      class="custom-mobile-navigation-drawer"
+    >
+    <v-list>
+      <v-list-item class="custom-mobile-navigation-drawer-close">
+      <v-btn
+        icon
+        @click="drawer = false"
+      >
+        <v-icon color="primary">fa-times</v-icon>
+      </v-btn>
+      </v-list-item>
+      <v-list-item>
+        <the-room-menu :mobile="true" />
+      </v-list-item>
+      <v-divider />
+      <v-list-item>
+        <the-user-menu :mobile="true" />
+      </v-list-item>
+    </v-list>
+  </v-navigation-drawer>
+</span>
 </template>
 
 <script lang="ts">
@@ -46,6 +78,8 @@ import TheCanvasTools from './TheCanvasTools.vue'
 })
 export default class TheNavSmall extends Vue {
   @Prop() private id!: string;
+
+  drawer = false
 }
 </script>
 <style scoped lang="scss">
@@ -71,6 +105,7 @@ header.navbar-toolbar-left.navbar-toolbar-left.navbar-toolbar-left {
   color: black;
   >div {
     justify-content: center;
+    align-items: start;
   }
 }
 .navbar-toolbar-right.navbar-toolbar-right.navbar-toolbar-right {
@@ -99,5 +134,9 @@ header.navbar-toolbar-left.navbar-toolbar-left.navbar-toolbar-left {
 }
 .custom-not-clickable {
   pointer-events: none;
+}
+
+.custom-mobile-navigation-drawer-close {
+  justify-content: flex-end;
 }
 </style>

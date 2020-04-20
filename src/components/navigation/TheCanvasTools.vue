@@ -6,6 +6,7 @@
           <v-btn
             tile
             icon
+            :small="mobile"
             v-on="on"
             class="custom-move-disabled"
             color="primary"
@@ -17,16 +18,17 @@
         </template>
         <span>Zoom in</span>
       </v-tooltip>
-      <small
-        class="custom-zoom-percentage-button"
+      <div
+        class="custom-zoom-percentage-button caption"
       >
         {{ this.zoomPercentage }}%
-      </small>
+      </div>
       <v-tooltip bottom>
         <template v-slot:activator="{ on }">
           <v-btn
             tile
             icon
+            :small="mobile"
             v-on="on"
             class="custom-move-disabled"
             color="primary"
@@ -38,6 +40,7 @@
         </template>
         <span>Zoom out</span>
       </v-tooltip>
+      <v-divider vertical inset />
     </v-btn-toggle>
     <v-btn-toggle dense group class="custom-settings-right">
       <v-tooltip bottom>
@@ -45,6 +48,7 @@
           <v-btn
             tile
             icon
+            :small="mobile"
             :class="[isEnabledClass]"
             v-on="on"
             color="primary"
@@ -61,13 +65,14 @@
           <v-btn
             tile
             icon
+            :small="mobile"
             v-on="on"
             class="custom-move-disabled"
             color="primary"
             max-height="40"
             @click="centerCanvas"
           >
-            <v-icon small>fa-border-all</v-icon>
+            <v-icon small>fa-compress-arrows-alt</v-icon>
           </v-btn>
         </template>
         <span>Center the canvas</span>
@@ -77,7 +82,7 @@
 </template>
 
 <script lang="ts">
-import { Component, Vue } from 'vue-property-decorator'
+import { Component, Vue, Prop } from 'vue-property-decorator'
 import { Action, Getter, namespace } from 'vuex-class'
 import { EventBus } from '@/event-bus'
 import { ToolGetters, ToolsAction } from '@/store/modules/tools'
@@ -91,6 +96,7 @@ const Tools = namespace(Namespaces.TOOLS)
   name: 'TheCanvasTools'
 })
 export default class TheCanvasTools extends Vue {
+  @Prop() private mobile!: boolean;
   @Getter(`stage/${StageGetters.STAGE_ZOOM}`) stageZoom!: number
   @Action(`stage/${StageActions.SET_ZOOM}`) setZoom!: (payload: number) => void
   @Action(`stage/${StageActions.ZOOM_OUT}`) zoomOut!: () => void

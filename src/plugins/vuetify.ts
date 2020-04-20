@@ -1,6 +1,8 @@
 import Vue from 'vue'
 import '@fortawesome/fontawesome-free/css/all.css'
 import colours from '@/assets/scss/_variables.scss'
+import { DashedLine, NormalLine, TBarHead, DashedLineActive, NormalLineActive, TBarHeadActive } from '@/assets/tool-icons'
+
 import Vuetify, {
   VApp,
   VRadio,
@@ -28,6 +30,8 @@ import Vuetify, {
   VListItemAvatar,
   VListItemContent,
   VListItemTitle,
+  VListItemIcon,
+  VSubheader,
   VContent,
   VCard,
   VCardActions,
@@ -36,7 +40,10 @@ import Vuetify, {
   VSlider,
   VSelect,
   VNavigationDrawer,
-  VTextField
+  VTextField,
+  VChipGroup,
+  VChip,
+  VSkeletonLoader
 } from 'vuetify/lib'
 
 Vue.use(Vuetify, {
@@ -67,7 +74,9 @@ Vue.use(Vuetify, {
     VListItemAvatar,
     VListItemContent,
     VListItemTitle,
+    VListItemIcon,
     VContent,
+    VSubheader,
     VCard,
     VCardActions,
     VSheet,
@@ -75,7 +84,10 @@ Vue.use(Vuetify, {
     VSlider,
     VSelect,
     VNavigationDrawer,
-    VTextField
+    VTextField,
+    VChipGroup,
+    VChip,
+    VSkeletonLoader
   },
   directives: { }
 })
@@ -83,7 +95,27 @@ Vue.use(Vuetify, {
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const opts: Record<string, any> = {
   icons: {
-    iconfont: 'fa' // 'mdi' || 'mdiSvg' || 'md' || 'fa' || 'fa4'
+    values: {
+      dashedLine: {
+        component: DashedLine
+      },
+      normalLine: {
+        component: NormalLine
+      },
+      tBarHead: {
+        component: TBarHead
+      },
+      dashedLineActive: {
+        component: DashedLineActive
+      },
+      normalLineActive: {
+        component: NormalLineActive
+      },
+      tBarHeadActive: {
+        component: TBarHeadActive
+      }
+    },
+    iconfont: 'fa' // 'mdi' || 'mdiSvg' || 'md' || 'fa' || 'fa4',
   },
   theme: {
     options: {
