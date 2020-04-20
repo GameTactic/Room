@@ -1,0 +1,22 @@
+deploymentApiVersion: apps/v1
+replicaCount: 3
+strategyType: RollingUpdate
+gitlab:
+  app: gt-room
+  env: prod
+  envName: Production
+  envURL: https://room.eu.gametactic.eu
+service:
+  type: ClusterIP
+  url: https://room.eu.gametactic.eu
+  externalPort: 80
+  internalPort: 80
+prometheus:
+  metrics: true
+postgresql:
+  enabled: false
+ingress:
+  modSecurity:
+    enabled: true
+    secRuleEngine: "DetectionOnly"
+
