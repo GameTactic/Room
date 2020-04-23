@@ -43,11 +43,17 @@ import Vuetify, {
   VTextField,
   VChipGroup,
   VChip,
-  VSkeletonLoader
+  VSkeletonLoader,
+  VDialog,
+  VCardText,
+  VCardTitle
 } from 'vuetify/lib'
 
 Vue.use(Vuetify, {
   components: {
+    VCardText,
+    VCardTitle,
+    VDialog,
     VApp,
     VRadioGroup,
     VSwitch,

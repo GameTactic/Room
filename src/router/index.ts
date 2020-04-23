@@ -2,10 +2,16 @@ import Vue from 'vue'
 import VueRouter, { RouteConfig } from 'vue-router'
 import Room from '@/views/Room.vue'
 import Index from '@/views/Index.vue'
+import Login from '@/views/Login.vue'
 
 Vue.use(VueRouter)
 
 const routes: RouteConfig[] = [
+  {
+    path: '/login',
+    name: 'login',
+    component: Login
+  },
   {
     path: '/:id',
     name: 'room',
