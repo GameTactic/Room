@@ -1,13 +1,13 @@
 <template>
   <v-card>
     <v-card-subtitle class="pb-0 pl-5 custom-hide-text">
-      Colour
+      {{ $t('tool.template.colour') }}
     </v-card-subtitle>
     <v-card-actions class="py-0">
       <colour-picker :value.sync="textColour" />
     </v-card-actions>
     <v-card-subtitle class="py-0 pl-5 custom-hide-text">
-      Size
+      {{ $t('tool.template.size') }}
     </v-card-subtitle>
     <v-card-actions class="py-0">
       <size-picker class="px-2" :value.sync="textSize"></size-picker>

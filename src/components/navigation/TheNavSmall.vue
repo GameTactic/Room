@@ -6,7 +6,11 @@
           <v-img class="ml-3 mr-12" max-width="160" max-height="45" :src="require('@/assets/logo.png')"></v-img>
           <v-spacer />
           <div>
-            <v-tooltip bottom nudge-bottom="10">
+            <v-tooltip
+              bottom
+              nudge-bottom="10"
+              :open-delay="500"
+            >
               <template v-slot:activator="{ on }">
                 <v-btn
                   dark
@@ -16,7 +20,7 @@
                   <v-icon size="20">fa-save</v-icon>
                 </v-btn>
               </template>
-              <span>Save room</span>
+              <span>{{ $t('navigation.navigation.saveRoom') }}</span>
             </v-tooltip>
             <v-btn
               class="mr-2"

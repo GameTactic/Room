@@ -9,8 +9,8 @@
           tile
           class="custom-entity-panel"
         >
-          <wows-panel v-if="roomState.game.name === 'wows'" :clickedItem="clickedItem" :teams="teams" />
-          <wot-panel v-if="roomState.game.name === 'wot'" :clickedItem="clickedItem" :teams="teams" />
+          <wows-panel v-if="roomState.game.name === 'wows'" :clickedItemKey="clickedItemKey" :teams="teams" />
+          <wot-panel v-if="roomState.game.name === 'wot'" :clickedItemKey="clickedItemKey" :teams="teams" />
         </v-card>
       </v-col>
       <v-col class="pt-1">
@@ -35,8 +35,9 @@
                 <v-tooltip
                   left
                   v-for="(item, index) in items"
-                  :key="item.title"
-                  :title="item.title"
+                  :open-delay="500"
+                  :key="item.key"
+                  :title="$t(`entity.panel.${item.title}`)"
                   :color="item.color"
                 >
                   <template v-slot:activator="{ on }">
@@ -44,9 +45,9 @@
                       v-on="on"
                       dark
                       active-class="test"
-                      :input-value="clickedItem === item.title"
+                      :input-value="clickedItemKey === item.key"
                       class="custom-list-item-center"
-                      @click="onItemClickHandler(item.title)"
+                      @click="onItemClickHandler(item.key)"
                     >
                       <v-list-item-action>
                         <v-badge
@@ -64,21 +65,13 @@
                       </v-list-item-action>
 
                       <v-list-item-content>
-                        <v-list-item-title>{{ item.title }}</v-list-item-title>
+                        <v-list-item-title>{{ $t(`entity.panel.${item.title}`) }}</v-list-item-title>
                       </v-list-item-content>
                     </v-list-item>
                   </template>
-                  <span>{{ item.title }}</span>
+                  <span>{{ $t(`entity.panel.${item.title}`) }}</span>
                 </v-tooltip>
               </v-list>
-              <v-btn
-                text
-                small
-                icon
-                @click="show = !show"
-              >
-                <v-icon>{{ show ? 'fa-chevron-right' : 'fa-chevron-left' }}</v-icon>
-              </v-btn>
             </div>
           </div>
         </v-navigation-drawer>
@@ -94,7 +87,7 @@ import { Getter } from 'vuex-class'
 import { WowsPanel, WotPanel } from './entity-panel'
 
 export interface MenuItem {
-  id: number;
+  key: number;
   title: string;
   icon: string;
   color?: string;
@@ -115,28 +108,28 @@ export default class MapButtons extends Vue {
   show = true
 
   teams: MenuItem[] = [
-    { id: 1, title: 'Team 1', icon: 'fa-users', color: 'green', noOfEntities: 0 },
-    { id: 2, title: 'Team 2', icon: 'fa-users', color: 'red', noOfEntities: 0 }
+    { key: 1, title: 'team.one', icon: 'fa-users', color: 'green', noOfEntities: 0 },
+    { key: 2, title: 'team.two', icon: 'fa-users', color: 'red', noOfEntities: 0 }
   ]
 
   items: MenuItem[] = [
-    { id: 0, title: 'Add', icon: 'fa-plus' },
+    { key: 0, title: 'add', icon: 'fa-plus' },
     ...this.teams
   ]
 
-  clickedItem = 'Add'
+  clickedItemKey = 0
 
   images = {
     wows: require('@/assets/wows-icon2.png'),
     wot: require('@/assets/wot-icon.png')
   }
 
-  onItemClickHandler (title: string) {
-    this.show = title !== this.clickedItem ? true : !this.show
+  onItemClickHandler (key: number) {
+    this.show = key !== this.clickedItemKey ? true : !this.show
     if (!this.show) {
-      this.clickedItem = ''
+      this.clickedItemKey = -1
     } else {
-      this.clickedItem = title
+      this.clickedItemKey = key
     }
   }
 }
@@ -178,6 +171,7 @@ export default class MapButtons extends Vue {
 .custom-entity-panel {
   overflow-y: auto;
   overflow-x: hidden;
+  height: 100%;
 }
 
 .custom-card-expanded >div >div {
@@ -198,6 +192,7 @@ export default class MapButtons extends Vue {
 
 .custom-navigation-drawer {
   background-color: $room-primary;
+  height: 480px !important;
 
   i {
     color: $room-text;

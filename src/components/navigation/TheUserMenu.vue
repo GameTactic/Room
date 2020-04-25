@@ -1,7 +1,7 @@
 <template>
   <v-menu v-if="!mobile" offset-y>
     <template v-slot:activator="{ on: menu }">
-      <v-tooltip bottom>
+      <v-tooltip bottom :open-delay="500">
         <template v-slot:activator="{ on: tooltip }">
           <v-btn
             dark
