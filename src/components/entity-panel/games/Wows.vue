@@ -1,9 +1,9 @@
 <template>
-  <div v-if="clickedItem === 'Add'">
+  <div v-if="clickedItemKey === 0">
     <TheCreateEntity
       game="wows"
       :entities.sync="entities"
-      :clickedItem="clickedItem"
+      :clickedItemKey="clickedItemKey"
       :teams="teams"
       :entityData="shipsData"
       :fields="fields"
@@ -13,7 +13,7 @@
   <div
     v-else
   >
-    Other content
+    _
   </div>
 </template>
 
@@ -34,7 +34,7 @@ import TheCreateEntity from '@/components/entity-panel/sections/TheCreateEntity.
   }
 })
 export default class Wows extends Vue {
-  @Prop() private clickedItem!: string;
+  @Prop() private clickedItemKey!: number;
   @Prop() private teams!: MenuItem[];
   @Getter(`room/${RoomGetters.ROOM_STATE}`) roomState!: RoomState;
 
@@ -45,49 +45,49 @@ export default class Wows extends Vue {
     path: 'artillery.distance',
     value: '',
     hide: false,
-    label: 'Main Battery Range',
-    placeholder: 'e.g. 10',
-    suffix: 'km'
+    label: 'entity.wows.artillery.label',
+    placeholder: 'entity.wows.artillery.placeholder',
+    suffix: 'entity.wows.artillery.suffix'
   }, {
     id: 'shipSurfaceConcealment',
     path: 'concealment.detect_distance_by_ship',
     value: '',
     hide: false,
-    label: 'Surface Concealment',
-    placeholder: 'e.g. 5',
-    suffix: 'km'
+    label: 'entity.wows.surfaceConcealment.label',
+    placeholder: 'entity.wows.surfaceConcealment.placeholder',
+    suffix: 'entity.wows.surfaceConcealment.suffix'
   }, {
     id: 'shipPlaneConcealment',
     path: 'concealment.detect_distance_by_plane',
     value: '',
     hide: false,
-    label: 'Plane Concealment',
-    placeholder: 'e.g. 3',
-    suffix: 'km'
+    label: 'entity.wows.planeConcealment.label',
+    placeholder: 'entity.wows.planeConcealment.placeholder',
+    suffix: 'entity.wows.planeConcealment.suffix'
   }, {
     id: 'shipTorpedoesRange',
     path: 'torpedoes.distance',
     value: '',
     hide: false,
-    label: 'Torpedoes Range',
-    placeholder: 'e.g. 10',
-    suffix: 'km'
+    label: 'entity.wows.torpedoRange.label',
+    placeholder: 'entity.wows.torpedoRange.placeholder',
+    suffix: 'entity.wows.torpedoRange.suffix'
   }, {
     id: 'shipRadarRange',
     path: '',
     value: '',
     hide: false,
-    label: 'Radar Range',
-    placeholder: 'e.g. 9',
-    suffix: 'km'
+    label: 'entity.wows.radarRange.label',
+    placeholder: 'entity.wows.radarRange.placeholder',
+    suffix: 'entity.wows.radarRange.suffix'
   }, {
     id: 'shipHydroRange',
     path: '',
     value: '',
     hide: false,
-    label: 'Hydro Range',
-    placeholder: 'e.g. 5',
-    suffix: 'km'
+    label: 'entity.wows.hydroRange.label',
+    placeholder: 'entity.wows.hydroRange.placeholder',
+    suffix: 'entity.wows.hydroRange.suffix'
   }]
 
   get shipsData (): Item[] {
@@ -136,7 +136,7 @@ export default class Wows extends Vue {
   }
 
   async autoCompleteOnChangeHandler (shipItem: Item) {
-    if (shipItem) {
+    if (shipItem && !this.entities.find((entity: Item) => entity.value === shipItem.value)) {
       this.entities.unshift(shipItem)
       const response = await axios.get(`https://api.worldofwarships.eu/wows/encyclopedia/shipprofile/?ship_id=${shipItem.value}&application_id=d84a218b4fec37003e799f13777bf880`)
       const shipData = response.data.data[shipItem.value]

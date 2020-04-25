@@ -5,13 +5,13 @@
       <v-switch
         v-model="rulerTemporary"
         class="mt-0 pr-12"
-        :label="rulerTemporary ? 'Permanent' : 'Temporary'"
+        :label="rulerTemporary ? $t('tool.template.permanent') : $t('tool.template.temporary')"
       ></v-switch>
       <v-spacer></v-spacer>
       <v-switch
         v-model="rulerShowCircle"
         class="mt-0"
-        :label="rulerShowCircle ? 'Circle' : 'Line'"
+        :label="rulerShowCircle ? $t('tool.container.circle') : $t('tool.container.line')"
       ></v-switch>
       <v-spacer></v-spacer>
     </v-card-actions>

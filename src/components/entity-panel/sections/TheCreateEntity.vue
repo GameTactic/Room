@@ -26,7 +26,7 @@
           filter
           label
           outlined
-          :key="`chip-${team.id}`"
+          :key="`chip-${team.key}`"
           @click="chipOnClickHandler(team.color)"
         >
           <v-icon :color="team.color">fa-users</v-icon>
@@ -50,8 +50,8 @@
               clear-icon="fa-times"
               cache-items
               hide-selected
-              label="Search for your ship"
-              placeholder="Start typing to Search"
+              :label="$t('entity.create.wows.autocomplete.label')"
+              :placeholder="$t('entity.create.wows.autocomplete.placeholder')"
               prepend-icon="fa-search"
               autocomplete="new-password"
               return-object
@@ -67,99 +67,101 @@
               </template>
             </v-autocomplete>
           </v-col>
-          <v-col
-            v-for="entity in updatedEntities"
-            :key="entity.value"
-            align-self="center"
-            :cols="4"
-            class="px-2 pb-2"
-          >
-            <v-badge
-              overlap
-              color="transparent"
-              offset-x="30"
-              :value="entityCardHover === entity.value"
+          <v-row class="custom-entity-card-container">
+            <v-col
+              v-for="entity in updatedEntities"
+              :key="entity.value"
+              align-self="center"
+              :cols="4"
+              class="px-2 pb-2"
             >
-              <template v-slot:badge>
-                <v-menu offset-y nudge-left="20">
-                  <template v-slot:activator="{ on: menuItem }">
-                    <v-btn
-                      icon
-                      ripple
-                      small
-                      v-on="menuItem"
+              <v-badge
+                overlap
+                color="transparent"
+                offset-x="30"
+                :value="entityCardHover === entity.value"
+              >
+                <template v-slot:badge>
+                  <v-menu offset-y nudge-left="20">
+                    <template v-slot:activator="{ on: menuItem }">
+                      <v-btn
+                        icon
+                        ripple
+                        small
+                        v-on="menuItem"
+                        @mouseover="entityCardOnMouseHoverHandler(entity.value)"
+                      >
+                        <v-icon small>fa-ellipsis-v</v-icon>
+                      </v-btn>
+                    </template>
+                    <v-list dense>
+                      <v-list-item
+                        v-for="(item, index) in cardMenuItems"
+                        :key="index"
+                        class="custom-entity-card-list-item"
+                        @click="cardMenuOnClickHandler(entity, item.action)"
+                      >
+                        <v-icon
+                          small
+                          :color="item.action === 'delete' ? 'primary' : ''"
+                          :title="item.title"
+                          v-text="item.icon"
+                        />
+                      </v-list-item>
+                    </v-list>
+                  </v-menu>
+                </template>
+                <v-card
+                  v-if="entityData.length"
+                  class="custom-entity-card"
+                  tile
+                  draggable
+                  @mouseover="entityCardOnMouseHoverHandler(entity.value)"
+                >
+                  <v-badge
+                    overlap
+                    left
+                    color="transparent"
+                    offset-x="30"
+                    :value="entityCardHover === entity.value"
+                  >
+                    <template v-slot:badge>
+                      <v-btn
+                        icon
+                        v-on="showEntityFields"
+                        :disabled="isEntityPropertiesShown"
+                        ripple
+                        small
+                        @click="entityCardOnEditHandler(entity)"
+                      >
+                        <v-icon small>fa-edit</v-icon>
+                      </v-btn>
+                    </template>
+                    <v-card
+                      v-if="entityData.length"
+                      class="custom-entity-card"
+                      raised
+                      tile
+                      draggable
                       @mouseover="entityCardOnMouseHoverHandler(entity.value)"
                     >
-                      <v-icon small>fa-ellipsis-v</v-icon>
-                    </v-btn>
-                  </template>
-                  <v-list dense>
-                    <v-list-item
-                      v-for="(item, index) in cardMenuItems"
-                      :key="index"
-                      class="custom-entity-card-list-item"
-                      @click="cardMenuOnClickHandler(entity, item.action)"
-                    >
-                      <v-icon
-                        small
-                        :color="item.action === 'delete' ? 'primary' : ''"
-                        :title="item.title"
-                        v-text="item.icon"
-                      />
-                    </v-list-item>
-                  </v-list>
-                </v-menu>
-              </template>
-              <v-card
-                v-if="entityData.length"
-                class="custom-entity-card"
-                tile
-                draggable
-                @mouseover="entityCardOnMouseHoverHandler(entity.value)"
-              >
-                <v-badge
-                  overlap
-                  left
-                  color="transparent"
-                  offset-x="30"
-                  :value="entityCardHover === entity.value"
-                >
-                  <template v-slot:badge>
-                    <v-btn
-                      icon
-                      v-on="showEntityFields"
-                      :disabled="isEntityPropertiesShown"
-                      ripple
-                      small
-                      @click="entityCardOnEditHandler(entity)"
-                    >
-                      <v-icon small>fa-edit</v-icon>
-                    </v-btn>
-                  </template>
-                  <v-card
-                    v-if="entityData.length"
-                    class="custom-entity-card"
-                    raised
-                    tile
-                    draggable
-                    @mouseover="entityCardOnMouseHoverHandler(entity.value)"
-                  >
-                    <v-container class="pa-1">
-                      <v-row class="text-center mx-0">
-                        <v-col cols="12" class="pa-0">
-                          <img class="custom-entity-card-image" width="40" :src="entity.image">
-                        </v-col>
-                        <v-col cols="12" class="pa-0">
-                          <div class="caption">{{entity.shortText}}</div>
-                          <v-chip v-if="entity.tier" x-small pill>T-{{entity.tier}}</v-chip>
-                        </v-col>
-                      </v-row>
-                    </v-container>
-                  </v-card>
-                </v-badge>
-              </v-card>
-            </v-badge>
-          </v-col>
+                      <v-container class="pa-1">
+                        <v-row class="text-center mx-0">
+                          <v-col cols="12" class="pa-0">
+                            <img class="custom-entity-card-image" width="40" :src="entity.image">
+                          </v-col>
+                          <v-col cols="12" class="pa-0">
+                            <div class="caption">{{entity.shortText}}</div>
+                            <v-chip v-if="entity.tier" x-small pill>T-{{entity.tier}}</v-chip>
+                          </v-col>
+                        </v-row>
+                      </v-container>
+                    </v-card>
+                  </v-badge>
+                </v-card>
+              </v-badge>
+            </v-col>
+          </v-row>
         </v-row>
         <v-row v-else>
           <v-col cols="12">
@@ -196,9 +198,9 @@
           v-if="!field.hide"
           :id="field.id"
           :value="field.value"
-          :label="field.label"
-          :placeholder="field.placeholder"
-          :suffix="field.suffix"
+          :label="$t(field.label)"
+          :placeholder="$t(field.placeholder)"
+          :suffix="$t(field.suffix)"
           class="custom-text-field"
           outlined
           dense
@@ -222,7 +224,7 @@ import { GameName } from '../../../store/modules/room'
   mixins: [Games]
 })
 export default class TheCreateEntity extends Games {
-  @Prop() private clickedItem!: string;
+  @Prop() private clickedItemKey!: number;
   @Prop() private teams!: MenuItem[];
   @Prop() private entityData!: Item[];
   @Prop() private entities!: Item[];
@@ -301,6 +303,14 @@ export default class TheCreateEntity extends Games {
   >img {
     padding: 2px;
   }
+}
+
+.custom-entity-card-container {
+  height: 350px;
+  overflow-y: auto;
+  overflow-x: hidden;
+  justify-content: flex-start;
+  align-content: flex-start;
 }
 
 .custom-entity-card-row {

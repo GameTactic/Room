@@ -9,7 +9,7 @@ import { Component, Prop, Vue } from 'vue-property-decorator'
   name: 'WOT'
 })
 export default class Wot extends Vue {
-  @Prop() private clickedItem!: string;
+  @Prop() private clickedItemKey!: number;
 }
 </script>
 
