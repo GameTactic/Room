@@ -24,6 +24,7 @@ export default class TheApp extends Vue {
   @Action(`room/${RoomAction.SET_LOCALE}`) setLocale!: (locale: Locale) => void
   @authNamespace.Action(AuthenticationActions.AUTHENTICATE) authenticate!: (token: string) => Promise<ExtendedJWT>
   @authNamespace.Action(AuthenticationActions.STORE_TOKEN) storeToken!: (token: string) => void
+  @authNamespace.Action(AuthenticationActions.LOAD_PROVIDERS) loadProviders!: () => void
   async created () {
     this.setGame({ name: GameName['WOWS'], ships: [], gameInfo: undefined })
     this.setLocale(Locale['ENUK'])
@@ -52,6 +53,7 @@ export default class TheApp extends Vue {
   }
 
   initAuthentication () {
+    this.loadProviders()
     const localToken = localStorage.getItem(JWT_KEY)
     if (this.$route?.query?.code) {
       this.authenticate(this.$route.query.code as string).then(jwt => this.storeToken(jwt.encoded))

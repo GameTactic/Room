@@ -6,18 +6,8 @@
       <h4>Please select a realm to log in with</h4>
     </v-card-text>
     <v-card-actions>
-      <v-btn color="primary" @click="authEU" depressed>
-        EU
-      </v-btn>
-      <v-btn color="primary" @click="authNA" depressed>
-        NA
-      </v-btn>
-      <v-btn color="primary" @click="authASIA" depressed>
-        ASIA
-      </v-btn>
-      <v-btn color="primary" @click="authRU" depressed>
-        CIS
-      </v-btn>
+      <ProviderBlock v-for="(provider, name) in providers" :provider-name="name" :provider="provider" :key="name">
+      </ProviderBlock>
     </v-card-actions>
   </v-card>
 </template>
@@ -26,35 +16,21 @@
 import { Component, Vue } from 'vue-property-decorator'
 import { namespace } from 'vuex-class'
 import { Namespaces } from '@/store'
-import { AuthenticationActions, JWTRegion } from '@/store/modules/authentication'
+import { AuthenticationActions, AuthenticationGetters } from '@/store/modules/authentication'
+import { Providers } from '@/util/ProvidersUtil'
+import ProviderBlock from '@/components/navigation/login/ProviderBlock.vue'
 
 const authNamespace = namespace(Namespaces.AUTH)
 
   @Component({
-    name: 'g-login-card'
+    name: 'LoginCard',
+    components: {
+      ProviderBlock
+    }
   })
 export default class extends Vue {
-    @authNamespace.Action(AuthenticationActions.LOGIN_WG) authenticate!: (region: string) => void;
-
-    authEU () {
-      console.log('authentication to ' + JWTRegion.EU)
-      this.authenticate(JWTRegion.EU)
-    }
-
-    authNA () {
-      console.log('authentication to ' + JWTRegion.NA)
-      this.authenticate(JWTRegion.NA)
-    }
-
-    authASIA () {
-      console.log('authentication to ' + JWTRegion.SA)
-      this.authenticate(JWTRegion.SA)
-    }
-
-    authRU () {
-      console.log('authentication to ' + JWTRegion.RU)
-      this.authenticate(JWTRegion.RU)
-    }
+    @authNamespace.Action(AuthenticationActions.LOGIN_WG) authenticate!: (endpoint: string) => void
+    @authNamespace.Getter(AuthenticationGetters.PROVIDERS) providers!: Providers
 }
 </script>
 

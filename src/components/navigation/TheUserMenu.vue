@@ -1,5 +1,18 @@
 <template>
-  <v-menu v-if="!mobile" offset-y>
+  <v-btn
+    dark
+    icon
+    style="margin-right:2px"
+    v-if="!mobile && !isAuth"
+    @click="doOpen"
+  >
+    Login
+    <v-dialog v-model="dialogOpen" @click:outside="dialogOpen = false"
+              max-width="300px">
+      <LoginCard></LoginCard>
+    </v-dialog>
+  </v-btn>
+  <v-menu v-else-if="!mobile && isAuth" offset-y>
     <template v-slot:activator="{ on: menu }">
       <v-tooltip bottom>
         <template v-slot:activator="{ on: tooltip }">
@@ -12,18 +25,12 @@
             <v-icon size="20">fa-user-circle</v-icon>
           </v-btn>
         </template>
-        <span>Sign in / Sign out</span>
+        <span>User profile</span>
       </v-tooltip>
     </template>
     <v-list>
-      <v-list-item v-if="isAuth" @click="logout">
+      <v-list-item @click="logout">
         <v-list-item-title>Logout</v-list-item-title>
-      </v-list-item>
-      <v-list-item v-else @click="doOpen">
-        <v-list-item-title>Login</v-list-item-title>
-        <v-dialog v-model="dialogOpen" @click:outside="dialogOpen = false" max-width="300px">
-          <g-login-card></g-login-card>
-        </v-dialog>
       </v-list-item>
       <v-list-item
         v-for="(userMenuItem, index) in userMenuItems"
@@ -43,7 +50,7 @@
     <v-list-item v-else @click="doOpen">
       <v-list-item-title>Login</v-list-item-title>
       <v-dialog v-model="dialogOpen" @click:outside="dialogOpen = false" fullscreen>
-        <g-login-card></g-login-card>
+        <LoginCard></LoginCard>
       </v-dialog>
     </v-list-item>
     <v-list-item
@@ -59,13 +66,13 @@
 </template>
 
 <script lang="ts">
-import { Component, Prop, Vue } from 'vue-property-decorator'
-import { namespace } from 'vuex-class'
-import { Namespaces } from '@/store'
-import { AuthenticationActions, AuthenticationGetters } from '@/store/modules/authentication'
-import GLoginCard from '@/components/navigation/LoginCard.vue'
+  import {Component, Prop, Vue} from 'vue-property-decorator'
+  import {namespace} from 'vuex-class'
+  import {Namespaces} from '@/store'
+  import {AuthenticationActions, AuthenticationGetters} from '@/store/modules/authentication'
+  import LoginCard from '@/components/navigation/LoginCard.vue'
 
-const authNamespace = namespace(Namespaces.AUTH)
+  const authNamespace = namespace(Namespaces.AUTH)
 
   interface UserMenuItem {
     text: string;
@@ -74,9 +81,9 @@ const authNamespace = namespace(Namespaces.AUTH)
 
   @Component({
     name: 'TheUserMenu',
-    components: { GLoginCard }
+    components: {LoginCard}
   })
-export default class TheUserMenu extends Vue {
+  export default class TheUserMenu extends Vue {
     @authNamespace.Getter(AuthenticationGetters.IS_AUTH) isAuth!: boolean
     @authNamespace.Action(AuthenticationActions.LOGIN_WG) authenticate!: (region: string) => void;
     @authNamespace.Action(AuthenticationActions.LOGOUT) logout!: () => void
@@ -85,8 +92,10 @@ export default class TheUserMenu extends Vue {
 
     dialogOpen = false
 
-    doOpen () {
-      setTimeout(() => { this.dialogOpen = true })
+    doOpen() {
+      setTimeout(() => {
+        this.dialogOpen = true
+      })
     }
 
     userMenuItems: UserMenuItem[] = []
@@ -95,7 +104,7 @@ export default class TheUserMenu extends Vue {
     userMenuItemsClickHandler(item: UserMenuItem) {
       // do stuff
     }
-}
+  }
 
 </script>
 <style scoped lang="scss">
