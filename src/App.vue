@@ -7,10 +7,14 @@
 <script lang="ts">
 import Component from 'vue-class-component'
 import Vue from 'vue'
-import { Action } from 'vuex-class'
+import { Action, namespace } from 'vuex-class'
 import { RoomAction, Game, Locale, GameName, Ship } from '@/store/modules/room'
 import { WowsShipsApiResponse, WowsShipInfoApiResponse } from '@/types/Games/Wows'
+import { Namespaces } from '@/store'
+import { AuthenticationActions, ExtendedJWT, JWT_KEY } from '@/store/modules/authentication'
 import axios from 'axios'
+
+const authNamespace = namespace(Namespaces.AUTH)
 
 @Component({
   name: 'TheApp'
@@ -18,10 +22,14 @@ import axios from 'axios'
 export default class TheApp extends Vue {
   @Action(`room/${RoomAction.SET_GAME}`) setGame!: (game: Game) => void
   @Action(`room/${RoomAction.SET_LOCALE}`) setLocale!: (locale: Locale) => void
+  @authNamespace.Action(AuthenticationActions.AUTHENTICATE) authenticate!: (token: string) => Promise<ExtendedJWT>
+  @authNamespace.Action(AuthenticationActions.STORE_TOKEN) storeToken!: (token: string) => void
+
   async created () {
     this.setGame({ name: GameName['WOWS'], ships: [], gameInfo: undefined })
     this.setLocale(Locale['ENUK'])
     this.setGame(await this.getWowsApiData())
+    this.initAuthentication()
   }
 
   async getWowsApiData (): Promise<Game> {
@@ -41,6 +49,15 @@ export default class TheApp extends Vue {
       name: GameName['WOWS'],
       ships: ships,
       gameInfo: gameInfo.data.data
+    }
+  }
+
+  initAuthentication () {
+    const localToken = localStorage.getItem(JWT_KEY)
+    if (this.$route?.query?.code) {
+      this.authenticate(this.$route.query.code as string).then(jwt => this.storeToken(jwt.encoded))
+    } else if (localToken !== null) {
+      this.authenticate(localToken)
     }
   }
 }

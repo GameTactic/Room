@@ -2,12 +2,27 @@ import { ActionContext, Module } from 'vuex'
 import axios from 'axios'
 import { verify } from 'jsonwebtoken'
 
+export const JWT_KEY = 'jsonwebtoken'
+
 // Possible regions in the JWT token.
 export enum JWTRegion {
   EU = 'eu',
   NA = 'na',
   RU = 'ru',
   SA = 'sa',
+}
+
+export function regionDomain (region: JWTRegion): string {
+  switch (region) {
+    case JWTRegion.EU:
+      return 'eu'
+    case JWTRegion.NA:
+      return 'na'
+    case JWTRegion.RU:
+      return 'ru'
+    case JWTRegion.SA:
+      return 'asia'
+  }
 }
 
 export interface JWT {
@@ -32,6 +47,8 @@ export interface AuthenticationState {
 export enum AuthenticationActions {
   AUTHENTICATE = 'authenticate',
   LOGIN_WG = 'auth_wg',
+  LOGOUT = 'logout',
+  STORE_TOKEN = 'storeToken'
 }
 
 export enum AuthenticationMutation {
@@ -76,10 +93,19 @@ const AuthenticationModule: Module<AuthenticationState, {}> = {
       // TODO: You probably want put this into the `state`. -Niko
       // Im not sure how this should be done, so I did it as I know.
       context.commit('SET_AUTHENTICATION_TOKEN', extended)
+      return extended
     },
-    async [AuthenticationActions.LOGIN_WG] (context: AuthenticationActionContext, region: string) {
+    [AuthenticationActions.STORE_TOKEN] (context: AuthenticationActionContext, token: string) {
+      localStorage.setItem(JWT_KEY, token)
+    },
+    [AuthenticationActions.LOGIN_WG] (context: AuthenticationActionContext, region: JWTRegion) {
       // TODO: This is just placeholder logic. Please check it works. -Niko
-      location.replace(process.env.VUE_APP_MS_AUTH + `/connect/wargaming/${region}/${window.location.href}`)
+      const returnUrl = process.env.VUE_APP_MS_AUTH + `/connect/wargaming/${regionDomain(region)}/${window.location.href}`
+      location.assign(returnUrl)
+    },
+    [AuthenticationActions.LOGOUT] (context: AuthenticationActionContext) {
+      localStorage.removeItem(JWT_KEY)
+      context.commit(AuthenticationMutation.SET_AUTHENTICATION_TOKEN, null)
     }
   }
 }
