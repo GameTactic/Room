@@ -43,7 +43,10 @@ import Vuetify, {
   VTextField,
   VChipGroup,
   VChip,
-  VSkeletonLoader
+  VSkeletonLoader,
+  VDialog,
+  VCardText,
+  VCardTitle
 } from 'vuetify/lib'
 
 Vue.use(Vuetify, {
@@ -87,7 +90,10 @@ Vue.use(Vuetify, {
     VTextField,
     VChipGroup,
     VChip,
-    VSkeletonLoader
+    VSkeletonLoader,
+    VCardText,
+    VCardTitle,
+    VDialog
   },
   directives: { }
 })

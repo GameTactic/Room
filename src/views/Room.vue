@@ -20,14 +20,16 @@ import TheToolPanel from '@/components/TheToolPanel.vue'
 import TheCanvas from '@/components/TheCanvas.vue'
 import TheEntityPanel from '@/components/TheEntityPanel.vue'
 import Component from 'vue-class-component'
-import { Prop } from 'vue-property-decorator'
+import { Prop, Watch } from 'vue-property-decorator'
 import Vue from 'vue'
-import { namespace } from 'vuex-class'
+import { namespace, Action } from 'vuex-class'
 import { Namespaces } from '@/store'
 import { EventBus } from '@/event-bus'
 import { VueKonvaStage } from '@/types/Canvas'
+import { AuthenticationGetters, ExtendedJWT } from '@/store/modules/authentication'
+import { Socket } from 'vue-socket.io-extended'
 
-const Socket = namespace(Namespaces.SOCKET)
+const authNamespace = namespace(Namespaces.AUTH)
 
   @Component({
     name: 'Room',
@@ -41,7 +43,19 @@ const Socket = namespace(Namespaces.SOCKET)
   })
 export default class extends Vue {
   @Prop() id!: string
-  @Socket.Getter('socket') socket!: WebSocket
+  @authNamespace.Getter(AuthenticationGetters.IS_AUTH) isAuth!: boolean
+  @authNamespace.Getter(AuthenticationGetters.JWT) jwt!: ExtendedJWT
+  @Action('socket/joinRoom') joinRoom!: (id: string) => void
+  @Socket() // --> listens to the event by method name, e.g. `connect`
+  connect () {
+    console.log('connection established')
+    this.joinRoom(this.id)
+  }
+
+  @Socket('message')
+  onMessage (data: string) {
+    console.log('data', data)
+  }
 
   $refs!: {
     app: HTMLDivElement;
@@ -49,9 +63,25 @@ export default class extends Vue {
   }
 
   created () {
-    this.socket.onopen = () => {
-      // eslint-disable-next-line @typescript-eslint/camelcase
-      this.socket.send(JSON.stringify({ join_room: this.id }))
+    this.initialiseSocketIO(this.isAuth)
+    console.log('this.$socket.client', this.$socket.client)
+    this.$socket.client.on('message', (message: string) => {
+      console.log('message', message)
+    })
+  }
+
+  @Watch('isAuth')
+  onPropertyChanged (isAuth: boolean) {
+    this.initialiseSocketIO(isAuth)
+  }
+
+  initialiseSocketIO (isAuth?: boolean) {
+    if (isAuth) {
+      // start socket.io with registered user
+      this.$socket.client.io.opts.query = { Authorization: this.jwt.encoded } // First set the token.
+      this.$socket.client.open() // Then open the socket and use it anywhere else.
+    } else {
+      // start socket.io with anonymous user
     }
   }
 

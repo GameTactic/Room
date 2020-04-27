@@ -26,7 +26,7 @@ import { Action, Getter, namespace } from 'vuex-class'
 import { ToolGetters, ToolsAction } from '@/store/modules/tools'
 import { CanvasAction, CanvasGetters, HideCanvasElementInterface } from '@/store/modules/canvas'
 import Konva from 'konva'
-import { SocketActions, SocketGetters } from '@/store/modules/socket'
+import { SocketActions } from '@/store/modules/socket'
 import { EventBus } from '@/event-bus'
 import PointerEventMapper, { CustomStageConfig, CustomStageEvent } from '@/util/PointerEventMapper'
 import { KonvaPointerEvent } from 'konva/types/PointerEvents'
@@ -53,8 +53,8 @@ export default class TheCanvas extends Vue {
   @Getter(`tools/${ToolGetters.ENABLED_TOOL}`) enabledTool!: Tool
   @Getter(`tools/${ToolGetters.ENABLED}`) enabled!: boolean
   @Getter(`tools/${ToolGetters.TOOLS}`) tools!: Tool[]
-  @Sockets.Getter(SocketGetters.SOCKET) socket!: WebSocket
-  @Sockets.Action(SocketActions.SEND_IF_OPEN) send!: (message: string) => void
+  // @Sockets.Getter(SocketGetters.SOCKET) socket!: WebSocket
+  // @Sockets.Action(SocketActions.SEND_IF_OPEN) send!: (message: string) => void
   @Action(`canvas/${CanvasAction.ADD_CANVAS_ELEMENT}`) addCanvasElement!: (canvasElement: CanvasElement) => void
   @Action(`canvas/${CanvasAction.ADD_CANVAS_ELEMENT_HISTORY}`) addCanvasElementHistory!: (canvasElement: CanvasElement) => void
   @Action(`canvas/${CanvasAction.HIDE_CANVAS_ELEMENT}`) hideCanvasElement!: (payload: HideCanvasElementInterface) => void
@@ -135,7 +135,7 @@ export default class TheCanvas extends Vue {
       const response = handleUndoRedo.handleUndoRedo(undoRedo)
       if (response) {
         this.addCanvasElementHistory(response.addToHistory)
-        this.socket.send(JSON.stringify(response.returnElement))
+        // this.socket.send(JSON.stringify(response.returnElement))
         this.renderShapes()
       }
     })
@@ -144,7 +144,7 @@ export default class TheCanvas extends Vue {
       if (this.canvasElement.tool.textString && this.canvasElement.tool.textString?.length > 0) {
         this.addCanvasElement({ ...canvasElement })
         this.addCanvasElementHistory(canvasElement)
-        this.socket.send(JSON.stringify(this.canvasElement))
+        // this.socket.send(JSON.stringify(this.canvasElement))
         this.renderShapes()
       }
     })
@@ -174,32 +174,32 @@ export default class TheCanvas extends Vue {
       this.onTouchUpHandler(e)
     })
 
-    this.socket.onmessage = (data: MessageEvent) => {
-      const stageEvent: CustomStageEvent = {
-        stage: this.stageNode,
-        stageConfig: this.stageConfig,
-        zoom: this.stageZoom
-      }
-      const socketMessageHandler = new HandleSocketMessage(
-        JSON.parse(data.data).payload,
-        this.$data.canvasElement,
-        this.tools,
-        this.layerNode,
-        this.canvasElements,
-        stageEvent
-      )
-      const response = socketMessageHandler.handle()
-      if (response) {
-        if (response.change === SocketHandlerChange.ADD && response.payload.canvasElement) {
-          this.addCanvasElement(response.payload.canvasElement)
-        } else if (response.change === SocketHandlerChange.HIDE && response.payload.groupIds) {
-          response.payload.groupIds.forEach((groupId: string) => {
-            this.hideCanvasElement({ fromSocket: true, id: groupId })
-          })
-        }
-      }
-      this.renderShapes()
-    }
+    // this.socket.onmessage = (data: MessageEvent) => {
+    //   const stageEvent: CustomStageEvent = {
+    //     stage: this.stageNode,
+    //     stageConfig: this.stageConfig,
+    //     zoom: this.stageZoom
+    //   }
+    //   const socketMessageHandler = new HandleSocketMessage(
+    //     JSON.parse(data.data).payload,
+    //     this.$data.canvasElement,
+    //     this.tools,
+    //     this.layerNode,
+    //     this.canvasElements,
+    //     stageEvent
+    //   )
+    //   const response = socketMessageHandler.handle()
+    //   if (response) {
+    //     if (response.change === SocketHandlerChange.ADD && response.payload.canvasElement) {
+    //       this.addCanvasElement(response.payload.canvasElement)
+    //     } else if (response.change === SocketHandlerChange.HIDE && response.payload.groupIds) {
+    //       response.payload.groupIds.forEach((groupId: string) => {
+    //         this.hideCanvasElement({ fromSocket: true, id: groupId })
+    //       })
+    //     }
+    //   }
+    //   this.renderShapes()
+    // }
   }
 
   beforeDestroy () {
