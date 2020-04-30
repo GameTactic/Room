@@ -2,7 +2,7 @@
   <span>
     <v-row class="navbar-row custom-not-clickable">
       <v-col cols="12" class="custom-clickable">
-        <v-toolbar dense class="navbar-toolbar-left">
+        <v-toolbar dense flat class="navbar-toolbar-left">
           <v-img class="ml-3 mr-12" max-width="160" max-height="45" :src="require('@/assets/logo.png')"></v-img>
           <v-spacer />
           <div>
