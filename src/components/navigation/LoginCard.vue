@@ -34,19 +34,15 @@ const authNamespace = namespace(Namespaces.AUTH)
 export default class extends Vue {
   @authNamespace.Action(AuthenticationActions.LOGIN_WG) authenticate!: (region: string) => void;
   authEU () {
-    console.log('authentication to ' + JWTRegion.EU)
     this.authenticate(JWTRegion.EU)
   }
   authNA () {
-    console.log('authentication to ' + JWTRegion.NA)
     this.authenticate(JWTRegion.NA)
   }
   authASIA () {
-    console.log('authentication to ' + JWTRegion.SA)
     this.authenticate(JWTRegion.SA)
   }
   authRU () {
-    console.log('authentication to ' + JWTRegion.RU)
     this.authenticate(JWTRegion.RU)
   }
 }
