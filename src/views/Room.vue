@@ -48,13 +48,9 @@ export default class extends Vue {
   @Action('socket/joinRoom') joinRoom!: (id: string) => void
   @Socket() // --> listens to the event by method name, e.g. `connect`
   connect () {
+    // eslint-disable-next-line
     console.log('connection established')
     this.joinRoom(this.id)
-  }
-
-  @Socket('message')
-  onMessage (data: string) {
-    console.log('data', data)
   }
 
   $refs!: {
@@ -64,10 +60,6 @@ export default class extends Vue {
 
   created () {
     this.initialiseSocketIO(this.isAuth)
-    console.log('this.$socket.client', this.$socket.client)
-    this.$socket.client.on('message', (message: string) => {
-      console.log('message', message)
-    })
   }
 
   @Watch('isAuth')

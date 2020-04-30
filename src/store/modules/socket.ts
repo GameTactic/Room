@@ -12,12 +12,10 @@ const SocketModule: Module<{}, {}> = {
   actions: {
     [SocketActions.EMIT_MESSAGE] (_context: SocketActionContext, message: string) {
       const vm: any = this
-      console.log('this', this)
       vm._vm.$socket.client.emit('auth', message)
     },
     [SocketActions.JOIN_ROOM] (_context: SocketActionContext, id: string) {
       const vm: any = this
-      console.log('vm._vm.$socket.client.emit', vm._vm.$socket.client.emit)
       vm._vm.$socket.client.emit('join', id)
     }
   }

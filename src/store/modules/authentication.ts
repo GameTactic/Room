@@ -46,6 +46,7 @@ export interface AuthenticationState {
 
 export enum AuthenticationActions {
   AUTHENTICATE = 'authenticate',
+  CHECK_TOKEN_EXPIRY = 'checkTokenExpiry',
   LOGIN_WG = 'auth_wg',
   LOGOUT = 'logout',
   STORE_TOKEN = 'storeToken'
@@ -94,6 +95,29 @@ const AuthenticationModule: Module<AuthenticationState, {}> = {
       // Im not sure how this should be done, so I did it as I know.
       context.commit('SET_AUTHENTICATION_TOKEN', extended)
       return extended
+    },
+    async [AuthenticationActions.CHECK_TOKEN_EXPIRY] (context: AuthenticationActionContext) {
+      const response = await axios.get((process.env.VUE_APP_MS_AUTH as string))
+      let isTokenValid = true
+      if (response.status !== 200) {
+        throw Error('Could not reach authentication server.')
+      }
+      const stateJwt = context.state.jwt
+      if (stateJwt) {
+        try {
+          const verifiedToken = verify(stateJwt.encoded, response.data.publicKey) as JWT
+          // eslint-disable-next-line
+          console.log('verifiedToken', verifiedToken)
+          isTokenValid = true
+          // Need to handle tokens that are nearly expired - Sam
+        } catch (error) {
+          // Placeholder until modal has been created - Sam
+          isTokenValid = false
+          context.dispatch(AuthenticationActions.LOGOUT)
+          alert('Your session has expired and you have been logged out. Please login again/')
+        }
+      }
+      return isTokenValid
     },
     [AuthenticationActions.STORE_TOKEN] (context: AuthenticationActionContext, token: string) {
       localStorage.setItem(JWT_KEY, token)
