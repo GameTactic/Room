@@ -9,8 +9,8 @@
           tile
           class="custom-entity-panel"
         >
-          <wows-panel v-if="roomState.game.name === 'wows'" :clickedItemKey="clickedItemKey" :teams="teams" />
-          <wot-panel v-if="roomState.game.name === 'wot'" :clickedItemKey="clickedItemKey" :teams="teams" />
+          <wows-panel v-if="gameName === 'wows'" :clickedItemKey="clickedItemKey" :teams="teams" />
+          <wot-panel v-if="gameName === 'wot'" :clickedItemKey="clickedItemKey" :teams="teams" />
         </v-card>
       </v-col>
       <v-col class="pt-1">
@@ -23,7 +23,7 @@
           <div>
             <v-list-item class="px-2">
               <v-list-item-avatar>
-                <v-img :src="images[roomState.game.name]"></v-img>
+                <v-img :src="images[gameName]"></v-img>
               </v-list-item-avatar>
             </v-list-item>
             <v-divider></v-divider>
@@ -82,7 +82,7 @@
 
 <script lang="ts">
 import { Component, Prop, Vue } from 'vue-property-decorator'
-import { RoomGetters, RoomState } from '@/store/modules/room'
+import { RoomGetters, GameName } from '@/store/modules/room'
 import { Getter } from 'vuex-class'
 import { WowsPanel, WotPanel } from './entity-panel'
 
@@ -103,7 +103,7 @@ export interface MenuItem {
 })
 export default class MapButtons extends Vue {
   @Prop() private id!: string;
-  @Getter(`room/${RoomGetters.ROOM_STATE}`) private readonly roomState!: RoomState;
+  @Getter(`room/${RoomGetters.GAME_NAME}`) private readonly gameName!: GameName;
 
   show = true
 

@@ -1,36 +1,22 @@
-import { Module } from 'vuex'
-
-export interface SocketState {
-  socket: WebSocket;
-}
+import { Module, ActionContext } from 'vuex'
 
 export enum SocketActions {
-  SEND_MESSAGE = 'sendMessage',
-  SEND_IF_OPEN = 'sendIfOpen'
+  EMIT_MESSAGE = 'emitMessage',
+  JOIN_ROOM = 'joinRoom'
 }
 
-export enum SocketGetters {
-  SOCKET = 'socket',
-  IS_OPEN = 'isOpen'
-}
+type SocketActionContext = ActionContext<{}, {}>;
 
-const SocketModule: Module<SocketState, {}> = {
+const SocketModule: Module<{}, {}> = {
   namespaced: true,
-  state () {
-    return {
-      socket: new WebSocket(process.env.ECHO_SERVER || 'wss://echo.eu.gametactic.eu')
-    }
-  },
-  getters: {
-    [SocketGetters.SOCKET]: state => state.socket,
-    [SocketGetters.IS_OPEN]: state => state.socket.readyState === WebSocket.OPEN
-  },
   actions: {
-    [SocketActions.SEND_MESSAGE]: ({ state }) => (message: string) => state.socket.send(message),
-    [SocketActions.SEND_IF_OPEN]: ({ getters, dispatch }) => async (message: string) => {
-      if (getters.isOpen) {
-        await dispatch(SocketActions.SEND_MESSAGE, message)
-      }
+    [SocketActions.EMIT_MESSAGE] (_context: SocketActionContext, message: string) {
+      const vm: any = this
+      vm._vm.$socket.client.emit('auth', message)
+    },
+    [SocketActions.JOIN_ROOM] (_context: SocketActionContext, id: string) {
+      const vm: any = this
+      vm._vm.$socket.client.emit('join', id)
     }
   }
 }
