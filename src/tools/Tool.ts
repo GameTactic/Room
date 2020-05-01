@@ -1,34 +1,40 @@
 import Konva from 'konva'
 import { CanvasElement, VueKonvaStage } from '@/types/Canvas'
 import { CustomEvent } from '@/util/PointerEventMapper'
+import store from '@/main'
+import { SocketActions, SocketGetters } from '@/store/modules/socket'
 
 export type CanvasDownAction = (event: CustomEvent, stage: VueKonvaStage) => void;
 export type CanvasMoveAction = (event: CustomEvent, stage: VueKonvaStage) => void;
 export type CanvasUpAction = (event: CustomEvent, stage: VueKonvaStage) => void;
-export type MouseDownAction = (event: CustomEvent, canvasElement: CanvasElement, layer: Konva.Layer, socket: WebSocket) => void;
-export type MouseMoveAction = (event: CustomEvent, canvasElement: CanvasElement, layer: Konva.Layer, socket: WebSocket) => void;
-export type MouseUpAction = (event: CustomEvent, canvasElement: CanvasElement, layer: Konva.Layer, socket: WebSocket) => void;
+export type MouseDownAction = (event: CustomEvent, canvasElement: CanvasElement, layer: Konva.Layer) => void;
+export type MouseMoveAction = (event: CustomEvent, canvasElement: CanvasElement, layer: Konva.Layer) => void;
+export type MouseUpAction = (event: CustomEvent, canvasElement: CanvasElement, layer: Konva.Layer) => void;
 export type RenderCanvas = (canvasElement: CanvasElement, layer: Konva.Layer, event: CustomEvent) => void;
-export type SendToWebSocket = (canvasElement: CanvasElement, socket: WebSocket) => void;
 
-export interface Tool {
+export class Tool {
+  send = (canvasElement: CanvasElement): void => {
+    store.dispatch(`socket/${SocketActions.SEND_IF_OPEN}`, JSON.stringify(canvasElement))
+  }
+}
+
+export interface ToolInterface {
   name: string;
   // eslint-disable-next-line
   [key: string]: any
 }
 
-export interface CanvasToolInterface extends Tool {
+export interface CanvasToolInterface extends ToolInterface {
   canvasDownAction: CanvasDownAction;
   canvasMoveAction: CanvasMoveAction;
   canvasUpAction: CanvasUpAction;
 }
 
-export interface ToolClassInterface extends Tool {
+export interface ToolClassInterface extends ToolInterface {
   mouseDownAction: MouseDownAction;
   mouseMoveAction: MouseMoveAction;
   mouseUpAction: MouseUpAction;
   renderCanvas: RenderCanvas;
-  sendToWebSocket: SendToWebSocket;
 }
 
 export interface CircleInterface extends ToolClassInterface {

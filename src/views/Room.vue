@@ -5,12 +5,8 @@
     @mousedown="canvasDown"
     @mousemove="canvasMove"
     @mouseup="canvasUp"
-    @dragstart="onDragStartHandler"
-    @dragenter="onDragEnterHandler"
-    @dragover="onDragOverHandler"
-    @dragend="onDragEndHandler"
   >
-    <the-canvas v-if="loadCanvas" ref="stage" :id="id" :prop-stage-config="stageConfig"/>
+    <the-canvas v-if="loadCanvas" ref="stage" :id="id"/>
     <the-nav-large class="the-nav-large" :id="id"/>
     <the-nav-small class="the-nav-small" :id="id"/>
     <the-tool-panel class="custom-hide-on-mobile" :id="id"/>
@@ -28,12 +24,15 @@ import TheEntityPanel from '@/components/TheEntityPanel.vue'
 import Component from 'vue-class-component'
 import { Prop } from 'vue-property-decorator'
 import Vue from 'vue'
-import { namespace } from 'vuex-class'
+import { Action, Getter, namespace } from 'vuex-class'
 import { Namespaces } from '@/store'
 import { EventBus } from '@/event-bus'
-import { VueKonvaStage } from '@/types/Canvas'
+import { CanvasElement, VueKonvaStage } from '@/types/Canvas'
 import TheCreateNewTacticOverlay from '@/components/overlays/TheCreateNewTacticOverlay.vue'
 import { Map } from '@/store/modules/room'
+import { StageActions, StageGetters } from '@/store/modules/stage'
+import { CustomStageConfig } from '@/util/PointerEventMapper'
+import { CanvasAction } from '@/store/modules/canvas'
 
 const Socket = namespace(Namespaces.SOCKET)
 
@@ -51,24 +50,17 @@ const Socket = namespace(Namespaces.SOCKET)
 export default class extends Vue {
   @Prop() id!: string
   @Socket.Getter('socket') socket!: WebSocket
+  @Action(`canvas/${CanvasAction.SET_CANVAS_ELEMENT}`) setCanvasElements!: (canvasElements: CanvasElement[]) => void
+  @Action(`canvas/${CanvasAction.SET_CANVAS_ELEMENT_HISTORY}`) setCanvasElementsHistory!: (canvasElements: CanvasElement[]) => void
+  @Getter(`stage/${StageGetters.STAGE_CONFIG}`) stageConfig!: CustomStageConfig
+  @Action(`stage/${StageActions.SET_MAP_SRC}`) setMapSrc!: (mapSrc: string) => void
+  @Action(`stage/${StageActions.SET_CONFIG}`) setConfig!: (config: CustomStageConfig) => void
 
   $refs!: {
     app: HTMLDivElement;
     stage: VueKonvaStage;
   }
-  loadCanvas = false
-
-  stageConfig = {
-    scale: {
-      x: 1,
-      y: 1
-    },
-    width: 760,
-    height: 760,
-    initialWidth: 760,
-    initialHeight: 760,
-    mapSrc: 'https://glossary-wows-global.gcdn.co/icons//spaces/10_NE_big_race_minimap_combined_e163008b1c4bdae55455ac62d7553402cae05ed662d62282aa842022aea767ba.png'
-  }
+  loadCanvas = true
   dragEnabled = false
 
   created () {
@@ -78,8 +70,22 @@ export default class extends Vue {
     }
 
     EventBus.$on('createTactic', (tactic: Tactic) => {
-      this.stageConfig.mapSrc = tactic.map.icon
+      this.setCanvasElements([])
+      this.setCanvasElementsHistory([])
+      this.setConfig({
+        scale: {
+          x: 1,
+          y: 1
+        },
+        height: 760,
+        width: 760,
+        initialWidth: 760,
+        initialHeight: 760,
+        mapSrc: tactic.map.icon,
+        mapRatio: tactic.map.ratio
+      })
       this.loadCanvas = true
+      EventBus.$emit('newTactic')
     })
   }
 
@@ -99,29 +105,6 @@ export default class extends Vue {
     if (e.target === this.$refs.app && !(e.target instanceof HTMLCanvasElement)) {
       EventBus.$emit('mouseUp', e)
     }
-  }
-
-  onDragStartHandler (e: any) {
-    e.dataTransfer.effectAllowed = 'copyMove'
-    const image = document.createElement('img')
-    image.src = e.srcElement?.dataset?.image
-    // console.log('image', image.src)
-    e.dataTransfer.setDragImage(image, 0, 0)
-    // console.log('e.dataTransfer', e.dataTransfer)
-  }
-
-  onDragEnterHandler (e: any) {
-    e.dataTransfer.dropEffect = 'copy'
-    this.dragEnabled = true
-  }
-
-  onDragOverHandler (e: any) {
-    e.preventDefault()
-  }
-
-  onDragEndHandler (e: DragEvent) {
-    this.dragEnabled = false
-    EventBus.$emit('entityDragEnd', e)
   }
 }
 export interface Tactic {

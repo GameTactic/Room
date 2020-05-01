@@ -3,30 +3,29 @@ import { CanvasElement } from '@/types/Canvas'
 import Shape, { FreeDrawCreatorInterface } from '@/tools/shapes/Shape'
 import { CustomEvent, CustomStageEvent } from '@/util/PointerEventMapper'
 
-export default class FreedrawCreator extends Shape implements FreeDrawCreatorInterface {
-  private freedraw: Konva.Line
+export default class FreeDrawCreator extends Shape implements FreeDrawCreatorInterface {
+  private freeDraw: Konva.Line
   private readonly hitStroke: number = 10
   constructor (public temporary: boolean,
                public size: number,
                public colour: string) {
     super()
-    this.freedraw = new Konva.Line()
+    this.freeDraw = new Konva.Line()
   }
 
   create = (canvasElement: CanvasElement, layer: Konva.Layer, event: CustomEvent | CustomStageEvent): void => {
     this.group.attrs.temporary = this.temporary
     this.group.id(canvasElement.id).add(
-      this.freedraw = this.createFreedrawElement(canvasElement, event)
+      this.freeDraw = this.createFreeDrawElement(canvasElement, event)
     )
     layer.add(this.group)
   }
 
-  // eslint-disable-next-line
   move = (canvasElement: CanvasElement, layer: Konva.Layer, event: CustomEvent): void => {
-    this.freedraw.points(canvasElement.data.map((num, index) => (index % 2) ? this.formatX(num, event) : this.formatY(num, event)))
+    this.freeDraw.points(canvasElement.data.map((num, index) => (index % 2) ? this.formatX(num, event) : this.formatY(num, event)))
   }
 
-  createFreedrawElement = (canvasElement: CanvasElement, event: CustomEvent | CustomStageEvent, colour?: string, size?: number): Konva.Shape & Konva.Line => {
+  createFreeDrawElement = (canvasElement: CanvasElement, event: CustomEvent | CustomStageEvent, colour?: string, size?: number): Konva.Shape & Konva.Line => {
     return new Konva.Line({
       globalCompositeOperation: 'source-over',
       points: canvasElement.data.map((num, index) => (index % 2) ? this.formatX(num, event) : this.formatY(num, event)),

@@ -1,11 +1,11 @@
-import { CircleInterface, Tracker } from '@/tools/Tool'
+import { CircleInterface, Tool, Tracker } from '@/tools/Tool'
 import Konva from 'konva'
 import { CanvasElement } from '@/types/Canvas'
 import uuid from 'uuid'
 import CircleCreator from '@/tools/shapes/CircleCreator'
 import { CustomEvent, CustomStageEvent } from '@/util/PointerEventMapper'
 
-export default class Circle implements CircleInterface {
+export default class Circle extends Tool implements CircleInterface {
   private circleCreator: CircleCreator
   constructor (public readonly name: string,
                public size: number,
@@ -13,8 +13,8 @@ export default class Circle implements CircleInterface {
                public temporary: boolean,
                public showRadius: boolean,
                public outlineColour: string,
-               public strokeStyle: number
-  ) {
+               public strokeStyle: number) {
+    super()
     this.circleCreator = new CircleCreator(
       this.temporary,
       this.size,
@@ -24,11 +24,11 @@ export default class Circle implements CircleInterface {
       this.showRadius)
   }
 
-  // eslint-disable-next-line
-  mouseDownAction = (event: CustomEvent, canvasElement: CanvasElement, layer: Konva.Layer, socket: WebSocket): void => {
+  mouseDownAction = (event: CustomEvent, canvasElement: CanvasElement, layer: Konva.Layer): void => {
     canvasElement.data = [event.globalOffset.x, event.globalOffset.y]
     canvasElement.id = uuid()
     canvasElement.hasMoved = false
+    canvasElement.change = false
     canvasElement.tracker = Tracker.ADDITION
     canvasElement.tool = {
       name: this.name,
@@ -51,16 +51,14 @@ export default class Circle implements CircleInterface {
     canvasElement.position = this.circleCreator.getGroup().position()
   }
 
-  // eslint-disable-next-line
-  mouseMoveAction = (event: CustomEvent, canvasElement: CanvasElement, layer: Konva.Layer, socket: WebSocket): void => {
+  mouseMoveAction = (event: CustomEvent, canvasElement: CanvasElement, layer: Konva.Layer): void => {
     if (!canvasElement.hasMoved) { canvasElement.hasMoved = true }
     const pos = { x: event.globalOffset.x, y: event.globalOffset.y }
     this.circleCreator.move(canvasElement, layer, pos, event)
     layer.batchDraw()
   }
 
-  // eslint-disable-next-line
-  mouseUpAction = (event: CustomEvent, canvasElement: CanvasElement, layer: Konva.Layer, socket: WebSocket): void => {
+  mouseUpAction = (event: CustomEvent, canvasElement: CanvasElement, layer: Konva.Layer): void => {
     if (!canvasElement.hasMoved) {
       this.circleCreator.destroy(canvasElement, layer)
     } else {
@@ -68,7 +66,7 @@ export default class Circle implements CircleInterface {
         this.circleCreator.runTemporaryAnimation(this.circleCreator.getGroup(), layer)
       }
       canvasElement.data = canvasElement.data.concat([event.globalOffset.x, event.globalOffset.y])
-      this.sendToWebSocket(canvasElement, socket)
+      this.send(canvasElement)
     }
   }
 
@@ -90,28 +88,5 @@ export default class Circle implements CircleInterface {
         this.circleCreator.runTemporaryAnimation(this.circleCreator.getGroup(), layer)
       }
     }
-  }
-
-  sendToWebSocket = (canvasElement: CanvasElement, socket: WebSocket) => {
-    const data: CanvasElement = {
-      jti: 'SAM',
-      id: canvasElement.id,
-      layerId: canvasElement.layerId,
-      tool: {
-        name: this.name,
-        colour: this.colour,
-        size: this.size,
-        showRadius: this.showRadius,
-        strokeStyle: this.strokeStyle,
-        outlineColour: this.outlineColour,
-        temporary: this.temporary
-      },
-      data: canvasElement.data,
-      tracker: Tracker.ADDITION,
-      change: false,
-      hasMoved: canvasElement.hasMoved,
-      position: canvasElement.position
-    }
-    socket.send(JSON.stringify(data))
   }
 }

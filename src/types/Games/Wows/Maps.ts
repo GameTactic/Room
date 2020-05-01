@@ -81,6 +81,12 @@ export default class WowsMaps {
       ratio: 42
     },
     {
+      desc: 'A harbor suitable for navigation and destruction...',
+      icon: 'https://cdn.discordapp.com/attachments/687732423488045252/687736941650903121/Trap.png',
+      name: 'Trap. Tournament. Domination',
+      ratio: 42
+    },
+    {
       desc: 'Two large islands that share the map as siblings.',
       icon: 'https://glossary-wows-global.gcdn.co/icons//spaces/20_NE_two_brothers_minimap_combined_e992739479cb6fb431c6f7ade6c12eefa8dd90f2c60eea491d9c0b9968dea387.png',
       name: 'Two Brothers',

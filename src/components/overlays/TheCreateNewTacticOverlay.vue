@@ -75,6 +75,7 @@ import { Getter } from 'vuex-class'
         name: '',
         icon: '',
         desc: '',
+        ratio: 0,
         id: 0
       },
       name: ''

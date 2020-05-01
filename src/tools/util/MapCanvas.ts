@@ -12,19 +12,26 @@ export default class MapCanvas {
   }
 
   createMapElement = (stageConfig: CustomStageConfig, layer: Konva.Layer): void => {
+    const mapDimentionRatio = 0.75
     const imgObj = new Image()
     imgObj.onload = () => {
       const el = new Konva.Image({
         image: imgObj,
-        x: (stageConfig.initialWidth * 0.125),
-        y: (stageConfig.initialHeight * 0.125),
-        width: (stageConfig.initialWidth * 0.75),
-        height: (stageConfig.initialHeight * 0.75)
+        x: (stageConfig.initialWidth * ((1 - mapDimentionRatio) / 2)),
+        y: (stageConfig.initialHeight * ((1 - mapDimentionRatio) / 2)),
+        width: (stageConfig.initialWidth * mapDimentionRatio),
+        height: (stageConfig.initialHeight * mapDimentionRatio)
       })
-      const group = new Konva.Group()
-      group.attrs.type = 'map'
-      group.add(el)
-      layer.add(group)
+      const foundGroup: Konva.Group = layer.findOne((group: Konva.Group) => group.attrs.type && group.attrs.type === 'map')
+      if (foundGroup) {
+        foundGroup.getChildren().each(child => child.destroy())
+        layer.add(foundGroup.add(el))
+      } else {
+        const group = new Konva.Group()
+        group.attrs.type = 'map'
+        group.add(el)
+        layer.add(group)
+      }
       layer.batchDraw()
     }
     imgObj.src = stageConfig.mapSrc

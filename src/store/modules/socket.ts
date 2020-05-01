@@ -18,7 +18,7 @@ const SocketModule: Module<SocketState, {}> = {
   namespaced: true,
   state () {
     return {
-      socket: new WebSocket(process.env.ECHO_SERVER || 'wss://echo.eu.gametactic.eu')
+      socket: new WebSocket(process.env.VUE_APP_MS_SOCK || 'ws://socket.gametactic.eu')
     }
   },
   getters: {
@@ -27,7 +27,7 @@ const SocketModule: Module<SocketState, {}> = {
   },
   actions: {
     [SocketActions.SEND_MESSAGE]: ({ state }) => (message: string) => state.socket.send(message),
-    [SocketActions.SEND_IF_OPEN]: ({ getters, dispatch }) => async (message: string) => {
+    [SocketActions.SEND_IF_OPEN]: async ({ getters, dispatch }, message: string) => {
       if (getters.isOpen) {
         await dispatch(SocketActions.SEND_MESSAGE, message)
       }

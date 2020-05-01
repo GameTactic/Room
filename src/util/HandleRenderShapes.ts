@@ -1,9 +1,8 @@
 import Konva from 'konva'
 import { CanvasElement } from '@/types/Canvas'
-import { Tool, Tracker } from '@/tools/Tool'
-import { CustomStageEvent } from '@/util/PointerEventMapper'
+import { ToolInterface, Tracker } from '@/tools/Tool'
+import { CustomStageConfig, CustomStageEvent } from '@/util/PointerEventMapper'
 import { Container } from 'konva/types/Container'
-import Shape from '@/tools/shapes/Shape'
 
 export default class HandleRenderShapes {
   // eslint-disable-next-line no-useless-constructor
@@ -11,8 +10,9 @@ export default class HandleRenderShapes {
     public layer: Konva.Layer,
     public canvasElements: CanvasElement[],
     public canvasElementsHistory: CanvasElement[],
-    public tools: Tool[],
-    public stageEvent: CustomStageEvent) {
+    public tools: ToolInterface[],
+    public stageEvent: CustomStageEvent,
+    public stageConfig: CustomStageConfig) {
   }
 
   handle = (): void => {
@@ -36,7 +36,7 @@ export default class HandleRenderShapes {
 
   handleCanvasElementAddition = (canvasElement: CanvasElement): void => {
     if (!this.layer.find((shape: Konva.Shape) => shape.attrs.id === canvasElement.id).length) {
-      canvasElement.tool.renderCanvas(canvasElement, this.layer, this.stageEvent)
+      canvasElement.tool.renderCanvas(canvasElement, this.layer, this.stageEvent, this.stageConfig)
     }
   }
 
@@ -50,7 +50,7 @@ export default class HandleRenderShapes {
   }
 
   checkGroupPosition = (canvasElement: CanvasElement): void => {
-    const group = this.layer.findOne((shape: Konva.Group) => shape.attrs.id === canvasElement.id)
+    const group = this.layer.findOne((group: Konva.Group) => group.attrs.id === canvasElement.id)
     if (group && (group.position().x !== canvasElement.position.x || group.position().y !== canvasElement.position.y)) {
       group.position(canvasElement.position)
     }

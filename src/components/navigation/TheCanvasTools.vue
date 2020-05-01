@@ -86,7 +86,7 @@ import { Component, Vue, Prop } from 'vue-property-decorator'
 import { Action, Getter, namespace } from 'vuex-class'
 import { EventBus } from '@/event-bus'
 import { ToolGetters, ToolsAction } from '@/store/modules/tools'
-import { Tool } from '@/tools/Tool'
+import { ToolInterface } from '@/tools/Tool'
 import { Namespaces } from '@/store'
 import { StageActions, StageGetters } from '@/store/modules/stage'
 
@@ -103,7 +103,7 @@ export default class TheCanvasTools extends Vue {
   @Action(`stage/${StageActions.ZOOM_IN}`) zoomIn!: () => void
   @Tools.Action(ToolsAction.ENABLE_TOOL) enableTool!: (toolName: string) => void
   @Tools.Action(ToolsAction.DISABLE_TOOL) disableTool!: () => void
-  @Tools.Getter(ToolGetters.ENABLED_TOOL) enabledTool?: Tool
+  @Tools.Getter(ToolGetters.ENABLED_TOOL) enabledTool?: ToolInterface
   search = ''
 
   get zoomPercentage (): number {

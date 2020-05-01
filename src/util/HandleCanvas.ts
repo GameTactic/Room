@@ -11,7 +11,7 @@ export default class HandleCanvas {
     stage.$el.setAttribute('style', 'left: ' + left + 'px; top: ' + top + 'px;')
   }
 
-  static handleZoom = (stage: VueKonvaStage, stageZoom: number, stageConfig: CustomStageConfig, onLoad?: boolean): CustomStageConfig => {
+  static handleZoom = (stage: VueKonvaStage, stageZoom: number, stageConfig: CustomStageConfig, setStageConfig: (config: CustomStageConfig) => void, onLoad?: boolean): void => {
     const topOffset = (window.innerWidth > 899) ? 100 : 150
     const prev = { width: stage.width(), height: stage.height() }
     const dimensions: { width: number; height: number } = {
@@ -37,7 +37,7 @@ export default class HandleCanvas {
       }
       stage.attrs.container.setAttribute('style', 'top: ' + style.top + 'px; left: ' + style.left + 'px;')
     }
-    return {
+    setStageConfig({
       scale: {
         x: (stage.width() / stageConfig.initialWidth),
         y: (stage.width() / stageConfig.initialWidth)
@@ -46,7 +46,8 @@ export default class HandleCanvas {
       height: dimensions.height,
       initialWidth: stageConfig.initialWidth,
       initialHeight: stageConfig.initialHeight,
-      mapSrc: stageConfig.mapSrc
-    }
+      mapSrc: stageConfig.mapSrc,
+      mapRatio: stageConfig.mapRatio
+    })
   }
 }

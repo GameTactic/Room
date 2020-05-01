@@ -1,6 +1,8 @@
 import Konva from 'konva'
 import { NodeConfig } from 'konva/types/Node'
 import { VueKonvaStage } from '@/types/Canvas'
+import { StageGetters } from '@/store/modules/stage'
+import store from '@/main'
 
 export default class PointerEventMapper {
   static touchEventMapper = (event: TouchEvent): object => {
@@ -38,10 +40,11 @@ export default class PointerEventMapper {
     }
   }
 
-  static globalEventMapper = (e: Konva.KonvaPointerEvent | DragEvent, stageConfig: CustomStageConfig, stageZoom: number, stage: VueKonvaStage): CustomEvent => {
+  static globalEventMapper = (e: Konva.KonvaPointerEvent | DragEvent, stage: VueKonvaStage): CustomEvent => {
+    const stageConfig: CustomStageConfig = store.getters[`stage/${StageGetters.STAGE_CONFIG}`]
+    const stageZoom: number = store.getters[`stage/${StageGetters.STAGE_ZOOM}`]
     let pageX = 0
     let pageY = 0
-
     if ('evt' in e) {
       pageX = e.evt.pageX
       pageY = e.evt.pageY
@@ -49,7 +52,6 @@ export default class PointerEventMapper {
       pageX = e.pageX
       pageY = e.pageY
     }
-
     const offset = {
       x: pageX - stage.attrs.container.offsetLeft,
       y: pageY - stage.attrs.container.offsetTop
@@ -104,6 +106,7 @@ export interface CustomStageConfig extends NodeConfig {
   initialWidth: number;
   initialHeight: number;
   mapSrc: string;
+  mapRatio: number;
 }
 
 export interface CustomStageEvent {

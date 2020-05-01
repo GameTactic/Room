@@ -27,7 +27,7 @@ export default class ColourPicker extends Vue {
     ['#D74E09FF', '#792387FF'],
     ['#F2BB05FF', '#3349F4FF'],
     ['#08A045FF', '#4392F1FF'],
-    ['#F7FFF7FF', '#080F0FFF']
+    ['#F7FFF7FF', '#666666FF']
   ];
 
   onColourPickerHandler (colour: string) {

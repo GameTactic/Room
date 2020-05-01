@@ -1,7 +1,6 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
 import ToolModule from '@/store/modules/tools'
-import CursorModule from '@/store/modules/cursor'
 import SocketModule from '@/store/modules/socket'
 import CanvasModule from '@/store/modules/canvas'
 import StageModule from '@/store/modules/stage'
@@ -24,7 +23,6 @@ export enum Namespaces {
 export default new Vuex.Store<any>({
   modules: {
     [Namespaces.TOOLS]: ToolModule,
-    [Namespaces.CURSOR]: CursorModule,
     [Namespaces.SOCKET]: SocketModule,
     [Namespaces.CANVAS]: CanvasModule,
     [Namespaces.ROOM]: RoomModule,
