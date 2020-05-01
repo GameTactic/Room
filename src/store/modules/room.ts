@@ -1,4 +1,5 @@
 import { ActionContext, Module } from 'vuex'
+import { Game, Collection, Tactic, User, PresentationPayload, Api } from './types'
 
 export enum GameName {
   NONE = '',
@@ -7,165 +8,93 @@ export enum GameName {
 }
 
 export enum Locale {
-  ENUK = 'en-uk'
+  CS = 'cs',
+  DA = 'da',
+  DE = 'de',
+  EL = 'el',
+  EN = 'en',
+  ES = 'es',
+  FI = 'fi',
+  FR = 'fr',
+  HU = 'hu',
+  IT = 'it',
+  NL = 'nl',
+  NO = 'no',
+  PL = 'pl',
+  RO = 'ro',
+  RU = 'ru',
+  SR = 'sr',
+  SV = 'sv',
+  TR = 'tr',
+  UK = 'uk',
+  ZH = 'zh'
 }
 
 export enum RoomAction {
-  SET_GAME = 'setGame',
-  SET_LOCALE = 'setLocale'
+  SET_LOCALE = 'setLocale',
+  SET_GAME_NAME = 'setGameName',
+  SET_GAME_API = 'setGameApi',
+  DELETE_GAME_API = 'deleteGameApi',
+  SET_COLLECTIONS = 'setCollections',
+  SET_COLLECTION = 'setCollection',
+  UPDATE_COLLECTION = 'updateCollection',
+  DELETE_COLLECTION = 'deleteCollection',
+  SET_TACTICS = 'setTactics',
+  SET_TACTIC = 'setTactic',
+  UPDATE_TACTIC = 'updateTactic',
+  DELETE_TACTIC = 'deleteTactic',
+  SET_USERS = 'setUsers',
+  SET_USER = 'setUser',
+  UPDATE_USER = 'updateUser',
+  DELETE_USER = 'deleteUser',
+  SET_PRESENTATION = 'setPresentation',
+  SET_IS_PRIVATE = 'setIsPrivate'
 }
 
 export enum RoomMutation {
-  SET_GAME = 'SET_GAME',
-  SET_LOCALE = 'SET_LOCALE'
+  SET_LOCALE = 'SET_LOCALE',
+  SET_GAME_NAME = 'SET_GAME_NAME',
+  SET_GAME_API = 'SET_GAME_API',
+  DELETE_GAME_API = 'DELETE_GAME_API',
+  SET_COLLECTIONS = 'SET_COLLECTIONS',
+  SET_COLLECTION = 'SET_COLLECTION',
+  UPDATE_COLLECTION = 'UPDATE_COLLECTION',
+  DELETE_COLLECTION = 'DELETE_COLLECTION',
+  SET_TACTICS = 'SET_TACTICS',
+  SET_TACTIC = 'SET_TACTIC',
+  UPDATE_TACTIC = 'UPDATE_TACTIC',
+  DELETE_TACTIC = 'DELETE_TACTIC',
+  SET_USERS = 'SET_USERS',
+  SET_USER = 'SET_USER',
+  UPDATE_USER = 'UPDATE_USER',
+  DELETE_USER = 'DELETE_USER',
+  SET_PRESENTATION = 'SET_PRESENTATION',
+  SET_IS_PRIVATE = 'SET_IS_PRIVATE'
 }
 
 export enum RoomGetters {
-  ROOM_STATE = 'roomState',
-}
-
-export interface ShipData {
-  engine: {
-    engine_id_str: string;
-    max_speed: number;
-    engine_id: number;
-  };
-  anti_aircraft: {
-    slots: {
-      distance: number;
-      avg_damage: number;
-      caliber: number;
-      name: string;
-      guns: number;
-    }[];
-  };
-  mobility: {
-    rudder_time: number;
-    total: number;
-    turning_radius: number;
-    max_speed: number;
-  };
-  hull: {
-    hull_id: number;
-    hull_id_str: string;
-    torpedoes_barrels: number;
-    anti_aircraft_barrels: number;
-  };
-  atbas: {
-    distance: number;
-  };
-  artillery: {
-    max_dispersion: number;
-    shot_delay: number;
-    rotation_time: number;
-    distance: number;
-  };
-  torpedoes: {
-    visibility_dist: number;
-    distance: number;
-    torpedoes_id: number;
-    torpedo_name: string;
-    reload_time: number;
-    torpedo_speed: number;
-    rotation_time: number;
-    torpedoes_id_str: string;
-    max_damage: number;
-  };
-  ship_id: number;
-  fire_control: {
-    fire_control_id: number;
-    distance: number;
-    distance_increase: number;
-    fire_control_id_str: string;
-  };
-  weaponry: {
-    anti_aircraft: number;
-    aircraft: number;
-    artillery: number;
-    torpedoes: number;
-  };
-  battle_level_range_max: number;
-  battle_level_range_min: number;
-  flight_control: null;
-  concealment: {
-    total: number;
-    detect_distance_by_plane: number;
-    detect_distance_by_ship: number;
-  };
-  armour: {
-    casemate: {
-      max: number;
-      min: number;
-    };
-  };
-}
-
-export interface Ship {
-  description: string;
-  price_gold: number;
-  ship_id_str: string;
-  has_demo_profile: boolean;
-  images: {
-    small: string;
-    medium: string;
-    large: string;
-    contour: string;
-  };
-  modules: string;
-  modules_tree: string;
-  nation: string;
-  is_premium: boolean;
-  ship_id: number;
-  price_credit: 0;
-  default_profile: string;
-  upgrades: number[];
-  tier: number;
-  next_ships: string;
-  mod_slots: number;
-  type: string;
-  is_special: boolean;
-  name: string;
-}
-
-type ShipTypeImages = {
-  image_premium: string;
-  image: string;
-  image_elite: string;
-}
-
-export interface GameInfo {
-  ships_updated_at: number;
-  ship_types: {
-    [key: string]: string;
-  };
-  languages: {
-    [key: string]: string;
-  };
-  ship_modifications: {
-    [key: string]: string;
-  };
-  ship_modules: {
-    [key: string]: string;
-  };
-  ship_type_images: {
-    [key: string]: ShipTypeImages;
-  };
-  ship_nations: {
-    [key: string]: string;
-  };
-  game_version: string;
-  [key: string]: string | number | { [key: string]: string } | { [key: string]: ShipTypeImages };
-}
-
-export interface Game {
-  name: GameName;
-  ships: Ship[];
-  gameInfo: GameInfo | undefined;
+  LOCALE = 'locale',
+  GAME_NAME = 'gameName',
+  GAME_API = 'gameApi',
+  COLLECTIONS = 'collections',
+  COLLECTION = 'collection',
+  TACTICS = 'tactics',
+  TACTIC = 'tactic',
+  USERS = 'users',
+  USER = 'user',
+  PRESENTATION = 'presentation',
+  IS_PRIVATE = 'isPrivate'
 }
 
 export interface RoomState {
-  game: Game;
   locale: Locale;
+  game: Game;
+  collections: Collection[];
+  tactics: Tactic[];
+  users: User[];
+  isPresentationEnabled: boolean;
+  presentationEnabledBy: string | undefined;
+  isPrivate: boolean;
 }
 
 type CursorActionContext = ActionContext<RoomState, {}>
@@ -174,31 +103,144 @@ const RoomModule: Module<RoomState, {}> = {
   namespaced: true,
   state () {
     return {
+      locale: Locale['EN'],
       game: {
         name: GameName['NONE'],
-        ships: [],
-        gameInfo: undefined
+        api: []
       },
-      locale: Locale['ENUK']
+      collections: [],
+      tactics: [],
+      users: [],
+      isPresentationEnabled: false,
+      presentationEnabledBy: undefined,
+      isPrivate: false
     }
   },
   getters: {
-    [RoomGetters.ROOM_STATE]: state => ({ game: state.game, locale: state.locale })
+    [RoomGetters.LOCALE]: state => state.locale,
+    [RoomGetters.GAME_NAME]: state => state.game.name,
+    [RoomGetters.GAME_API]: state => state.game.api,
+    [RoomGetters.COLLECTIONS]: state => state.collections,
+    [RoomGetters.COLLECTION]: (state) => (id: string) => state.collections.find((collection: Collection) => collection.id === id),
+    [RoomGetters.TACTICS]: state => state.tactics,
+    [RoomGetters.TACTIC]: (state) => (id: string) => state.tactics.find((tactic: Tactic) => tactic.id === id),
+    [RoomGetters.USERS]: state => state.users,
+    [RoomGetters.USER]: (state) => (jti: string) => state.users.find((user: User) => user.jti === jti),
+    [RoomGetters.PRESENTATION]: state => ({ isPresentationEnabled: state.isPresentationEnabled, presentationEnabledBy: state.presentationEnabledBy }),
+    [RoomGetters.IS_PRIVATE]: state => state.isPrivate
   },
   mutations: {
-    [RoomMutation.SET_GAME] (state: RoomState, payload: Game) {
-      state.game = payload
-    },
     [RoomMutation.SET_LOCALE] (state: RoomState, payload: Locale) {
       state.locale = payload
+    },
+    [RoomMutation.SET_GAME_NAME] (state: RoomState, name: GameName) {
+      state.game.name = name
+    },
+    [RoomMutation.SET_GAME_API] (state: RoomState, payload: Api) {
+      state.game.api.push(payload)
+    },
+    [RoomMutation.DELETE_GAME_API] (state: RoomState) {
+      state.game.api = []
+    },
+    [RoomMutation.SET_COLLECTIONS] (state: RoomState, payload: Collection[]) {
+      state.collections = payload
+    },
+    [RoomMutation.SET_COLLECTION] (state: RoomState, payload: Collection) {
+      state.collections.push(payload)
+    },
+    [RoomMutation.UPDATE_COLLECTION] (state: RoomState, payload: Collection) {
+      state.collections.splice(state.collections.findIndex((collection: Collection) => collection.id === payload.id), 1, payload)
+    },
+    [RoomMutation.DELETE_COLLECTION] (state: RoomState, id: string) {
+      state.collections.splice(state.collections.findIndex((collection: Collection) => collection.id === id), 1)
+    },
+    [RoomMutation.SET_TACTICS] (state: RoomState, payload: Tactic[]) {
+      state.tactics = payload
+    },
+    [RoomMutation.SET_TACTIC] (state: RoomState, payload: Tactic) {
+      state.tactics.push(payload)
+    },
+    [RoomMutation.UPDATE_TACTIC] (state: RoomState, payload: Tactic) {
+      state.tactics.splice(state.tactics.findIndex((tactic: Tactic) => tactic.id === payload.id), 1, payload)
+    },
+    [RoomMutation.DELETE_TACTIC] (state: RoomState, id: string) {
+      state.tactics.splice(state.tactics.findIndex((tactic: Tactic) => tactic.id === id), 1)
+    },
+    [RoomMutation.SET_USERS] (state: RoomState, payload: User[]) {
+      state.users = payload
+    },
+    [RoomMutation.SET_USER] (state: RoomState, payload: User) {
+      state.users.push(payload)
+    },
+    [RoomMutation.UPDATE_USER] (state: RoomState, payload: User) {
+      state.users.splice(state.users.findIndex((user: User) => user.jti === payload.jti), 1, payload)
+    },
+    [RoomMutation.DELETE_USER] (state: RoomState, jti: string) {
+      state.users.splice(state.users.findIndex((user: User) => user.jti === jti), 1)
+    },
+    [RoomMutation.SET_PRESENTATION] (state: RoomState, payload: PresentationPayload) {
+      state.isPresentationEnabled = payload.isPresentationEnabled
+      state.presentationEnabledBy = payload.presentationEnabledBy
+    },
+    [RoomMutation.SET_IS_PRIVATE] (state: RoomState, isPrivate: boolean) {
+      state.isPrivate = isPrivate
     }
   },
   actions: {
-    [RoomAction.SET_GAME] (context: CursorActionContext, payload: Game) {
-      context.commit('SET_GAME', payload)
-    },
     [RoomAction.SET_LOCALE] (context: CursorActionContext, payload: Locale) {
       context.commit('SET_LOCALE', payload)
+    },
+    [RoomAction.SET_GAME_NAME] (context: CursorActionContext, name: GameName) {
+      context.commit('SET_GAME_NAME', name)
+    },
+    // eslint-disable-next-line
+    [RoomAction.SET_GAME_API] (context: CursorActionContext, payload: any) {
+      context.commit('SET_GAME_API', payload)
+    },
+    [RoomAction.DELETE_GAME_API] (context: CursorActionContext) {
+      context.commit('DELETE_GAME_API')
+    },
+    [RoomAction.SET_COLLECTIONS] (context: CursorActionContext, payload: Collection[]) {
+      context.commit('SET_COLLECTIONS', payload)
+    },
+    [RoomAction.SET_COLLECTION] (context: CursorActionContext, payload: Collection) {
+      context.commit('SET_COLLECTION', payload)
+    },
+    [RoomAction.UPDATE_COLLECTION] (context: CursorActionContext, payload: Collection) {
+      context.commit('UPDATE_COLLECTION', payload)
+    },
+    [RoomAction.DELETE_COLLECTION] (context: CursorActionContext, id: string) {
+      context.commit('DELETE_COLLECTION', id)
+    },
+    [RoomAction.SET_TACTICS] (context: CursorActionContext, payload: Tactic[]) {
+      context.commit('SET_TACTICS', payload)
+    },
+    [RoomAction.SET_TACTIC] (context: CursorActionContext, payload: Tactic) {
+      context.commit('SET_TACTIC', payload)
+    },
+    [RoomAction.UPDATE_TACTIC] (context: CursorActionContext, payload: Tactic) {
+      context.commit('UPDATE_TACTIC', payload)
+    },
+    [RoomAction.DELETE_TACTIC] (context: CursorActionContext, id: string) {
+      context.commit('DELETE_TACTIC', id)
+    },
+    [RoomAction.SET_USERS] (context: CursorActionContext, payload: User[]) {
+      context.commit('SET_USERS', payload)
+    },
+    [RoomAction.SET_USER] (context: CursorActionContext, payload: User) {
+      context.commit('SET_USER', payload)
+    },
+    [RoomAction.UPDATE_USER] (context: CursorActionContext, payload: User) {
+      context.commit('UPDATE_USER', payload)
+    },
+    [RoomAction.DELETE_USER] (context: CursorActionContext, jti: string) {
+      context.commit('DELETE_USER', jti)
+    },
+    [RoomAction.SET_PRESENTATION] (context: CursorActionContext, payload: PresentationPayload) {
+      context.commit('SET_PRESENTATION', payload)
+    },
+    [RoomAction.SET_IS_PRIVATE] (context: CursorActionContext, isPrivate: boolean) {
+      context.commit('SET_IS_PRIVATE', isPrivate)
     }
   }
 }

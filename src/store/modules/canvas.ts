@@ -2,7 +2,6 @@ import { ActionContext, Module } from 'vuex'
 import { CanvasElement } from '@/types/Canvas'
 import { Tool, Tracker } from '@/tools/Tool'
 import { CursorState } from './cursor'
-import { SocketState } from './socket'
 import { ToolState } from './tools'
 import { StageState } from './stage'
 
@@ -40,7 +39,6 @@ interface CanvasState {
 interface RootState extends CanvasElement {
   canvas: CanvasState;
   cursor: CursorState;
-  socket: SocketState;
   tools: ToolState;
   stage: StageState;
 }

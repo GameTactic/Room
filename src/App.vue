@@ -7,40 +7,51 @@
 <script lang="ts">
 import Component from 'vue-class-component'
 import Vue from 'vue'
-import { Action } from 'vuex-class'
-import { RoomAction, Game, Locale, GameName, Ship } from '@/store/modules/room'
-import { WowsShipsApiResponse, WowsShipInfoApiResponse } from '@/types/Games/Wows'
-import axios from 'axios'
+import { Action, namespace, Getter } from 'vuex-class'
+import { RoomAction, Locale, GameName, RoomGetters } from '@/store/modules/room'
+import { Namespaces } from '@/store'
+import { AuthenticationActions, AuthenticationGetters, ExtendedJWT, JWT_KEY } from '@/store/modules/authentication'
+import { Api } from './store/modules/types'
+import { getWowsApiData } from '@/games/wows/api'
+
+const authNamespace = namespace(Namespaces.AUTH)
 
 @Component({
   name: 'TheApp'
 })
 export default class TheApp extends Vue {
-  @Action(`room/${RoomAction.SET_GAME}`) setGame!: (game: Game) => void
+  @Action(`room/${RoomAction.SET_GAME_NAME}`) setGameName!: (name: string) => void
+  @Action(`room/${RoomAction.SET_GAME_API}`) setGameApi!: (api: Api) => void
   @Action(`room/${RoomAction.SET_LOCALE}`) setLocale!: (locale: Locale) => void
+  @Getter(`room/${RoomGetters.GAME_NAME}`) game!: GameName
+  @authNamespace.Action(AuthenticationActions.AUTHENTICATE) authenticate!: (token: string) => Promise<ExtendedJWT>
+  @authNamespace.Action(AuthenticationActions.CHECK_TOKEN_EXPIRY) checkTokenExpiry!: () => Promise<boolean>
+  @authNamespace.Action(AuthenticationActions.STORE_TOKEN) storeToken!: (token: string) => void
+  @authNamespace.Getter(AuthenticationGetters.JWT) jwt!: ExtendedJWT
+
   async created () {
-    this.setGame({ name: GameName['WOWS'], ships: [], gameInfo: undefined })
-    this.setLocale(Locale['ENUK'])
-    this.setGame(await this.getWowsApiData())
+    this.setGameName(GameName['WOWS'])
+    this.setLocale(Locale['EN'])
+    this.initAuthentication()
   }
 
-  async getWowsApiData (): Promise<Game> {
-    const response: WowsShipsApiResponse = await axios.get('https://api.worldofwarships.eu/wows/encyclopedia/ships/?application_id=d84a218b4fec37003e799f13777bf880')
-    const pageTotal = response.data.meta.page_total
-    let ships: Ship[] = []
-    ships = ships.concat(Object.values(response.data.data))
-    if (pageTotal > 1) {
-      for (let i = 2; i <= pageTotal; i++) {
-        const response: WowsShipsApiResponse = await axios.get(`https://api.worldofwarships.eu/wows/encyclopedia/ships/?page_no=${i}&application_id=d84a218b4fec37003e799f13777bf880`)
-        ships = ships.concat(Object.values(response.data.data))
-      }
-    }
-    const gameInfo: WowsShipInfoApiResponse = await axios.get('https://api.worldofwarships.eu/wows/encyclopedia/info/?application_id=d84a218b4fec37003e799f13777bf880')
+  async initAuthentication () {
+    const localToken = localStorage.getItem(JWT_KEY)
 
-    return {
-      name: GameName['WOWS'],
-      ships: ships,
-      gameInfo: gameInfo.data.data
+    if (this.checkTokenExpiry()) {
+      if (this.$route?.query?.code) {
+        this.authenticate(this.$route.query.code as string).then(jwt => this.storeToken(jwt.encoded))
+      } else if (localToken !== null) {
+        this.authenticate(localToken)
+      }
+      if (localToken) {
+        switch (this.game) {
+          case 'wows':
+            await getWowsApiData(localToken, this.setGameApi)
+            break
+          default: break
+        }
+      }
     }
   }
 }

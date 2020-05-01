@@ -73,6 +73,6 @@ export default class Ping implements PingInterface {
       hasMoved: true,
       position: canvasElement.position
     }
-    socket.send(JSON.stringify(data))
+    // socket.send(JSON.stringify(data))
   }
 }
