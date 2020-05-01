@@ -13,9 +13,9 @@
                 v-model="tactic.name"
               />
             </v-card-actions>
-            <v-card-actions>
+            <v-card-actions v-if="maps !== false">
               <v-autocomplete
-                :items="roomMaps"
+                :items="maps"
                 item-text="name"
                 :search-input.sync="search"
                 v-model="tactic.map"
@@ -64,8 +64,9 @@
 import Vue from 'vue'
 import Component from 'vue-class-component'
 import { EventBus } from '@/event-bus'
-import { Map, RoomGetters } from '@/store/modules/room'
+import { RoomGetters } from '@/store/modules/room'
 import { Getter } from 'vuex-class'
+import { Map, Api } from '@/store/modules/types'
 
 @Component({
   name: 'TheCreateNewTacticOverlay',
@@ -84,12 +85,21 @@ import { Getter } from 'vuex-class'
   })
 })
 export default class CreateNewTacticOverlay extends Vue {
-  @Getter(`room/${RoomGetters.ROOM_MAPS}`) roomMaps!: Map[]
+  @Getter(`room/${RoomGetters.GAME_API}`) gameApi!: Api[]
   overlay = false
   created () {
     EventBus.$on('openCreateNewTacticOverlay', () => {
       this.overlay = !this.overlay
     })
+  }
+
+  get maps () {
+    const mapApi: Api[] = this.gameApi.filter((api: Api) => api.name === 'maps')
+    if (mapApi.length === 1 && mapApi[0].data) {
+      return mapApi[0].data
+    } else {
+      return false
+    }
   }
 
   $refs!: {

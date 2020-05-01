@@ -26,9 +26,9 @@ export interface User {
 }
 
 export interface Map {
+  desc: string;
   name: string;
-  image: string;
-  description: string;
+  icon: string;
   ratio: number;
 }
 
@@ -50,7 +50,7 @@ export interface Collection {
   createdBy: string;
 }
 
-export interface PresentationPayload { 
-  isPresentationEnabled: boolean; 
-  presentationEnabledBy: string; 
+export interface PresentationPayload {
+  isPresentationEnabled: boolean;
+  presentationEnabledBy: string;
 }

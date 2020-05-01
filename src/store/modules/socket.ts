@@ -37,10 +37,12 @@ const SocketModule: Module<SocketState, {}> = {
       }
     },
     [SocketActions.EMIT_MESSAGE] (_context: SocketActionContext, message: string) {
+      // eslint-disable-next-line
       const vm: any = this
       vm._vm.$socket.client.emit('auth', message)
     },
     [SocketActions.JOIN_ROOM] (_context: SocketActionContext, id: string) {
+      // eslint-disable-next-line
       const vm: any = this
       vm._vm.$socket.client.emit('join', id)
     }
