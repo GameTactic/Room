@@ -1,41 +1,41 @@
 <template>
   <v-card>
     <v-card-subtitle class="pb-0 pl-5 custom-hide-text">
-      Fill
+      {{ $t('tool.template.fill') }}
     </v-card-subtitle>
     <v-card-actions class="py-0">
       <colour-picker-transparency :value.sync="circleColour" />
     </v-card-actions>
     <v-card-subtitle class="py-0 pl-5 custom-hide-text">
-      Size
+      {{ $t('tool.template.size') }}
     </v-card-subtitle>
     <v-card-actions class="py-0">
       <size-picker class="px-2" :value.sync="circleSize"></size-picker>
     </v-card-actions>
-    <v-card-subtitle class="py-0 pl-5 custom-hide-text">
-      Outline
+    <v-card-subtitle class="pb-0 pl-5 pt-2 custom-hide-text">
+      {{ $t('tool.template.colour') }}
     </v-card-subtitle>
     <v-card-actions class="py-0">
       <colour-picker :value.sync="circleOutlineColour" />
     </v-card-actions>
     <v-card-subtitle class="py-0 pl-5 custom-hide-text">
-      Stroke style
+      {{ $t('tool.template.strokeStyle') }}
     </v-card-subtitle>
     <v-card-actions class="pb-0">
       <v-radio-group v-model="circleStrokeStyle" row class="mt-1 px-3 flex-fill">
         <v-spacer></v-spacer>
-        <v-tooltip top>
+        <v-tooltip top :open-delay="500">
           <template v-slot:activator="{ on }">
             <v-radio v-on="on" class="mr-0" name="strokeStyle" on-icon="$vuetify.icons.normalLineActive" off-icon="$vuetify.icons.normalLine" :value="0"></v-radio>
           </template>
-          <span>Normal Line</span>
+          <span>{{ $t('tool.template.solidLine') }}</span>
         </v-tooltip>
         <v-spacer></v-spacer>
-        <v-tooltip top>
+        <v-tooltip top :open-delay="500">
           <template v-slot:activator="{ on }">
             <v-radio v-on="on" class="mr-0" name="strokeStyle" on-icon="$vuetify.icons.dashedLineActive" off-icon="$vuetify.icons.dashedLine" :value="1"></v-radio>
           </template>
-          <span>Dashed Line</span>
+          <span>{{ $t('tool.template.dashedLine') }}</span>
         </v-tooltip>
         <v-spacer></v-spacer>
       </v-radio-group>
@@ -46,13 +46,13 @@
         <v-switch
           v-model="circleTemporary"
           class="mt-0"
-          :label="circleTemporary ? 'Permanent' : 'Temporary'"
+          :label="circleTemporary ? $t('tool.template.permanent') : $t('tool.template.temporary')"
         ></v-switch>
         <v-spacer></v-spacer>
         <v-switch
           v-model="circleShowRadius"
           class="mt-0"
-          :label="circleShowRadius ? 'Show Radius' : 'Hide Radius'"
+          :label="circleShowRadius ?$t('tool.template.showRadius') : $t('tool.template.hideRadius')"
         ></v-switch>
         <v-spacer></v-spacer>
       </v-row>

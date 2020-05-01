@@ -1,11 +1,13 @@
-import { Module } from 'vuex'
+import { Module, ActionContext } from 'vuex'
 
 export interface SocketState {
   socket: WebSocket;
 }
 
 export enum SocketActions {
-  SEND_MESSAGE = 'sendMessage',
+  EMIT_MESSAGE = 'emitMessage',
+  JOIN_ROOM = 'joinRoom',
+  SEND_MESSAGE = 'send',
   SEND_IF_OPEN = 'sendIfOpen'
 }
 
@@ -13,6 +15,8 @@ export enum SocketGetters {
   SOCKET = 'socket',
   IS_OPEN = 'isOpen'
 }
+
+type SocketActionContext = ActionContext<{}, {}>;
 
 const SocketModule: Module<SocketState, {}> = {
   namespaced: true,
@@ -31,6 +35,14 @@ const SocketModule: Module<SocketState, {}> = {
       if (getters.isOpen) {
         await dispatch(SocketActions.SEND_MESSAGE, message)
       }
+    },
+    [SocketActions.EMIT_MESSAGE] (_context: SocketActionContext, message: string) {
+      const vm: any = this
+      vm._vm.$socket.client.emit('auth', message)
+    },
+    [SocketActions.JOIN_ROOM] (_context: SocketActionContext, id: string) {
+      const vm: any = this
+      vm._vm.$socket.client.emit('join', id)
     }
   }
 }

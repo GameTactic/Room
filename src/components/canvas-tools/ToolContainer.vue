@@ -9,7 +9,11 @@
   >
     <template v-slot:activator="{ on: menu }">
       <div>
-        <v-tooltip right nudge-right="10">
+        <v-tooltip
+          right
+          nudge-right="10"
+          :open-delay="500"
+        >
           <template v-slot:activator="{ on: tooltip }">
             <v-btn
               :class="[isEnabledClass, 'border-btn']"
@@ -22,7 +26,7 @@
               <v-icon dense :color="iconColour">{{icon}}</v-icon>
             </v-btn>
           </template>
-          <span>{{ toolName }}</span>
+          <span>{{ $t(`tool.container.${toolName}`) }}</span>
         </v-tooltip>
         <v-btn
           x-small
@@ -39,10 +43,15 @@
       </div>
     </template>
     <v-sheet>
-      <slot>Default Content For Slot</slot>
+      <slot />
     </v-sheet>
   </v-menu>
-  <v-tooltip right v-else nudge-right="10">
+  <v-tooltip
+    v-else
+    right
+    nudge-right="10"
+    :open-delay="500"
+  >
     <template v-slot:activator="{ on: tooltip1 }">
       <v-btn
         :class="[isEnabledClass, 'border-btn']"
@@ -55,7 +64,7 @@
         <v-icon dense :color="iconColour">{{icon}}</v-icon>
       </v-btn>
     </template>
-    <span>{{ toolName }}</span>
+    <span>{{ $t(`tool.container.${toolName}`) }}</span>
   </v-tooltip>
 </template>
 
@@ -94,7 +103,7 @@ export default class ToolContainer extends Vue {
   }
 
   get toolName (): string {
-    return this.toolname.charAt(0).toUpperCase() + this.toolname.slice(1)
+    return this.toolname
   }
 
   get iconColour (): string {
