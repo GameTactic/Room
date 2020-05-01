@@ -17,7 +17,7 @@
 
 <script lang="ts">
 import { Component, Vue } from 'vue-property-decorator'
-import { Tool } from '@/tools/Tool'
+import { ToolInterface } from '@/tools/Tool'
 import { namespace } from 'vuex-class'
 import { Namespaces } from '@/store'
 import { ToolGetters, ToolsAction } from '@/store/modules/tools'
@@ -32,7 +32,7 @@ const Tools = namespace(Namespaces.TOOLS)
   components: { SizePicker, ColourPicker }
 })
 export default class PopoutButton extends Vue {
-  @Tools.Getter(ToolGetters.TOOL) findTool!: (name: string) => Tool
+  @Tools.Getter(ToolGetters.TOOL) findTool!: (name: string) => ToolInterface
   @Tools.Action(ToolsAction.SET_COLOUR) setColour!: (colour: string) => void
   @Tools.Action(ToolsAction.SET_SIZE) setSize!: (size: number) => void
 
