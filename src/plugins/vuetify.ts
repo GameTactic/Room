@@ -47,6 +47,7 @@ import Vuetify, {
   VChip,
   VSkeletonLoader,
   VInput,
+  VCardText,
   VCardTitle
 } from 'vuetify/lib'
 
@@ -95,7 +96,8 @@ Vue.use(Vuetify, {
     VChip,
     VSkeletonLoader,
     VInput,
-    VCardTitle
+    VCardTitle,
+    VCardText,
   },
   directives: { }
 })

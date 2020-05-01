@@ -22,8 +22,9 @@ import TheToolPanel from '@/components/TheToolPanel.vue'
 import TheCanvas from '@/components/TheCanvas.vue'
 import TheEntityPanel from '@/components/TheEntityPanel.vue'
 import Component from 'vue-class-component'
-import { Prop } from 'vue-property-decorator'
+import { Prop, Watch } from 'vue-property-decorator'
 import Vue from 'vue'
+<<<<<<< HEAD
 import { Action, Getter, namespace } from 'vuex-class'
 import { Namespaces } from '@/store'
 import { EventBus } from '@/event-bus'
@@ -33,8 +34,16 @@ import { Map } from '@/store/modules/room'
 import { StageActions, StageGetters } from '@/store/modules/stage'
 import { CustomStageConfig } from '@/util/PointerEventMapper'
 import { CanvasAction } from '@/store/modules/canvas'
+=======
+import { namespace, Action } from 'vuex-class'
+import { Namespaces } from '@/store'
+import { EventBus } from '@/event-bus'
+import { VueKonvaStage } from '@/types/Canvas'
+import { AuthenticationGetters, ExtendedJWT } from '@/store/modules/authentication'
+import { Socket } from 'vue-socket.io-extended'
+>>>>>>> 66ac79f6fb7b44dd8bc81efc881fc6cf04c6f9da
 
-const Socket = namespace(Namespaces.SOCKET)
+const authNamespace = namespace(Namespaces.AUTH)
 
   @Component({
     name: 'Room',
@@ -49,12 +58,24 @@ const Socket = namespace(Namespaces.SOCKET)
   })
 export default class extends Vue {
   @Prop() id!: string
+<<<<<<< HEAD
   @Socket.Getter('socket') socket!: WebSocket
   @Action(`canvas/${CanvasAction.SET_CANVAS_ELEMENT}`) setCanvasElements!: (canvasElements: CanvasElement[]) => void
   @Action(`canvas/${CanvasAction.SET_CANVAS_ELEMENT_HISTORY}`) setCanvasElementsHistory!: (canvasElements: CanvasElement[]) => void
   @Getter(`stage/${StageGetters.STAGE_CONFIG}`) stageConfig!: CustomStageConfig
   @Action(`stage/${StageActions.SET_MAP_SRC}`) setMapSrc!: (mapSrc: string) => void
   @Action(`stage/${StageActions.SET_CONFIG}`) setConfig!: (config: CustomStageConfig) => void
+=======
+  @authNamespace.Getter(AuthenticationGetters.IS_AUTH) isAuth!: boolean
+  @authNamespace.Getter(AuthenticationGetters.JWT) jwt!: ExtendedJWT
+  @Action('socket/joinRoom') joinRoom!: (id: string) => void
+  @Socket() // --> listens to the event by method name, e.g. `connect`
+  connect () {
+    // eslint-disable-next-line
+    console.log('connection established')
+    this.joinRoom(this.id)
+  }
+>>>>>>> 66ac79f6fb7b44dd8bc81efc881fc6cf04c6f9da
 
   $refs!: {
     app: HTMLDivElement;
@@ -64,9 +85,21 @@ export default class extends Vue {
   dragEnabled = false
 
   created () {
-    this.socket.onopen = () => {
-      // eslint-disable-next-line @typescript-eslint/camelcase
-      this.socket.send(JSON.stringify({ join_room: this.id }))
+    this.initialiseSocketIO(this.isAuth)
+  }
+
+  @Watch('isAuth')
+  onPropertyChanged (isAuth: boolean) {
+    this.initialiseSocketIO(isAuth)
+  }
+
+  initialiseSocketIO (isAuth?: boolean) {
+    if (isAuth) {
+      // start socket.io with registered user
+      this.$socket.client.io.opts.query = { Authorization: this.jwt.encoded } // First set the token.
+      this.$socket.client.open() // Then open the socket and use it anywhere else.
+    } else {
+      // start socket.io with anonymous user
     }
 
     EventBus.$on('createTactic', (tactic: Tactic) => {

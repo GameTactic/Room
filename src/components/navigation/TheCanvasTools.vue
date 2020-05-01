@@ -1,7 +1,7 @@
 <template>
   <div class="custom-canvas-tools-container">
     <v-btn-toggle dense group class="custom-settings-left">
-      <v-tooltip bottom>
+      <v-tooltip bottom :open-delay="500">
         <template v-slot:activator="{ on }">
           <v-btn
             tile
@@ -16,14 +16,14 @@
             <v-icon small>fa-plus</v-icon>
           </v-btn>
         </template>
-        <span>Zoom in</span>
+        <span>{{ $t('navigation.canvasTools.zoomIn') }}</span>
       </v-tooltip>
       <div
         class="custom-zoom-percentage-button caption"
       >
         {{ this.zoomPercentage }}%
       </div>
-      <v-tooltip bottom>
+      <v-tooltip bottom :open-delay="500">
         <template v-slot:activator="{ on }">
           <v-btn
             tile
@@ -38,12 +38,12 @@
             <v-icon small>fa-minus</v-icon>
           </v-btn>
         </template>
-        <span>Zoom out</span>
+        <span>{{ $t('navigation.canvasTools.zoomOut') }}</span>
       </v-tooltip>
       <v-divider vertical inset />
     </v-btn-toggle>
     <v-btn-toggle dense group class="custom-settings-right">
-      <v-tooltip bottom>
+      <v-tooltip bottom :open-delay="500">
         <template v-slot:activator="{ on }">
           <v-btn
             tile
@@ -58,9 +58,9 @@
             <v-icon small>fa-hand-paper</v-icon>
           </v-btn>
         </template>
-        <span>Move canvas</span>
+        <span>{{ $t('navigation.canvasTools.moveCanvas') }}</span>
       </v-tooltip>
-      <v-tooltip bottom>
+      <v-tooltip bottom :open-delay="500">
         <template v-slot:activator="{ on }">
           <v-btn
             tile
@@ -75,7 +75,7 @@
             <v-icon small>fa-compress-arrows-alt</v-icon>
           </v-btn>
         </template>
-        <span>Center the canvas</span>
+        <span>{{ $t('navigation.canvasTools.centerCanvas') }}</span>
       </v-tooltip>
     </v-btn-toggle>
   </div>

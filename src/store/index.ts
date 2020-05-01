@@ -1,32 +1,31 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
-import ToolModule from '@/store/modules/tools'
-import SocketModule from '@/store/modules/socket'
-import CanvasModule from '@/store/modules/canvas'
-import StageModule from '@/store/modules/stage'
-import RoomModule from '@/store/modules/room'
 import AuthenticationModule from '@/store/modules/authentication'
+import CanvasModule from '@/store/modules/canvas'
+import RoomModule from '@/store/modules/room'
+import SocketModule from '@/store/modules/socket'
+import StageModule from '@/store/modules/stage'
+import ToolModule from '@/store/modules/tools'
 
 Vue.use(Vuex)
 
 export enum Namespaces {
-  TOOLS = 'tools',
-  CURSOR = 'cursor',
-  SOCKET = 'socket',
+  AUTH = 'authentication',
   CANVAS = 'canvas',
   ROOM = 'room',
-  AUTH = 'authentication',
-  STAGE = 'stage'
+  SOCKET = 'socket',
+  STAGE = 'stage',
+  TOOLS = 'tools'
 }
 
 // eslint-disable-next-line
 export default new Vuex.Store<any>({
   modules: {
-    [Namespaces.TOOLS]: ToolModule,
-    [Namespaces.SOCKET]: SocketModule,
+    [Namespaces.AUTH]: AuthenticationModule,
     [Namespaces.CANVAS]: CanvasModule,
     [Namespaces.ROOM]: RoomModule,
-    [Namespaces.AUTH]: AuthenticationModule,
-    [Namespaces.STAGE]: StageModule
+    [Namespaces.SOCKET]: SocketModule,
+    [Namespaces.STAGE]: StageModule,
+    [Namespaces.TOOLS]: ToolModule
   }
 })

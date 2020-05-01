@@ -1,15 +1,19 @@
 <template>
   <v-row class="navbar-row custom-not-clickable">
-    <v-toolbar dense class="navbar-toolbar-left custom-clickable">
+    <v-toolbar dense flat class="navbar-toolbar-left custom-clickable">
       <v-img class="ml-3 mr-12" max-width="160" max-height="45" :src="require('@/assets/logo.png')"></v-img>
       <v-spacer />
     </v-toolbar>
     <v-toolbar dense flat class="navbar-toolbar-center justify-center custom-not-clickable-large custom-background-transparent">
       <the-canvas-tools class="custom-clickable"/>
     </v-toolbar>
-    <v-toolbar dense class="navbar-toolbar-right custom-clickable">
+    <v-toolbar dense flat class="navbar-toolbar-right custom-clickable">
       <v-spacer />
-      <v-tooltip bottom nudge-bottom="10">
+      <v-tooltip
+        bottom
+        nudge-bottom="10"
+        :open-delay="500"
+      >
         <template v-slot:activator="{ on }">
           <v-btn
             dark
@@ -19,7 +23,7 @@
             <v-icon size="20">fa-save</v-icon>
           </v-btn>
         </template>
-        <span>Save room</span>
+        <span>{{ $t('navigation.navigation.saveRoom') }}</span>
       </v-tooltip>
       <the-room-menu />
       <the-user-menu />
@@ -82,7 +86,6 @@ header.navbar-toolbar-left.navbar-toolbar-left.navbar-toolbar-left {
     transform: skew(-45deg);
     z-index: -1;
     background: $room-primary;
-    box-shadow: 7px 3px 5px 0 #aaaaaa;
   }
 }
 .navbar-toolbar-center {
@@ -113,7 +116,6 @@ header.navbar-toolbar-left.navbar-toolbar-left.navbar-toolbar-left {
     transform: skew(45deg);
     z-index: -1;
     background: $room-primary;
-    box-shadow: -7px 3px 5px 0px #aaaaaa;
   }
   div {
     justify-content: flex-end;

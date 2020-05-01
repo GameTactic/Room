@@ -9,8 +9,8 @@
           tile
           class="custom-entity-panel"
         >
-          <wows-panel v-if="roomState.game.name === 'wows'" :clickedItem="clickedItem" :teams="teams" />
-          <wot-panel v-if="roomState.game.name === 'wot'" :clickedItem="clickedItem" :teams="teams" />
+          <wows-panel v-if="gameName === 'wows'" :clickedItemKey="clickedItemKey" :teams="teams" />
+          <wot-panel v-if="gameName === 'wot'" :clickedItemKey="clickedItemKey" :teams="teams" />
         </v-card>
       </v-col>
       <v-col class="pt-1">
@@ -23,7 +23,7 @@
           <div>
             <v-list-item class="px-2">
               <v-list-item-avatar>
-                <v-img :src="images[roomState.game.name]"></v-img>
+                <v-img :src="images[gameName]"></v-img>
               </v-list-item-avatar>
             </v-list-item>
             <v-divider></v-divider>
@@ -35,8 +35,9 @@
                 <v-tooltip
                   left
                   v-for="(item, index) in items"
-                  :key="item.title"
-                  :title="item.title"
+                  :open-delay="500"
+                  :key="item.key"
+                  :title="$t(`entity.panel.${item.title}`)"
                   :color="item.color"
                 >
                   <template v-slot:activator="{ on }">
@@ -44,9 +45,9 @@
                       v-on="on"
                       dark
                       active-class="test"
-                      :input-value="clickedItem === item.title"
+                      :input-value="clickedItemKey === item.key"
                       class="custom-list-item-center"
-                      @click="onItemClickHandler(item.title)"
+                      @click="onItemClickHandler(item.key)"
                     >
                       <v-list-item-action>
                         <v-badge
@@ -64,11 +65,11 @@
                       </v-list-item-action>
 
                       <v-list-item-content>
-                        <v-list-item-title>{{ item.title }}</v-list-item-title>
+                        <v-list-item-title>{{ $t(`entity.panel.${item.title}`) }}</v-list-item-title>
                       </v-list-item-content>
                     </v-list-item>
                   </template>
-                  <span>{{ item.title }}</span>
+                  <span>{{ $t(`entity.panel.${item.title}`) }}</span>
                 </v-tooltip>
               </v-list>
             </div>
@@ -81,12 +82,12 @@
 
 <script lang="ts">
 import { Component, Prop, Vue } from 'vue-property-decorator'
-import { RoomGetters, RoomState } from '@/store/modules/room'
+import { RoomGetters, GameName } from '@/store/modules/room'
 import { Getter } from 'vuex-class'
 import { WowsPanel, WotPanel } from './entity-panel'
 
 export interface MenuItem {
-  id: number;
+  key: number;
   title: string;
   icon: string;
   color?: string;
@@ -102,33 +103,33 @@ export interface MenuItem {
 })
 export default class MapButtons extends Vue {
   @Prop() private id!: string;
-  @Getter(`room/${RoomGetters.ROOM_STATE}`) private readonly roomState!: RoomState;
+  @Getter(`room/${RoomGetters.GAME_NAME}`) private readonly gameName!: GameName;
 
   show = false
 
   teams: MenuItem[] = [
-    { id: 1, title: 'Team 1', icon: 'fa-users', color: 'green', noOfEntities: 0 },
-    { id: 2, title: 'Team 2', icon: 'fa-users', color: 'red', noOfEntities: 0 }
+    { key: 1, title: 'team.one', icon: 'fa-users', color: 'green', noOfEntities: 0 },
+    { key: 2, title: 'team.two', icon: 'fa-users', color: 'red', noOfEntities: 0 }
   ]
 
   items: MenuItem[] = [
-    { id: 0, title: 'Add', icon: 'fa-plus' },
+    { key: 0, title: 'add', icon: 'fa-plus' },
     ...this.teams
   ]
 
-  clickedItem = 'Add'
+  clickedItemKey = 0
 
   images = {
     wows: require('@/assets/wows-icon2.png'),
     wot: require('@/assets/wot-icon.png')
   }
 
-  onItemClickHandler (title: string) {
-    this.show = title !== this.clickedItem ? true : !this.show
+  onItemClickHandler (key: number) {
+    this.show = key !== this.clickedItemKey ? true : !this.show
     if (!this.show) {
-      this.clickedItem = ''
+      this.clickedItemKey = -1
     } else {
-      this.clickedItem = title
+      this.clickedItemKey = key
     }
   }
 }
@@ -170,9 +171,9 @@ export default class MapButtons extends Vue {
 .custom-entity-panel {
   overflow-y: auto;
   overflow-x: hidden;
-  min-height: 300px;
   border-bottom-left-radius: 5px;
   border-top-left-radius: 5px;
+  height: 100%;
 }
 
 .custom-card-expanded >div >div {
@@ -193,6 +194,7 @@ export default class MapButtons extends Vue {
 
 .custom-navigation-drawer {
   background-color: $room-primary;
+  height: 480px !important;
 
   i {
     color: $room-text;

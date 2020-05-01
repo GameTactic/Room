@@ -1,5 +1,9 @@
 <template>
-  <v-tooltip right nudge-right="10">
+  <v-tooltip
+    right
+    nudge-right="10"
+    :open-delay="500"
+  >
     <template v-slot:activator="{ on }">
       <v-btn
         :disabled="isDisabled"
@@ -12,7 +16,7 @@
         <v-icon dense color="primary">{{icon}}</v-icon>
       </v-btn>
     </template>
-    <span>Redo</span>
+    <span>{{ $t('redo.container.redo') }}</span>
   </v-tooltip>
 </template>
 
