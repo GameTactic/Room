@@ -1,9 +1,10 @@
 import { ApiHeader } from '@/types/Games/Index'
 import { WowsShipsApiResponse, Ship, WowsShipInfoApiResponse } from '@/types/Games/Wows'
 import axios from 'axios'
-import { Api } from '@/store/modules/types'
+import { Api, Map } from '@/store/modules/types'
 import { JWTRegion } from '@/store/modules/authentication'
 import { GameName } from '@/store/modules/room'
+import WowsMaps from '@/types/Games/Wows/Maps'
 
 export const getWowsApiData = async (token: string, setGameApi: (api: Api) => void): Promise<void> => {
   const headers: ApiHeader = {
@@ -22,7 +23,8 @@ export const getWowsApiData = async (token: string, setGameApi: (api: Api) => vo
     }
   }
   const gameInfo: WowsShipInfoApiResponse = await axios.get(`${process.env.VUE_APP_MS_WG_API}/wows/encyclopedia/info/`, { headers })
-
+  const wowsMaps = new WowsMaps()
+  const maps: Map[] = wowsMaps.getMaps()
   setGameApi({
     name: 'wows.encyclopedia.ships',
     data: ships
@@ -30,5 +32,9 @@ export const getWowsApiData = async (token: string, setGameApi: (api: Api) => vo
   setGameApi({
     name: 'wows.encyclopedia.info',
     data: gameInfo.data.data
+  })
+  setGameApi({
+    name: 'wows.encyclopedia.info',
+    data: maps
   })
 }

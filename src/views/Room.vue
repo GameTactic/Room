@@ -24,26 +24,17 @@ import TheEntityPanel from '@/components/TheEntityPanel.vue'
 import Component from 'vue-class-component'
 import { Prop, Watch } from 'vue-property-decorator'
 import Vue from 'vue'
-<<<<<<< HEAD
-import { Action, Getter, namespace } from 'vuex-class'
-import { Namespaces } from '@/store'
-import { EventBus } from '@/event-bus'
+import { Map } from '@/store/modules/types'
 import { CanvasElement, VueKonvaStage } from '@/types/Canvas'
 import TheCreateNewTacticOverlay from '@/components/overlays/TheCreateNewTacticOverlay.vue'
-import { Map } from '@/store/modules/room'
 import { StageActions, StageGetters } from '@/store/modules/stage'
 import { CustomStageConfig } from '@/util/PointerEventMapper'
 import { CanvasAction } from '@/store/modules/canvas'
-=======
-import { namespace, Action } from 'vuex-class'
-import { Namespaces } from '@/store'
+import { Action, Getter } from 'vuex-class'
 import { EventBus } from '@/event-bus'
-import { VueKonvaStage } from '@/types/Canvas'
 import { AuthenticationGetters, ExtendedJWT } from '@/store/modules/authentication'
 import { Socket } from 'vue-socket.io-extended'
->>>>>>> 66ac79f6fb7b44dd8bc81efc881fc6cf04c6f9da
-
-const authNamespace = namespace(Namespaces.AUTH)
+import { SocketGetters } from '@/store/modules/socket'
 
   @Component({
     name: 'Room',
@@ -58,16 +49,14 @@ const authNamespace = namespace(Namespaces.AUTH)
   })
 export default class extends Vue {
   @Prop() id!: string
-<<<<<<< HEAD
-  @Socket.Getter('socket') socket!: WebSocket
+  @Getter(`socket/${SocketGetters.SOCKET}`) socket!: WebSocket
   @Action(`canvas/${CanvasAction.SET_CANVAS_ELEMENT}`) setCanvasElements!: (canvasElements: CanvasElement[]) => void
   @Action(`canvas/${CanvasAction.SET_CANVAS_ELEMENT_HISTORY}`) setCanvasElementsHistory!: (canvasElements: CanvasElement[]) => void
   @Getter(`stage/${StageGetters.STAGE_CONFIG}`) stageConfig!: CustomStageConfig
   @Action(`stage/${StageActions.SET_MAP_SRC}`) setMapSrc!: (mapSrc: string) => void
   @Action(`stage/${StageActions.SET_CONFIG}`) setConfig!: (config: CustomStageConfig) => void
-=======
-  @authNamespace.Getter(AuthenticationGetters.IS_AUTH) isAuth!: boolean
-  @authNamespace.Getter(AuthenticationGetters.JWT) jwt!: ExtendedJWT
+  @Getter(`authentication/${AuthenticationGetters.IS_AUTH}`) isAuth!: boolean
+  @Getter(`authentication/${AuthenticationGetters.JWT}`) jwt!: ExtendedJWT
   @Action('socket/joinRoom') joinRoom!: (id: string) => void
   @Socket() // --> listens to the event by method name, e.g. `connect`
   connect () {
@@ -75,7 +64,6 @@ export default class extends Vue {
     console.log('connection established')
     this.joinRoom(this.id)
   }
->>>>>>> 66ac79f6fb7b44dd8bc81efc881fc6cf04c6f9da
 
   $refs!: {
     app: HTMLDivElement;

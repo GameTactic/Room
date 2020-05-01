@@ -97,7 +97,7 @@ Vue.use(Vuetify, {
     VSkeletonLoader,
     VInput,
     VCardTitle,
-    VCardText,
+    VCardText
   },
   directives: { }
 })
