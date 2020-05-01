@@ -1,12 +1,11 @@
-import { LineInterface, Tracker } from '@/tools/Tool'
+import { LineInterface, Tool, Tracker } from '@/tools/Tool'
 import Konva from 'konva'
 import LineCreator from '@/tools/shapes/LineCreator'
 import { CanvasElement } from '@/types/Canvas'
 import uuid from 'uuid'
-import throttle from 'lodash.throttle'
 import { CustomEvent, CustomStageEvent } from '@/util/PointerEventMapper'
 
-export default class Line implements LineInterface {
+export default class Line extends Tool implements LineInterface {
   private lineCreator: LineCreator
   constructor (public readonly name: string,
                public size: number,
@@ -14,6 +13,7 @@ export default class Line implements LineInterface {
                public endStyle: string,
                public strokeStyle: number,
                public temporary: boolean) {
+    super()
     this.lineCreator = new LineCreator(
       this.temporary,
       this.size,
@@ -22,12 +22,12 @@ export default class Line implements LineInterface {
     )
   }
 
-  // eslint-disable-next-line
-  mouseDownAction = (event: CustomEvent, canvasElement: CanvasElement, layer: Konva.Layer, _socket: WebSocket): void => {
+  mouseDownAction = (event: CustomEvent, canvasElement: CanvasElement, layer: Konva.Layer): void => {
     canvasElement.data = [event.globalOffset.x, event.globalOffset.y]
     canvasElement.id = uuid()
     canvasElement.tracker = Tracker.ADDITION
     canvasElement.hasMoved = false
+    canvasElement.change = false
     canvasElement.tool = {
       name: this.name,
       colour: this.colour,
@@ -46,17 +46,16 @@ export default class Line implements LineInterface {
     canvasElement.position = this.lineCreator.getGroup().position()
   }
 
-  // eslint-disable-next-line
-  mouseMoveAction = throttle((event: CustomEvent, canvasElement: CanvasElement, layer: Konva.Layer, socket: WebSocket): void => {
+  mouseMoveAction = (event: CustomEvent, canvasElement: CanvasElement, layer: Konva.Layer): void => {
     if (!canvasElement.hasMoved) {
       canvasElement.hasMoved = true
     }
     const pos = { x: event.globalOffset.x, y: event.globalOffset.y }
     this.lineCreator['move' + this.endStyle.toUpperCase()](canvasElement, layer, pos, event)
     layer.batchDraw()
-  }, 5)
+  }
 
-  mouseUpAction = (event: CustomEvent, canvasElement: CanvasElement, layer: Konva.Layer, socket: WebSocket): void => {
+  mouseUpAction = (event: CustomEvent, canvasElement: CanvasElement, layer: Konva.Layer): void => {
     if (!canvasElement.hasMoved) {
       this.lineCreator.destroy(canvasElement, layer)
     } else {
@@ -64,7 +63,7 @@ export default class Line implements LineInterface {
         this.lineCreator.runTemporaryAnimation(this.lineCreator.getGroup(), layer)
       }
       canvasElement.data = canvasElement.data.concat([event.globalOffset.x, event.globalOffset.y])
-      this.sendToWebSocket(canvasElement, socket)
+      this.send(canvasElement)
     }
   }
 
@@ -82,27 +81,5 @@ export default class Line implements LineInterface {
         this.lineCreator.runTemporaryAnimation(this.lineCreator.getGroup(), layer)
       }
     }
-  }
-
-  sendToWebSocket = (canvasElement: CanvasElement, socket: WebSocket) => {
-    const data: CanvasElement = {
-      jti: 'SAM',
-      id: canvasElement.id,
-      layerId: canvasElement.layerId,
-      tool: {
-        name: this.name,
-        colour: this.colour,
-        size: this.size,
-        strokeStyle: this.strokeStyle,
-        endStyle: this.endStyle,
-        temporary: this.temporary
-      },
-      data: canvasElement.data,
-      tracker: Tracker.ADDITION,
-      change: false,
-      hasMoved: canvasElement.hasMoved,
-      position: canvasElement.position
-    }
-    socket.send(JSON.stringify(data))
   }
 }

@@ -1,7 +1,9 @@
 import { CanvasElement } from '@/types/Canvas'
-import { Tool, Tracker } from '@/tools/Tool'
+import { ToolInterface, Tracker } from '@/tools/Tool'
 import Konva from 'konva'
 import { CustomStageEvent } from '@/util/PointerEventMapper'
+import store from '@/main'
+import { StageGetters } from '@/store/modules/stage'
 
 export interface SocketHandlerCallback {
   change: SocketHandlerChange;
@@ -20,7 +22,7 @@ export default class HandleSocketMessage {
   // eslint-disable-next-line no-useless-constructor
   constructor (public canvasElement: CanvasElement,
                public currentElement: CanvasElement,
-               public tools: Tool[],
+               public tools: ToolInterface[],
                public layer: Konva.Layer,
                public canvasElements: CanvasElement[],
                public stageEvent: CustomStageEvent) {
@@ -54,10 +56,10 @@ export default class HandleSocketMessage {
     }
   }
 
-  renderCanvas = (tools: Tool[], canvasElement: CanvasElement, layer: Konva.Layer, stageEvent: CustomStageEvent): void => {
-    const foundTool: Tool | undefined = tools.find((tool: Tool) => tool.name === canvasElement.tool.name)
+  renderCanvas = (tools: ToolInterface[], canvasElement: CanvasElement, layer: Konva.Layer, stageEvent: CustomStageEvent): void => {
+    const foundTool: ToolInterface | undefined = tools.find((tool: ToolInterface) => tool.name === canvasElement.tool.name)
     if (foundTool && foundTool.renderCanvas) {
-      foundTool.renderCanvas(canvasElement, layer, stageEvent)
+      foundTool.renderCanvas(canvasElement, layer, stageEvent, store.getters[`stage/${StageGetters.STAGE_CONFIG}`])
     }
   }
 

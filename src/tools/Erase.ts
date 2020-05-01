@@ -1,20 +1,21 @@
-import { EraseInterface, Tracker } from '@/tools/Tool'
+import { EraseInterface, Tool, Tracker } from '@/tools/Tool'
 import Konva from 'konva'
 import { CanvasElement } from '@/types/Canvas'
 import uuid from 'uuid'
 import { CustomEvent } from '@/util/PointerEventMapper'
 
-export default class Erase implements EraseInterface {
-  // eslint-disable-next-line no-useless-constructor
+export default class Erase extends Tool implements EraseInterface {
   constructor (public readonly name: string,
                public erase: string[],
                public readonly temporary: boolean) {
+    super()
   }
-  // eslint-disable-next-line
-  mouseDownAction = (event: CustomEvent, canvasElement: CanvasElement, layer: Konva.Layer, socket: WebSocket): void => {
+
+  mouseDownAction = (event: CustomEvent, canvasElement: CanvasElement, layer: Konva.Layer): void => {
     canvasElement.data = [event.globalOffset.x, event.globalOffset.y]
     canvasElement.id = uuid()
     canvasElement.hasMoved = true
+    canvasElement.change = false
     canvasElement.tracker = Tracker.REMOVAL
     canvasElement.tool = {
       name: this.name,
@@ -23,14 +24,14 @@ export default class Erase implements EraseInterface {
     }
     this.findAndHide(event, canvasElement, layer)
   }
-  // eslint-disable-next-line
-  mouseMoveAction = (event: CustomEvent, canvasElement: CanvasElement, layer: Konva.Layer, socket: WebSocket): void => {
+
+  mouseMoveAction = (event: CustomEvent, canvasElement: CanvasElement, layer: Konva.Layer): void => {
     this.findAndHide(event, canvasElement, layer)
   }
 
-  mouseUpAction = (event: CustomEvent, canvasElement: CanvasElement, layer: Konva.Layer, socket: WebSocket): void => {
+  mouseUpAction = (event: CustomEvent, canvasElement: CanvasElement, layer: Konva.Layer): void => {
     this.findAndHide(event, canvasElement, layer)
-    this.sendToWebSocket(canvasElement, socket)
+    this.send(canvasElement)
   }
 
   hideGroup = (layer: Konva.Layer, group?: string[]): void => {
@@ -55,24 +56,5 @@ export default class Erase implements EraseInterface {
     if (canvasElement.tracker === Tracker.REMOVAL) {
       this.hideGroup(layer, canvasElement.tool.erase)
     }
-  }
-
-  sendToWebSocket = (canvasElement: CanvasElement, socket: WebSocket) => {
-    const data: CanvasElement = {
-      jti: 'SAM',
-      id: canvasElement.id,
-      layerId: canvasElement.layerId,
-      tool: {
-        name: this.name,
-        erase: canvasElement.tool.erase,
-        temporary: this.temporary
-      },
-      data: canvasElement.data,
-      tracker: Tracker.REMOVAL,
-      change: false,
-      hasMoved: true,
-      position: canvasElement.position
-    }
-    socket.send(JSON.stringify(data))
   }
 }

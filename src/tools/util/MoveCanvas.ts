@@ -1,18 +1,11 @@
 import { CanvasToolInterface } from '@/tools/Tool'
 import { VueKonvaStage } from '@/types/Canvas'
-import { CustomEvent } from '@/util/PointerEventMapper'
+import { CustomEvent, Point } from '@/util/PointerEventMapper'
 
 export default class MoveCanvas implements CanvasToolInterface {
-  // eslint-disable-next-line no-useless-constructor
   public startPos: {
-    pointer: {
-      x: number;
-      y: number;
-    };
-    element: {
-      x: number;
-      y: number;
-    };
+    pointer: Point;
+    element: Point;
   }
   constructor (public name: string) {
     this.startPos = {
@@ -26,7 +19,7 @@ export default class MoveCanvas implements CanvasToolInterface {
       }
     }
   }
-  // eslint-disable-next-line
+
   canvasDownAction = (event: CustomEvent, stage: VueKonvaStage): void => {
     this.startPos = {
       pointer: {
@@ -40,7 +33,6 @@ export default class MoveCanvas implements CanvasToolInterface {
     }
   }
 
-  // eslint-disable-next-line
   canvasMoveAction = (event: CustomEvent, stage: VueKonvaStage): void => {
     const newPosition = {
       x: event.konvaPointerEvent.evt.x - this.startPos.pointer.x,

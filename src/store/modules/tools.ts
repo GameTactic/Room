@@ -1,6 +1,6 @@
 import MoveCanvas from '@/tools/util/MoveCanvas'
 import { ActionContext, Module } from 'vuex'
-import { Tool } from '@/tools/Tool'
+import { ToolInterface } from '@/tools/Tool'
 import Ping from '@/tools/Ping'
 import FreeDraw from '@/tools/FreeDraw'
 import Erase from '@/tools/Erase'
@@ -35,9 +35,9 @@ export enum ToolsAction {
 }
 
 export interface ToolState {
-  enabledTool?: Tool;
+  enabledTool?: ToolInterface;
   enabled: boolean;
-  tools: Tool[];
+  tools: ToolInterface[];
 }
 
 export enum ToolsMutation {
@@ -66,7 +66,7 @@ const ToolModule: Module<ToolState, {}> = {
       enabled: false,
       tools: [
         new Ping('ping', 5, '#005555FF', true),
-        new FreeDraw('freedraw', 5, '#CE0000FF', false),
+        new FreeDraw('freeDraw', 5, '#CE0000FF', false),
         new Erase('erase', [], false),
         new Line('line', 5, '#CE0000FF', 'line', 0, false),
         new Circle('circle', 5, '#CE000080', false, true, '#CE0000FF', 0),
@@ -96,9 +96,9 @@ const ToolModule: Module<ToolState, {}> = {
     [ToolsMutation.SET_DISABLED] (state: ToolState) {
       state.enabled = false
     },
-    [ToolsMutation.SET_TOOL] (state: ToolState, payload: Tool) {
+    [ToolsMutation.SET_TOOL] (state: ToolState, payload: ToolInterface) {
       let foundIndex = -1
-      const found = state.tools.find((tool: Tool, index: number) => {
+      const found = state.tools.find((tool: ToolInterface, index: number) => {
         foundIndex = index
         return tool.name === payload.name
       })
@@ -162,7 +162,7 @@ const ToolModule: Module<ToolState, {}> = {
     [ToolsAction.DISABLE] (context: ToolActionContext) {
       context.commit(ToolsMutation.SET_DISABLED)
     },
-    [ToolsAction.SET_TOOL] (context: ToolActionContext, tool: Tool) {
+    [ToolsAction.SET_TOOL] (context: ToolActionContext, tool: ToolInterface) {
       context.commit(ToolsMutation.SET_TOOL, tool)
     },
     [ToolsAction.SET_COLOUR] (context: ToolActionContext, colour: string) {

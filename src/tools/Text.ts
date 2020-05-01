@@ -1,4 +1,4 @@
-import { TextInterface, Tracker } from '@/tools/Tool'
+import { TextInterface, Tool, Tracker } from '@/tools/Tool'
 import Konva from 'konva'
 import { CanvasElement } from '@/types/Canvas'
 import uuid from 'uuid'
@@ -6,13 +6,14 @@ import TextCreator from '@/tools/shapes/TextCreator'
 import { EventBus } from '@/event-bus'
 import { CustomEvent, CustomStageEvent } from '@/util/PointerEventMapper'
 
-export default class Text implements TextInterface {
+export default class Text extends Tool implements TextInterface {
   private textCreator: TextCreator
   constructor (public readonly name: string,
                public size: number,
                public colour: string,
                public temporary: boolean,
                public textString: string) {
+    super()
     this.textCreator = new TextCreator(
       this.temporary,
       this.size,
@@ -22,22 +23,23 @@ export default class Text implements TextInterface {
   }
 
   // eslint-disable-next-line
-  mouseDownAction = (event: CustomEvent, canvasElement: CanvasElement, layer: Konva.Layer, _socket: WebSocket): void => {
+  mouseDownAction = (_event: CustomEvent, _canvasElement: CanvasElement, _layer: Konva.Layer): void => {
 
   }
 
   // eslint-disable-next-line
-  mouseMoveAction = (event: CustomEvent, canvasElement: CanvasElement, layer: Konva.Layer, socket: WebSocket): void => {
+  mouseMoveAction = (_event: CustomEvent, _canvasElement: CanvasElement, _layer: Konva.Layer): void => {
   }
 
   // eslint-disable-next-line
-  mouseUpAction = (event: CustomEvent, canvasElement: CanvasElement, layer: Konva.Layer, socket: WebSocket): void => {
+  mouseUpAction = (event: CustomEvent, canvasElement: CanvasElement, layer: Konva.Layer): void => {
     const target = event.konvaPointerEvent.target
     if (target instanceof Konva.Stage || target instanceof Konva.Node) {
       canvasElement.data = [event.globalOffset.x, event.globalOffset.y]
       canvasElement.id = uuid()
       canvasElement.tracker = Tracker.ADDITION
       canvasElement.hasMoved = true
+      canvasElement.change = false
       canvasElement.position = { x: 0, y: 0 }
       canvasElement.tool = {
         name: this.name,
@@ -93,26 +95,5 @@ export default class Text implements TextInterface {
         this.textCreator.runTemporaryAnimation(this.textCreator.getGroup(), layer)
       }
     }
-  }
-
-  sendToWebSocket = (canvasElement: CanvasElement, socket: WebSocket) => {
-    const data: CanvasElement = {
-      jti: 'SAM',
-      id: canvasElement.id,
-      layerId: canvasElement.layerId,
-      tool: {
-        name: this.name,
-        colour: this.colour,
-        size: this.size,
-        temporary: this.temporary,
-        textString: this.textString
-      },
-      data: canvasElement.data,
-      tracker: Tracker.ADDITION,
-      change: false,
-      hasMoved: canvasElement.hasMoved,
-      position: canvasElement.position
-    }
-    socket.send(JSON.stringify(data))
   }
 }

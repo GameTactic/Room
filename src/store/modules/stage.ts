@@ -49,11 +49,12 @@ const StageModule: Module<StageState, {}> = {
       stageZoomStep: 10,
       stageZoom: 100,
       stageConfig: {
-        width: 0,
-        height: 0,
-        initialWidth: 0,
-        initialHeight: 0,
+        width: 1000,
+        height: 1000,
+        initialWidth: 1000,
+        initialHeight: 1000,
         mapSrc: '',
+        mapRatio: 0,
         scale: {
           x: 1,
           y: 1
@@ -79,7 +80,9 @@ const StageModule: Module<StageState, {}> = {
       }
     },
     [StageMutations.SET_MAP_SRC] (state: StageState, newMap: string) {
-      state.stageConfig.mapSrc = newMap
+      if (newMap !== '') {
+        state.stageConfig.mapSrc = newMap
+      }
     },
     [StageMutations.SET_ZOOM_IN] (state: StageState) {
       const newValue = state.stageZoom + state.stageZoomStep
@@ -150,8 +153,8 @@ const StageModule: Module<StageState, {}> = {
     [StageActions.ZOOM_DEFAULT] (context: StageActionContext) {
       context.commit(StageMutations.SET_ZOOM, 100)
     },
-    [StageActions.SET_MAP_SRC] (context: StageActionContext) {
-      context.commit(StageMutations.SET_MAP_SRC)
+    [StageActions.SET_MAP_SRC] (context: StageActionContext, newValue: string) {
+      context.commit(StageMutations.SET_MAP_SRC, newValue)
     }
   }
 }

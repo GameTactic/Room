@@ -1,13 +1,13 @@
 import { ActionContext, Module } from 'vuex'
 import { CanvasElement } from '@/types/Canvas'
-import { Tool, Tracker } from '@/tools/Tool'
-import { CursorState } from './cursor'
+import { ToolInterface, Tracker } from '@/tools/Tool'
 import { SocketState } from './socket'
 import { ToolState } from './tools'
 import { StageState } from './stage'
 
 export enum CanvasMutation {
   SET_CANVAS_ELEMENT = 'SET_CANVAS_ELEMENT',
+  SET_CANVAS_ELEMENT_HISTORY = 'SET_CANVAS_ELEMENT_HISTORY',
   ADD_CANVAS_ELEMENT = 'ADD_CANVAS_ELEMENT',
   HIDE_CANVAS_ELEMENT = 'HIDE_CANVAS_ELEMENT',
   DELETE_CANVAS_ELEMENT = 'DELETE_CANVAS_ELEMENT',
@@ -16,6 +16,7 @@ export enum CanvasMutation {
 
 export enum CanvasAction {
   SET_CANVAS_ELEMENT = 'setCanvasElement',
+  SET_CANVAS_ELEMENT_HISTORY = 'setCanvasElementHistory',
   ADD_CANVAS_ELEMENT = 'addCanvasElement',
   HIDE_CANVAS_ELEMENT = 'hideCanvasElement',
   DELETE_CANVAS_ELEMENT = 'deleteCanvasElement',
@@ -39,7 +40,6 @@ interface CanvasState {
 
 interface RootState extends CanvasElement {
   canvas: CanvasState;
-  cursor: CursorState;
   socket: SocketState;
   tools: ToolState;
   stage: StageState;
@@ -63,6 +63,9 @@ const CanvasModule: Module<CanvasState, RootState> = {
     [CanvasMutation.SET_CANVAS_ELEMENT] (state: CanvasState, payload: CanvasElement[]) {
       state.canvasElements = [...payload]
     },
+    [CanvasMutation.SET_CANVAS_ELEMENT_HISTORY] (state: CanvasState, payload: CanvasElement[]) {
+      state.canvasElementsHistory = [...payload]
+    },
     [CanvasMutation.HIDE_CANVAS_ELEMENT] (state: CanvasState, payload: HideCanvasElementInterface) {
       if (payload.id) {
         const foundElement = state.canvasElements.find((canvasElement: CanvasElement) => canvasElement.id === payload.id)
@@ -85,7 +88,7 @@ const CanvasModule: Module<CanvasState, RootState> = {
     },
     [CanvasMutation.ADD_CANVAS_ELEMENT] (state: CanvasState, payload: RootState) {
       payload.jti = 'SAM'
-      const foundTool: Tool | undefined = payload.tools.tools.find((tool: Tool) => tool.name === payload.tool.name)
+      const foundTool: ToolInterface | undefined = payload.tools.tools.find((tool: ToolInterface) => tool.name === payload.tool.name)
       state.canvasElements.push({ ...payload, tool: { ...payload.tool, renderCanvas: foundTool?.renderCanvas } })
     },
     [CanvasMutation.ADD_CANVAS_ELEMENT_HISTORY] (state: CanvasState, payload: CanvasElement) {
@@ -96,6 +99,9 @@ const CanvasModule: Module<CanvasState, RootState> = {
   actions: {
     [CanvasAction.SET_CANVAS_ELEMENT] (context: CursorActionContext, payload: CanvasElement[]) {
       context.commit('SET_CANVAS_ELEMENT', payload)
+    },
+    [CanvasAction.SET_CANVAS_ELEMENT_HISTORY] (context: CursorActionContext, payload: CanvasElement[]) {
+      context.commit('SET_CANVAS_ELEMENT_HISTORY', payload)
     },
     [CanvasAction.ADD_CANVAS_ELEMENT] (context: CursorActionContext, payload: CanvasElement) {
       context.commit('ADD_CANVAS_ELEMENT', { ...payload, tools: context.rootState.tools })

@@ -104,7 +104,7 @@ export default class MapButtons extends Vue {
   @Prop() private id!: string;
   @Getter(`room/${RoomGetters.ROOM_STATE}`) private readonly roomState!: RoomState;
 
-  show = true
+  show = false
 
   teams: MenuItem[] = [
     { id: 1, title: 'Team 1', icon: 'fa-users', color: 'green', noOfEntities: 0 },

@@ -1,5 +1,5 @@
 import { CanvasElement } from '@/types/Canvas'
-import { Tool, Tracker } from '@/tools/Tool'
+import { ToolInterface, Tracker } from '@/tools/Tool'
 import Konva from 'konva'
 import { CustomEvent } from '@/util/PointerEventMapper'
 
@@ -22,11 +22,10 @@ export enum MouseUpChange {
 export default class HandleMouseUp {
   // eslint-disable-next-line no-useless-constructor
   constructor (public canvasElement: CanvasElement,
-               public enabledTool: Tool,
+               public enabledTool: ToolInterface,
                public layer: Konva.Layer,
                public canvasElements: CanvasElement[],
-               public event: CustomEvent,
-               public socket: WebSocket) {
+               public event: CustomEvent) {
   }
 
   handle = (): MouseUpCallback | undefined => {

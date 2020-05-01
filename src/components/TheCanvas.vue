@@ -18,7 +18,7 @@
 <script lang="ts">
 import { Prop } from 'vue-property-decorator'
 import Component from 'vue-class-component'
-import { Tool, Tracker } from '@/tools/Tool'
+import { ToolInterface, Tracker } from '@/tools/Tool'
 import { CanvasElement, VueKonvaLayer, VueKonvaStage } from '@/types/Canvas'
 import Vue from 'vue'
 import { Namespaces } from '@/store'
@@ -47,14 +47,13 @@ const Sockets = namespace(Namespaces.SOCKET)
 
 export default class TheCanvas extends Vue {
   @Prop() private id!: string
-  @Prop() private propStageConfig!: CustomStageConfig
   @Tools.Action(ToolsAction.DISABLE) disable!: () => void
   @Action(`tools/${ToolsAction.ENABLE}`) enable!: () => void
   @Action(`tools/${ToolsAction.DISABLE_TOOL}`) disableTool!: () => void
   @Action(`tools/${ToolsAction.ENABLE_TOOL}`) enableTool!: (name: string) => void
-  @Getter(`tools/${ToolGetters.ENABLED_TOOL}`) enabledTool!: Tool
+  @Getter(`tools/${ToolGetters.ENABLED_TOOL}`) enabledTool!: ToolInterface
   @Getter(`tools/${ToolGetters.ENABLED}`) enabled!: boolean
-  @Getter(`tools/${ToolGetters.TOOLS}`) tools!: Tool[]
+  @Getter(`tools/${ToolGetters.TOOLS}`) tools!: ToolInterface[]
   @Sockets.Getter(SocketGetters.SOCKET) socket!: WebSocket
   @Sockets.Action(SocketActions.SEND_IF_OPEN) send!: (message: string) => void
   @Action(`canvas/${CanvasAction.ADD_CANVAS_ELEMENT}`) addCanvasElement!: (canvasElement: CanvasElement) => void
@@ -91,16 +90,21 @@ export default class TheCanvas extends Vue {
   }
 
   mounted () {
-    const response = HandleCanvas.handleZoom(this.stageNode, this.stageZoom, this.propStageConfig, true)
-    this.setStageConfig(response)
-    this.setMap(this.stageConfig)
-    HandleCanvas.handleCenterCanvas(this.stageElement)
+    this.initializeNewTactic()
   }
 
   created () {
+    this.$store.watch(
+      () => {
+        return this.stageConfig.mapSrc
+      },
+      (newMap: string, oldMap: string) => {
+        if (newMap !== oldMap) this.setMap(this.stageConfig)
+      }
+    )
+
     window.addEventListener('resize', () => {
-      const response = HandleCanvas.handleZoom(this.stageNode, this.stageZoom, this.stageConfig, false)
-      this.setStageConfig(response)
+      HandleCanvas.handleZoom(this.stageNode, this.stageZoom, this.stageConfig, this.setStageConfig, false)
       HandleCanvas.handleCenterCanvas(this.stageElement)
     })
 
@@ -115,8 +119,12 @@ export default class TheCanvas extends Vue {
     })
 
     EventBus.$on('zoom', () => {
-      const response = HandleCanvas.handleZoom(this.stageNode, this.stageZoom, this.stageConfig, false)
-      this.setStageConfig(response)
+      HandleCanvas.handleZoom(this.stageNode, this.stageZoom, this.stageConfig, this.setStageConfig, false)
+      HandleCanvas.handleCenterCanvas(this.stageElement)
+    })
+
+    EventBus.$on('newTactic', () => {
+      this.initializeNewTactic()
     })
 
     EventBus.$on('centerCanvas', () => {
@@ -128,7 +136,7 @@ export default class TheCanvas extends Vue {
       const response = handleUndoRedo.handleUndoRedo(undoRedo)
       if (response) {
         this.addCanvasElementHistory(response.addToHistory)
-        this.socket.send(JSON.stringify(response.returnElement))
+        this.send(JSON.stringify(response.returnElement))
         this.renderShapes()
       }
     })
@@ -137,7 +145,7 @@ export default class TheCanvas extends Vue {
       if (this.canvasElement.tool.textString && this.canvasElement.tool.textString?.length > 0) {
         this.addCanvasElement({ ...canvasElement })
         this.addCanvasElementHistory(canvasElement)
-        this.socket.send(JSON.stringify(this.canvasElement))
+        this.send(JSON.stringify(this.canvasElement))
         this.renderShapes()
       }
     })
@@ -165,10 +173,6 @@ export default class TheCanvas extends Vue {
 
     EventBus.$on('touchUp', (e: TouchEvent) => {
       this.onTouchUpHandler(e)
-    })
-
-    EventBus.$on('entityDragEnd', (e: TouchEvent) => {
-      this.onEntityDragEndHandler(e)
     })
 
     this.socket.onmessage = (data: MessageEvent) => {
@@ -209,16 +213,16 @@ export default class TheCanvas extends Vue {
       stageConfig: this.stageConfig,
       zoom: this.stageZoom
     }
-    const renderShapesHandler = new HandleRenderShapes(this.layerNode, this.canvasElements, this.canvasElementsHistory, this.tools, stageEvent)
+    const renderShapesHandler = new HandleRenderShapes(this.layerNode, this.canvasElements, this.canvasElementsHistory, this.tools, stageEvent, this.stageConfig)
     renderShapesHandler.handle()
   }
 
   onMouseDownHandler (e: Konva.KonvaPointerEvent): void {
     this.$data.mouseDown = true
-    const event = PointerEventMapper.globalEventMapper(e, this.stageConfig, this.stageZoom, this.stageNode)
+    const event = PointerEventMapper.globalEventMapper(e, this.stageNode)
     if (this.enabledTool?.mouseDownAction) {
       this.enable()
-      this.enabledTool.mouseDownAction(event, this.$data.canvasElement, this.layerNode, this.socket, this.stageZoom)
+      this.enabledTool.mouseDownAction(event, this.$data.canvasElement, this.layerNode)
     } else if (this.enabledTool?.canvasDownAction) {
       this.enable()
       this.enabledTool.canvasDownAction(event, this.stageElement)
@@ -226,9 +230,9 @@ export default class TheCanvas extends Vue {
   }
 
   onMouseMoveHandler (e: Konva.KonvaPointerEvent): void {
-    const event = PointerEventMapper.globalEventMapper(e, this.stageConfig, this.stageZoom, this.stageNode)
+    const event = PointerEventMapper.globalEventMapper(e, this.stageNode)
     if (this.enabledTool?.mouseMoveAction && this.enabled) {
-      this.enabledTool.mouseMoveAction(event, this.$data.canvasElement, this.layerNode, this.socket, this.stageZoom)
+      this.enabledTool.mouseMoveAction(event, this.$data.canvasElement, this.layerNode)
     } else if (this.enabledTool?.canvasMoveAction && this.enabled) {
       this.enabledTool.canvasMoveAction(event, this.stageElement)
     }
@@ -236,11 +240,11 @@ export default class TheCanvas extends Vue {
 
   onMouseUpHandler (e: Konva.KonvaPointerEvent): void {
     this.$data.mouseDown = false
-    const event = PointerEventMapper.globalEventMapper(e, this.stageConfig, this.stageZoom, this.stageNode)
+    const event = PointerEventMapper.globalEventMapper(e, this.stageNode)
     if (this.enabledTool?.mouseUpAction && this.enabled) {
       this.disable()
-      this.enabledTool.mouseUpAction(event, this.$data.canvasElement, this.layerNode, this.socket, this.stageZoom)
-      const handleMouseUp = new HandleMouseUp(this.$data.canvasElement, this.enabledTool, this.layerNode, this.canvasElements, event, this.socket)
+      this.enabledTool.mouseUpAction(event, this.$data.canvasElement, this.layerNode)
+      const handleMouseUp = new HandleMouseUp(this.$data.canvasElement, this.enabledTool, this.layerNode, this.canvasElements, event)
       const response = handleMouseUp.handle()
       if (response) {
         if (response.change === MouseUpChange.ADD && response.payload.canvasElement) {
@@ -268,6 +272,12 @@ export default class TheCanvas extends Vue {
     mapCanvas.setMap(stageConfig, this.layerNode)
   }
 
+  initializeNewTactic () {
+    HandleCanvas.handleZoom(this.stageNode, this.stageZoom, this.stageConfig, this.setStageConfig, false)
+    HandleCanvas.handleCenterCanvas(this.stageElement)
+    this.renderShapes()
+  }
+
   onTouchDownHandler = (event: TouchEvent): void => {
     this.onMouseDownHandler(PointerEventMapper.touchEventMapper(event) as KonvaPointerEvent)
   }
@@ -278,27 +288,6 @@ export default class TheCanvas extends Vue {
 
   onTouchUpHandler = (event: TouchEvent): void => {
     this.onMouseUpHandler(PointerEventMapper.touchEventMapper(event) as KonvaPointerEvent)
-  }
-
-  onEntityDragEndHandler (e: any): void {
-    const event = PointerEventMapper.globalEventMapper(e, this.stageConfig, this.stageZoom, this.stageNode)
-    const layer = this.layerNode
-    const stage = this.stageNode
-    Konva.Image.fromURL(e.srcElement?.dataset?.image, (image: any) => {
-      image.setAttrs({
-        width: 20,
-        height: 20
-      })
-      const group = new Konva.Group()
-      group.add(image)
-      group.attrs.type = 'sprite'
-      layer.add(group)
-      image.position({
-        x: event.globalOffset.x - 13.5,
-        y: event.globalOffset.y - 13.5
-      })
-      layer.batchDraw()
-    })
   }
 
   get stageNode () {
@@ -312,6 +301,7 @@ export default class TheCanvas extends Vue {
   get layerNode () {
     return this.$refs.layer.getNode()
   }
+
   // eslint-disable-next-line
   [key: string]: any
 }
@@ -331,7 +321,7 @@ export default class TheCanvas extends Vue {
   &.line::v-deep canvas {
     cursor: url('~@/assets/cursor/pen.png'), auto;
   }
-  &.freedraw::v-deep canvas {
+  &.freeDraw::v-deep canvas {
     cursor: url('~@/assets/cursor/pen.png'), auto;
   }
   &.erase::v-deep canvas {
