@@ -9,7 +9,11 @@
     </v-toolbar>
     <v-toolbar dense class="navbar-toolbar-right custom-clickable">
       <v-spacer />
-      <v-tooltip bottom nudge-bottom="10">
+      <v-tooltip
+        bottom
+        nudge-bottom="10"
+        :open-delay="500"
+      >
         <template v-slot:activator="{ on }">
           <v-btn
             dark
@@ -19,7 +23,7 @@
             <v-icon size="20">fa-save</v-icon>
           </v-btn>
         </template>
-        <span>Save room</span>
+        <span>{{ $t('navigation.navigation.saveRoom') }}</span>
       </v-tooltip>
       <the-room-menu />
       <the-user-menu />

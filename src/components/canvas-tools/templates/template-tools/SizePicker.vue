@@ -1,8 +1,9 @@
 <template>
 <v-slider
   :value="value"
-  :hint="'Size: ' + value"
+  :hint="`${$t('tool.template.size')}: ${value}`"
   prepend-icon="fa-ruler-vertical"
+  persistent-hint
   :max="6"
   :min="1"
   :step="1"
