@@ -1,14 +1,10 @@
 <template>
-  <v-card>
-    <v-card-title>Login</v-card-title>
-    <v-divider></v-divider>
+  <v-card class="login-card">
+    <v-card-title class="login-card-title">Select a login option</v-card-title>
     <v-card-text>
-      <h4>Please select a realm to log in with</h4>
-    </v-card-text>
-    <v-card-actions>
       <ProviderBlock v-for="(provider, name) in providers" :provider-name="name" :provider="provider" :key="name">
       </ProviderBlock>
-    </v-card-actions>
+    </v-card-text>
   </v-card>
 </template>
 
@@ -35,5 +31,7 @@ export default class extends Vue {
 </script>
 
 <style scoped>
-
+  .login-card-title {
+    font-weight: bold;
+  }
 </style>

@@ -66,13 +66,13 @@
 </template>
 
 <script lang="ts">
-  import {Component, Prop, Vue} from 'vue-property-decorator'
-  import {namespace} from 'vuex-class'
-  import {Namespaces} from '@/store'
-  import {AuthenticationActions, AuthenticationGetters} from '@/store/modules/authentication'
-  import LoginCard from '@/components/navigation/LoginCard.vue'
+import { Component, Prop, Vue } from 'vue-property-decorator'
+import { namespace } from 'vuex-class'
+import { Namespaces } from '@/store'
+import { AuthenticationActions, AuthenticationGetters } from '@/store/modules/authentication'
+import LoginCard from '@/components/navigation/LoginCard.vue'
 
-  const authNamespace = namespace(Namespaces.AUTH)
+const authNamespace = namespace(Namespaces.AUTH)
 
   interface UserMenuItem {
     text: string;
@@ -81,9 +81,9 @@
 
   @Component({
     name: 'TheUserMenu',
-    components: {LoginCard}
+    components: { LoginCard }
   })
-  export default class TheUserMenu extends Vue {
+export default class TheUserMenu extends Vue {
     @authNamespace.Getter(AuthenticationGetters.IS_AUTH) isAuth!: boolean
     @authNamespace.Action(AuthenticationActions.LOGIN_WG) authenticate!: (region: string) => void;
     @authNamespace.Action(AuthenticationActions.LOGOUT) logout!: () => void
@@ -92,7 +92,7 @@
 
     dialogOpen = false
 
-    doOpen() {
+    doOpen () {
       setTimeout(() => {
         this.dialogOpen = true
       })
@@ -104,7 +104,7 @@
     userMenuItemsClickHandler(item: UserMenuItem) {
       // do stuff
     }
-  }
+}
 
 </script>
 <style scoped lang="scss">
