@@ -1,7 +1,8 @@
 import { Module, ActionContext } from 'vuex'
 
+// eslint-disable-next-line
 export interface SocketState {
-  socket: WebSocket;
+  // socket: WebSocket;
 }
 
 export enum SocketActions {
@@ -22,15 +23,15 @@ const SocketModule: Module<SocketState, {}> = {
   namespaced: true,
   state () {
     return {
-      socket: new WebSocket(process.env.VUE_APP_MS_SOCK || 'ws://socket.gametactic.eu')
+      // socket: new WebSocket(process.env.VUE_APP_MS_SOCK || 'ws://socket.gametactic.eu')
     }
   },
   getters: {
-    [SocketGetters.SOCKET]: state => state.socket,
-    [SocketGetters.IS_OPEN]: state => state.socket.readyState === WebSocket.OPEN
+    // [SocketGetters.SOCKET]: state => state.socket,
+    // [SocketGetters.IS_OPEN]: state => state.socket.readyState === WebSocket.OPEN
   },
   actions: {
-    [SocketActions.SEND_MESSAGE]: ({ state }) => (message: string) => state.socket.send(message),
+    // [SocketActions.SEND_MESSAGE]: ({ state }) => (message: string) => state.socket.send(message),
     [SocketActions.SEND_IF_OPEN]: async ({ getters, dispatch }, message: string) => {
       if (getters.isOpen) {
         await dispatch(SocketActions.SEND_MESSAGE, message)

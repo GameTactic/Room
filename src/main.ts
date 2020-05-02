@@ -7,7 +7,7 @@ import store from './store'
 import App from './App.vue'
 import socket from '@/plugins/socket'
 import './plugins/sentry'
-import values from '@/lodash.values'
+import values from 'lodash.values'
 import i18n, { localeFiles } from './lib/I18n'
 
 socket(store, Vue)

@@ -2,7 +2,7 @@ import Konva from 'konva'
 import { CanvasElement, VueKonvaStage } from '@/types/Canvas'
 import { CustomEvent } from '@/util/PointerEventMapper'
 import store from '@/main'
-import { SocketActions, SocketGetters } from '@/store/modules/socket'
+import { SocketActions } from '@/store/modules/socket'
 
 export type CanvasDownAction = (event: CustomEvent, stage: VueKonvaStage) => void;
 export type CanvasMoveAction = (event: CustomEvent, stage: VueKonvaStage) => void;

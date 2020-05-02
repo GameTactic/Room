@@ -94,8 +94,8 @@ export default class CreateNewTacticOverlay extends Vue {
   }
 
   get maps () {
-    const mapApi: Api[] = this.gameApi.filter((api: Api) => api.name === 'maps')
-    if (mapApi.length === 1 && mapApi[0].data) {
+    const mapApi: Api[] = this.gameApi.filter((api: Api) => api.name === 'wows.encyclopedia.maps')
+    if (mapApi.length === 1) {
       return mapApi[0].data
     } else {
       return false

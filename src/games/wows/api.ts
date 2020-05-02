@@ -34,7 +34,7 @@ export const getWowsApiData = async (token: string, setGameApi: (api: Api) => vo
     data: gameInfo.data.data
   })
   setGameApi({
-    name: 'wows.encyclopedia.info',
+    name: 'wows.encyclopedia.maps',
     data: maps
   })
 }
