@@ -1,7 +1,8 @@
-import { GameName } from './room';
+import { GameName } from '@/store/modules/room'
 
 export interface Api {
   name: string;
+  // eslint-disable-next-line
   data: any;
 }
 
@@ -11,6 +12,7 @@ export interface Entity {
   shortText: string;
   value: string;
   image: string | undefined;
+  // eslint-disable-next-line
   data: any;
 }
 

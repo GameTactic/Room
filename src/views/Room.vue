@@ -34,7 +34,7 @@ import { Action, Getter } from 'vuex-class'
 import { EventBus } from '@/event-bus'
 import { AuthenticationGetters, ExtendedJWT } from '@/store/modules/authentication'
 import { Socket } from 'vue-socket.io-extended'
-import { SocketGetters } from '@/store/modules/socket'
+// import { SocketGetters } from '@/store/modules/socket'
 
   @Component({
     name: 'Room',
@@ -49,7 +49,7 @@ import { SocketGetters } from '@/store/modules/socket'
   })
 export default class extends Vue {
   @Prop() id!: string
-  @Getter(`socket/${SocketGetters.SOCKET}`) socket!: WebSocket
+  // @Getter(`socket/${SocketGetters.SOCKET}`) socket!: WebSocket
   @Action(`canvas/${CanvasAction.SET_CANVAS_ELEMENT}`) setCanvasElements!: (canvasElements: CanvasElement[]) => void
   @Action(`canvas/${CanvasAction.SET_CANVAS_ELEMENT_HISTORY}`) setCanvasElementsHistory!: (canvasElements: CanvasElement[]) => void
   @Getter(`stage/${StageGetters.STAGE_CONFIG}`) stageConfig!: CustomStageConfig
