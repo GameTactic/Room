@@ -64,3 +64,13 @@ export default class TheToolPanel extends Vue {
   border-top-width: 1.5px !important;
 }
 </style>
+<style lang="scss">
+.theme--light.v-icon.primary--text {
+    color: var(--v-primary-base) !important;
+    caret-color: var(--v-primary-base) !important;
+    fill: var(--v-primary-base) !important;
+}
+.theme--light.v-icon {
+    fill: var(--v-secondary-lighten2);
+}
+</style>
