@@ -1,9 +1,14 @@
 import axios from 'axios'
 import { CustomStageConfig } from '@/util/PointerEventMapper'
 import Konva from 'konva'
+import store from '@/main'
+import { StageGetters } from '@/store/modules/stage'
+import { LayerGetters } from '@/store/modules/layer'
 
 export default class MapCanvas {
-  async setMap (stageConfig: CustomStageConfig, layer: Konva.Layer) {
+  async setMap () {
+    const stageConfig: CustomStageConfig = store.getters[`stage/${StageGetters.STAGE_CONFIG}`]
+    const layer: Konva.Layer = store.getters[`layer/${LayerGetters.LAYER}`]
     await axios.get(stageConfig.mapSrc).then((response) => {
       if (response.status === 200) {
         this.createMapElement(stageConfig, layer)

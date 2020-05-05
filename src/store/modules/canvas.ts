@@ -1,16 +1,16 @@
 import { ActionContext, Module } from 'vuex'
-import { CanvasElement } from '@/types/Canvas'
-import { ToolInterface, Tracker } from '@/tools/Tool'
-import { SocketState } from './socket'
-import { ToolState } from './tools'
-import { StageState } from './stage'
+import { CanvasElement, CanvasElementHistory } from '@/types/Canvas'
+import { SocketState } from '@/store/modules/socket'
+import { ToolState } from '@/store/modules/tools'
+import { StageState } from '@/store/modules/stage'
+import { ToolInterface } from '@/tools/Tool'
 
 export enum CanvasMutation {
   SET_CANVAS_ELEMENT = 'SET_CANVAS_ELEMENT',
   SET_CANVAS_ELEMENT_HISTORY = 'SET_CANVAS_ELEMENT_HISTORY',
   ADD_CANVAS_ELEMENT = 'ADD_CANVAS_ELEMENT',
   HIDE_CANVAS_ELEMENT = 'HIDE_CANVAS_ELEMENT',
-  DELETE_CANVAS_ELEMENT = 'DELETE_CANVAS_ELEMENT',
+  SHOW_CANVAS_ELEMENT = 'SHOW_CANVAS_ELEMENT',
   ADD_CANVAS_ELEMENT_HISTORY = 'ADD_CANVAS_ELEMENT_HISTORY'
 }
 
@@ -19,7 +19,7 @@ export enum CanvasAction {
   SET_CANVAS_ELEMENT_HISTORY = 'setCanvasElementHistory',
   ADD_CANVAS_ELEMENT = 'addCanvasElement',
   HIDE_CANVAS_ELEMENT = 'hideCanvasElement',
-  DELETE_CANVAS_ELEMENT = 'deleteCanvasElement',
+  SHOW_CANVAS_ELEMENT = 'showCanvasElement',
   ADD_CANVAS_ELEMENT_HISTORY = 'addCanvasElementHistory'
 }
 
@@ -35,7 +35,7 @@ export enum CanvasGetters {
 
 interface CanvasState {
   canvasElements: CanvasElement[];
-  canvasElementsHistory: CanvasElement[];
+  canvasElementsHistory: CanvasElementHistory[];
 }
 
 interface RootState extends CanvasElement {
@@ -45,7 +45,7 @@ interface RootState extends CanvasElement {
   stage: StageState;
 }
 
-type CursorActionContext = ActionContext<CanvasState, RootState>
+type CanvasActionContext = ActionContext<CanvasState, RootState>
 
 const CanvasModule: Module<CanvasState, RootState> = {
   namespaced: true,
@@ -63,56 +63,46 @@ const CanvasModule: Module<CanvasState, RootState> = {
     [CanvasMutation.SET_CANVAS_ELEMENT] (state: CanvasState, payload: CanvasElement[]) {
       state.canvasElements = [...payload]
     },
-    [CanvasMutation.SET_CANVAS_ELEMENT_HISTORY] (state: CanvasState, payload: CanvasElement[]) {
+    [CanvasMutation.SET_CANVAS_ELEMENT_HISTORY] (state: CanvasState, payload: CanvasElementHistory[]) {
       state.canvasElementsHistory = [...payload]
     },
-    [CanvasMutation.HIDE_CANVAS_ELEMENT] (state: CanvasState, payload: HideCanvasElementInterface) {
-      if (payload.id) {
-        const foundElement = state.canvasElements.find((canvasElement: CanvasElement) => canvasElement.id === payload.id)
-        if (foundElement) {
-          foundElement.tracker = Tracker.REMOVAL
-          if (!payload.fromSocket) {
-            state.canvasElementsHistory.push({ ...foundElement })
-          }
-        }
+    [CanvasMutation.HIDE_CANVAS_ELEMENT] (state: CanvasState, payload: CanvasElement) {
+      const foundElement = state.canvasElements.find((canvasElement: CanvasElement) => canvasElement.id === payload.id)
+      if (foundElement) {
+        foundElement.isVisible = false
       }
     },
-    [CanvasMutation.DELETE_CANVAS_ELEMENT] (state: CanvasState, payload: RootState) {
-      if (payload.id) {
-        const foundElement = state.canvasElements.find((canvasElement: CanvasElement) => canvasElement.id === payload.id)
-        if (foundElement) {
-          const index = state.canvasElements.indexOf(foundElement)
-          state.canvasElements.splice(index, 1)
-        }
+    [CanvasMutation.SHOW_CANVAS_ELEMENT] (state: CanvasState, payload: CanvasElement) {
+      const foundElement = state.canvasElements.find((canvasElement: CanvasElement) => canvasElement.id === payload.id)
+      if (foundElement) {
+        foundElement.isVisible = true
       }
     },
     [CanvasMutation.ADD_CANVAS_ELEMENT] (state: CanvasState, payload: RootState) {
-      payload.jti = 'SAM'
       const foundTool: ToolInterface | undefined = payload.tools.tools.find((tool: ToolInterface) => tool.name === payload.tool.name)
       state.canvasElements.push({ ...payload, tool: { ...payload.tool, renderCanvas: foundTool?.renderCanvas } })
     },
-    [CanvasMutation.ADD_CANVAS_ELEMENT_HISTORY] (state: CanvasState, payload: CanvasElement) {
-      payload.jti = 'SAM'
+    [CanvasMutation.ADD_CANVAS_ELEMENT_HISTORY] (state: CanvasState, payload: CanvasElementHistory) {
       state.canvasElementsHistory.push({ ...payload })
     }
   },
   actions: {
-    [CanvasAction.SET_CANVAS_ELEMENT] (context: CursorActionContext, payload: CanvasElement[]) {
+    [CanvasAction.SET_CANVAS_ELEMENT] (context: CanvasActionContext, payload: CanvasElement[]) {
       context.commit('SET_CANVAS_ELEMENT', payload)
     },
-    [CanvasAction.SET_CANVAS_ELEMENT_HISTORY] (context: CursorActionContext, payload: CanvasElement[]) {
+    [CanvasAction.SET_CANVAS_ELEMENT_HISTORY] (context: CanvasActionContext, payload: CanvasElement[]) {
       context.commit('SET_CANVAS_ELEMENT_HISTORY', payload)
     },
-    [CanvasAction.ADD_CANVAS_ELEMENT] (context: CursorActionContext, payload: CanvasElement) {
+    [CanvasAction.ADD_CANVAS_ELEMENT] (context: CanvasActionContext, payload: CanvasElement) {
       context.commit('ADD_CANVAS_ELEMENT', { ...payload, tools: context.rootState.tools })
     },
-    [CanvasAction.HIDE_CANVAS_ELEMENT] (context: CursorActionContext, payload: HideCanvasElementInterface) {
+    [CanvasAction.HIDE_CANVAS_ELEMENT] (context: CanvasActionContext, payload: CanvasElement) {
       context.commit('HIDE_CANVAS_ELEMENT', payload)
     },
-    [CanvasAction.DELETE_CANVAS_ELEMENT] (context: CursorActionContext, payload: RootState) {
-      context.commit('DELETE_CANVAS_ELEMENT', payload)
+    [CanvasAction.SHOW_CANVAS_ELEMENT] (context: CanvasActionContext, payload: RootState) {
+      context.commit('SHOW_CANVAS_ELEMENT', payload)
     },
-    [CanvasAction.ADD_CANVAS_ELEMENT_HISTORY] (context: CursorActionContext, payload: CanvasElement) {
+    [CanvasAction.ADD_CANVAS_ELEMENT_HISTORY] (context: CanvasActionContext, payload: CanvasElementHistory) {
       context.commit('ADD_CANVAS_ELEMENT_HISTORY', { ...payload })
     }
   }

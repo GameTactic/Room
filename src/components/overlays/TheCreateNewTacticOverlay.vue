@@ -66,7 +66,7 @@ import Component from 'vue-class-component'
 import { EventBus } from '@/event-bus'
 import { RoomGetters } from '@/store/modules/room'
 import { Getter } from 'vuex-class'
-import { Map, Api } from '@/store/modules/types'
+import { Api } from '@/store/modules/types'
 
 @Component({
   name: 'TheCreateNewTacticOverlay',

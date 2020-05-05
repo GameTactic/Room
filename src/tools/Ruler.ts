@@ -1,9 +1,9 @@
-import { RulerInterface, Tool, Tracker } from '@/tools/Tool'
-import Konva from 'konva'
-import { CanvasElement } from '@/types/Canvas'
-import uuid from 'uuid'
+import { LineData, RulerInterface, Tool, Tracker } from '@/tools/Tool'
+import { CanvasElement, CanvasElementType, RequestCanvasEntity } from '@/types/Canvas'
 import RulerCreator from '@/tools/shapes/RulerCreator'
-import { CustomEvent, CustomStageEvent } from '@/util/PointerEventMapper'
+import { CustomEvent } from '@/util/PointerEventMapper'
+import { ISO } from '@/util/ISO'
+import uuid from 'uuid'
 
 export default class Ruler extends Tool implements RulerInterface {
   private rulerCreator: RulerCreator
@@ -21,13 +21,22 @@ export default class Ruler extends Tool implements RulerInterface {
     )
   }
 
-  mouseDownAction = (event: CustomEvent, canvasElement: CanvasElement, layer: Konva.Layer): void => {
-    canvasElement.data = [event.globalOffset.x, event.globalOffset.y]
-    canvasElement.id = uuid()
-    canvasElement.hasMoved = false
-    canvasElement.change = false
-    canvasElement.tracker = Tracker.ADDITION
-    canvasElement.tool = {
+  mouseDownAction = (event: CustomEvent): void => {
+    this.enableTool()
+    this.resetCanvasEntity()
+    this.canvasElement.isVisible = true
+    this.canvasElement.type = CanvasElementType.SHAPE
+    this.canvasElement.data = {
+      from: {
+        x: event.globalOffset.x,
+        y: event.globalOffset.y
+      },
+      to: {
+        x: event.globalOffset.x,
+        y: event.globalOffset.y
+      }
+    }
+    this.canvasElement.tool = {
       name: this.name,
       size: this.size,
       colour: this.colour,
@@ -40,45 +49,61 @@ export default class Ruler extends Tool implements RulerInterface {
       this.colour,
       this.showCircle
     )
-    this.rulerCreator.create(canvasElement, layer, event)
-    canvasElement.position = this.rulerCreator.getGroup().position()
+    this.rulerCreator.create(event)
+    this.canvasElement.position = this.rulerCreator.getGroup().getPosition()
   }
 
-  mouseMoveAction = (event: CustomEvent, canvasElement: CanvasElement, layer: Konva.Layer): void => {
-    if (!canvasElement.hasMoved) {
-      canvasElement.hasMoved = true
-    }
-    const pos = { x: event.globalOffset.x, y: event.globalOffset.y }
-    this.rulerCreator.move(canvasElement, layer, pos, event)
-    layer.batchDraw()
-  }
-
-  mouseUpAction = (event: CustomEvent, canvasElement: CanvasElement, layer: Konva.Layer): void => {
-    if (!canvasElement.hasMoved) {
-      this.rulerCreator.destroy(canvasElement, layer)
-    } else {
-      if (canvasElement.tool.temporary) {
-        this.rulerCreator.runTemporaryAnimation(this.rulerCreator.getGroup(), layer)
-      }
-      canvasElement.data = canvasElement.data.concat([event.globalOffset.x, event.globalOffset.y])
-      this.send(canvasElement)
+  mouseMoveAction = (event: CustomEvent): void => {
+    if (this.enabled) {
+      if (!this.canvasEntity.hasMoved) { this.canvasEntity.hasMoved = true }
+      const data = this.canvasElement.data as LineData
+      data.to = { x: event.globalOffset.x, y: event.globalOffset.y }
+      this.rulerCreator.move(event)
+      this.layer.batchDraw()
     }
   }
 
-  renderCanvas = (canvasElement: CanvasElement, layer: Konva.Layer, event: CustomEvent | CustomStageEvent): void => {
-    if (canvasElement.hasMoved) {
-      this.rulerCreator = new RulerCreator(
-        canvasElement.tool.temporary || this.temporary,
-        canvasElement.tool.size || this.size,
-        canvasElement.tool.colour || this.colour,
-        canvasElement.tool.showCircle || this.showCircle
-      )
-      this.rulerCreator.create(canvasElement, layer, event)
-      this.rulerCreator.move(canvasElement, layer, { x: canvasElement.data[2], y: canvasElement.data[3] }, event)
-      layer.batchDraw()
-      if (canvasElement.tool.temporary) {
-        this.rulerCreator.runTemporaryAnimation(this.rulerCreator.getGroup(), layer)
+  mouseUpAction = (): void => {
+    if (this.enabled) {
+      this.disableTool()
+      if (!this.canvasEntity.hasMoved) {
+        this.rulerCreator.destroy()
+      } else {
+        if (this.canvasElement.tool.temporary) {
+          this.rulerCreator.runTemporaryAnimation(this.rulerCreator.getGroup())
+        }
+        this.sendAndAddToState({
+          id: uuid(),
+          jti: this.canvasElement.jti,
+          modifyData: {
+            additions: [this.canvasElement.id]
+          },
+          modifyType: Tracker.ADDITION,
+          canvasElements: [this.canvasElement],
+          timestampModified: ISO.timestamp()
+        })
       }
     }
+  }
+
+  renderCanvas = (request: RequestCanvasEntity): void => {
+    request.canvasElements.forEach((canvasElement: CanvasElement) => {
+      const data = canvasElement.data as LineData
+      if (data.from && data.to) {
+        this.rulerCreator = new RulerCreator(
+          canvasElement.tool.temporary || this.temporary,
+          canvasElement.tool.size || this.size,
+          canvasElement.tool.colour || this.colour,
+          canvasElement.tool.showCircle || this.showCircle
+        )
+        this.rulerCreator.create(this.stageEvent, canvasElement)
+        this.rulerCreator.move(this.stageEvent, canvasElement)
+        if (canvasElement.tool.temporary) {
+          this.rulerCreator.runTemporaryAnimation(this.rulerCreator.getGroup())
+        } else {
+          this.layer.batchDraw()
+        }
+      }
+    })
   }
 }

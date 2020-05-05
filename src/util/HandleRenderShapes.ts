@@ -1,18 +1,29 @@
 import Konva from 'konva'
-import { CanvasElement } from '@/types/Canvas'
+import { AdditionData, CanvasElement, CanvasElementHistory } from '@/types/Canvas'
 import { ToolInterface, Tracker } from '@/tools/Tool'
-import { CustomStageConfig, CustomStageEvent } from '@/util/PointerEventMapper'
+import { CustomStageConfig } from '@/util/PointerEventMapper'
 import { Container } from 'konva/types/Container'
+import { LayerGetters } from '@/store/modules/layer'
+import { CanvasGetters } from '@/store/modules/canvas'
+import { StageGetters } from '@/store/modules/stage'
+import { ToolGetters } from '@/store/modules/tools'
+import { Store } from 'vuex'
 
 export default class HandleRenderShapes {
   // eslint-disable-next-line no-useless-constructor
-  constructor (
-    public layer: Konva.Layer,
-    public canvasElements: CanvasElement[],
-    public canvasElementsHistory: CanvasElement[],
-    public tools: ToolInterface[],
-    public stageEvent: CustomStageEvent,
-    public stageConfig: CustomStageConfig) {
+  public layer: Konva.Layer
+  public canvasElements: CanvasElement[]
+  public stageConfig: CustomStageConfig
+  public canvasElementsHistory: CanvasElementHistory[]
+  public tools: ToolInterface[]
+  public stage: Konva.Stage
+  constructor (private propStore: Store<string>) {
+    this.layer = this.propStore.getters[`layer/${LayerGetters.LAYER}`]
+    this.canvasElements = this.propStore.getters[`canvas/${CanvasGetters.CANVAS_ELEMENTS}`]
+    this.stageConfig = this.propStore.getters[`stage/${StageGetters.STAGE_CONFIG}`]
+    this.canvasElementsHistory = this.propStore.getters[`canvas/${CanvasGetters.CANVAS_ELEMENTS_HISTORY}`]
+    this.tools = this.propStore.getters[`tools/${ToolGetters.TOOLS}`]
+    this.stage = this.propStore.getters[`stage/${StageGetters.STAGE}`]
   }
 
   handle = (): void => {
@@ -24,101 +35,54 @@ export default class HandleRenderShapes {
   handleCanvasElements = (): void => {
     this.canvasElements.forEach((canvasElement: CanvasElement) => {
       if (canvasElement.tool.renderCanvas) {
-        if (canvasElement.tracker === Tracker.ADDITION) {
-          this.handleCanvasElementAddition(canvasElement)
-        } else if (canvasElement.tracker === Tracker.REMOVAL) {
-          this.handleCanvasElementRemoval(canvasElement)
+        if (canvasElement.isVisible) {
+          this.handleCanvasElementVisible(canvasElement)
+        } else {
+          this.handleCanvasElementInvisible(canvasElement)
         }
         this.checkGroupPosition(canvasElement)
       }
     })
   }
 
-  handleCanvasElementAddition = (canvasElement: CanvasElement): void => {
+  handleCanvasElementVisible = (canvasElement: CanvasElement): void => {
     if (!this.layer.find((shape: Konva.Shape) => shape.attrs.id === canvasElement.id).length) {
-      canvasElement.tool.renderCanvas(canvasElement, this.layer, this.stageEvent, this.stageConfig)
+      const memory: CanvasElementHistory | undefined = this.canvasElementsHistory.find((canvasElementsHistory: CanvasElementHistory) => {
+        const data = canvasElementsHistory.modifyData as AdditionData
+        return (canvasElementsHistory.modifyType === Tracker.ADDITION && data.additions.includes(canvasElement.id))
+      })
+      if (memory) {
+        canvasElement.tool.renderCanvas({
+          id: memory.id,
+          jti: memory.jti,
+          modifyType: memory.modifyType,
+          modifyData: memory.modifyData,
+          timestampModified: memory.timestampModified,
+          canvasElements: [canvasElement]
+        })
+      }
     }
   }
 
-  handleCanvasElementRemoval = (canvasElement: CanvasElement): void => {
-    if (this.layer.find((shape: Konva.Shape) => shape.attrs.id === canvasElement.id).length) {
-      const group = this.layer.findOne((shape: Konva.Shape) => shape.attrs.id === canvasElement.id)
-      if (group) {
-        group.destroy()
-      }
+  handleCanvasElementInvisible = (canvasElement: CanvasElement): void => {
+    const foundGroup: Konva.Group = this.layer.findOne((group: Konva.Group) => group.attrs.id === canvasElement.id)
+    if (foundGroup) {
+      foundGroup.destroy()
     }
   }
 
   checkGroupPosition = (canvasElement: CanvasElement): void => {
     const group = this.layer.findOne((group: Konva.Group) => group.attrs.id === canvasElement.id)
-    if (group && (group.position().x !== canvasElement.position.x || group.position().y !== canvasElement.position.y)) {
+    if (group && (group.getPosition().x !== canvasElement.position.x || group.getPosition().y !== canvasElement.position.y)) {
       group.position(canvasElement.position)
     }
   }
 
   handleLayerNodes = (): void => {
     this.layer.getChildren().each((group) => {
-      this.handleEmptyShapes(group as Konva.Group)
       if (!this.canvasElements.find((canvasElement: CanvasElement) => canvasElement.id === group.attrs.id) && !group.attrs.temporary && group.attrs.type !== 'map') {
         group.getChildren().each(child => child.destroy())
       }
     })
-  }
-
-  deleteGroup = (group: Container<Konva.Node> | null): void => {
-    if (group instanceof Konva.Group && !group.attrs.temporary) {
-      const foundElement = this.canvasElements.find((canvasElement: CanvasElement) => canvasElement.id === group.attrs.id)
-      const historyElements = this.canvasElementsHistory.filter((canvasElement: CanvasElement) => canvasElement.id === group.attrs.id)
-      if (foundElement && historyElements) {
-        this.canvasElements.splice(this.canvasElements.indexOf(foundElement), 1)
-        historyElements.forEach((canvasElement: CanvasElement) => {
-          this.canvasElementsHistory.splice(this.canvasElementsHistory.indexOf((canvasElement)), 1)
-        })
-        group.destroy()
-      }
-    }
-  }
-
-  handleEmptyShapes = (group: Konva.Group): void => {
-    group.find((child: Konva.Node) => child instanceof Konva.Circle).each((node: Konva.Node) => this.validateCircle(node))
-    group.find((child: Konva.Node) => child instanceof Konva.Line).each((node: Konva.Node) => this.validateLine(node))
-    group.find((child: Konva.Node) => child instanceof Konva.Text).each((node: Konva.Node) => this.validateText(node))
-  }
-
-  validateCircle = (node: Konva.Node): void => {
-    if (node instanceof Konva.Circle) {
-      if (node.radius() < 10) {
-        this.deleteGroup(node.parent)
-      }
-    }
-  }
-
-  validateLine = (node: Konva.Node): void => {
-    if (node instanceof Konva.Line) {
-      const threshold = 5
-      const point = { x: node.attrs.points[0], y: node.attrs.points[1] }
-      const validPoints = node.attrs.points.filter((num: number, index: number) => {
-        if (index % 2) {
-          if ((num - point.y) > threshold || (num - point.y) < (threshold * -1)) {
-            return num
-          }
-        } else {
-          if ((num - point.x) > threshold || (num - point.x) < (threshold * -1)) {
-            return num
-          }
-        }
-      })
-      if (validPoints.length === 0) {
-        this.deleteGroup(node.parent)
-      }
-    }
-  }
-
-  validateText = (node: Konva.Node): void => {
-    if (node instanceof Konva.Text) {
-      if (node.attrs.text.length === 0) {
-        this.deleteGroup(node.parent)
-      }
-    }
   }
 }

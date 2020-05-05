@@ -97,7 +97,7 @@ export interface RoomState {
   isPrivate: boolean;
 }
 
-type CursorActionContext = ActionContext<RoomState, {}>
+type RoomActionContext = ActionContext<RoomState, {}>
 
 const RoomModule: Module<RoomState, {}> = {
   namespaced: true,
@@ -187,59 +187,59 @@ const RoomModule: Module<RoomState, {}> = {
     }
   },
   actions: {
-    [RoomAction.SET_LOCALE] (context: CursorActionContext, payload: Locale) {
+    [RoomAction.SET_LOCALE] (context: RoomActionContext, payload: Locale) {
       context.commit('SET_LOCALE', payload)
     },
-    [RoomAction.SET_GAME_NAME] (context: CursorActionContext, name: GameName) {
+    [RoomAction.SET_GAME_NAME] (context: RoomActionContext, name: GameName) {
       context.commit('SET_GAME_NAME', name)
     },
     // eslint-disable-next-line
-    [RoomAction.SET_GAME_API] (context: CursorActionContext, payload: any) {
+    [RoomAction.SET_GAME_API] (context: RoomActionContext, payload: any) {
       context.commit('SET_GAME_API', payload)
     },
-    [RoomAction.DELETE_GAME_API] (context: CursorActionContext) {
+    [RoomAction.DELETE_GAME_API] (context: RoomActionContext) {
       context.commit('DELETE_GAME_API')
     },
-    [RoomAction.SET_COLLECTIONS] (context: CursorActionContext, payload: Collection[]) {
+    [RoomAction.SET_COLLECTIONS] (context: RoomActionContext, payload: Collection[]) {
       context.commit('SET_COLLECTIONS', payload)
     },
-    [RoomAction.SET_COLLECTION] (context: CursorActionContext, payload: Collection) {
+    [RoomAction.SET_COLLECTION] (context: RoomActionContext, payload: Collection) {
       context.commit('SET_COLLECTION', payload)
     },
-    [RoomAction.UPDATE_COLLECTION] (context: CursorActionContext, payload: Collection) {
+    [RoomAction.UPDATE_COLLECTION] (context: RoomActionContext, payload: Collection) {
       context.commit('UPDATE_COLLECTION', payload)
     },
-    [RoomAction.DELETE_COLLECTION] (context: CursorActionContext, id: string) {
+    [RoomAction.DELETE_COLLECTION] (context: RoomActionContext, id: string) {
       context.commit('DELETE_COLLECTION', id)
     },
-    [RoomAction.SET_TACTICS] (context: CursorActionContext, payload: Tactic[]) {
+    [RoomAction.SET_TACTICS] (context: RoomActionContext, payload: Tactic[]) {
       context.commit('SET_TACTICS', payload)
     },
-    [RoomAction.SET_TACTIC] (context: CursorActionContext, payload: Tactic) {
+    [RoomAction.SET_TACTIC] (context: RoomActionContext, payload: Tactic) {
       context.commit('SET_TACTIC', payload)
     },
-    [RoomAction.UPDATE_TACTIC] (context: CursorActionContext, payload: Tactic) {
+    [RoomAction.UPDATE_TACTIC] (context: RoomActionContext, payload: Tactic) {
       context.commit('UPDATE_TACTIC', payload)
     },
-    [RoomAction.DELETE_TACTIC] (context: CursorActionContext, id: string) {
+    [RoomAction.DELETE_TACTIC] (context: RoomActionContext, id: string) {
       context.commit('DELETE_TACTIC', id)
     },
-    [RoomAction.SET_USERS] (context: CursorActionContext, payload: User[]) {
+    [RoomAction.SET_USERS] (context: RoomActionContext, payload: User[]) {
       context.commit('SET_USERS', payload)
     },
-    [RoomAction.SET_USER] (context: CursorActionContext, payload: User) {
+    [RoomAction.SET_USER] (context: RoomActionContext, payload: User) {
       context.commit('SET_USER', payload)
     },
-    [RoomAction.UPDATE_USER] (context: CursorActionContext, payload: User) {
+    [RoomAction.UPDATE_USER] (context: RoomActionContext, payload: User) {
       context.commit('UPDATE_USER', payload)
     },
-    [RoomAction.DELETE_USER] (context: CursorActionContext, jti: string) {
+    [RoomAction.DELETE_USER] (context: RoomActionContext, jti: string) {
       context.commit('DELETE_USER', jti)
     },
-    [RoomAction.SET_PRESENTATION] (context: CursorActionContext, payload: PresentationPayload) {
+    [RoomAction.SET_PRESENTATION] (context: RoomActionContext, payload: PresentationPayload) {
       context.commit('SET_PRESENTATION', payload)
     },
-    [RoomAction.SET_IS_PRIVATE] (context: CursorActionContext, isPrivate: boolean) {
+    [RoomAction.SET_IS_PRIVATE] (context: RoomActionContext, isPrivate: boolean) {
       context.commit('SET_IS_PRIVATE', isPrivate)
     }
   }

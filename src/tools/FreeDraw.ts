@@ -1,9 +1,10 @@
-import { FreeDrawInterface, Tool, Tracker } from '@/tools/Tool'
-import Konva from 'konva'
-import { CanvasElement } from '@/types/Canvas'
-import uuid from 'uuid'
+import { FreeDrawData, FreeDrawInterface, Tool, Tracker } from '@/tools/Tool'
+import { CanvasElement, CanvasElementType, RequestCanvasEntity } from '@/types/Canvas'
 import FreeDrawCreator from '@/tools/shapes/FreeDrawCreator'
-import { CustomEvent, CustomStageEvent } from '@/util/PointerEventMapper'
+import { CustomEvent } from '@/util/PointerEventMapper'
+import throttle from 'lodash.throttle'
+import { ISO } from '@/util/ISO'
+import uuid from 'uuid'
 
 export default class FreeDraw extends Tool implements FreeDrawInterface {
   private freeDrawCreator: FreeDrawCreator
@@ -19,13 +20,13 @@ export default class FreeDraw extends Tool implements FreeDrawInterface {
     )
   }
 
-  mouseDownAction = (event: CustomEvent, canvasElement: CanvasElement, layer: Konva.Layer): void => {
-    canvasElement.data = [event.globalOffset.x, event.globalOffset.y]
-    canvasElement.id = uuid()
-    canvasElement.hasMoved = false
-    canvasElement.change = false
-    canvasElement.tracker = Tracker.ADDITION
-    canvasElement.tool = {
+  mouseDownAction = (event: CustomEvent): void => {
+    this.enableTool()
+    this.resetCanvasEntity()
+    this.canvasElement.type = CanvasElementType.SHAPE
+    this.canvasElement.isVisible = true
+    this.canvasElement.data = { points: [event.globalOffset.x, event.globalOffset.y] }
+    this.canvasElement.tool = {
       name: this.name,
       size: this.size,
       colour: this.colour,
@@ -36,40 +37,59 @@ export default class FreeDraw extends Tool implements FreeDrawInterface {
       this.size,
       this.colour
     )
-    this.freeDrawCreator.create(canvasElement, layer, event)
-    canvasElement.position = this.freeDrawCreator.getGroup().position()
+    this.freeDrawCreator.create(event)
+    this.canvasElement.position = this.freeDrawCreator.getGroup().getPosition()
   }
 
-  mouseMoveAction = (event: CustomEvent, canvasElement: CanvasElement, layer: Konva.Layer): void => {
-    if (!canvasElement.hasMoved) { canvasElement.hasMoved = true }
-    canvasElement.data = canvasElement.data.concat([event.globalOffset.x, event.globalOffset.y])
-    this.freeDrawCreator.move(canvasElement, layer, event)
-    layer.batchDraw()
-  }
+  mouseMoveAction = throttle((event: CustomEvent): void => {
+    if (this.enabled) {
+      if (!this.canvasEntity.hasMoved) { this.canvasEntity.hasMoved = true }
+      const data = this.canvasElement.data as FreeDrawData
+      data.points = [ ...data.points, event.globalOffset.x, event.globalOffset.y ]
+      this.freeDrawCreator.move(event)
+      this.layer.batchDraw()
+    }
+  }, 10)
 
-  mouseUpAction = (event: CustomEvent, canvasElement: CanvasElement, layer: Konva.Layer): void => {
-    if (!canvasElement.hasMoved) {
-      this.freeDrawCreator.destroy(canvasElement, layer)
-    } else {
-      if (canvasElement.tool.temporary) {
-        this.freeDrawCreator.runTemporaryAnimation(this.freeDrawCreator.getGroup(), layer)
+  mouseUpAction = (event: CustomEvent): void => {
+    if (this.enabled) {
+      this.disableTool()
+      if (!this.canvasEntity.hasMoved) {
+        this.freeDrawCreator.destroy()
+      } else {
+        if (this.canvasElement.tool.temporary) {
+          this.freeDrawCreator.runTemporaryAnimation(this.freeDrawCreator.getGroup())
+        }
+        this.sendAndAddToState({
+          id: uuid(),
+          jti: this.canvasElement.jti,
+          modifyData: {
+            additions: [this.canvasElement.id]
+          },
+          modifyType: Tracker.ADDITION,
+          canvasElements: [this.canvasElement],
+          timestampModified: ISO.timestamp()
+        })
       }
-      this.send(canvasElement)
     }
   }
 
-  renderCanvas = (canvasElement: CanvasElement, layer: Konva.Layer, event: CustomEvent | CustomStageEvent): void => {
-    if (canvasElement.hasMoved) {
-      this.freeDrawCreator = new FreeDrawCreator(
-        canvasElement.tool.temporary || this.temporary,
-        canvasElement.tool.size || this.size,
-        canvasElement.tool.colour || this.colour
-      )
-      this.freeDrawCreator.create(canvasElement, layer, event)
-      layer.batchDraw()
-      if (canvasElement.tool.temporary) {
-        this.freeDrawCreator.runTemporaryAnimation(this.freeDrawCreator.getGroup(), layer)
+  renderCanvas = (request: RequestCanvasEntity): void => {
+    request.canvasElements.forEach((canvasElement: CanvasElement) => {
+      const data = canvasElement.data as FreeDrawData
+      if (data.points) {
+        this.freeDrawCreator = new FreeDrawCreator(
+          canvasElement.tool.temporary || this.temporary,
+          canvasElement.tool.size || this.size,
+          canvasElement.tool.colour || this.colour
+        )
+        this.freeDrawCreator.create(this.stageEvent, canvasElement)
+        if (canvasElement.tool.temporary) {
+          this.freeDrawCreator.runTemporaryAnimation(this.freeDrawCreator.getGroup())
+        } else {
+          this.layer.batchDraw()
+        }
       }
-    }
+    })
   }
 }

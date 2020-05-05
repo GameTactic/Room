@@ -1,9 +1,9 @@
-import { CircleInterface, Tool, Tracker } from '@/tools/Tool'
-import Konva from 'konva'
-import { CanvasElement } from '@/types/Canvas'
-import uuid from 'uuid'
+import { CircleData, CircleInterface, Tool, Tracker } from '@/tools/Tool'
+import { CanvasElement, CanvasElementType, RequestCanvasEntity } from '@/types/Canvas'
 import CircleCreator from '@/tools/shapes/CircleCreator'
-import { CustomEvent, CustomStageEvent } from '@/util/PointerEventMapper'
+import { CustomEvent } from '@/util/PointerEventMapper'
+import { ISO } from '@/util/ISO'
+import uuid from 'uuid'
 
 export default class Circle extends Tool implements CircleInterface {
   private circleCreator: CircleCreator
@@ -24,13 +24,22 @@ export default class Circle extends Tool implements CircleInterface {
       this.showRadius)
   }
 
-  mouseDownAction = (event: CustomEvent, canvasElement: CanvasElement, layer: Konva.Layer): void => {
-    canvasElement.data = [event.globalOffset.x, event.globalOffset.y]
-    canvasElement.id = uuid()
-    canvasElement.hasMoved = false
-    canvasElement.change = false
-    canvasElement.tracker = Tracker.ADDITION
-    canvasElement.tool = {
+  mouseDownAction = (event: CustomEvent): void => {
+    this.enableTool()
+    this.resetCanvasEntity()
+    this.canvasElement.isVisible = true
+    this.canvasElement.type = CanvasElementType.SHAPE
+    this.canvasElement.data = {
+      from: {
+        x: event.globalOffset.x,
+        y: event.globalOffset.y
+      },
+      to: {
+        x: event.globalOffset.x,
+        y: event.globalOffset.y
+      }
+    }
+    this.canvasElement.tool = {
       name: this.name,
       size: this.size,
       colour: this.colour,
@@ -47,46 +56,64 @@ export default class Circle extends Tool implements CircleInterface {
       this.strokeStyle,
       this.showRadius
     )
-    this.circleCreator.create(canvasElement, layer, event)
-    canvasElement.position = this.circleCreator.getGroup().position()
+    this.circleCreator.create(event)
+    this.canvasElement.position = this.circleCreator.getGroup().getPosition()
   }
 
-  mouseMoveAction = (event: CustomEvent, canvasElement: CanvasElement, layer: Konva.Layer): void => {
-    if (!canvasElement.hasMoved) { canvasElement.hasMoved = true }
-    const pos = { x: event.globalOffset.x, y: event.globalOffset.y }
-    this.circleCreator.move(canvasElement, layer, pos, event)
-    layer.batchDraw()
-  }
-
-  mouseUpAction = (event: CustomEvent, canvasElement: CanvasElement, layer: Konva.Layer): void => {
-    if (!canvasElement.hasMoved) {
-      this.circleCreator.destroy(canvasElement, layer)
-    } else {
-      if (canvasElement.tool.temporary) {
-        this.circleCreator.runTemporaryAnimation(this.circleCreator.getGroup(), layer)
-      }
-      canvasElement.data = canvasElement.data.concat([event.globalOffset.x, event.globalOffset.y])
-      this.send(canvasElement)
+  mouseMoveAction = (event: CustomEvent): void => {
+    if (this.enabled) {
+      if (!this.canvasEntity.hasMoved) { this.canvasEntity.hasMoved = true }
+      const data = this.canvasElement.data as CircleData
+      data.to = { x: event.globalOffset.x, y: event.globalOffset.y }
+      this.circleCreator.move(event)
+      this.layer.batchDraw()
     }
   }
 
-  renderCanvas = (canvasElement: CanvasElement, layer: Konva.Layer, event: CustomStageEvent): void => {
-    if (canvasElement.hasMoved) {
-      this.circleCreator = new CircleCreator(
-        canvasElement.tool.temporary || this.temporary,
-        canvasElement.tool.size || this.size,
-        canvasElement.tool.colour || this.colour,
-        canvasElement.tool.outlineColour || this.outlineColour,
-        canvasElement.tool.strokeStyle || this.strokeStyle,
-        canvasElement.tool.showRadius || this.showRadius
-      )
-      this.circleCreator.create(canvasElement, layer, event)
-      const pos = { x: canvasElement.data[2], y: canvasElement.data[3] }
-      this.circleCreator.move(canvasElement, layer, pos, event)
-      layer.batchDraw()
-      if (canvasElement.tool.temporary) {
-        this.circleCreator.runTemporaryAnimation(this.circleCreator.getGroup(), layer)
+  // eslint-disable-next-line
+  mouseUpAction = (event: CustomEvent): void => {
+    if (this.enabled) {
+      this.disableTool()
+      if (!this.canvasEntity.hasMoved) {
+        this.circleCreator.destroy()
+      } else {
+        if (this.canvasElement.tool.temporary) {
+          this.circleCreator.runTemporaryAnimation(this.circleCreator.getGroup())
+        }
+        this.sendAndAddToState({
+          id: uuid(),
+          jti: this.canvasElement.jti,
+          modifyData: {
+            additions: [this.canvasElement.id]
+          },
+          modifyType: Tracker.ADDITION,
+          canvasElements: [this.canvasElement],
+          timestampModified: ISO.timestamp()
+        })
       }
     }
+  }
+
+  renderCanvas = (request: RequestCanvasEntity): void => {
+    request.canvasElements.forEach((canvasElement: CanvasElement) => {
+      const data = canvasElement.data as CircleData
+      if (data.from && data.to) {
+        this.circleCreator = new CircleCreator(
+          canvasElement.tool.temporary || this.temporary,
+          canvasElement.tool.size || this.size,
+          canvasElement.tool.colour || this.colour,
+          canvasElement.tool.outlineColour || this.outlineColour,
+          canvasElement.tool.strokeStyle || this.strokeStyle,
+          canvasElement.tool.showRadius || this.showRadius
+        )
+        this.circleCreator.create(this.stageEvent, canvasElement)
+        this.circleCreator.move(this.stageEvent, canvasElement)
+        if (canvasElement.tool.temporary) {
+          this.circleCreator.runTemporaryAnimation(this.circleCreator.getGroup())
+        } else {
+          this.layer.batchDraw()
+        }
+      }
+    })
   }
 }

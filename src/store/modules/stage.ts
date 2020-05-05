@@ -1,13 +1,17 @@
 import { ActionContext, Module } from 'vuex'
 import { CustomStageConfig } from '@/util/PointerEventMapper'
+import Konva from 'konva'
 
 export enum StageGetters {
+  STAGE_NODE = 'stageNode',
   STAGE_ZOOM = 'stageZoom',
   STAGE_CONFIG = 'stageConfig',
-  STAGE_ZOOM_STEP = 'stageZoomStep'
+  STAGE_ZOOM_STEP = 'stageZoomStep',
+  STAGE = 'stage'
 }
 
 export enum StageActions {
+  SET_STAGE = 'setStage',
   ZOOM_IN = 'zoomIn',
   ZOOM_OUT = 'zoomOut',
   ZOOM_DEFAULT = 'zoomDefault',
@@ -20,6 +24,7 @@ export enum StageActions {
 }
 
 export enum StageMutations {
+  SET_STAGE = 'SET_STAGE',
   SET_MAP_SRC = 'SET_MAP_SRC',
   SET_ZOOM = 'SET_ZOOM',
   SET_ZOOM_IN = 'SET_ZOOM_IN',
@@ -31,6 +36,7 @@ export enum StageMutations {
 }
 
 export interface StageState {
+  stage: Konva.Stage | undefined;
   stageZoomMax: number;
   stageZoomMin: number;
   stageZoomStep: number;
@@ -44,6 +50,7 @@ const StageModule: Module<StageState, {}> = {
   namespaced: true,
   state () {
     return {
+      stage: undefined,
       stageZoomMax: 300,
       stageZoomMin: 10,
       stageZoomStep: 10,
@@ -63,11 +70,15 @@ const StageModule: Module<StageState, {}> = {
     }
   },
   getters: {
+    [StageGetters.STAGE]: state => state.stage,
     [StageGetters.STAGE_ZOOM]: state => state.stageZoom,
     [StageGetters.STAGE_CONFIG]: state => state.stageConfig,
     [StageGetters.STAGE_ZOOM_STEP]: state => state.stageZoomStep
   },
   mutations: {
+    [StageMutations.SET_STAGE] (state: StageState, stage: Konva.Stage) {
+      state.stage = stage
+    },
     [StageMutations.SET_ZOOM] (state: StageState, newValue: number) {
       if (newValue < state.stageZoomMin) {
         state.stageZoom = state.stageZoomMin
@@ -129,6 +140,9 @@ const StageModule: Module<StageState, {}> = {
     }
   },
   actions: {
+    [StageActions.SET_STAGE] (context: StageActionContext, stage: Konva.Stage) {
+      context.commit(StageMutations.SET_STAGE, stage)
+    },
     [StageActions.ZOOM_IN] (context: StageActionContext) {
       context.commit(StageMutations.SET_ZOOM_IN)
     },

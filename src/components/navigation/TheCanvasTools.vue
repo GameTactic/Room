@@ -11,7 +11,7 @@
             class="custom-move-disabled"
             color="primary"
             max-height="40"
-            @click="zoomInFunction()"
+            @click="zoomFunction(false)"
           >
             <v-icon small>fa-plus</v-icon>
           </v-btn>
@@ -33,7 +33,7 @@
             class="custom-move-disabled"
             color="primary"
             max-height="40"
-            @click="zoomOutFunction()"
+            @click="zoomFunction(true)"
           >
             <v-icon small>fa-minus</v-icon>
           </v-btn>
@@ -70,7 +70,7 @@
             class="custom-move-disabled"
             color="primary"
             max-height="40"
-            @click="centerCanvas"
+            @click="centerFunction"
           >
             <v-icon small>fa-compress-arrows-alt</v-icon>
           </v-btn>
@@ -84,11 +84,14 @@
 <script lang="ts">
 import { Component, Vue, Prop } from 'vue-property-decorator'
 import { Action, Getter, namespace } from 'vuex-class'
-import { EventBus } from '@/event-bus'
 import { ToolGetters, ToolsAction } from '@/store/modules/tools'
 import { ToolInterface } from '@/tools/Tool'
 import { Namespaces } from '@/store'
 import { StageActions, StageGetters } from '@/store/modules/stage'
+import Konva from 'konva'
+import { CustomStageConfig } from '@/util/PointerEventMapper'
+import ZoomCanvas from '@/tools/util/ZoomCanvas'
+import CenterCanvas from '@/tools/util/CenterCanvas'
 
 const Tools = namespace(Namespaces.TOOLS)
 
@@ -98,13 +101,30 @@ const Tools = namespace(Namespaces.TOOLS)
 export default class TheCanvasTools extends Vue {
   @Prop() private mobile!: boolean;
   @Getter(`stage/${StageGetters.STAGE_ZOOM}`) stageZoom!: number
+  @Getter(`stage/${StageGetters.STAGE}`) stage!: Konva.Stage
+  @Getter(`stage/${StageGetters.STAGE_CONFIG}`) stageConfig!: CustomStageConfig
   @Action(`stage/${StageActions.SET_ZOOM}`) setZoom!: (payload: number) => void
   @Action(`stage/${StageActions.ZOOM_OUT}`) zoomOut!: () => void
   @Action(`stage/${StageActions.ZOOM_IN}`) zoomIn!: () => void
+  @Action(`stage/${StageActions.SET_CONFIG}`) setStageConfig!: (config: CustomStageConfig) => void
   @Tools.Action(ToolsAction.ENABLE_TOOL) enableTool!: (toolName: string) => void
   @Tools.Action(ToolsAction.DISABLE_TOOL) disableTool!: () => void
   @Tools.Getter(ToolGetters.ENABLED_TOOL) enabledTool?: ToolInterface
-  search = ''
+
+  mounted () {
+    const zoomCanvas = new ZoomCanvas()
+    const centerCanvas = new CenterCanvas()
+    zoomCanvas.zoom(this.$store)
+    centerCanvas.center(this.$store)
+    window.addEventListener('resize', () => {
+      centerCanvas.center(this.$store)
+      zoomCanvas.zoom(this.$store)
+    })
+  }
+
+  beforeDestroy () {
+    window.removeEventListener('resize', () => null)
+  }
 
   get zoomPercentage (): number {
     return this.stageZoom
@@ -118,18 +138,15 @@ export default class TheCanvasTools extends Vue {
     }
   }
 
-  zoomOutFunction (): void {
-    this.zoomOut()
-    EventBus.$emit('zoom')
+  zoomFunction (zoomOut: boolean): void {
+    (zoomOut) ? this.zoomOut() : this.zoomIn()
+    const zoomCanvas = new ZoomCanvas()
+    zoomCanvas.zoom(this.$store)
   }
 
-  zoomInFunction (): void {
-    this.zoomIn()
-    EventBus.$emit('zoom')
-  }
-
-  centerCanvas (): void {
-    EventBus.$emit('centerCanvas')
+  centerFunction (): void {
+    const centerCanvas = new CenterCanvas()
+    centerCanvas.center(this.$store)
   }
   get isEnabledClass (): string {
     return (this.enabledTool?.name === 'moveCanvas') ? 'custom-move-active' : 'custom-move-disabled'

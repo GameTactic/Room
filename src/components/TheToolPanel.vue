@@ -26,6 +26,8 @@ import LineTemplate from './canvas-tools/templates/Line.vue'
 import { Tool } from '@/tools/Tool'
 import CircleTemplate from './canvas-tools/templates/Circle.vue'
 import TextTemplate from './canvas-tools/templates/Text.vue'
+import { Action } from 'vuex-class'
+import { ToolsAction } from '@/store/modules/tools'
 
 @Component({
   name: 'TheToolPanel',
@@ -42,8 +44,17 @@ import TextTemplate from './canvas-tools/templates/Text.vue'
 })
 export default class TheToolPanel extends Vue {
   @Prop() private id!: string;
+  @Action(`tools/${ToolsAction.DISABLE_TOOL}`) disableTool!: () => void
 
   tools: Tool[] = []
+
+  created () {
+    window.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') {
+        this.disableTool()
+      }
+    })
+  }
 }
 </script>
 <style scoped lang="scss">
