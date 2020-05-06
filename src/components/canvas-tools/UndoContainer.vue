@@ -27,7 +27,6 @@ import { Action, Getter } from 'vuex-class'
 import { CanvasAction, CanvasGetters } from '@/store/modules/canvas'
 import { CanvasElement, CanvasElementHistory } from '@/types/Canvas'
 import HandleUndoRedo from '@/util/HandleUndoRedo'
-import { SocketActions } from '@/store/modules/socket'
 import HandleRenderShapes from '@/util/HandleRenderShapes'
 
 @Component({
@@ -39,7 +38,6 @@ export default class UndoContainer extends Vue {
     @Prop() private toolname!: string
     @Getter(`canvas/${CanvasGetters.CANVAS_ELEMENTS_HISTORY}`) canvasElementsHistory!: CanvasElementHistory[]
     @Getter(`canvas/${CanvasGetters.CANVAS_ELEMENTS}`) canvasElements!: CanvasElement[]
-    @Action(`socket/${SocketActions.SEND_IF_OPEN}`) send!: (data: string) => void
     @Action(`canvas/${CanvasAction.ADD_CANVAS_ELEMENT_HISTORY}`) addCanvasElementHistory!: (canvasElement: CanvasElement) => void
 
     onButtonClickHandler () {

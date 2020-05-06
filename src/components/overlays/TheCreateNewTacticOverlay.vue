@@ -69,7 +69,7 @@ import { Api } from '@/store/modules/types'
 import { StageActions } from '@/store/modules/stage'
 import { CustomStageConfig } from '@/util/PointerEventMapper'
 import { CanvasAction } from '@/store/modules/canvas'
-import { CanvasElement } from '@/types/Canvas'
+import { CanvasElement, CanvasElementHistory } from '@/types/Canvas'
 import TacticWatcher from '@/mixins/TacticWatcher'
 import uuid from 'uuid'
 import { AuthenticationGetters } from '@/store/modules/authentication'
@@ -97,7 +97,7 @@ export default class CreateNewTacticOverlay extends mixins(TacticWatcher) {
   @Getter(`room/${RoomGetters.GAME_API}`) gameApi!: Api[]
   @Action(`stage/${StageActions.SET_CONFIG}`) setConfig!: (config: CustomStageConfig) => void
   @Action(`canvas/${CanvasAction.SET_CANVAS_ELEMENT}`) setCanvasElements!: (canvasElements: CanvasElement[]) => void
-  @Action(`canvas/${CanvasAction.SET_CANVAS_ELEMENT_HISTORY}`) setCanvasElementsHistory!: (canvasElements: CanvasElement[]) => void
+  @Action(`canvas/${CanvasAction.SET_CANVAS_ELEMENT_HISTORY}`) setCanvasElementsHistory!: (canvasElements: CanvasElementHistory[]) => void
 
   overlay = false
   created () {
