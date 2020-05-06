@@ -1,5 +1,5 @@
 import Konva from 'konva'
-import { CanvasElement } from '@/types/Canvas'
+import { CanvasElement, CanvasElementType } from '@/types/Canvas'
 import Shape, { LineCreatorInterface } from '@/tools/shapes/Shape'
 import { CustomEvent, CustomStageEvent } from '@/util/PointerEventMapper'
 import { LineData } from '@/tools/Tool'
@@ -30,6 +30,7 @@ export default class LineCreator extends Shape implements LineCreatorInterface {
     this.group.id(canvasElement.id).add(
       this.line = this.createLineElement(canvasElement, event)
     )
+    this.group.attrs.type = CanvasElementType.SHAPE
     this.layer.add(this.group)
   }
 
@@ -39,6 +40,7 @@ export default class LineCreator extends Shape implements LineCreatorInterface {
     this.group.id(canvasElement.id).add(
       this.arrow = this.createArrowElement(canvasElement, event)
     )
+    this.group.attrs.type = CanvasElementType.SHAPE
     this.layer.add(this.group)
   }
 
@@ -49,6 +51,7 @@ export default class LineCreator extends Shape implements LineCreatorInterface {
       this.line = this.createLineElement(canvasElement, event),
       this.tBar = this.createTElement(canvasElement, event)
     )
+    this.group.attrs.type = CanvasElementType.SHAPE
     this.layer.add(this.group)
   }
 

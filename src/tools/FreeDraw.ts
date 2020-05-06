@@ -1,5 +1,5 @@
 import { FreeDrawData, FreeDrawInterface, Tool, Tracker } from '@/tools/Tool'
-import { CanvasElement, CanvasElementType, RequestCanvasEntity } from '@/types/Canvas'
+import { AdditionTools, CanvasElement, CanvasElementType, RequestCanvasEntity } from '@/types/Canvas'
 import FreeDrawCreator from '@/tools/shapes/FreeDrawCreator'
 import { CustomEvent } from '@/util/PointerEventMapper'
 import throttle from 'lodash.throttle'
@@ -64,7 +64,8 @@ export default class FreeDraw extends Tool implements FreeDrawInterface {
           id: uuid(),
           jti: this.canvasElement.jti,
           modifyData: {
-            additions: [this.canvasElement.id]
+            additions: [this.canvasElement.id],
+            tool: AdditionTools.FREEDRAW
           },
           modifyType: Tracker.ADDITION,
           canvasElements: [this.canvasElement],

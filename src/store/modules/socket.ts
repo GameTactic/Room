@@ -1,51 +1,35 @@
 import { Module, ActionContext } from 'vuex'
+import VueSocketIOExt from 'vue-socket.io-extended'
+import JsonParser from 'socket.io-json-parser'
+import { RequestCanvasEntity } from '@/types/Canvas'
+import ConnectOpts = SocketIOClient.ConnectOpts;
 
-// eslint-disable-next-line
-export interface SocketState {
-  socket: WebSocket;
-}
+export const socketOptions: ConnectOpts = {
+  autoConnect: false,
+  jsonp: true,
+  forceJSONP: true,
+  parser: JsonParser
+} as ConnectOpts
 
 export enum SocketActions {
-  EMIT_MESSAGE = 'emitMessage',
   JOIN_ROOM = 'joinRoom',
-  SEND_MESSAGE = 'send',
-  SEND_IF_OPEN = 'sendIfOpen'
-}
-
-export enum SocketGetters {
-  SOCKET = 'socket',
-  IS_OPEN = 'isOpen'
+  REQUEST_CANVAS_ENTITY = 'requestCanvasEntity'
 }
 
 type SocketActionContext = ActionContext<{}, {}>;
 
-const SocketModule: Module<SocketState, {}> = {
+const SocketModule: Module<{}, {}> = {
   namespaced: true,
-  state () {
-    return {
-      socket: io('localhost:3000')
-    }
-  },
-  getters: {
-    [SocketGetters.SOCKET]: state => state.socket,
-    [SocketGetters.IS_OPEN]: state => state.socket.readyState === WebSocket.OPEN
-  },
   actions: {
-    [SocketActions.SEND_MESSAGE]: ({ state }) => (message: string) => state.socket.send(message),
-    [SocketActions.SEND_IF_OPEN]: async ({ getters, dispatch }, message: string) => {
-      if (getters.isOpen) {
-        await dispatch(SocketActions.SEND_MESSAGE, message)
-      }
-    },
-    [SocketActions.EMIT_MESSAGE] (_context: SocketActionContext, message: string) {
+    [SocketActions.REQUEST_CANVAS_ENTITY] (_context: SocketActionContext, message: RequestCanvasEntity) {
       // eslint-disable-next-line
       const vm: any = this
-      vm._vm.$socket.client.emit('auth', message)
+      vm._vm.$socket.client.emit('requestCanvasEntity', message)
     },
     [SocketActions.JOIN_ROOM] (_context: SocketActionContext, id: string) {
       // eslint-disable-next-line
       const vm: any = this
-      vm._vm.$socket.client.emit('join', id)
+      vm._vm.$socket.client.emit('joinRoom', id)
     }
   }
 }

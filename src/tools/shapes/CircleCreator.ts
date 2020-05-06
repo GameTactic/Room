@@ -1,5 +1,5 @@
 import Konva from 'konva'
-import { CanvasElement } from '@/types/Canvas'
+import { CanvasElement, CanvasElementType } from '@/types/Canvas'
 import Shape, { CircleCreatorInterface } from '@/tools/shapes/Shape'
 import { CustomEvent, CustomStageEvent } from '@/util/PointerEventMapper'
 import { CircleData } from '@/tools/Tool'
@@ -29,10 +29,12 @@ export default class CircleCreator extends Shape implements CircleCreatorInterfa
           this.line = this.createLineElement(canvasElement, event)
         )
       )
+      this.group.attrs.type = CanvasElementType.SHAPE
     } else {
       this.layer.add(this.group.id(canvasElement.id).add(
         this.circle = this.createCircleElement(canvasElement, event)
       ))
+      this.group.attrs.type = CanvasElementType.SHAPE
     }
   }
   // eslint-disable-next-line

@@ -1,4 +1,5 @@
 import { GameName } from '@/store/modules/room'
+import {CanvasElement, CanvasElementHistory} from '@/types/Canvas'
 
 export interface Api {
   name: string;
@@ -32,16 +33,19 @@ export interface Map {
   name: string;
   icon: string;
   ratio: number;
+  height: number;
+  width: number;
 }
 
 export interface Tactic {
   id: string;
-  collectionId: boolean;
-  isLocked: boolean;
+  name: string;
+  collectionId: string;
   lockedBy: string | undefined;
   map: Map;
-  entities: Entity[];
   createdBy: string;
+  canvasElements: CanvasElement[];
+  canvasElementsHistory: CanvasElementHistory[];
 }
 
 export interface Collection {

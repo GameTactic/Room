@@ -4,6 +4,7 @@ import Konva from 'konva'
 import store from '@/main'
 import { StageGetters } from '@/store/modules/stage'
 import { LayerGetters } from '@/store/modules/layer'
+import { CanvasElementType } from '@/types/Canvas'
 
 export default class MapCanvas {
   async setMap () {
@@ -27,13 +28,13 @@ export default class MapCanvas {
         width: (stageConfig.initialWidth * mapDimentionRatio),
         height: (stageConfig.initialHeight * mapDimentionRatio)
       })
-      const foundGroup: Konva.Group = layer.findOne((group: Konva.Group) => group.attrs.type && group.attrs.type === 'map')
+      const foundGroup: Konva.Group = layer.findOne((group: Konva.Group) => group.attrs.type && group.attrs.type === CanvasElementType.MAP)
       if (foundGroup) {
         foundGroup.getChildren().each(child => child.destroy())
         layer.add(foundGroup.add(el))
       } else {
         const group = new Konva.Group()
-        group.attrs.type = 'map'
+        group.attrs.type = CanvasElementType.MAP
         group.add(el)
         layer.add(group)
       }

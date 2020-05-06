@@ -1,5 +1,5 @@
 import { CircleData, CircleInterface, Tool, Tracker } from '@/tools/Tool'
-import { CanvasElement, CanvasElementType, RequestCanvasEntity } from '@/types/Canvas'
+import { AdditionTools, CanvasElement, CanvasElementType, RequestCanvasEntity } from '@/types/Canvas'
 import CircleCreator from '@/tools/shapes/CircleCreator'
 import { CustomEvent } from '@/util/PointerEventMapper'
 import { ISO } from '@/util/ISO'
@@ -84,7 +84,8 @@ export default class Circle extends Tool implements CircleInterface {
           id: uuid(),
           jti: this.canvasElement.jti,
           modifyData: {
-            additions: [this.canvasElement.id]
+            additions: [this.canvasElement.id],
+            tool: AdditionTools.CIRCLE
           },
           modifyType: Tracker.ADDITION,
           canvasElements: [this.canvasElement],

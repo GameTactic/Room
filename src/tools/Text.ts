@@ -1,6 +1,6 @@
 import { TextData, TextInterface, Tool, Tracker } from '@/tools/Tool'
 import Konva from 'konva'
-import { CanvasElement, CanvasElementType, RequestCanvasEntity } from '@/types/Canvas'
+import { AdditionTools, CanvasElement, CanvasElementType, RequestCanvasEntity } from '@/types/Canvas'
 import TextCreator from '@/tools/shapes/TextCreator'
 import { CustomEvent } from '@/util/PointerEventMapper'
 import { ISO } from '@/util/ISO'
@@ -76,7 +76,8 @@ export default class Text extends Tool implements TextInterface {
             jti: this.canvasElement.jti,
             modifyType: Tracker.ADDITION,
             modifyData: {
-              additions: [this.canvasElement.id]
+              additions: [this.canvasElement.id],
+              tool: AdditionTools.TEXT
             },
             canvasElements: [this.canvasElement],
             timestampModified: ISO.timestamp()

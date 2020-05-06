@@ -1,6 +1,6 @@
 import { LineData, LineInterface, Tool, Tracker } from '@/tools/Tool'
 import LineCreator from '@/tools/shapes/LineCreator'
-import { CanvasElement, CanvasElementType, RequestCanvasEntity } from '@/types/Canvas'
+import { AdditionTools, CanvasElement, CanvasElementType, RequestCanvasEntity } from '@/types/Canvas'
 import { CustomEvent } from '@/util/PointerEventMapper'
 import { ISO } from '@/util/ISO'
 import uuid from 'uuid'
@@ -79,7 +79,8 @@ export default class Line extends Tool implements LineInterface {
           jti: this.canvasElement.jti,
           modifyType: Tracker.ADDITION,
           modifyData: {
-            additions: [this.canvasElement.id]
+            additions: [this.canvasElement.id],
+            tool: AdditionTools.LINE
           },
           canvasElements: [this.canvasElement],
           timestampModified: ISO.timestamp()

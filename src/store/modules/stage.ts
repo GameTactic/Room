@@ -1,38 +1,47 @@
 import { ActionContext, Module } from 'vuex'
 import { CustomStageConfig } from '@/util/PointerEventMapper'
 import Konva from 'konva'
+import { Dimensions } from '@/mixins/StageWatcher'
+import { Tactic, Map } from '@/store/modules/types'
 
 export enum StageGetters {
-  STAGE_NODE = 'stageNode',
+  STAGE = 'stage',
   STAGE_ZOOM = 'stageZoom',
   STAGE_CONFIG = 'stageConfig',
   STAGE_ZOOM_STEP = 'stageZoomStep',
-  STAGE = 'stage'
+  STAGE_DIMENSIONS = 'stageDimensions',
+  STAGE_DIMENSIONS_INITIAL = 'stageDimensionsInitial'
 }
 
 export enum StageActions {
-  SET_STAGE = 'setStage',
   ZOOM_IN = 'zoomIn',
   ZOOM_OUT = 'zoomOut',
-  ZOOM_DEFAULT = 'zoomDefault',
-  SCALE = 'scale',
-  SET_DIMENSIONS = 'setDimensions',
-  SET_CONFIG = 'setConfig',
   SET_ZOOM = 'setZoom',
+  SET_STAGE = 'setStage',
+  SET_SCALE = 'setScale',
+  SET_CONFIG = 'setConfig',
+  SET_MAP_SRC = 'setMapSrc',
+  ZOOM_DEFAULT = 'zoomDefault',
   SET_ZOOM_STEP = 'setZoomStep',
-  SET_MAP_SRC = 'setMapSrc'
+  SET_MAP_RATIO = 'setMapRatio',
+  SET_DIMENSIONS = 'setDimensions',
+  SET_CONFIG_ZOOM = 'setConfigZoom',
+  SET_STAGE_TACTIC = 'setStageTactic',
+  SET_DIMENSIONS_INITIAL = 'setDimensionsInitial'
 }
 
 export enum StageMutations {
-  SET_STAGE = 'SET_STAGE',
-  SET_MAP_SRC = 'SET_MAP_SRC',
   SET_ZOOM = 'SET_ZOOM',
-  SET_ZOOM_IN = 'SET_ZOOM_IN',
-  SET_ZOOM_OUT = 'SET_ZOOM_OUT',
+  SET_STAGE = 'SET_STAGE',
   SET_CONFIG = 'SET_CONFIG',
+  SET_ZOOM_IN = 'SET_ZOOM_IN',
+  SET_MAP_SRC = 'SET_MAP_SRC',
+  SET_ZOOM_OUT = 'SET_ZOOM_OUT',
+  SET_ZOOM_STEP = 'SET_ZOOM_STEP',
+  SET_MAP_RATIO = 'SET_MAP_RATIO',
   SET_CONFIG_SCALE = 'SET_CONFIG_SCALE',
   SET_CONFIG_DIMENSIONS = 'SET_CONFIG_DIMENSIONS',
-  SET_ZOOM_STEP = 'SET_ZOOM_STEP'
+  SET_CONFIG_DIMENSIONS_INITIAL = 'SET_CONFIG_DIMENSIONS_INITIAL'
 }
 
 export interface StageState {
@@ -56,10 +65,10 @@ const StageModule: Module<StageState, {}> = {
       stageZoomStep: 10,
       stageZoom: 100,
       stageConfig: {
-        width: 1000,
-        height: 1000,
-        initialWidth: 1000,
-        initialHeight: 1000,
+        width: 1,
+        height: 1,
+        initialWidth: 0,
+        initialHeight: 0,
         mapSrc: '',
         mapRatio: 0,
         scale: {
@@ -73,21 +82,22 @@ const StageModule: Module<StageState, {}> = {
     [StageGetters.STAGE]: state => state.stage,
     [StageGetters.STAGE_ZOOM]: state => state.stageZoom,
     [StageGetters.STAGE_CONFIG]: state => state.stageConfig,
-    [StageGetters.STAGE_ZOOM_STEP]: state => state.stageZoomStep
+    [StageGetters.STAGE_ZOOM_STEP]: state => state.stageZoomStep,
+    [StageGetters.STAGE_DIMENSIONS]: state => ({ width: state.stageConfig.width, height: state.stageConfig.height }),
+    [StageGetters.STAGE_DIMENSIONS_INITIAL]: state => ({ width: state.stageConfig.initialWidth, height: state.stageConfig.initialHeight })
   },
   mutations: {
     [StageMutations.SET_STAGE] (state: StageState, stage: Konva.Stage) {
       state.stage = stage
+    },
+    [StageMutations.SET_MAP_RATIO] (state: StageState, ratio: number) {
+      state.stageConfig.mapRatio = ratio
     },
     [StageMutations.SET_ZOOM] (state: StageState, newValue: number) {
       if (newValue < state.stageZoomMin) {
         state.stageZoom = state.stageZoomMin
       } else {
         state.stageZoom = (newValue > state.stageZoomMax) ? state.stageZoomMax : newValue
-      }
-      state.stageConfig.scale = {
-        x: (state.stageZoom / 100),
-        y: (state.stageZoom / 100)
       }
     },
     [StageMutations.SET_MAP_SRC] (state: StageState, newMap: string) {
@@ -102,10 +112,6 @@ const StageModule: Module<StageState, {}> = {
       } else {
         state.stageZoom = (newValue > state.stageZoomMax) ? state.stageZoomMax : newValue
       }
-      state.stageConfig.scale = {
-        x: (state.stageZoom / 100),
-        y: (state.stageZoom / 100)
-      }
     },
     [StageMutations.SET_ZOOM_OUT] (state: StageState) {
       const newValue = state.stageZoom - state.stageZoomStep
@@ -114,19 +120,9 @@ const StageModule: Module<StageState, {}> = {
       } else {
         state.stageZoom = (newValue > state.stageZoomMax) ? state.stageZoomMax : newValue
       }
-      state.stageConfig.scale = {
-        x: (state.stageZoom / 100),
-        y: (state.stageZoom / 100)
-      }
     },
     [StageMutations.SET_CONFIG_SCALE] (state: StageState, newValue: number) {
-      if (newValue < (state.stageZoomMin) / 100) {
-        state.stageConfig.scale = { x: (state.stageZoomMin / 100), y: (state.stageZoomMin / 100) }
-      } else if (newValue > (state.stageZoomMax) / 100) {
-        state.stageConfig.scale = state.stageConfig.scale = { x: (state.stageZoomMax / 100), y: (state.stageZoomMax / 100) }
-      } else {
-        state.stageConfig.scale = { x: newValue, y: newValue }
-      }
+      state.stageConfig.scale = { x: newValue, y: newValue }
     },
     [StageMutations.SET_ZOOM_STEP] (state: StageState, newValue: number) {
       state.stageZoomStep = (newValue > 0) ? newValue : state.stageZoomStep
@@ -134,9 +130,13 @@ const StageModule: Module<StageState, {}> = {
     [StageMutations.SET_CONFIG] (state: StageState, config: CustomStageConfig) {
       state.stageConfig = config
     },
-    [StageMutations.SET_CONFIG_DIMENSIONS] (state: StageState, dimensions: { width: number; height: number }) {
+    [StageMutations.SET_CONFIG_DIMENSIONS] (state: StageState, dimensions: Dimensions) {
       state.stageConfig.width = dimensions.width
       state.stageConfig.height = dimensions.height
+    },
+    [StageMutations.SET_CONFIG_DIMENSIONS_INITIAL] (state: StageState, dimensions: Dimensions) {
+      state.stageConfig.initialWidth = dimensions.width
+      state.stageConfig.initialHeight = dimensions.height
     }
   },
   actions: {
@@ -152,13 +152,13 @@ const StageModule: Module<StageState, {}> = {
     [StageActions.SET_ZOOM] (context: StageActionContext, newValue: number) {
       context.commit(StageMutations.SET_ZOOM, newValue)
     },
-    [StageActions.SCALE] (context: StageActionContext, scale: number) {
+    [StageActions.SET_SCALE] (context: StageActionContext, scale: number) {
       context.commit(StageMutations.SET_CONFIG_SCALE, scale)
     },
     [StageActions.SET_CONFIG] (context: StageActionContext, config: CustomStageConfig) {
       context.commit(StageMutations.SET_CONFIG, config)
     },
-    [StageActions.SET_DIMENSIONS] (context: StageActionContext, dimensions: { width: number; height: number }) {
+    [StageActions.SET_DIMENSIONS] (context: StageActionContext, dimensions: Dimensions) {
       context.commit(StageMutations.SET_CONFIG_DIMENSIONS, dimensions)
     },
     [StageActions.SET_ZOOM_STEP] (context: StageActionContext, newValue: number) {
@@ -167,8 +167,22 @@ const StageModule: Module<StageState, {}> = {
     [StageActions.ZOOM_DEFAULT] (context: StageActionContext) {
       context.commit(StageMutations.SET_ZOOM, 100)
     },
-    [StageActions.SET_MAP_SRC] (context: StageActionContext, newValue: string) {
-      context.commit(StageMutations.SET_MAP_SRC, newValue)
+    [StageActions.SET_MAP_SRC] (context: StageActionContext, map: Map) {
+      context.commit(StageMutations.SET_MAP_SRC, map.icon)
+      context.commit(StageMutations.SET_CONFIG_DIMENSIONS, { width: map.width, height: map.height })
+    },
+    [StageActions.SET_CONFIG_ZOOM] (context: StageActionContext, newValues: { width: number; height: number; scale: number }) {
+      context.commit(StageMutations.SET_CONFIG_DIMENSIONS, { width: newValues.width, height: newValues.height })
+      context.commit(StageMutations.SET_CONFIG_SCALE, newValues.scale)
+    },
+    [StageActions.SET_DIMENSIONS_INITIAL] (context: StageActionContext, newValues: Dimensions) {
+      context.commit(StageMutations.SET_CONFIG_DIMENSIONS_INITIAL, newValues)
+    },
+    [StageActions.SET_STAGE_TACTIC] (context: StageActionContext, tactic: Tactic) {
+      context.commit(StageMutations.SET_ZOOM, 100)
+      context.commit(StageMutations.SET_MAP_SRC, tactic.map.icon)
+      context.commit(StageMutations.SET_CONFIG_DIMENSIONS, { width: tactic.map.width, height: tactic.map.height })
+      context.commit(StageMutations.SET_CONFIG_DIMENSIONS_INITIAL, { width: 0, height: 0 })
     }
   }
 }

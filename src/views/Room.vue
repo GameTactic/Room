@@ -60,27 +60,6 @@ export default class Room extends mixins(RoomSocket) {
   loadCanvas = true
   dragEnabled = false
 
-  created () {
-    EventBus.$on('createTactic', (tactic: Tactic) => {
-      this.setCanvasElements([])
-      this.setCanvasElementsHistory([])
-      this.setConfig({
-        scale: {
-          x: 1,
-          y: 1
-        },
-        height: 760,
-        width: 760,
-        initialWidth: 760,
-        initialHeight: 760,
-        mapSrc: tactic.map.icon,
-        mapRatio: tactic.map.ratio
-      })
-      this.loadCanvas = true
-      EventBus.$emit('newTactic')
-    })
-  }
-
   mouseDownAction (e: MouseEvent) {
     this.dragEnabled = true
     if (e.target === this.$refs.app && !(e.target instanceof HTMLCanvasElement)) {
@@ -100,10 +79,6 @@ export default class Room extends mixins(RoomSocket) {
       EventBus.$emit('mouseAction', e)
     }
   }
-}
-export interface Tactic {
-  name: string;
-  map: Map;
 }
 </script>
 <style scoped lang="scss">

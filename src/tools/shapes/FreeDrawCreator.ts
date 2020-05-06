@@ -1,5 +1,5 @@
 import Konva from 'konva'
-import { CanvasElement } from '@/types/Canvas'
+import { CanvasElement, CanvasElementType } from '@/types/Canvas'
 import Shape, { FreeDrawCreatorInterface } from '@/tools/shapes/Shape'
 import { CustomEvent, CustomStageEvent } from '@/util/PointerEventMapper'
 import { FreeDrawData } from '@/tools/Tool'
@@ -19,6 +19,7 @@ export default class FreeDrawCreator extends Shape implements FreeDrawCreatorInt
     this.group.id(canvasElement.id).add(
       this.freeDraw = this.createFreeDrawElement(canvasElement, event)
     )
+    this.group.attrs.type = CanvasElementType.SHAPE
     this.layer.add(this.group)
   }
 

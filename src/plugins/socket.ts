@@ -11,7 +11,7 @@ const socketOptions: ConnectOpts = {
   forceJSONP: true,
   parser: JsonParser
 } as ConnectOpts
-const socket = io(process.env.VUE_APP_MS_SOCK || 'wss://socket.gametactic.eu', socketOptions)
+const socket = io('localhost:3000', socketOptions)
 
 export default (store: Store<object>, vue: VueConstructor) => {
   vue.use(VueSocketIOExt, socket, { store })

@@ -90,7 +90,6 @@ import { Namespaces } from '@/store'
 import { StageActions, StageGetters } from '@/store/modules/stage'
 import Konva from 'konva'
 import { CustomStageConfig } from '@/util/PointerEventMapper'
-import ZoomCanvas from '@/tools/util/ZoomCanvas'
 import CenterCanvas from '@/tools/util/CenterCanvas'
 
 const Tools = namespace(Namespaces.TOOLS)
@@ -112,13 +111,10 @@ export default class TheCanvasTools extends Vue {
   @Tools.Getter(ToolGetters.ENABLED_TOOL) enabledTool?: ToolInterface
 
   mounted () {
-    const zoomCanvas = new ZoomCanvas()
     const centerCanvas = new CenterCanvas()
-    zoomCanvas.zoom(this.$store)
     centerCanvas.center(this.$store)
     window.addEventListener('resize', () => {
       centerCanvas.center(this.$store)
-      zoomCanvas.zoom(this.$store)
     })
   }
 
@@ -140,8 +136,6 @@ export default class TheCanvasTools extends Vue {
 
   zoomFunction (zoomOut: boolean): void {
     (zoomOut) ? this.zoomOut() : this.zoomIn()
-    const zoomCanvas = new ZoomCanvas()
-    zoomCanvas.zoom(this.$store)
   }
 
   centerFunction (): void {
@@ -190,7 +184,6 @@ export default class TheCanvasTools extends Vue {
   @mixin skewElement {
     content: '';
     position: absolute;
-    top: 1px;
     width: 100%;
     height: 100%;
     -webkit-transform-origin: 100% 0;
@@ -202,6 +195,7 @@ export default class TheCanvasTools extends Vue {
   }
   .custom-settings-right:after {
     @include skewElement;
+    width: 200px;
     right: -50px;
     -webkit-transform: skew(-45deg);
     -ms-transform: skew(-45deg);
@@ -211,6 +205,7 @@ export default class TheCanvasTools extends Vue {
   .custom-settings-left:after {
     @include skewElement;
     left: -50px;
+    width: 200px;
     -webkit-transform: skew(45deg);
     -ms-transform: skew(45deg);
     transform: skew(45deg);
@@ -218,9 +213,7 @@ export default class TheCanvasTools extends Vue {
   }
   .custom-canvas-tools-container {
     display: flex;
-    background-color: white;
     color: $room-primary;
-    border-bottom: 1px solid rgba(0, 0, 0, 0.05);
   }
   .custom-btn-disabled {
     &:before {

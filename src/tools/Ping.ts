@@ -1,5 +1,5 @@
 import { PingData, PingInterface, Tool, Tracker } from '@/tools/Tool'
-import { CanvasElement, CanvasElementType, RequestCanvasEntity } from '@/types/Canvas'
+import { AdditionTools, CanvasElement, CanvasElementType, RequestCanvasEntity } from '@/types/Canvas'
 import throttle from 'lodash.throttle'
 import PingCreator from '@/tools/shapes/PingCreator'
 import { CustomEvent } from '@/util/PointerEventMapper'
@@ -61,7 +61,8 @@ export default class Ping extends Tool implements PingInterface {
       jti: this.canvasElement.jti,
       modifyType: Tracker.ADDITION,
       modifyData: {
-        additions: [this.canvasElement.id]
+        additions: [this.canvasElement.id],
+        tool: AdditionTools.PING
       },
       canvasElements: [this.canvasElement],
       timestampModified: ISO.timestamp()

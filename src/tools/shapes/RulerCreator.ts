@@ -1,5 +1,5 @@
 import Konva from 'konva'
-import { CanvasElement } from '@/types/Canvas'
+import { CanvasElement, CanvasElementType } from '@/types/Canvas'
 import Shape, { RulerCreatorInterface } from '@/tools/shapes/Shape'
 import { CustomEvent, CustomStageConfig, CustomStageEvent } from '@/util/PointerEventMapper'
 import store from '@/main'
@@ -36,6 +36,7 @@ export default class RulerCreator extends Shape implements RulerCreatorInterface
         this.text = this.createTextElement(canvasElement, event)
       )
     }
+    this.group.attrs.type = CanvasElementType.SHAPE
     this.layer.add(this.group)
   }
 

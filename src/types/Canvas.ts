@@ -10,6 +10,20 @@ export type VueKonvaStage = Konva.Stage & Vue & {
   getNode: Function;
 }
 
+export enum AdditionTools {
+  CIRCLE = 'circle',
+  ENTITY = 'entity',
+  FREEDRAW = 'freeDraw',
+  RULER = 'ruler',
+  LINE = 'line',
+  PING = 'ping',
+  TEXT = 'text',
+}
+
+export enum RemovalTools {
+  ERASER = 'erase'
+}
+
 export enum CanvasElementType {
   MAP = 'map',
   SHAPE = 'shape',
@@ -68,4 +82,5 @@ export interface UndoData {
 // Array of canvas element IDs to add
 export interface AdditionData {
   additions: string[];
+  tool: AdditionTools;
 }

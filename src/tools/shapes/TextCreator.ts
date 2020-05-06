@@ -1,5 +1,5 @@
 import Konva from 'konva'
-import { CanvasElement } from '@/types/Canvas'
+import { CanvasElement, CanvasElementType } from '@/types/Canvas'
 import Shape, { TextCreatorInterface } from '@/tools/shapes/Shape'
 import { CustomEvent, CustomStageEvent } from '@/util/PointerEventMapper'
 import { TextData } from '@/tools/Tool'
@@ -16,8 +16,9 @@ export default class TextCreator extends Shape implements TextCreatorInterface {
                public textString: string) {
     super()
     this.text = new Konva.Text()
+    this.textArea = this.initTextArea()
     document.body.append(
-      this.textArea = document.createElement('textarea')
+      this.textArea
     )
   }
 
@@ -27,6 +28,7 @@ export default class TextCreator extends Shape implements TextCreatorInterface {
     this.group.id(canvasElement.id).add(
       this.text = this.createTextElement(canvasElement, event)
     )
+    this.group.attrs.type = CanvasElementType.SHAPE
     this.layer.add(this.group).batchDraw()
   }
 
@@ -88,5 +90,13 @@ export default class TextCreator extends Shape implements TextCreatorInterface {
     this.textArea = this.styleTextArea(this.textArea, event)
     this.textArea.focus()
     return this.textArea
+  }
+
+  initTextArea = (): HTMLTextAreaElement => {
+    const textArea = document.createElement('textarea')
+    textArea.style.position = 'absolute'
+    textArea.style.resize = 'none'
+    textArea.tabIndex = -1
+    return textArea
   }
 }

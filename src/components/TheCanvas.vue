@@ -24,7 +24,6 @@ import { Action, Getter } from 'vuex-class'
 import { ToolGetters } from '@/store/modules/tools'
 import { CanvasAction, CanvasGetters, HideCanvasElementInterface } from '@/store/modules/canvas'
 import Konva from 'konva'
-import { SocketGetters } from '@/store/modules/socket'
 import { EventBus } from '@/event-bus'
 import PointerEventMapper, { CustomStageConfig } from '@/util/PointerEventMapper'
 import { KonvaPointerEvent } from 'konva/types/PointerEvents'
@@ -34,17 +33,16 @@ import MapCanvas from '@/tools/util/MapCanvas'
 import { LayerActions, LayerGetters } from '@/store/modules/layer'
 import { CanvasEntityGetters, CanvasEntityState } from '@/store/modules/canvasEntity'
 import CanvasSockets from '@/mixins/CanvasSockets'
-
+import StageWatcher from '@/mixins/StageWatcher'
 @Component({
   name: 'TheCanvas',
-  mixins: [CanvasSockets]
+  mixins: [CanvasSockets, StageWatcher]
 })
 
-export default class TheCanvas extends mixins(CanvasSockets) {
+export default class TheCanvas extends mixins(CanvasSockets, StageWatcher) {
   @Prop() id!: string
   @Getter(`tools/${ToolGetters.ENABLED_TOOL}`) enabledTool!: ToolInterface
   @Getter(`tools/${ToolGetters.TOOLS}`) tools!: ToolInterface[]
-  @Getter(`socket/${SocketGetters.SOCKET}`) socket!: WebSocket
   @Action(`canvas/${CanvasAction.ADD_CANVAS_ELEMENT}`) addCanvasElement!: (canvasElement: CanvasElement) => void
   @Action(`canvas/${CanvasAction.HIDE_CANVAS_ELEMENT}`) hideCanvasElement!: (payload: HideCanvasElementInterface) => void
   @Getter(`canvas/${CanvasGetters.CANVAS_ELEMENTS}`) canvasElements!: CanvasElement[]

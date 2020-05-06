@@ -61,12 +61,18 @@
     </v-dialog>
 </template>
 <script lang="ts">
-import Vue from 'vue'
-import Component from 'vue-class-component'
+import Component, { mixins } from 'vue-class-component'
 import { EventBus } from '@/event-bus'
 import { RoomGetters } from '@/store/modules/room'
-import { Getter } from 'vuex-class'
+import { Action, Getter } from 'vuex-class'
 import { Api } from '@/store/modules/types'
+import { StageActions } from '@/store/modules/stage'
+import { CustomStageConfig } from '@/util/PointerEventMapper'
+import { CanvasAction } from '@/store/modules/canvas'
+import { CanvasElement } from '@/types/Canvas'
+import TacticWatcher from '@/mixins/TacticWatcher'
+import uuid from 'uuid'
+import { AuthenticationGetters } from '@/store/modules/authentication'
 
 @Component({
   name: 'TheCreateNewTacticOverlay',
@@ -76,16 +82,23 @@ import { Api } from '@/store/modules/types'
         name: '',
         icon: '',
         desc: '',
+        width: 0,
+        height: 0,
         ratio: 0,
         id: 0
       },
       name: ''
     },
     search: ''
-  })
+  }),
+  mixins: [TacticWatcher]
 })
-export default class CreateNewTacticOverlay extends Vue {
+export default class CreateNewTacticOverlay extends mixins(TacticWatcher) {
   @Getter(`room/${RoomGetters.GAME_API}`) gameApi!: Api[]
+  @Action(`stage/${StageActions.SET_CONFIG}`) setConfig!: (config: CustomStageConfig) => void
+  @Action(`canvas/${CanvasAction.SET_CANVAS_ELEMENT}`) setCanvasElements!: (canvasElements: CanvasElement[]) => void
+  @Action(`canvas/${CanvasAction.SET_CANVAS_ELEMENT_HISTORY}`) setCanvasElementsHistory!: (canvasElements: CanvasElement[]) => void
+
   overlay = false
   created () {
     EventBus.$on('openCreateNewTacticOverlay', () => {
@@ -111,9 +124,19 @@ export default class CreateNewTacticOverlay extends Vue {
     return !(this.$data.tactic.name && this.$data.tactic.map.icon)
   }
 
+  // Need to do more to this, but we dont have the collection stuff created yet so this is temporary.
   createTactic (): void {
     if (!this.isDisabled()) {
-      EventBus.$emit('createTactic', this.$data.tactic)
+      this.newTactic({
+        id: uuid(),
+        name: this.$data.tactic.name,
+        collectionId: uuid(),
+        canvasElements: [],
+        canvasElementsHistory: [],
+        lockedBy: undefined,
+        createdBy: this.$store.getters[`authentication/${AuthenticationGetters.JWT}`].jti,
+        map: this.$data.tactic.map
+      })
       this.overlay = false
     }
   }

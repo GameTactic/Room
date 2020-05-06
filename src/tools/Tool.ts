@@ -117,7 +117,7 @@ export class Tool {
   }
 
   send = (request: RequestCanvasEntity): void => {
-    store.dispatch(`socket/${SocketActions.SEND_IF_OPEN}`, request)
+    store.dispatch(`socket/${SocketActions.REQUEST_CANVAS_ENTITY}`, request)
   }
 
   get stageEvent (): CustomStageEvent {

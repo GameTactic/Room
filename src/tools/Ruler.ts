@@ -1,5 +1,5 @@
 import { LineData, RulerInterface, Tool, Tracker } from '@/tools/Tool'
-import { CanvasElement, CanvasElementType, RequestCanvasEntity } from '@/types/Canvas'
+import { AdditionTools, CanvasElement, CanvasElementType, RequestCanvasEntity } from '@/types/Canvas'
 import RulerCreator from '@/tools/shapes/RulerCreator'
 import { CustomEvent } from '@/util/PointerEventMapper'
 import { ISO } from '@/util/ISO'
@@ -76,7 +76,8 @@ export default class Ruler extends Tool implements RulerInterface {
           id: uuid(),
           jti: this.canvasElement.jti,
           modifyData: {
-            additions: [this.canvasElement.id]
+            additions: [this.canvasElement.id],
+            tool: AdditionTools.RULER
           },
           modifyType: Tracker.ADDITION,
           canvasElements: [this.canvasElement],

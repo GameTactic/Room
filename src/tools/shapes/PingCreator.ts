@@ -1,5 +1,5 @@
 import Konva from 'konva'
-import { CanvasElement } from '@/types/Canvas'
+import { CanvasElement, CanvasElementType } from '@/types/Canvas'
 import Shape, { PingCreatorInterface } from '@/tools/shapes/Shape'
 import { CustomEvent, CustomStageEvent } from '@/util/PointerEventMapper'
 import { PingData } from '@/tools/Tool'
@@ -20,6 +20,7 @@ export default class PingCreator extends Shape implements PingCreatorInterface {
     this.group.id(canvasElement.id).add(
       this.ping = this.createPingElement(canvasElement, event)
     )
+    this.group.attrs.type = CanvasElementType.SHAPE
     this.layer.add(this.group)
     this.runAnimation(this.ping)
   }

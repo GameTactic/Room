@@ -1,3 +1,10 @@
+import { Tracker } from '@/tools/Tool'
+import { CanvasAction, CanvasGetters } from '@/store/modules/canvas'
+import store from '@/main'
+import { ISO } from '@/util/ISO'
+import uuid from 'uuid'
+import { AuthenticationGetters, JWT } from '@/store/modules/authentication'
+import { SocketActions } from '@/store/modules/socket'
 import {
   AdditionData,
   CanvasElement,
@@ -7,12 +14,6 @@ import {
   RemovalData,
   UndoData
 } from '@/types/Canvas'
-import { Tracker } from '@/tools/Tool'
-import { CanvasAction, CanvasGetters } from '@/store/modules/canvas'
-import store from '@/main'
-import { ISO } from '@/util/ISO'
-import uuid from 'uuid'
-import {AuthenticationGetters} from "@/store/modules/authentication";
 
 export default class HandleUndoRedo {
   handleUndoRedo = (undoRedoString: string): void => {
@@ -75,14 +76,6 @@ export default class HandleUndoRedo {
     return undefined
   }
 
-  getSoulmate (history: CanvasElementHistory[]): CanvasElementHistory | undefined {
-    const lastElement = history[history.length - 1]
-    const data = lastElement.modifyData as RedoData
-    if (data.historyId) {
-      return history.find((item: CanvasElementHistory) => item.id === data.historyId)
-    }
-  }
-
   undo (modifyType: Tracker, modifyData: UndoData) {
     const data: CanvasElementHistory = {
       id: uuid(),
@@ -97,15 +90,17 @@ export default class HandleUndoRedo {
     if (undo) {
       switch (undo.modifyType) {
         case Tracker.ADDITION:
-          this.undoAdditions(undo, canvasElements, data)
+          this.undoAdditions(undo, canvasElements)
           break
         case Tracker.REMOVAL:
-          this.undoRemovals(undo, canvasElements, data)
+          this.undoRemovals(undo, canvasElements)
           break
         case Tracker.MOVE:
-          this.undoMove(undo, canvasElements, data)
+          this.undoMove(undo, canvasElements)
           break
       }
+      store.dispatch(`canvas/${CanvasAction.ADD_CANVAS_ELEMENT_HISTORY}`, data)
+      this.sendToSocket(data)
     }
   }
 
@@ -124,19 +119,21 @@ export default class HandleUndoRedo {
     if (redo) {
       switch (redo.modifyType) {
         case Tracker.ADDITION:
-          this.redoAdditions(redo, canvasElements, data)
+          this.redoAdditions(redo, canvasElements)
           break
         case Tracker.REMOVAL:
-          this.redoRemovals(redo, canvasElements, data)
+          this.redoRemovals(redo, canvasElements)
           break
         case Tracker.MOVE:
-          this.redoMove(redo, canvasElements, data)
+          this.redoMove(redo, canvasElements)
           break
       }
+      store.dispatch(`canvas/${CanvasAction.ADD_CANVAS_ELEMENT_HISTORY}`, data)
+      this.sendToSocket(data)
     }
   }
 
-  undoAdditions (history: CanvasElementHistory, canvasElements: CanvasElement[], canvasElementHistory: CanvasElementHistory) {
+  undoAdditions (history: CanvasElementHistory, canvasElements: CanvasElement[]) {
     const additions = (history.modifyData as AdditionData).additions
     if (additions) {
       additions.forEach((canvasElementId: string) => {
@@ -145,11 +142,10 @@ export default class HandleUndoRedo {
           store.dispatch(`canvas/${CanvasAction.HIDE_CANVAS_ELEMENT}`, foundElement)
         }
       })
-      store.dispatch(`canvas/${CanvasAction.ADD_CANVAS_ELEMENT_HISTORY}`, canvasElementHistory)
     }
   }
 
-  undoRemovals (history: CanvasElementHistory, canvasElements: CanvasElement[], canvasElementHistory: CanvasElementHistory) {
+  undoRemovals (history: CanvasElementHistory, canvasElements: CanvasElement[]) {
     const removals = (history.modifyData as RemovalData).removals
     if (removals) {
       removals.forEach((canvasElementId: string) => {
@@ -158,11 +154,10 @@ export default class HandleUndoRedo {
           store.dispatch(`canvas/${CanvasAction.SHOW_CANVAS_ELEMENT}`, foundElement)
         }
       })
-      store.dispatch(`canvas/${CanvasAction.ADD_CANVAS_ELEMENT_HISTORY}`, canvasElementHistory)
     }
   }
 
-  undoMove (history: CanvasElementHistory, canvasElements: CanvasElement[], canvasElementHistory: CanvasElementHistory) {
+  undoMove (history: CanvasElementHistory, canvasElements: CanvasElement[]) {
     const groups = (history.modifyData as MoveData).groups
     if (groups) {
       groups.forEach((groupId: string) => {
@@ -171,16 +166,15 @@ export default class HandleUndoRedo {
           const data = history.modifyData as MoveData
           const prevPos = foundElement.position
           foundElement.position = {
-            x: (data.to.x - data.from.x) - prevPos.x,
-            y: (data.to.y - data.from.y) - prevPos.y
+            x: -1 * ((data.to.x - data.from.x) - prevPos.x),
+            y: -1 * ((data.to.y - data.from.y) - prevPos.y)
           }
         }
       })
-      store.dispatch(`canvas/${CanvasAction.ADD_CANVAS_ELEMENT_HISTORY}`, canvasElementHistory)
     }
   }
 
-  redoAdditions (history: CanvasElementHistory, canvasElements: CanvasElement[], canvasElementHistory: CanvasElementHistory) {
+  redoAdditions (history: CanvasElementHistory, canvasElements: CanvasElement[]) {
     const additions = (history.modifyData as AdditionData).additions
     if (additions) {
       additions.forEach((canvasElementId: string) => {
@@ -189,11 +183,10 @@ export default class HandleUndoRedo {
           store.dispatch(`canvas/${CanvasAction.SHOW_CANVAS_ELEMENT}`, foundElement)
         }
       })
-      store.dispatch(`canvas/${CanvasAction.ADD_CANVAS_ELEMENT_HISTORY}`, canvasElementHistory)
     }
   }
 
-  redoRemovals (history: CanvasElementHistory, canvasElements: CanvasElement[], canvasElementHistory: CanvasElementHistory) {
+  redoRemovals (history: CanvasElementHistory, canvasElements: CanvasElement[]) {
     const removals = (history.modifyData as RemovalData).removals
     if (removals) {
       removals.forEach((canvasElementId: string) => {
@@ -202,11 +195,10 @@ export default class HandleUndoRedo {
           store.dispatch(`canvas/${CanvasAction.HIDE_CANVAS_ELEMENT}`, foundElement)
         }
       })
-      store.dispatch(`canvas/${CanvasAction.ADD_CANVAS_ELEMENT_HISTORY}`, canvasElementHistory)
     }
   }
 
-  redoMove (history: CanvasElementHistory, canvasElements: CanvasElement[], canvasElementHistory: CanvasElementHistory) {
+  redoMove (history: CanvasElementHistory, canvasElements: CanvasElement[]) {
     const groups = (history.modifyData as MoveData).groups
     if (groups) {
       groups.forEach((groupId: string) => {
@@ -220,14 +212,19 @@ export default class HandleUndoRedo {
           }
         }
       })
-      store.dispatch(`canvas/${CanvasAction.ADD_CANVAS_ELEMENT_HISTORY}`, canvasElementHistory)
     }
   }
 
   sortHistory (history: CanvasElementHistory[]) {
-    return history.sort((a: CanvasElementHistory, b: CanvasElementHistory) => {
+    const jwt = store.getters[`authentication/${AuthenticationGetters.JWT}`] as JWT
+    const filtered = history.filter((canvasElementHistory: CanvasElementHistory) => canvasElementHistory.jti === jwt.jti)
+    return filtered.sort((a: CanvasElementHistory, b: CanvasElementHistory) => {
       return (a.timestampModified < b.timestampModified) ? -1 : (a.timestampModified > b.timestampModified ? 1 : 0)
     })
+  }
+
+  sendToSocket (history: CanvasElementHistory) {
+    store.dispatch(`socket/${SocketActions.REQUEST_CANVAS_ENTITY}`, { ...history, canvasElements: [] })
   }
   // eslint-disable-next-line
   [key: string]: any
