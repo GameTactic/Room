@@ -1,8 +1,8 @@
 import { StageActions, StageGetters } from '@/store/modules/stage'
 import { Store } from 'vuex'
 
-export default class ZoomCanvas {
-  zoom = (store: Store<string>): void => {
+export default class CalibrateCanvas {
+  calibrate = (store: Store<string>): void => {
     const stageEvent = {
       stage: store.getters[`stage/${StageGetters.STAGE}`],
       stageConfig: store.getters[`stage/${StageGetters.STAGE_CONFIG}`],

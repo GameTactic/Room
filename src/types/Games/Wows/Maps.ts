@@ -110,6 +110,8 @@ export default class WowsMaps {
       desc: 'A harbor suitable for navigation and destruction...',
       icon: 'https://cdn.discordapp.com/attachments/687732423488045252/687736941650903121/Trap.png',
       name: 'Trap. Tournament. Domination',
+      width: 760,
+      height: 760,
       ratio: 42
     },
     {
