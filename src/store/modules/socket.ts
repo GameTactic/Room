@@ -11,15 +11,15 @@ type SocketActionContext = ActionContext<{}, {}>;
 const SocketModule: Module<{}, {}> = {
   namespaced: true,
   actions: {
-    [SocketActions.REQUEST_CANVAS_ENTITY] (_context: SocketActionContext, message: RequestCanvasEntity) {
+    [SocketActions.REQUEST_CANVAS_ENTITY] (_context: SocketActionContext, request: RequestCanvasEntity) {
       // eslint-disable-next-line
       const vm: any = this
-      vm._vm.$socket.client.emit('requestCanvasEntity', message)
+      vm._vm.$socket.client.emit('canvasRequestCanvasEntity', request)
     },
-    [SocketActions.JOIN_ROOM] (_context: SocketActionContext, id: string) {
+    [SocketActions.JOIN_ROOM] (_context: SocketActionContext, roomId: string) {
       // eslint-disable-next-line
       const vm: any = this
-      vm._vm.$socket.client.emit('joinRoom', id)
+      vm._vm.$socket.client.emit('roomJoin', roomId)
     }
   }
 }

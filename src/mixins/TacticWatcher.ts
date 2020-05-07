@@ -17,7 +17,7 @@ export default class TacticWatcher extends Vue {
   @Action(`canvas/${CanvasAction.SET_CANVAS_ELEMENT_HISTORY}`) setCanvasElementsHistory!: (canvasElements: CanvasElementHistory[]) => void
   @Action(`stage/${StageActions.SET_STAGE_TACTIC}`) setStageTactic!: (tactic: Tactic) => void
 
-  @Socket('changeTactic')
+  @Socket('canvasChangeTactic')
   onChangeTactic (tactic: Tactic[]) {
     if (this.validateTactic(tactic[0])) {
       this.changeTactic(tactic[0])
@@ -40,7 +40,7 @@ export default class TacticWatcher extends Vue {
   }
 
   sendToSockets (tactic: Tactic) {
-    this.$socket.client.emit('changeTactic', tactic)
+    this.$socket.client.emit('canvasChangeTactic', tactic)
   }
 
   validateTactic (tactic: Tactic) {

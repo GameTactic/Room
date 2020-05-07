@@ -19,7 +19,7 @@ export default class RoomSocket extends Vue {
     this.joinRoom(this.id)
   }
 
-  @Socket('userJoined')
+  @Socket('roomUserJoined')
   onUserJoined (jti: string) {
     // Someone joined the room
   }

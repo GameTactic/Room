@@ -12,12 +12,12 @@ import HandleRenderShapes from '@/util/HandleRenderShapes'
 import HandleUndoRedo from '@/util/HandleUndoRedo'
 
 @Component({
-  name: 'RoomSocket'
+  name: 'CanvasSocket'
 })
 export default class CanvasSocket extends Vue {
   @Prop() id!: string
   @Getter(`tools/${ToolGetters.TOOLS}`) tools!: Tool[]
-  @Socket('requestCanvasEntity')
+  @Socket('canvasRequestCanvasEntity')
   onRequestCanvasEntity (request: RequestCanvasEntity[]) {
     request.forEach((data: RequestCanvasEntity) => {
       if (data.modifyType && data.jti && data.timestampModified && data.id && data.canvasElements && data.modifyData) {
