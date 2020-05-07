@@ -1,6 +1,6 @@
 import { CanvasToolInterface, ToolClass } from '@/tools/Tool'
 import { CustomEvent, Point } from '@/util/PointerEventMapper'
-import Konva from 'Konva'
+import Konva from 'konva'
 
 export default class MoveCanvas extends ToolClass implements CanvasToolInterface {
   public startPos: {
