@@ -1,4 +1,4 @@
-import { TextData, TextInterface, Tool, Tracker } from '@/tools/Tool'
+import { TextData, TextInterface, ToolClass, Tracker } from '@/tools/Tool'
 import Konva from 'konva'
 import { AdditionTools, CanvasElement, CanvasElementType, RequestCanvasEntity } from '@/types/Canvas'
 import TextCreator from '@/tools/shapes/TextCreator'
@@ -6,7 +6,7 @@ import { CustomEvent } from '@/util/PointerEventMapper'
 import { ISO } from '@/util/ISO'
 import uuid from 'uuid'
 
-export default class Text extends Tool implements TextInterface {
+export default class Text extends ToolClass implements TextInterface {
   private textCreator: TextCreator
   constructor (public readonly name: string,
                public size: number,
@@ -56,9 +56,20 @@ export default class Text extends Tool implements TextInterface {
       )
       const textArea = this.textCreator.createTextArea(event)
       const inputEvent = () => {
-        if ((textArea.scrollHeight - 1) > textArea.getBoundingClientRect().height) {
-          textArea.value = textArea.value.slice(0, -1)
+        const maxDimensions = {
+          maxWidth: parseInt(textArea.style.maxWidth.substring(0, textArea.style.maxWidth.length - 2)),
+          maxHeight: parseInt(textArea.style.maxHeight.substring(0, textArea.style.maxHeight.length - 2))
         }
+        if (maxDimensions.maxWidth < textArea.scrollWidth) {
+          textArea.value = [textArea.value.slice(0, textArea.value.length - 1), '\n', textArea.value.slice(textArea.value.length - 1)].join('')
+        }
+        if (maxDimensions.maxHeight < textArea.scrollHeight) {
+          textArea.value = textArea.value.slice(0, textArea.value.length - 2)
+        }
+        textArea.style.height = '30px'
+        textArea.style.width = '100px'
+        textArea.style.height = `${textArea.scrollHeight}px`
+        textArea.style.width = `${textArea.scrollWidth}px`
       }
       const keyBoardEvent = (e: KeyboardEvent) => {
         if (e.key === 'Enter' && !e.shiftKey) {
@@ -87,10 +98,14 @@ export default class Text extends Tool implements TextInterface {
       const onClickEvent = () => {
         textArea.blur()
       }
+      const pasteEvent = (e: ClipboardEvent) => {
+        e.preventDefault()
+      }
       textArea.addEventListener('mousedown', onClickEvent)
       textArea.addEventListener('keydown', keyBoardEvent)
       textArea.addEventListener('focusout', focusOutEvent)
       textArea.addEventListener('input', inputEvent)
+      textArea.addEventListener('paste', pasteEvent)
     }
   }
 

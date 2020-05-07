@@ -1,4 +1,4 @@
-import { FreeDrawData, FreeDrawInterface, Tool, Tracker } from '@/tools/Tool'
+import { FreeDrawData, FreeDrawInterface, ToolClass, Tracker } from '@/tools/Tool'
 import { AdditionTools, CanvasElement, CanvasElementType, RequestCanvasEntity } from '@/types/Canvas'
 import FreeDrawCreator from '@/tools/shapes/FreeDrawCreator'
 import { CustomEvent } from '@/util/PointerEventMapper'
@@ -6,7 +6,7 @@ import throttle from 'lodash.throttle'
 import { ISO } from '@/util/ISO'
 import uuid from 'uuid'
 
-export default class FreeDraw extends Tool implements FreeDrawInterface {
+export default class FreeDraw extends ToolClass implements FreeDrawInterface {
   private freeDrawCreator: FreeDrawCreator
   constructor (public readonly name: string,
                public size: number,
@@ -51,6 +51,7 @@ export default class FreeDraw extends Tool implements FreeDrawInterface {
     }
   }, 10)
 
+  // eslint-disable-next-line
   mouseUpAction = (event: CustomEvent): void => {
     if (this.enabled) {
       this.disableTool()

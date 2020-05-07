@@ -1,15 +1,5 @@
 import { Module, ActionContext } from 'vuex'
-import VueSocketIOExt from 'vue-socket.io-extended'
-import JsonParser from 'socket.io-json-parser'
 import { RequestCanvasEntity } from '@/types/Canvas'
-import ConnectOpts = SocketIOClient.ConnectOpts;
-
-export const socketOptions: ConnectOpts = {
-  autoConnect: false,
-  jsonp: true,
-  forceJSONP: true,
-  parser: JsonParser
-} as ConnectOpts
 
 export enum SocketActions {
   JOIN_ROOM = 'joinRoom',

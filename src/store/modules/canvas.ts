@@ -2,7 +2,7 @@ import { ActionContext, Module } from 'vuex'
 import { CanvasElement, CanvasElementHistory } from '@/types/Canvas'
 import { ToolState } from '@/store/modules/tools'
 import { StageState } from '@/store/modules/stage'
-import { ToolInterface } from '@/tools/Tool'
+import { Tool } from '@/tools/Tool'
 
 export enum CanvasMutation {
   SET_CANVAS_ELEMENT = 'SET_CANVAS_ELEMENT',
@@ -77,7 +77,7 @@ const CanvasModule: Module<CanvasState, RootState> = {
       }
     },
     [CanvasMutation.ADD_CANVAS_ELEMENT] (state: CanvasState, payload: RootState) {
-      const foundTool: ToolInterface | undefined = payload.tools.tools.find((tool: ToolInterface) => tool.name === payload.tool.name)
+      const foundTool: Tool | undefined = payload.tools.tools.find((tool: Tool) => tool.name === payload.tool.name)
       state.canvasElements.push({ ...payload, tool: { ...payload.tool, renderCanvas: foundTool?.renderCanvas } })
     },
     [CanvasMutation.ADD_CANVAS_ELEMENT_HISTORY] (state: CanvasState, payload: CanvasElementHistory) {

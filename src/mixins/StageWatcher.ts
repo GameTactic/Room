@@ -6,6 +6,8 @@ import { Action, Getter } from 'vuex-class'
 import Component from 'vue-class-component'
 import Konva from 'konva'
 import Vue from 'vue'
+import MapCanvas from '@/tools/util/MapCanvas'
+import HandleRenderShapes from '@/util/HandleRenderShapes'
 
 @Component({
   name: 'StageWatch'
@@ -19,6 +21,7 @@ export default class StageWatch extends Vue {
   @Action(`stage/${StageActions.SET_DIMENSIONS}`) setStageDimensions!: (dimensions: Dimensions) => void
   @Action(`stage/${StageActions.SET_SCALE}`) setScale!: (scale: number) => void
   @Action(`stage/${StageActions.SET_DIMENSIONS_INITIAL}`) setDimensionsInitial!: (dimensions: Dimensions) => void
+  @Getter(`stage/${StageGetters.STAGE_MAP_SRC}`) stageMapSrc!: string
 
   @Watch('stageDimensionsInitial', { immediate: true })
   onStageInitialDimensions () {
@@ -48,6 +51,13 @@ export default class StageWatch extends Vue {
     }
     this.stage.attrs.container.setAttribute('style', `top: ${style.top}px; left: ${style.left}px;`)
     this.setScale(this.stageConfig.width / this.stageConfig.initialWidth)
+  }
+
+  @Watch('stageMapSrc')
+  onStageMapSrc () {
+    const mapCanvas = new MapCanvas()
+    const renderCanvas = new HandleRenderShapes(this.$store)
+    mapCanvas.setMap().then(() => renderCanvas.handle())
   }
 
   created () {

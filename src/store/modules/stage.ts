@@ -8,6 +8,7 @@ export enum StageGetters {
   STAGE = 'stage',
   STAGE_ZOOM = 'stageZoom',
   STAGE_CONFIG = 'stageConfig',
+  STAGE_MAP_SRC = 'stageMapSrc',
   STAGE_ZOOM_STEP = 'stageZoomStep',
   STAGE_DIMENSIONS = 'stageDimensions',
   STAGE_DIMENSIONS_INITIAL = 'stageDimensionsInitial'
@@ -82,6 +83,7 @@ const StageModule: Module<StageState, {}> = {
     [StageGetters.STAGE]: state => state.stage,
     [StageGetters.STAGE_ZOOM]: state => state.stageZoom,
     [StageGetters.STAGE_CONFIG]: state => state.stageConfig,
+    [StageGetters.STAGE_MAP_SRC]: state => state.stageConfig.mapSrc,
     [StageGetters.STAGE_ZOOM_STEP]: state => state.stageZoomStep,
     [StageGetters.STAGE_DIMENSIONS]: state => ({ width: state.stageConfig.width, height: state.stageConfig.height }),
     [StageGetters.STAGE_DIMENSIONS_INITIAL]: state => ({ width: state.stageConfig.initialWidth, height: state.stageConfig.initialHeight })

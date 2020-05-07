@@ -63,9 +63,11 @@ export default class TextCreator extends Shape implements TextCreatorInterface {
     } else {
       fontSize = 25
     }
+    textArea.setAttribute('wrap', 'off')
     textArea.placeholder = 'Write text here'
     textArea.id = this.canvasElement.id
     textArea.style.position = 'absolute'
+    textArea.style.overflow = 'hidden'
     textArea.style.top = event.pointerEvent.pageY + 'px'
     textArea.style.left = event.pointerEvent.pageX + 'px'
     textArea.style.color = this.canvasElement.tool.colour
@@ -74,15 +76,14 @@ export default class TextCreator extends Shape implements TextCreatorInterface {
     textArea.style.border = 'none'
     textArea.style.padding = '0px'
     textArea.style.margin = '0px'
-    textArea.style.overflow = 'hidden'
     textArea.style.background = 'none'
     textArea.style.outline = 'none'
     textArea.style.resize = 'none'
     textArea.style.lineHeight = this.lineHeight.toString()
     textArea.style.fontFamily = this.fontFamily
     textArea.spellcheck = false
-    textArea.style.height = (this.layer.getHeight() - event.offset.y) + 'px'
-    textArea.style.width = (this.layer.getWidth() - event.offset.x) + 'px'
+    textArea.style.maxHeight = (this.layer.getHeight() - event.offset.y) + 'px'
+    textArea.style.maxWidth = (this.layer.getWidth() - event.offset.x) + 'px'
     return textArea
   }
 

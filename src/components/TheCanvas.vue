@@ -18,7 +18,7 @@
 <script lang="ts">
 import { Prop } from 'vue-property-decorator'
 import Component, { mixins } from 'vue-class-component'
-import { ToolInterface } from '@/tools/Tool'
+import { Tool } from '@/tools/Tool'
 import { CanvasElement, VueKonvaLayer, VueKonvaStage } from '@/types/Canvas'
 import { Action, Getter } from 'vuex-class'
 import { ToolGetters } from '@/store/modules/tools'
@@ -29,7 +29,6 @@ import PointerEventMapper, { CustomStageConfig } from '@/util/PointerEventMapper
 import { KonvaPointerEvent } from 'konva/types/PointerEvents'
 import HandleRenderShapes from '@/util/HandleRenderShapes'
 import { StageActions, StageGetters } from '@/store/modules/stage'
-import MapCanvas from '@/tools/util/MapCanvas'
 import { LayerActions, LayerGetters } from '@/store/modules/layer'
 import { CanvasEntityGetters, CanvasEntityState } from '@/store/modules/canvasEntity'
 import CanvasSockets from '@/mixins/CanvasSockets'
@@ -41,8 +40,8 @@ import StageWatcher from '@/mixins/StageWatcher'
 
 export default class TheCanvas extends mixins(CanvasSockets, StageWatcher) {
   @Prop() id!: string
-  @Getter(`tools/${ToolGetters.ENABLED_TOOL}`) enabledTool!: ToolInterface
-  @Getter(`tools/${ToolGetters.TOOLS}`) tools!: ToolInterface[]
+  @Getter(`tools/${ToolGetters.ENABLED_TOOL}`) enabledTool!: Tool
+  @Getter(`tools/${ToolGetters.TOOLS}`) tools!: Tool[]
   @Action(`canvas/${CanvasAction.ADD_CANVAS_ELEMENT}`) addCanvasElement!: (canvasElement: CanvasElement) => void
   @Action(`canvas/${CanvasAction.HIDE_CANVAS_ELEMENT}`) hideCanvasElement!: (payload: HideCanvasElementInterface) => void
   @Getter(`canvas/${CanvasGetters.CANVAS_ELEMENTS}`) canvasElements!: CanvasElement[]
@@ -66,19 +65,6 @@ export default class TheCanvas extends mixins(CanvasSockets, StageWatcher) {
   }
 
   created () {
-    this.$store.watch(
-      () => {
-        return this.stageConfig.mapSrc
-      },
-      (newMap: string, oldMap: string) => {
-        if (newMap !== oldMap) {
-          const mapCanvas = new MapCanvas()
-          mapCanvas.setMap()
-          this.renderShapes()
-        }
-      }
-    )
-
     EventBus.$on('mouseAction', (e: MouseEvent) => {
       this.onMouseHandler(PointerEventMapper.mouseEventMapper(e) as KonvaPointerEvent)
     })

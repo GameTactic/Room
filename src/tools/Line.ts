@@ -1,11 +1,11 @@
-import { LineData, LineInterface, Tool, Tracker } from '@/tools/Tool'
+import { LineData, LineInterface, ToolClass, Tracker } from '@/tools/Tool'
 import LineCreator from '@/tools/shapes/LineCreator'
 import { AdditionTools, CanvasElement, CanvasElementType, RequestCanvasEntity } from '@/types/Canvas'
 import { CustomEvent } from '@/util/PointerEventMapper'
 import { ISO } from '@/util/ISO'
 import uuid from 'uuid'
 
-export default class Line extends Tool implements LineInterface {
+export default class Line extends ToolClass implements LineInterface {
   private lineCreator: LineCreator
   constructor (public readonly name: string,
                public size: number,
@@ -65,6 +65,7 @@ export default class Line extends Tool implements LineInterface {
     }
   }
 
+  // eslint-disable-next-line
   mouseUpAction = (event: CustomEvent): void => {
     if (this.enabled) {
       this.disableTool()

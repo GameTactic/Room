@@ -1,4 +1,4 @@
-import { PingData, PingInterface, Tool, Tracker } from '@/tools/Tool'
+import { PingData, PingInterface, ToolClass, Tracker } from '@/tools/Tool'
 import { AdditionTools, CanvasElement, CanvasElementType, RequestCanvasEntity } from '@/types/Canvas'
 import throttle from 'lodash.throttle'
 import PingCreator from '@/tools/shapes/PingCreator'
@@ -6,7 +6,7 @@ import { CustomEvent } from '@/util/PointerEventMapper'
 import { ISO } from '@/util/ISO'
 import uuid from 'uuid'
 
-export default class Ping extends Tool implements PingInterface {
+export default class Ping extends ToolClass implements PingInterface {
   private pingCreator: PingCreator
   constructor (public readonly name: string,
                public readonly size: number,

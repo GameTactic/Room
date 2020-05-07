@@ -1,11 +1,11 @@
-import { Tool, ToolClassInterface, Tracker } from '@/tools/Tool'
+import { ToolClass, ToolClassInterface, Tracker } from '@/tools/Tool'
 import Konva from 'konva'
 import { CustomEvent } from '@/util/PointerEventMapper'
 import { ISO } from '@/util/ISO'
 import { MoveData, RequestCanvasEntity } from '@/types/Canvas'
 import uuid from 'uuid'
 
-export default class Move extends Tool implements ToolClassInterface {
+export default class Move extends ToolClass implements ToolClassInterface {
   constructor (public readonly name: string,
                public temporary: boolean) {
     super()

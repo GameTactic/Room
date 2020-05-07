@@ -1,8 +1,8 @@
-import { CanvasToolInterface, Tool } from '@/tools/Tool'
+import { CanvasToolInterface, ToolClass } from '@/tools/Tool'
 import { CustomEvent, Point } from '@/util/PointerEventMapper'
 import Konva from 'Konva'
 
-export default class MoveCanvas extends Tool implements CanvasToolInterface {
+export default class MoveCanvas extends ToolClass implements CanvasToolInterface {
   public startPos: {
     pointer: Point;
     element: Point;
@@ -36,6 +36,7 @@ export default class MoveCanvas extends Tool implements CanvasToolInterface {
     }
   }
 
+  // eslint-disable-next-line
   canvasMoveAction = (event: CustomEvent, stage: Konva.Stage): void => {
     if (this.enabled) {
       const newPosition = {

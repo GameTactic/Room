@@ -1,11 +1,11 @@
-import { Tool, Tracker } from '@/tools/Tool'
+import { ToolClass, Tracker } from '@/tools/Tool'
 import Konva from 'konva'
 import { CustomEvent } from '@/util/PointerEventMapper'
 import { ISO } from '@/util/ISO'
 import { RemovalData, RequestCanvasEntity } from '@/types/Canvas'
 import uuid from 'uuid'
 
-export default class Erase extends Tool {
+export default class Erase extends ToolClass {
   constructor (public readonly name: string,
                public readonly temporary: boolean) {
     super()
@@ -30,6 +30,7 @@ export default class Erase extends Tool {
     }
   }
 
+  // eslint-disable-next-line
   mouseUpAction = (event: CustomEvent): void => {
     const data = this.canvasEntity.modifyData as RemovalData
     if (this.enabled && data.removals) {

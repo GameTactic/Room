@@ -1,6 +1,6 @@
 import Konva from 'konva'
 import { Point } from 'konva/types/Util'
-import { ToolInterface, Tracker } from '@/tools/Tool'
+import { Tool, Tracker } from '@/tools/Tool'
 
 export type VueKonvaLayer = Konva.Layer & Vue & {
   getNode: Function;
@@ -32,7 +32,7 @@ export enum CanvasElementType {
 
 export interface CanvasElement {
   id: string;
-  tool: ToolInterface;
+  tool: Tool;
   type: CanvasElementType;
   data: {};
   layerId: string;

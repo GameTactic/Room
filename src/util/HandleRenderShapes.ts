@@ -1,8 +1,7 @@
 import Konva from 'konva'
 import { AdditionData, CanvasElement, CanvasElementHistory } from '@/types/Canvas'
-import { ToolInterface, Tracker } from '@/tools/Tool'
+import { Tool, Tracker } from '@/tools/Tool'
 import { CustomStageConfig } from '@/util/PointerEventMapper'
-import { Container } from 'konva/types/Container'
 import { LayerGetters } from '@/store/modules/layer'
 import { CanvasGetters } from '@/store/modules/canvas'
 import { StageGetters } from '@/store/modules/stage'
@@ -15,7 +14,7 @@ export default class HandleRenderShapes {
   public canvasElements: CanvasElement[]
   public stageConfig: CustomStageConfig
   public canvasElementsHistory: CanvasElementHistory[]
-  public tools: ToolInterface[]
+  public tools: Tool[]
   public stage: Konva.Stage
   constructor (private propStore: Store<string>) {
     this.layer = this.propStore.getters[`layer/${LayerGetters.LAYER}`]

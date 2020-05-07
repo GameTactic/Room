@@ -20,8 +20,8 @@ export default class RoomSocket extends Vue {
   }
 
   @Socket('userJoined')
-  onUserJoined (username: string) {
-    console.log(`${username} joined the room!`)
+  onUserJoined (jti: string) {
+    // Someone joined the room
   }
 
   created () {

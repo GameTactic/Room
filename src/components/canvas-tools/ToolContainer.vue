@@ -70,7 +70,7 @@
 
 <script lang="ts">
 import { Component, Prop, Vue } from 'vue-property-decorator'
-import { ToolInterface } from '@/tools/Tool'
+import { Tool } from '@/tools/Tool'
 import { namespace } from 'vuex-class'
 import { Namespaces } from '@/store'
 import { ToolGetters, ToolsAction } from '@/store/modules/tools'
@@ -92,7 +92,7 @@ export default class ToolContainer extends Vue {
   @Prop() private toolname!: string
   @Tools.Action(ToolsAction.ENABLE_TOOL) enableTool!: (toolName: string) => void
   @Tools.Action(ToolsAction.DISABLE_TOOL) disableTool!: () => void
-  @Tools.Getter(ToolGetters.ENABLED_TOOL) enabledTool?: ToolInterface
+  @Tools.Getter(ToolGetters.ENABLED_TOOL) enabledTool?: Tool
 
   getIsActive (): boolean {
     const menu = this.$refs['menu'] as MenuElement

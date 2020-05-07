@@ -1,11 +1,11 @@
-import { CircleData, CircleInterface, Tool, Tracker } from '@/tools/Tool'
+import { CircleData, CircleInterface, ToolClass, Tracker } from '@/tools/Tool'
 import { AdditionTools, CanvasElement, CanvasElementType, RequestCanvasEntity } from '@/types/Canvas'
 import CircleCreator from '@/tools/shapes/CircleCreator'
 import { CustomEvent } from '@/util/PointerEventMapper'
 import { ISO } from '@/util/ISO'
 import uuid from 'uuid'
 
-export default class Circle extends Tool implements CircleInterface {
+export default class Circle extends ToolClass implements CircleInterface {
   private circleCreator: CircleCreator
   constructor (public readonly name: string,
                public size: number,

@@ -1,11 +1,11 @@
-import { LineData, RulerInterface, Tool, Tracker } from '@/tools/Tool'
+import { LineData, RulerInterface, ToolClass, Tracker } from '@/tools/Tool'
 import { AdditionTools, CanvasElement, CanvasElementType, RequestCanvasEntity } from '@/types/Canvas'
 import RulerCreator from '@/tools/shapes/RulerCreator'
 import { CustomEvent } from '@/util/PointerEventMapper'
 import { ISO } from '@/util/ISO'
 import uuid from 'uuid'
 
-export default class Ruler extends Tool implements RulerInterface {
+export default class Ruler extends ToolClass implements RulerInterface {
   private rulerCreator: RulerCreator
   constructor (public readonly name: string,
                public size: number,

@@ -4,7 +4,7 @@ import { Socket } from 'vue-socket.io-extended'
 import { Getter } from 'vuex-class'
 import { Prop } from 'vue-property-decorator'
 import { AdditionData, CanvasElement, CanvasElementHistory, MoveData, RedoData, RemovalData, RemovalTools, RequestCanvasEntity, UndoData } from '@/types/Canvas'
-import { ToolInterface, Tracker } from '@/tools/Tool'
+import { Tool, Tracker } from '@/tools/Tool'
 import { ToolGetters } from '@/store/modules/tools'
 import store from '@/main'
 import { CanvasAction, CanvasGetters } from '@/store/modules/canvas'
@@ -16,7 +16,7 @@ import HandleUndoRedo from '@/util/HandleUndoRedo'
 })
 export default class CanvasSocket extends Vue {
   @Prop() id!: string
-  @Getter(`tools/${ToolGetters.TOOLS}`) tools!: ToolInterface[]
+  @Getter(`tools/${ToolGetters.TOOLS}`) tools!: Tool[]
   @Socket('requestCanvasEntity')
   onRequestCanvasEntity (request: RequestCanvasEntity[]) {
     request.forEach((data: RequestCanvasEntity) => {
@@ -25,7 +25,7 @@ export default class CanvasSocket extends Vue {
           case Tracker.ADDITION:
             const additionData = data.modifyData as AdditionData
             if (data.canvasElements && additionData.tool) {
-              const foundTool = this.tools.find((tool: ToolInterface) => tool.name === additionData.tool)
+              const foundTool = this.tools.find((tool: Tool) => tool.name === additionData.tool)
               if (foundTool && foundTool.renderCanvas) {
                 foundTool.renderCanvas(data)
                 this.addToState(data)
@@ -35,7 +35,7 @@ export default class CanvasSocket extends Vue {
           case Tracker.REMOVAL:
             const removalData = data.modifyData as RemovalData
             if (removalData.removals) {
-              const foundTool = this.tools.find((tool: ToolInterface) => tool.name === RemovalTools.ERASER)
+              const foundTool = this.tools.find((tool: Tool) => tool.name === RemovalTools.ERASER)
               if (foundTool && foundTool.renderCanvas) {
                 foundTool.renderCanvas(data)
                 this.addToState(data)

@@ -33,7 +33,7 @@ export enum Tracker {
   MOVE = 'move'
 }
 
-export class Tool {
+export class ToolClass {
   get enabled (): boolean {
     return store.getters[`tools/${ToolGetters.ENABLED}`]
   }
@@ -160,20 +160,20 @@ export class Tool {
   }
 }
 
-export interface ToolInterface {
+export interface Tool {
   name: string;
   temporary: boolean;
   // eslint-disable-next-line
   [key: string]: any
 }
 
-export interface CanvasToolInterface extends ToolInterface {
+export interface CanvasToolInterface extends Tool {
   canvasDownAction: CanvasDownAction;
   canvasMoveAction: CanvasMoveAction;
   canvasUpAction: CanvasUpAction;
 }
 
-export interface ToolClassInterface extends ToolInterface {
+export interface ToolClassInterface extends Tool {
   mouseDownAction: MouseDownAction;
   mouseMoveAction: MouseMoveAction;
   mouseUpAction: MouseUpAction;
