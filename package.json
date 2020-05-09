@@ -16,7 +16,6 @@
     "core-js": "^3.6.4",
     "jsonwebtoken": "^8.5.1",
     "konva": "^4.0.18",
-    "lodash": "^4.17.15",
     "lodash.throttle": "^4.1.1",
     "lodash.values": "^4.3.0",
     "register-service-worker": "^1.6.2",
