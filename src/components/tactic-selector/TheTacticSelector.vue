@@ -54,7 +54,7 @@
         <template v-slot:prepend="{ item }">
           <v-icon
             v-if="item.children"
-            v-text="`fa-${item.id === 1 ? 'home-variant' : 'folder-network'}`"
+            v-text="`fa-${item.id === 1 ? 'folder' : 'map'}`"
           ></v-icon>
         </template>
       </v-treeview>
@@ -69,10 +69,10 @@
 
 <script lang="ts">
 import { Component, Prop, Vue } from 'vue-property-decorator'
-import { Tool } from '../../tools/Tool'
+import { Tool } from '@/tools/Tool'
 import { namespace, Getter } from 'vuex-class'
 import { RoomGetters } from '@/store/modules/room'
-import { Tactic } from '../../store/modules/types'
+import { Tactic } from '@/store/modules/types'
 
 @Component({
   name: 'TheTacticSelector',
