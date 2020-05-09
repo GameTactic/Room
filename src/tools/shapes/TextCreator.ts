@@ -51,7 +51,6 @@ export default class TextCreator extends Shape implements TextCreatorInterface {
       id: canvasElement.id,
       fontFamily: this.fontFamily,
       lineHeight: this.lineHeight,
-      width: (this.layer.getWidth() - (data.point.x * event.stageConfig.scale.x)) / event.stageConfig.scale.x,
       wrap: 'char'
     })
   }

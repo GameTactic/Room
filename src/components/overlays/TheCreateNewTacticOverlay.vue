@@ -1,10 +1,10 @@
 <template>
-    <v-dialog persistent v-model="overlay" width="700" class="custom-overlay">
+    <v-dialog v-model="overlay" width="700" class="custom-overlay">
       <v-card class="pa-12">
         <v-row>
           <v-col>
             <v-card-title>
-              Create new tactic
+              {{ $t('tactic.createTacticOverlay.title') }}
             </v-card-title>
             <v-card-actions>
               <v-text-field
@@ -22,8 +22,8 @@
                 color="primary"
                 hide-no-data
                 hide-selected
-                label="Search for maps"
-                placeholder="Start typing to Search"
+                :label="$t('tactic.createTacticOverlay.maps')"
+                :placeholder="$t('tactic.createTacticOverlay.search')"
                 prepend-icon="fa-search"
                 autocomplete="new-password"
                 return-object
@@ -45,11 +45,11 @@
                 :disabled="isDisabled()"
                 @click="createTactic()"
               >
-                Create tactic
+                {{ $t('tactic.createTacticOverlay.create') }}
               </v-btn>
             </v-card-subtitle>
           </v-col>
-          <v-divider vertical />
+          <v-divider class="d-none" vertical />
           <v-col>
             <v-card-subtitle>
               <v-img v-if="tactic.map.icon" :src="tactic.map.icon" max-width="200px"/>
@@ -137,7 +137,23 @@ export default class CreateNewTacticOverlay extends mixins(TacticWatcher) {
         createdBy: this.$store.getters[`authentication/${AuthenticationGetters.JWT}`].jti,
         map: this.$data.tactic.map
       })
+      this.resetTacticForm()
       this.overlay = false
+    }
+  }
+
+  resetTacticForm () {
+    this.$data.tactic = {
+      map: {
+        name: '',
+        icon: '',
+        desc: '',
+        width: 0,
+        height: 0,
+        ratio: 0,
+        id: 0
+      },
+      name: ''
     }
   }
 }

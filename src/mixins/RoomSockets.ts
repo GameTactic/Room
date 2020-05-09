@@ -30,7 +30,9 @@ export default class RoomSocket extends Vue {
 
   @Watch('isAuth')
   onPropertyChanged (isAuth: boolean) {
-    this.initialiseSocketIO(isAuth)
+    if (isAuth) {
+      this.initialiseSocketIO(isAuth)
+    }
   }
 
   initialiseSocketIO (isAuth?: boolean) {

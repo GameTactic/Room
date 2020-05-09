@@ -17,7 +17,7 @@ import HandleUndoRedo from '@/util/HandleUndoRedo'
 export default class CanvasSocket extends Vue {
   @Prop() id!: string
   @Getter(`tools/${ToolGetters.TOOLS}`) tools!: Tool[]
-  @Socket('canvasRequestCanvasEntity')
+  @Socket('canvasRequestChangeCanvasEntity')
   onRequestCanvasEntity (request: RequestCanvasEntity[]) {
     request.forEach((data: RequestCanvasEntity) => {
       if (data.modifyType && data.jti && data.timestampModified && data.id && data.canvasElements && data.modifyData) {

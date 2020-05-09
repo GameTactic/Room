@@ -14,12 +14,12 @@ const SocketModule: Module<{}, {}> = {
     [SocketActions.REQUEST_CANVAS_ENTITY] (_context: SocketActionContext, request: RequestCanvasEntity) {
       // eslint-disable-next-line
       const vm: any = this
-      vm._vm.$socket.client.emit('canvasRequestCanvasEntity', request)
+      vm._vm.$socket.client.emit('canvasRequestChangeCanvasEntity', request)
     },
     [SocketActions.JOIN_ROOM] (_context: SocketActionContext, roomId: string) {
       // eslint-disable-next-line
       const vm: any = this
-      vm._vm.$socket.client.emit('roomJoin', roomId)
+      vm._vm.$socket.client.emit('roomJoin', { roomId: roomId })
     }
   }
 }

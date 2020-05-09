@@ -44,15 +44,16 @@
               class="body-1"
               color="primary"
               hide-no-data
+              append-icon="mdi-menu-down"
               dense
               eager
               clearable
-              clear-icon="fa-times"
+              clear-icon="mdi-close"
               cache-items
               hide-selected
               :label="$t('entity.create.wows.autocomplete.label')"
               :placeholder="$t('entity.create.wows.autocomplete.placeholder')"
-              prepend-icon="fa-search"
+              prepend-icon="mdi-magnify"
               autocomplete="new-password"
               return-object
               @change="autoCompleteOnChangeHandler"

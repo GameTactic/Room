@@ -6,7 +6,6 @@ import { CanvasAction } from '@/store/modules/canvas'
 import { CanvasElement, CanvasElementHistory } from '@/types/Canvas'
 import { Action } from 'vuex-class'
 import { StageActions } from '@/store/modules/stage'
-import CenterCanvas from '@/tools/util/CenterCanvas'
 import HandleRenderShapes from '@/util/HandleRenderShapes'
 
 @Component({
