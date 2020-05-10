@@ -93,6 +93,6 @@ export default class FreeDraw implements FreeDrawInterface {
       hasMoved: canvasElement.hasMoved,
       position: canvasElement.position
     }
-    socket.send(JSON.stringify(data))
+    // socket.send(JSON.stringify(data))
   }
 }

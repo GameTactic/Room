@@ -7,8 +7,8 @@
     @click="doOpen"
   >
     Login
-    <v-dialog v-model="dialogOpen" @click:outside="dialogOpen = false"
-              max-width="300px">
+    <v-dialog v-model="isDialogOpen" @click:outside="onClickCloseDialog"
+              max-width="500px">
       <LoginCard></LoginCard>
     </v-dialog>
   </v-btn>
@@ -29,7 +29,7 @@
       </v-tooltip>
     </template>
     <v-list>
-      <v-list-item @click="logout">
+      <v-list-item @click="onClickLogout">
         <v-list-item-title>Logout</v-list-item-title>
       </v-list-item>
       <v-list-item
@@ -44,12 +44,12 @@
   </v-menu>
   <v-list v-else dense style="width: 100%;">
     <v-subheader>User Profile</v-subheader>
-    <v-list-item v-if="isAuth" @click="logout">
+    <v-list-item v-if="isAuth" @click="onClickLogout">
       <v-list-item-title>Logout</v-list-item-title>
     </v-list-item>
     <v-list-item v-else @click="doOpen">
       <v-list-item-title>Login</v-list-item-title>
-      <v-dialog v-model="dialogOpen" @click:outside="dialogOpen = false" fullscreen>
+      <v-dialog v-model="isDialogOpen" @click:outside="onClickCloseDialog" fullscreen>
         <LoginCard></LoginCard>
       </v-dialog>
     </v-list-item>
@@ -86,16 +86,20 @@ const authNamespace = namespace(Namespaces.AUTH)
 export default class TheUserMenu extends Vue {
     @authNamespace.Getter(AuthenticationGetters.IS_AUTH) isAuth!: boolean
     @authNamespace.Action(AuthenticationActions.LOGIN_WG) authenticate!: (region: string) => void;
-    @authNamespace.Action(AuthenticationActions.LOGOUT) logout!: () => void
+    @authNamespace.Action(AuthenticationActions.LOGOUT) onClickLogout!: () => void
 
     @Prop() private mobile!: boolean
 
-    dialogOpen = false
+    isDialogOpen = false
 
     doOpen () {
       setTimeout(() => {
-        this.dialogOpen = true
+        this.isDialogOpen = true
       })
+    }
+
+    onClickCloseDialog () {
+      this.isDialogOpen = false
     }
 
     userMenuItems: UserMenuItem[] = []
