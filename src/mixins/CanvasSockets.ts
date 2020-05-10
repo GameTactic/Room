@@ -29,7 +29,7 @@ export default class CanvasSocket extends Vue {
   @Socket('canvasRequestChangeCanvasEntity')
   onRequestCanvasEntity (request: RequestCanvasEntity[]) {
     request.forEach((data: RequestCanvasEntity) => {
-      if (data.modifyType && data.jti && data.timestampModified && data.id && data.canvasElements && data.modifyData) {
+      if (data.modifyType && data.canvasElements && data.modifyData) {
         switch (data.modifyType) {
           case Tracker.ADDITION:
             const additionData = data.modifyData as AdditionData
@@ -52,26 +52,21 @@ export default class CanvasSocket extends Vue {
             }
             break
           case Tracker.MOVE:
-            this.addToState(data)
-            break
           case Tracker.UNDO:
-            this.addToState(data)
-            break
           case Tracker.REDO:
             this.addToState(data)
             break
         }
       }
     })
-    const renderShapes = new HandleRenderShapes(this.$store)
-    renderShapes.handle()
+    new HandleRenderShapes(this.$store).handle()
   }
 
   addToState (request: RequestCanvasEntity) {
     switch (request.modifyType) {
       case Tracker.ADDITION:
         const additionsData = request.modifyData as AdditionData
-        if (request.canvasElements.length === additionsData.additions.length && request.canvasElements.length > 0) {
+        if (request.canvasElements.length === additionsData.additions.length && request.canvasElements) {
           request.canvasElements.forEach((canvasElement: CanvasElement) => {
             this.addCanvasElement(canvasElement)
           })
@@ -81,7 +76,7 @@ export default class CanvasSocket extends Vue {
         break
       case Tracker.REMOVAL:
         const removalsData = request.modifyData as RemovalData
-        if (removalsData.removals && removalsData.removals.length > 0) {
+        if (removalsData.removals) {
           removalsData.removals.forEach((groupId: string) => {
             const foundElement: CanvasElement | void = this.canvasElementById(groupId)
             if (foundElement) {
@@ -94,7 +89,7 @@ export default class CanvasSocket extends Vue {
         break
       case Tracker.MOVE:
         const moveData = request.modifyData as MoveData
-        if (moveData.to && moveData.from && moveData.groups.length > 0) {
+        if (moveData.to && moveData.from && moveData.groups) {
           moveData.groups.forEach((groupId: string) => {
             const foundElement: CanvasElement | void = this.canvasElementById(groupId)
             if (foundElement) {
@@ -122,7 +117,6 @@ export default class CanvasSocket extends Vue {
                 handleUndoRedo.undoRemovals(undo, this.canvasElements)
                 break
               case Tracker.MOVE:
-                delete request.canvasElements
                 handleUndoRedo.undoMove(undo, this.canvasElements)
                 break
             }

@@ -48,8 +48,7 @@ export default class RedoContainer extends Vue {
   }
 
   get isDisabled (): boolean {
-    const undoRedo = new HandleUndoRedo()
-    return (undoRedo.findRedo([...this.canvasElementsHistory]) === undefined)
+    return new HandleUndoRedo().findRedo([...this.canvasElementsHistory]) === undefined
   }
 
   created () {

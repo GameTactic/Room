@@ -1,7 +1,7 @@
 <template>
   <v-color-picker
     :value="value"
-    :swatches="swatches"
+    :swatches="swatchProp || defaultSwatches"
     mode="hexa"
     show-swatches
     hide-canvas
@@ -18,11 +18,10 @@ import { Component, Vue } from 'vue-property-decorator'
 
 @Component({
   name: 'ColourPicker',
-  props: ['value']
+  props: ['value', 'swatchProp']
 })
-
 export default class ColourPicker extends Vue {
-  swatches = [
+  defaultSwatches = [
     ['#CE0000FF', '#40476DFF'],
     ['#D74E09FF', '#792387FF'],
     ['#F2BB05FF', '#3349F4FF'],

@@ -183,9 +183,7 @@
           </v-col>
         </v-row>
         <v-subheader>
-          <p class="caption">
-            <b>Note</b> Drag and drop cards onto the canvas to create them
-          </p>
+          <p class="caption" v-html="$t('entity.cards.note')"></p>
         </v-subheader>
       </v-container>
     </template>
