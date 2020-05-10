@@ -25,18 +25,16 @@ export default class RoomSocket extends Vue {
   }
 
   created () {
-    this.initialiseSocketIO(this.isAuth)
+    this.initialiseSocketIO()
   }
 
   @Watch('isAuth')
-  onPropertyChanged (isAuth: boolean) {
-    if (isAuth) {
-      this.initialiseSocketIO(isAuth)
-    }
+  onPropertyChanged () {
+    this.initialiseSocketIO()
   }
 
-  initialiseSocketIO (isAuth?: boolean) {
-    if (isAuth) { // start socket.io with registered user
+  initialiseSocketIO () {
+    if (this.isAuth) { // start socket.io with registered user
       this.$socket.client.io.opts.query = { Authorization: this.jwt.encoded } // First set the token.
       this.$socket.client.open() // Then open the socket and use it anywhere else.
     } else { // start socket.io with anonymous user

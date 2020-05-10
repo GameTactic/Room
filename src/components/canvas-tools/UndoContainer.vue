@@ -6,7 +6,7 @@
   >
     <template v-slot:activator="{ on }">
       <v-btn
-        :disabled="isDisabled"
+        :disabled="isDisabled || !isLoadCanvas"
         class="undoBtn"
         icon
         elevation=""
@@ -36,6 +36,7 @@ export default class UndoContainer extends Vue {
     @Prop() private id!: string
     @Prop() private icon!: string
     @Prop() private toolname!: string
+    @Prop() private isLoadCanvas!: boolean
     @Getter(`canvas/${CanvasGetters.CANVAS_ELEMENTS_HISTORY}`) canvasElementsHistory!: CanvasElementHistory[]
     @Getter(`canvas/${CanvasGetters.CANVAS_ELEMENTS}`) canvasElements!: CanvasElement[]
     @Action(`canvas/${CanvasAction.ADD_CANVAS_ELEMENT_HISTORY}`) addCanvasElementHistory!: (canvasElement: CanvasElement) => void

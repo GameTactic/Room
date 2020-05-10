@@ -103,6 +103,7 @@ export interface MenuItem {
 })
 export default class MapButtons extends Vue {
   @Prop() private id!: string;
+  @Prop() private isLoadCanvas!: string;
   @Getter(`room/${RoomGetters.GAME_NAME}`) private readonly gameName!: GameName;
 
   show = false

@@ -22,14 +22,11 @@ export enum CanvasAction {
   ADD_CANVAS_ELEMENT_HISTORY = 'addCanvasElementHistory'
 }
 
-export interface HideCanvasElementInterface {
-  fromSocket: boolean;
-  id: string;
-}
-
 export enum CanvasGetters {
   CANVAS_ELEMENTS = 'canvasElements',
-  CANVAS_ELEMENTS_HISTORY = 'canvasElementsHistory'
+  CANVAS_ELEMENTS_HISTORY = 'canvasElementsHistory',
+  CANVAS_ELEMENT_BY_ID = 'canvasElementById',
+  CANVAS_ELEMENT_HISTORY_BY_ID = 'canvasElementHistoryById'
 }
 
 interface CanvasState {
@@ -55,7 +52,9 @@ const CanvasModule: Module<CanvasState, RootState> = {
   },
   getters: {
     [CanvasGetters.CANVAS_ELEMENTS]: state => state.canvasElements,
-    [CanvasGetters.CANVAS_ELEMENTS_HISTORY]: state => state.canvasElementsHistory
+    [CanvasGetters.CANVAS_ELEMENTS_HISTORY]: state => state.canvasElementsHistory,
+    [CanvasGetters.CANVAS_ELEMENT_BY_ID]: state => (id: string) => state.canvasElements.find(canvasElement => canvasElement.id === id),
+    [CanvasGetters.CANVAS_ELEMENT_HISTORY_BY_ID]: state => (id: string) => state.canvasElementsHistory.find(canvasElementHistory => canvasElementHistory.id === id)
   },
   mutations: {
     [CanvasMutation.SET_CANVAS_ELEMENT] (state: CanvasState, payload: CanvasElement[]) {

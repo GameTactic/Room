@@ -66,7 +66,7 @@ export default class HandleRenderShapes {
   handleCanvasElementInvisible = (canvasElement: CanvasElement): void => {
     const foundGroup: Konva.Group = this.layer.findOne((group: Konva.Group) => group.attrs.id === canvasElement.id)
     if (foundGroup) {
-      foundGroup.destroy()
+      this.destroy(foundGroup)
     }
   }
 
@@ -80,8 +80,13 @@ export default class HandleRenderShapes {
   handleLayerNodes = (): void => {
     this.layer.getChildren().each((group) => {
       if (!this.canvasElements.find((canvasElement: CanvasElement) => canvasElement.id === group.attrs.id) && !group.attrs.temporary && group.attrs.type !== 'map') {
-        group.getChildren().each(child => child.destroy())
+        this.destroy(group as Konva.Group)
       }
     })
+  }
+
+  destroy = (group: Konva.Group): void => {
+    group.destroyChildren()
+    group.destroy()
   }
 }

@@ -19,6 +19,7 @@
               :class="[isEnabledClass, 'border-btn']"
               icon
               tile
+              :disabled="!isLoadCanvas"
               v-on="tooltip"
               elevation="0"
               @click="onButtonClickHandler"
@@ -32,6 +33,7 @@
           x-small
           :class="['tools-caret-down', isEnabledButtonClass]"
           icon
+          v-if="isLoadCanvas"
           elevation="0"
           tile
           absolute
@@ -56,6 +58,7 @@
       <v-btn
         :class="[isEnabledClass, 'border-btn']"
         icon
+        :disabled="!isLoadCanvas"
         tile
         elevation="0"
         v-on="tooltip1"
@@ -90,6 +93,7 @@ export default class ToolContainer extends Vue {
   @Prop() private icon!: string
   @Prop() private popout!: boolean
   @Prop() private toolname!: string
+  @Prop() private isLoadCanvas!: boolean
   @Tools.Action(ToolsAction.ENABLE_TOOL) enableTool!: (toolName: string) => void
   @Tools.Action(ToolsAction.DISABLE_TOOL) disableTool!: () => void
   @Tools.Getter(ToolGetters.ENABLED_TOOL) enabledTool?: Tool

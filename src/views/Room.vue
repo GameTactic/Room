@@ -6,11 +6,11 @@
     @mousemove="mouseMoveAction"
     @mouseup="mouseUpAction"
   >
-    <the-canvas v-if="loadCanvas" ref="stage" :id="id"/>
-    <the-nav-large class="the-nav-large" :id="id" :loadCanvas="loadCanvas"/>
-    <the-nav-small class="the-nav-small" :id="id" :loadCanvas="loadCanvas"/>
-    <the-tool-panel class="custom-hide-on-mobile" :id="id"/>
-    <the-entity-panel  class="custom-hide-on-mobile" :id="id"/>
+    <the-canvas v-show="isLoadCanvas" ref="stage" :id="id"/>
+    <the-nav-large class="the-nav-large" :id="id" :isLoadCanvas="isLoadCanvas"/>
+    <the-nav-small class="the-nav-small" :id="id" :isLoadCanvas="isLoadCanvas"/>
+    <the-tool-panel class="custom-hide-on-mobile" :id="id" :isLoadCanvas="isLoadCanvas"/>
+    <the-entity-panel  class="custom-hide-on-mobile" :id="id" :isLoadCanvas="isLoadCanvas"/>
     <the-create-new-tactic-overlay :id="id" />
   </div>
 </template>
@@ -58,6 +58,18 @@ export default class Room extends mixins(RoomSocket) {
   }
   loadCanvas = true
   dragEnabled = false
+
+  created () {
+    EventBus.$on('loadCanvas', () => {
+      if (this.isAuth) {
+        this.loadCanvas = true
+      }
+    })
+  }
+
+  get isLoadCanvas (): boolean {
+    return (this.loadCanvas && this.isAuth)
+  }
 
   mouseDownAction (e: MouseEvent) {
     this.dragEnabled = true

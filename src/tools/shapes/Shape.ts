@@ -3,10 +3,10 @@ import { CanvasElement } from '@/types/Canvas'
 import { CustomEvent, CustomStageEvent } from '@/util/PointerEventMapper'
 import { CanvasEntityActions, CanvasEntityGetters } from '@/store/modules/canvasEntity'
 import store from '@/main'
-import { LayerGetters } from '@/store/modules/layer'
+import { LayerActions, LayerGetters } from '@/store/modules/layer'
 
 export default class Shape {
-  private readonly decayTime = 1000
+  private readonly decayTime = 500
   public group: Konva.Group
   constructor () {
     this.group = new Konva.Group()
@@ -15,23 +15,20 @@ export default class Shape {
   getGroup = (): Konva.Group => this.group
 
   runTemporaryAnimation = (group: Konva.Group): void => {
-    const animate = new Konva.Animation((frame) => {
+    new Konva.Animation((frame) => {
       if (frame) {
-        group.opacity(1 - (frame.time / this.decayTime))
+        if ((frame.time / this.decayTime) > 1) {
+          self.stop()
+          group.destroyChildren()
+        }
+        const time = ((frame.time / this.decayTime) >= 1) ? 1 : (frame.time / this.decayTime)
+        group.opacity(1 - time)
       }
-    }, this.layer)
-    animate.start()
-    setTimeout(() => {
-      group.destroy()
-      animate.stop()
-      this.layer.batchDraw()
-    }, this.decayTime)
+    }, this.layer).start()
   }
 
   destroy = (): void => {
-    const group: Konva.Collection<Konva.Node> = this.layer.getChildren(node => node.attrs.id === this.group.attrs.id)
-    group.each(child => child.destroy())
-    this.layer.batchDraw()
+    store.dispatch(`layer/${LayerActions.LAYER_DESTROY_GROUP}`, this.group)
   }
 
   formatX = (num: number, event: CustomEvent | CustomStageEvent): number => {

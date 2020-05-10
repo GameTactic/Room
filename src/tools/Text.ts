@@ -77,6 +77,7 @@ export default class Text extends ToolClass implements TextInterface {
         }
       }
       const focusOutEvent = () => {
+        this.disableTool()
         this.canvasElement.tool.textString = textArea.value
         textArea.remove()
         this.textCreator.create(event)

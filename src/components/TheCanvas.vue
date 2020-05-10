@@ -22,7 +22,7 @@ import { Tool } from '@/tools/Tool'
 import { CanvasElement, VueKonvaLayer, VueKonvaStage } from '@/types/Canvas'
 import { Action, Getter } from 'vuex-class'
 import { ToolGetters } from '@/store/modules/tools'
-import { CanvasAction, CanvasGetters, HideCanvasElementInterface } from '@/store/modules/canvas'
+import { CanvasAction, CanvasGetters } from '@/store/modules/canvas'
 import Konva from 'konva'
 import { EventBus } from '@/event-bus'
 import PointerEventMapper, { CustomStageConfig } from '@/util/PointerEventMapper'
@@ -43,7 +43,6 @@ export default class TheCanvas extends mixins(CanvasSockets, StageWatcher) {
   @Getter(`tools/${ToolGetters.ENABLED_TOOL}`) enabledTool!: Tool
   @Getter(`tools/${ToolGetters.TOOLS}`) tools!: Tool[]
   @Action(`canvas/${CanvasAction.ADD_CANVAS_ELEMENT}`) addCanvasElement!: (canvasElement: CanvasElement) => void
-  @Action(`canvas/${CanvasAction.HIDE_CANVAS_ELEMENT}`) hideCanvasElement!: (payload: HideCanvasElementInterface) => void
   @Getter(`canvas/${CanvasGetters.CANVAS_ELEMENTS}`) canvasElements!: CanvasElement[]
   @Getter(`stage/${StageGetters.STAGE_ZOOM}`) stageZoom!: number
   @Getter(`stage/${StageGetters.STAGE_CONFIG}`) stageConfig!: CustomStageConfig

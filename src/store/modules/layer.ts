@@ -10,16 +10,16 @@ export enum LayerActions {
   LAYER_ADD = 'layerAdd',
   LAYER_SET = 'layerSet',
   LAYER_DESTROY_GROUP = 'layerDestroyGroup',
-  LAYER_DESTROY_CHILDREN = 'layerDestroyChildren',
-  LAYER_DESTROY = 'layerDestroy'
+  LAYER_DESTROY = 'layerDestroy',
+  LAYER_CLEAR = 'layerClear'
 }
 
 export enum LayerMutations {
   LAYER_SET = 'LAYER_SET',
   LAYER_ADD = 'LAYER_ADD',
   LAYER_DESTROY = 'LAYER_DESTROY',
-  LAYER_DESTROY_CHILDREN = 'layerDestroyChildren',
-  LAYER_DESTROY_GROUP = 'layerDestroyGroup'
+  LAYER_DESTROY_GROUP = 'LAYER_DESTROY_GROUP',
+  LAYER_CLEAR = 'LAYER_CLEAR'
 }
 
 export interface LayerState {
@@ -45,7 +45,7 @@ const LayerModule: Module<LayerState, {}> = {
     [LayerMutations.LAYER_DESTROY_GROUP] (state: LayerState, groupId: number) {
       state.layer.findOne((child: Konva.Group) => {
         if (child.attrs.id === groupId) {
-          child.destroy()
+          child.destroyChildren()
         }
       })
     },
@@ -58,7 +58,7 @@ const LayerModule: Module<LayerState, {}> = {
     [LayerMutations.LAYER_DESTROY] (state: LayerState) {
       state.layer.destroy()
     },
-    [LayerMutations.LAYER_DESTROY_CHILDREN] (state: LayerState) {
+    [LayerMutations.LAYER_CLEAR] (state: LayerState) {
       state.layer.destroyChildren()
     }
   },
@@ -72,11 +72,11 @@ const LayerModule: Module<LayerState, {}> = {
     [LayerActions.LAYER_DESTROY] (context: LayerActionContext) {
       context.commit(LayerMutations.LAYER_DESTROY)
     },
-    [LayerActions.LAYER_DESTROY_CHILDREN] (context: LayerActionContext) {
-      context.commit(LayerMutations.LAYER_DESTROY_CHILDREN)
-    },
     [LayerActions.LAYER_DESTROY_GROUP] (context: LayerActionContext, groupId) {
       context.commit(LayerMutations.LAYER_DESTROY_GROUP, groupId)
+    },
+    [LayerActions.LAYER_CLEAR] (context: LayerActionContext) {
+      context.commit(LayerMutations.LAYER_CLEAR)
     }
   }
 }
