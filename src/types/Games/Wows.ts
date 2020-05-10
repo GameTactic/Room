@@ -1,5 +1,3 @@
-import { GameName } from '@/store/modules/room';
-
 export interface WowsShipsApiResponse {
   data: {
     status: string;
@@ -25,7 +23,6 @@ export interface WowsShipInfoApiResponse {
     data: GameInfo;
   };
 }
-
 
 export interface ShipData {
   engine: {

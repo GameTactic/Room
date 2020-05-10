@@ -1,20 +1,15 @@
-import { CanvasToolInterface } from '@/tools/Tool'
-import { VueKonvaStage } from '@/types/Canvas'
-import { CustomEvent } from '@/util/PointerEventMapper'
+import { CanvasToolInterface, ToolClass } from '@/tools/Tool'
+import { CustomEvent, Point } from '@/util/PointerEventMapper'
+import Konva from 'konva'
 
-export default class MoveCanvas implements CanvasToolInterface {
-  // eslint-disable-next-line no-useless-constructor
+export default class MoveCanvas extends ToolClass implements CanvasToolInterface {
   public startPos: {
-    pointer: {
-      x: number;
-      y: number;
-    };
-    element: {
-      x: number;
-      y: number;
-    };
+    pointer: Point;
+    element: Point;
   }
-  constructor (public name: string) {
+  constructor (public name: string,
+               public temporary: boolean) {
+    super()
     this.startPos = {
       pointer: {
         x: 0,
@@ -26,32 +21,36 @@ export default class MoveCanvas implements CanvasToolInterface {
       }
     }
   }
-  // eslint-disable-next-line
-  canvasDownAction = (event: CustomEvent, stage: VueKonvaStage): void => {
+
+  canvasDownAction = (event: CustomEvent): void => {
+    this.enableTool()
     this.startPos = {
       pointer: {
         x: event.konvaPointerEvent.evt.x,
         y: event.konvaPointerEvent.evt.y
       },
       element: {
-        x: stage.$el.getBoundingClientRect().x,
-        y: stage.$el.getBoundingClientRect().y
+        x: this.stageEvent.stage.content.getBoundingClientRect().left,
+        y: this.stageEvent.stage.content.getBoundingClientRect().top
       }
     }
   }
 
   // eslint-disable-next-line
-  canvasMoveAction = (event: CustomEvent, stage: VueKonvaStage): void => {
-    const newPosition = {
-      x: event.konvaPointerEvent.evt.x - this.startPos.pointer.x,
-      y: event.konvaPointerEvent.evt.y - this.startPos.pointer.y
+  canvasMoveAction = (event: CustomEvent, stage: Konva.Stage): void => {
+    if (this.enabled) {
+      const newPosition = {
+        x: event.konvaPointerEvent.evt.x - this.startPos.pointer.x + this.startPos.element.x,
+        y: event.konvaPointerEvent.evt.y - this.startPos.pointer.y + this.startPos.element.y
+      }
+      this.stageEvent.stage.attrs.container.setAttribute('style',
+        `left: ${newPosition.x}px; top: ${newPosition.y}px;`
+      )
     }
-    stage.$el.setAttribute('style',
-      'left: ' + (newPosition.x + this.startPos.element.x) + 'px; top: ' + (newPosition.y + this.startPos.element.y) + 'px;'
-    )
   }
 
   // eslint-disable-next-line
-  canvasUpAction = (event: CustomEvent, stage: VueKonvaStage): void => {
+  canvasUpAction = (event: CustomEvent, stage: Konva.Stage): void => {
+    if (this.enabled) { this.disableTool() }
   }
 }

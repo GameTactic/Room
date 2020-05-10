@@ -1,17 +1,18 @@
-import { PingInterface, Tracker } from '@/tools/Tool'
-import Konva from 'konva'
-import { CanvasElement } from '@/types/Canvas'
+import { PingData, PingInterface, ToolClass, Tracker } from '@/tools/Tool'
+import { AdditionTools, CanvasElement, CanvasElementType, RequestCanvasEntity } from '@/types/Canvas'
 import throttle from 'lodash.throttle'
-import uuid from 'uuid'
 import PingCreator from '@/tools/shapes/PingCreator'
-import { CustomEvent, CustomStageEvent } from '@/util/PointerEventMapper'
+import { CustomEvent } from '@/util/PointerEventMapper'
+import { ISO } from '@/util/ISO'
+import uuid from 'uuid'
 
-export default class Ping implements PingInterface {
+export default class Ping extends ToolClass implements PingInterface {
   private pingCreator: PingCreator
   constructor (public readonly name: string,
                public readonly size: number,
                public readonly colour: string,
                public readonly temporary: boolean) {
+    super()
     this.pingCreator = new PingCreator(
       this.temporary,
       this.size,
@@ -19,60 +20,66 @@ export default class Ping implements PingInterface {
     )
   }
 
-  mouseDownAction = (event: CustomEvent, canvasElement: CanvasElement, layer: Konva.Layer, socket: WebSocket): void => {
-    this.triggerPing(event, canvasElement, layer, socket)
-  }
-
-  mouseMoveAction = throttle((event: CustomEvent, canvasElement: CanvasElement, layer: Konva.Layer, socket: WebSocket): void => {
-    this.triggerPing(event, canvasElement, layer, socket)
-  }, 75)
-
-  mouseUpAction = (): void => {
-    // mouse up action
-  }
-
-  triggerPing = (event: CustomEvent, canvasElement: CanvasElement, layer: Konva.Layer, socket: WebSocket): void => {
-    canvasElement.data = [event.globalOffset.x, event.globalOffset.y]
-    canvasElement.id = uuid()
-    canvasElement.hasMoved = true
-    canvasElement.tracker = Tracker.ADDITION
-    canvasElement.tool = {
+  mouseDownAction = (event: CustomEvent): void => {
+    this.enableTool()
+    this.resetCanvasEntity()
+    this.canvasElement.type = CanvasElementType.SHAPE
+    this.canvasElement.isVisible = true
+    this.canvasElement.data = {
+      point: { x: event.globalOffset.x, y: event.globalOffset.y }
+    }
+    this.canvasElement.tool = {
       name: this.name,
       colour: this.colour,
       size: this.size,
       temporary: this.temporary
     }
-    this.pingCreator.create(canvasElement, layer, event)
-    canvasElement.position = this.pingCreator.getGroup().position()
-    this.sendToWebSocket(canvasElement, socket)
+    this.triggerPing(event)
+    this.canvasElement.position = this.pingCreator.getGroup().getPosition()
   }
 
-  renderCanvas = (canvasElement: CanvasElement, layer: Konva.Layer, event: CustomEvent | CustomStageEvent): void => {
-    this.pingCreator = new PingCreator(
-      canvasElement.tool.temporary || this.temporary,
-      canvasElement.tool.size || this.size,
-      canvasElement.tool.colour || this.colour
-    )
-    this.pingCreator.create(canvasElement, layer, event)
-  }
-
-  sendToWebSocket = (canvasElement: CanvasElement, socket: WebSocket) => {
-    const data: CanvasElement = {
-      jti: 'SAM',
-      id: canvasElement.id,
-      layerId: canvasElement.layerId,
-      tool: {
-        name: this.name,
-        colour: this.colour,
-        size: this.size,
-        temporary: this.temporary
-      },
-      data: canvasElement.data,
-      tracker: Tracker.ADDITION,
-      change: false,
-      hasMoved: true,
-      position: canvasElement.position
+  mouseMoveAction = throttle((event: CustomEvent): void => {
+    if (this.enabled) {
+      this.canvasElement.data = {
+        point: { x: event.globalOffset.x, y: event.globalOffset.y }
+      }
+      this.triggerPing(event)
     }
-    // socket.send(JSON.stringify(data))
+  }, 75)
+
+  mouseUpAction = (event: CustomEvent): void => {
+    if (this.enabled) {
+      this.disableTool()
+      this.triggerPing(event)
+    }
+  }
+
+  triggerPing = (event: CustomEvent): void => {
+    this.pingCreator.create(event)
+    this.send({
+      id: uuid(),
+      jti: this.canvasElement.jti,
+      modifyType: Tracker.ADDITION,
+      modifyData: {
+        additions: [this.canvasElement.id],
+        tool: AdditionTools.PING
+      },
+      canvasElements: [this.canvasElement],
+      timestampModified: ISO.timestamp()
+    })
+  }
+
+  renderCanvas = (request: RequestCanvasEntity): void => {
+    request.canvasElements.forEach((canvasElement: CanvasElement) => {
+      const data = canvasElement.data as PingData
+      if (data.point) {
+        this.pingCreator = new PingCreator(
+          canvasElement.tool.temporary || this.temporary,
+          canvasElement.tool.size || this.size,
+          canvasElement.tool.colour || this.colour
+        )
+        this.pingCreator.create(this.stageEvent, canvasElement)
+      }
+    })
   }
 }

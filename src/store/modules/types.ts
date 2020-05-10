@@ -1,7 +1,9 @@
-import { GameName } from './room';
+import { GameName } from '@/store/modules/room'
+import {CanvasElement, CanvasElementHistory} from '@/types/Canvas'
 
 export interface Api {
   name: string;
+  // eslint-disable-next-line
   data: any;
 }
 
@@ -11,6 +13,7 @@ export interface Entity {
   shortText: string;
   value: string;
   image: string | undefined;
+  // eslint-disable-next-line
   data: any;
 }
 
@@ -26,20 +29,23 @@ export interface User {
 }
 
 export interface Map {
+  desc: string;
   name: string;
-  image: string;
-  description: string;
+  icon: string;
   ratio: number;
+  height: number;
+  width: number;
 }
 
 export interface Tactic {
   id: string;
-  collectionId: boolean;
-  isLocked: boolean;
+  name: string;
+  collectionId: string;
   lockedBy: string | undefined;
   map: Map;
-  entities: Entity[];
   createdBy: string;
+  canvasElements: CanvasElement[];
+  canvasElementsHistory: CanvasElementHistory[];
 }
 
 export interface Collection {
@@ -50,7 +56,7 @@ export interface Collection {
   createdBy: string;
 }
 
-export interface PresentationPayload { 
-  isPresentationEnabled: boolean; 
-  presentationEnabledBy: string; 
+export interface PresentationPayload {
+  isPresentationEnabled: boolean;
+  presentationEnabledBy: string;
 }

@@ -34,7 +34,7 @@
       </v-col>
       <v-col cols="12">
         <v-toolbar dense flat class="navbar-toolbar-center justify-center custom-background-transparent">
-          <the-canvas-tools class="custom-clickable" :mobile="true"/>
+          <the-canvas-tools v-if="this.isLoadCanvas" class="custom-clickable" :mobile="true"/>
         </v-toolbar>
       </v-col>
     </v-row>
@@ -82,7 +82,7 @@ import TheCanvasTools from './TheCanvasTools.vue'
 })
 export default class TheNavSmall extends Vue {
   @Prop() private id!: string;
-
+  @Prop() private isLoadCanvas!: boolean;
   drawer = false
 }
 </script>

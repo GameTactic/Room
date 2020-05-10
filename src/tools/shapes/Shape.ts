@@ -1,9 +1,12 @@
 import Konva from 'konva'
 import { CanvasElement } from '@/types/Canvas'
 import { CustomEvent, CustomStageEvent } from '@/util/PointerEventMapper'
+import { CanvasEntityActions, CanvasEntityGetters } from '@/store/modules/canvasEntity'
+import store from '@/main'
+import { LayerActions, LayerGetters } from '@/store/modules/layer'
 
 export default class Shape {
-  private readonly decayTime = 1000
+  private readonly decayTime = 500
   public group: Konva.Group
   constructor () {
     this.group = new Konva.Group()
@@ -11,24 +14,21 @@ export default class Shape {
 
   getGroup = (): Konva.Group => this.group
 
-  runTemporaryAnimation = (group: Konva.Group, layer: Konva.Layer): void => {
-    const animate = new Konva.Animation((frame) => {
+  runTemporaryAnimation = (group: Konva.Group): void => {
+    new Konva.Animation((frame) => {
       if (frame) {
-        group.opacity(1 - (frame.time / this.decayTime))
+        if ((frame.time / this.decayTime) > 1) {
+          self.stop()
+          group.destroyChildren()
+        }
+        const time = ((frame.time / this.decayTime) >= 1) ? 1 : (frame.time / this.decayTime)
+        group.opacity(1 - time)
       }
-    }, layer)
-    animate.start()
-    setTimeout(() => {
-      group.destroy()
-      animate.stop()
-      layer.batchDraw()
-    }, this.decayTime)
+    }, this.layer).start()
   }
 
-  destroy = (canvasElement: CanvasElement, layer: Konva.Layer): void => {
-    const group: Konva.Collection<Konva.Node> = layer.getChildren(node => node.attrs.id === this.group.attrs.id)
-    group.each(child => child.destroy())
-    layer.batchDraw()
+  destroy = (): void => {
+    store.dispatch(`layer/${LayerActions.LAYER_DESTROY_GROUP}`, this.group)
   }
 
   formatX = (num: number, event: CustomEvent | CustomStageEvent): number => {
@@ -37,6 +37,18 @@ export default class Shape {
 
   formatY = (num: number, event: CustomEvent | CustomStageEvent): number => {
     return ((num / event.stageConfig.height) * event.stage.height())
+  }
+
+  get canvasElement (): CanvasElement {
+    return store.getters[`canvasEntity/${CanvasEntityGetters.CANVAS_ELEMENT}`]
+  }
+
+  set canvasElement (canvasElement: CanvasElement) {
+    store.dispatch(`canvasEntity(${CanvasEntityActions.SET_CANVAS_ELEMENT}`, canvasElement)
+  }
+
+  get layer (): Konva.Layer {
+    return store.getters[`layer/${LayerGetters.LAYER}`]
   }
 }
 

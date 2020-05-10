@@ -27,7 +27,7 @@ import SizePicker from '@/components/canvas-tools/templates/template-tools/SizeP
 const Tools = namespace(Namespaces.TOOLS)
 
 @Component({
-  name: 'Freedraw',
+  name: 'FreeDraw',
   computed: {},
   components: { SizePicker, ColourPicker }
 })
@@ -37,7 +37,7 @@ export default class PopoutButton extends Vue {
   @Tools.Action(ToolsAction.SET_SIZE) setSize!: (size: number) => void
 
   get penSize () {
-    return this.findTool('freedraw').size || 5
+    return this.findTool('freeDraw').size || 5
   }
 
   set penSize (newValue: number) {
@@ -45,7 +45,7 @@ export default class PopoutButton extends Vue {
   }
 
   get penColour (): string {
-    return this.findTool('freedraw').colour || '#CE0000FF'
+    return this.findTool('freeDraw').colour || '#CE0000FF'
   }
 
   set penColour (newValue: string) {

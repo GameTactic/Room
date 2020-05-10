@@ -6,7 +6,7 @@
   >
     <template v-slot:activator="{ on }">
       <v-btn
-        :disabled="isDisabled"
+        :disabled="isDisabled || !isLoadCanvas"
         class="redoBtn"
         icon
         v-on="on"
@@ -22,11 +22,11 @@
 
 <script lang="ts">
 import { Component, Prop, Vue } from 'vue-property-decorator'
-import { Getter } from 'vuex-class'
-import { CanvasGetters } from '@/store/modules/canvas'
-import { CanvasElement } from '@/types/Canvas'
-import { EventBus } from '@/event-bus'
+import { Action, Getter } from 'vuex-class'
+import { CanvasAction, CanvasGetters } from '@/store/modules/canvas'
+import { CanvasElement, CanvasElementHistory } from '@/types/Canvas'
 import HandleUndoRedo from '@/util/HandleUndoRedo'
+import HandleRenderShapes from '@/util/HandleRenderShapes'
 
 @Component({
   name: 'RedoContainer.vue'
@@ -35,16 +35,28 @@ export default class RedoContainer extends Vue {
   @Prop() private id!: string
   @Prop() private icon!: string
   @Prop() private toolname!: string
-  @Getter(`canvas/${CanvasGetters.CANVAS_ELEMENTS_HISTORY}`) canvasElementsHistory!: CanvasElement[]
+  @Prop() private isLoadCanvas!: boolean
+  @Getter(`canvas/${CanvasGetters.CANVAS_ELEMENTS_HISTORY}`) canvasElementsHistory!: CanvasElementHistory[]
   @Getter(`canvas/${CanvasGetters.CANVAS_ELEMENTS}`) canvasElements!: CanvasElement[]
+  @Action(`canvas/${CanvasAction.ADD_CANVAS_ELEMENT_HISTORY}`) addCanvasElementHistory!: (canvasElement: CanvasElement) => void
 
   onButtonClickHandler () {
-    EventBus.$emit('undoRedo', (this.toolname.charAt(0).toUpperCase() + this.toolname.slice(1)))
+    const handleUndoRedo = new HandleUndoRedo()
+    handleUndoRedo.handleUndoRedo('Redo')
+    const renderShapes = new HandleRenderShapes(this.$store)
+    renderShapes.handle()
   }
 
   get isDisabled (): boolean {
-    const undoRedo = new HandleUndoRedo(this.canvasElementsHistory, this.canvasElements)
-    return (undoRedo.findRedo([...this.canvasElementsHistory]) === undefined)
+    return new HandleUndoRedo().findRedo([...this.canvasElementsHistory]) === undefined
+  }
+
+  created () {
+    window.addEventListener('keydown', (e) => {
+      if (e.ctrlKey && e.key === 'y') {
+        this.onButtonClickHandler()
+      }
+    })
   }
 }
 

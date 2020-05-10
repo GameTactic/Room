@@ -44,15 +44,16 @@
               class="body-1"
               color="primary"
               hide-no-data
+              append-icon="mdi-menu-down"
               dense
               eager
               clearable
-              clear-icon="fa-times"
+              clear-icon="mdi-close"
               cache-items
               hide-selected
               :label="$t('entity.create.wows.autocomplete.label')"
               :placeholder="$t('entity.create.wows.autocomplete.placeholder')"
-              prepend-icon="fa-search"
+              prepend-icon="mdi-magnify"
               autocomplete="new-password"
               return-object
               @change="autoCompleteOnChangeHandler"
@@ -181,6 +182,9 @@
             />
           </v-col>
         </v-row>
+        <v-subheader>
+          <p class="caption" v-html="$t('entity.cards.note')"></p>
+        </v-subheader>
       </v-container>
     </template>
     <v-sheet
@@ -217,11 +221,15 @@ import Component from 'vue-class-component'
 import { Item, Field } from '@/types/Games/Index'
 import { MenuItem } from '@/components/TheEntityPanel.vue'
 import Games from '@/mixins/Games'
-import { GameName } from '../../../store/modules/room'
+import { GameName } from '@/store/modules/room'
+import EntityCard from '../EntityCard.vue'
 
 @Component({
   name: 'TheCreateEntity',
-  mixins: [Games]
+  mixins: [Games],
+  components: {
+    EntityCard
+  }
 })
 export default class TheCreateEntity extends Games {
   @Prop() private clickedItemKey!: number;
@@ -336,8 +344,8 @@ export default class TheCreateEntity extends Games {
 }
 
 .custom-menu-content-class {
-  border-radius: 0px;
-  box-shadow: 0px 0px 0px 0px rgba(0, 0, 0, 0.2), 0px 2px 2px 0px rgba(0, 0, 0, 0.14), 0px 1px 5px 0px rgba(0, 0, 0, 0.12)
+  border-radius: 0;
+  box-shadow: 0 0 0 0 rgba(0, 0, 0, 0.2), 0 2px 2px 0 rgba(0, 0, 0, 0.14), 0 1px 5px 0 rgba(0, 0, 0, 0.12)
 }
 
 .custom-text-field.custom-text-field {

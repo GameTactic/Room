@@ -5,7 +5,7 @@
       <v-spacer />
     </v-toolbar>
     <v-toolbar dense flat class="navbar-toolbar-center justify-center custom-not-clickable-large custom-background-transparent">
-      <the-canvas-tools class="custom-clickable"/>
+      <the-canvas-tools v-if="this.isLoadCanvas" class="custom-clickable"/>
     </v-toolbar>
     <v-toolbar dense flat class="navbar-toolbar-right custom-clickable">
       <v-spacer />
@@ -47,6 +47,7 @@ import TheCanvasTools from './TheCanvasTools.vue'
 })
 export default class TheNavLarge extends Vue {
   @Prop() private id!: string;
+  @Prop() private isLoadCanvas!: boolean;
 }
 </script>
 <style lang="scss">

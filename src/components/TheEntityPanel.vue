@@ -103,9 +103,10 @@ export interface MenuItem {
 })
 export default class MapButtons extends Vue {
   @Prop() private id!: string;
+  @Prop() private isLoadCanvas!: string;
   @Getter(`room/${RoomGetters.GAME_NAME}`) private readonly gameName!: GameName;
 
-  show = true
+  show = false
 
   teams: MenuItem[] = [
     { key: 1, title: 'team.one', icon: 'fa-users', color: 'green', noOfEntities: 0 },
@@ -171,6 +172,8 @@ export default class MapButtons extends Vue {
 .custom-entity-panel {
   overflow-y: auto;
   overflow-x: hidden;
+  border-bottom-left-radius: 5px;
+  border-top-left-radius: 5px;
   height: 100%;
 }
 

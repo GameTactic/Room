@@ -1,4 +1,5 @@
 import Vue from 'vue'
+import '@mdi/font/css/materialdesignicons.css'
 import '@fortawesome/fontawesome-free/css/all.css'
 import colours from '@/assets/scss/_variables.scss'
 import { DashedLine, NormalLine, TBarHead, DashedLineActive, NormalLineActive, TBarHeadActive } from '@/assets/tool-icons'
@@ -33,18 +34,20 @@ import Vuetify, {
   VListItemIcon,
   VSubheader,
   VContent,
+  VOverlay,
   VCard,
   VCardActions,
   VSheet,
   VColorPicker,
   VSlider,
+  VDialog,
   VSelect,
   VNavigationDrawer,
   VTextField,
   VChipGroup,
   VChip,
   VSkeletonLoader,
-  VDialog,
+  VInput,
   VCardText,
   VCardTitle
 } from 'vuetify/lib'
@@ -59,6 +62,7 @@ Vue.use(Vuetify, {
     VAutocomplete,
     VBadge,
     VRow,
+    VOverlay,
     VImg,
     VTooltip,
     VDivider,
@@ -68,6 +72,7 @@ Vue.use(Vuetify, {
     VSpacer,
     VBtn,
     VIcon,
+    VDialog,
     VCol,
     VBtnToggle,
     VMenu,
@@ -91,9 +96,9 @@ Vue.use(Vuetify, {
     VChipGroup,
     VChip,
     VSkeletonLoader,
-    VCardText,
+    VInput,
     VCardTitle,
-    VDialog
+    VCardText
   },
   directives: { }
 })
@@ -121,7 +126,7 @@ const opts: Record<string, any> = {
         component: TBarHeadActive
       }
     },
-    iconfont: 'fa' // 'mdi' || 'mdiSvg' || 'md' || 'fa' || 'fa4',
+    iconfont: 'fa' || 'mdi' // || 'mdiSvg' || 'md' || 'fa' || 'fa4',
   },
   theme: {
     options: {
