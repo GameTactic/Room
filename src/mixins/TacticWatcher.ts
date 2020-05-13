@@ -8,6 +8,7 @@ import { Action } from 'vuex-class'
 import { StageActions } from '@/store/modules/stage'
 import { LayerActions } from '@/store/modules/layer'
 import { SocketActions, SocketCanvasTacticEmit } from '@/store/modules/socket'
+import { EventBus } from '@/event-bus';
 
 @Component({
   name: 'StageWatch'
@@ -19,6 +20,13 @@ export default class TacticWatcher extends Vue {
   @Action(`layer/${LayerActions.LAYER_CLEAR}`) layerClear!: () => void
   @Action(`socket/${SocketActions.EMIT}`) emit!: (payload: { data: object; emit: string }) => void
 
+  created () {
+    EventBus.$on('newTactic', (tactic: Tactic) => {
+      this.newTactic(tactic)
+    })
+  }
+
+  // This is for presentation mode
   @Socket(SocketCanvasTacticEmit.CANVAS_TACTIC_SWITCH_TACTIC)
   onChangeTactic (tactic: Tactic[]) {
     if (this.validateTactic(tactic[0])) {
@@ -33,10 +41,17 @@ export default class TacticWatcher extends Vue {
     this.layerClear()
   }
 
-  newTactic (tactic: Tactic) {
+  // Use for presentation mode
+  setTacticForAll (tactic: Tactic) {
     if (this.validateTactic(tactic)) {
       this.changeTactic(tactic)
       this.sendToSockets(tactic)
+    }
+  }
+
+  newTactic (tactic: Tactic) {
+    if (this.validateTactic(tactic)) {
+      this.changeTactic(tactic)
     }
   }
 
