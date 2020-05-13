@@ -13,6 +13,7 @@ export interface Entity {
   shortText: string;
   value: string;
   image: string | undefined;
+  type: string;
   // eslint-disable-next-line
   data: any;
 }

@@ -7,6 +7,7 @@ import { CanvasElement, CanvasElementHistory } from '@/types/Canvas'
 import { Action } from 'vuex-class'
 import { StageActions } from '@/store/modules/stage'
 import { LayerActions } from '@/store/modules/layer'
+import { SocketActions, SocketCanvasTacticEmit } from '@/store/modules/socket'
 
 @Component({
   name: 'StageWatch'
@@ -16,8 +17,9 @@ export default class TacticWatcher extends Vue {
   @Action(`canvas/${CanvasAction.SET_CANVAS_ELEMENT_HISTORY}`) setCanvasElementsHistory!: (canvasElements: CanvasElementHistory[]) => void
   @Action(`stage/${StageActions.SET_STAGE_TACTIC}`) setStageTactic!: (tactic: Tactic) => void
   @Action(`layer/${LayerActions.LAYER_CLEAR}`) layerClear!: () => void
+  @Action(`socket/${SocketActions.EMIT}`) emit!: (payload: { data: object; emit: string }) => void
 
-  @Socket('canvasChangeTactic')
+  @Socket(SocketCanvasTacticEmit.CANVAS_TACTIC_SWITCH_TACTIC)
   onChangeTactic (tactic: Tactic[]) {
     if (this.validateTactic(tactic[0])) {
       this.changeTactic(tactic[0])
@@ -39,7 +41,7 @@ export default class TacticWatcher extends Vue {
   }
 
   sendToSockets (tactic: Tactic) {
-    this.$socket.client.emit('canvasChangeTactic', tactic)
+    this.emit({ data: tactic, emit: SocketCanvasTacticEmit.CANVAS_TACTIC_SWITCH_TACTIC })
   }
 
   validateTactic (tactic: Tactic) {

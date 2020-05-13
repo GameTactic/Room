@@ -4,6 +4,7 @@ import { CustomEvent } from '@/util/PointerEventMapper'
 import { ISO } from '@/util/ISO'
 import { RemovalData, RequestCanvasEntity } from '@/types/Canvas'
 import uuid from 'uuid'
+import { SocketCanvasToolsEmit } from '@/store/modules/socket'
 
 export default class Erase extends ToolClass {
   constructor (public readonly name: string,
@@ -42,7 +43,7 @@ export default class Erase extends ToolClass {
         modifyData: data,
         canvasElements: [],
         timestampModified: ISO.timestamp()
-      })
+      }, SocketCanvasToolsEmit.CANVAS_TOOLS_ERASE)
     }
   }
 

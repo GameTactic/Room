@@ -4,22 +4,22 @@ import { Socket } from 'vue-socket.io-extended'
 import { Action, Getter } from 'vuex-class'
 import { Prop, Watch } from 'vue-property-decorator'
 import { AuthenticationGetters, ExtendedJWT } from '@/store/modules/authentication'
-import { SocketActions } from '@/store/modules/socket'
+import { SocketActions, SocketRoomEmit, SocketRoomListen } from '@/store/modules/socket'
 
 @Component({
   name: 'RoomSocket'
 })
 export default class RoomSocket extends Vue {
   @Prop() id!: string
-  @Action(`socket/${SocketActions.JOIN_ROOM}`) joinRoom!: (id: string) => void
+  @Action(`socket/${SocketActions.EMIT}`) emit!: (payload: { data: object; emit: string }) => void
   @Getter(`authentication/${AuthenticationGetters.IS_AUTH}`) isAuth!: boolean
   @Getter(`authentication/${AuthenticationGetters.JWT}`) jwt!: ExtendedJWT
   @Socket()
   connect () {
-    this.joinRoom(this.id)
+    this.emit({ data: { roomId: this.id }, emit: SocketRoomEmit.ROOM_JOIN })
   }
 
-  @Socket('roomUserJoined')
+  @Socket(SocketRoomListen.ROOM_USER_JOINED)
   onUserJoined (jti: string) {
     // Someone joined the room
   }

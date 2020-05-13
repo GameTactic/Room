@@ -4,6 +4,7 @@ import { AdditionTools, CanvasElement, CanvasElementType, RequestCanvasEntity } 
 import { CustomEvent } from '@/util/PointerEventMapper'
 import { ISO } from '@/util/ISO'
 import uuid from 'uuid'
+import { SocketCanvasToolsEmit } from '@/store/modules/socket'
 
 export default class Line extends ToolClass implements LineInterface {
   private lineCreator: LineCreator
@@ -85,7 +86,7 @@ export default class Line extends ToolClass implements LineInterface {
           },
           canvasElements: [this.canvasElement],
           timestampModified: ISO.timestamp()
-        })
+        }, SocketCanvasToolsEmit.CANVAS_TOOLS_LINE)
       }
     }
   }

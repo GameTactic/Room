@@ -4,6 +4,7 @@ import RulerCreator from '@/tools/shapes/RulerCreator'
 import { CustomEvent } from '@/util/PointerEventMapper'
 import { ISO } from '@/util/ISO'
 import uuid from 'uuid'
+import { SocketCanvasToolsEmit } from '@/store/modules/socket'
 
 export default class Ruler extends ToolClass implements RulerInterface {
   private rulerCreator: RulerCreator
@@ -82,7 +83,7 @@ export default class Ruler extends ToolClass implements RulerInterface {
           modifyType: Tracker.ADDITION,
           canvasElements: [this.canvasElement],
           timestampModified: ISO.timestamp()
-        })
+        }, SocketCanvasToolsEmit.CANVAS_TOOLS_RULER)
       }
     }
   }

@@ -5,8 +5,14 @@
     @mousedown="mouseDownAction"
     @mousemove="mouseMoveAction"
     @mouseup="mouseUpAction"
+    @drop="onDropHandler"
+    @dragover="$event.preventDefault()"
   >
-    <the-canvas v-show="isLoadCanvas" ref="stage" :id="id"/>
+    <the-canvas
+      v-show="isLoadCanvas"
+      ref="stage"
+      :id="id"
+    />
     <the-nav-large class="the-nav-large" :id="id" :isLoadCanvas="isLoadCanvas"/>
     <the-nav-small class="the-nav-small" :id="id" :isLoadCanvas="isLoadCanvas"/>
     <the-tool-panel class="custom-hide-on-mobile" :id="id" :isLoadCanvas="isLoadCanvas"/>
@@ -26,11 +32,14 @@ import { Prop } from 'vue-property-decorator'
 import { CanvasElement, VueKonvaStage } from '@/types/Canvas'
 import TheCreateNewTacticOverlay from '@/components/overlays/TheCreateNewTacticOverlay.vue'
 import { StageActions, StageGetters } from '@/store/modules/stage'
-import { CustomStageConfig } from '@/util/PointerEventMapper'
+import PointerEventMapper, { CustomStageConfig } from '@/util/PointerEventMapper'
 import { CanvasAction } from '@/store/modules/canvas'
 import { Action, Getter } from 'vuex-class'
 import { EventBus } from '@/event-bus'
 import RoomSocket from '@/mixins/RoomSockets'
+import { Item } from '@/types/Games'
+import { ToolGetters } from '@/store/modules/tools'
+import { Tool } from '@/tools/Tool'
 
   @Component({
     name: 'Room',
@@ -51,6 +60,7 @@ export default class Room extends mixins(RoomSocket) {
   @Getter(`stage/${StageGetters.STAGE_CONFIG}`) stageConfig!: CustomStageConfig
   @Action(`stage/${StageActions.SET_MAP_SRC}`) setMapSrc!: (mapSrc: string) => void
   @Action(`stage/${StageActions.SET_CONFIG}`) setConfig!: (config: CustomStageConfig) => void
+  @Getter(`tools/${ToolGetters.TOOL}`) findTool!: (name: string) => Tool | void
 
   $refs!: {
     app: HTMLDivElement;
@@ -58,7 +68,6 @@ export default class Room extends mixins(RoomSocket) {
   }
   loadCanvas = true
   dragEnabled = false
-
   created () {
     EventBus.$on('loadCanvas', () => {
       if (this.isAuth) {
@@ -88,6 +97,18 @@ export default class Room extends mixins(RoomSocket) {
     if (this.dragEnabled && e.target === this.$refs.app && !(e.target instanceof HTMLCanvasElement)) {
       this.dragEnabled = false
       EventBus.$emit('mouseAction', e)
+    }
+  }
+
+  onDropHandler (e: DragEvent) {
+    if (this.isLoadCanvas && e.dataTransfer) {
+      const item: Item | void = JSON.parse(e.dataTransfer.getData('entity'))
+      if (item) {
+        const entityTool: Tool | void = this.findTool('entity')
+        if (entityTool && entityTool.entityToRequest && entityTool.renderCanvas) {
+          entityTool.renderCanvas(entityTool.entityToRequest(item, PointerEventMapper.globalEventMapper(e)))
+        }
+      }
     }
   }
 }

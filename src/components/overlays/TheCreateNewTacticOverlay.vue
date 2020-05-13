@@ -10,7 +10,7 @@
               <v-text-field
                 :rules="[rules.length]"
                 prepend-icon="fa-file"
-                label="Tactic name"
+                label="SwitchTactic name"
                 v-model="tactic.name"
               />
             </v-card-actions>
