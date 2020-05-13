@@ -300,7 +300,6 @@ export default class TheCreateEntity extends Games {
       const image = new Image()
       if (entity.image) {
         image.src = entity.image
-        console.log(image)
         e.dataTransfer.setData('entity', JSON.stringify(entity))
         e.dataTransfer.setDragImage(image, 0, 0)
       }

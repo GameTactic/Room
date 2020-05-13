@@ -38,7 +38,6 @@ const SocketModule: Module<{}, {}> = {
     [SocketActions.EMIT] (_context: SocketActionContext, payload: { data: object; emit: string }) {
       // eslint-disable-next-line
       const vm: any = this
-      console.log(payload.emit)
       vm._vm.$socket.client.emit(payload.emit, payload.data)
     }
   }
