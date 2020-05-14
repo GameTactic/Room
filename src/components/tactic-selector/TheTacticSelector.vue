@@ -36,9 +36,9 @@
       </template>
       <v-card tile style="height: 300px;">
         <v-sheet class="pa-1 primary d-flex" tile>
-          <v-btn icon color="white" class="mr-2" @click="manageTacticsOnClickHandler">
+          <!-- <v-btn icon color="white" class="mr-2" @click="manageTacticsOnClickHandler">
             <v-icon small>fa-cog</v-icon>
-          </v-btn>
+          </v-btn> -->
           <v-text-field
             v-model="search"
             :label="$t('tactic.textField.label')"
@@ -208,13 +208,7 @@ interface TacticMenuItem {
 }
 
 @Component({
-  name: 'TheTacticSelector',
-  data: function () {
-    return {
-      open: [],
-      search: null
-    }
-  }
+  name: 'TheTacticSelector'
 })
 export default class TheTacticSelector extends Vue {
   @Prop() private id!: string
@@ -225,6 +219,10 @@ export default class TheTacticSelector extends Vue {
   @Action(`room/${RoomAction.UPDATE_TACTIC}`) updateTactic!: (tactic: Tactic) => void
   @Action(`room/${RoomAction.TOGGLE_PIN_TACTIC}`) togglePinTactic!: (tactic: Tactic) => void
 
+  open = []
+  search = null
+  isEditTacticDialogVisible = false
+  selectedTactic: Tactic | undefined
   cardMenuItems: TacticMenuItem[] = [{
     action: 'edit',
     title: `Edit Tactic`,
@@ -264,14 +262,12 @@ export default class TheTacticSelector extends Vue {
     EventBus.$emit('openCreateNewTacticOverlay')
   }
 
-  manageTacticsOnClickHandler () {
-    EventBus.$emit('openManageTacticsOverlay')
-  }
-
   tacticMenuOnClickHandler (menuItem: TacticMenuItem, tactic: Tactic) {
+    console.log('menuItem', menuItem)
     switch (menuItem.action) {
       case 'edit':
-        this.updateTactic(tactic)
+        console.log('in here')
+        EventBus.$emit('openManageTacticsOverlay', tactic)
         break
       case 'delete':
         this.deleteTactic(tactic.id)
@@ -300,6 +296,10 @@ export default class TheTacticSelector extends Vue {
   border: 2px solid rgba(0, 0, 0, 0.12);
 }
 
+.custom-tactic-menu-container {
+  left: 2px !important;
+}
+
 .custom-autocomplete-tactic-menu-icon {
   margin-right: 6px !important;
 }
@@ -324,44 +324,35 @@ export default class TheTacticSelector extends Vue {
   margin-top: 0.5rem;
 }
 
-.custom-tactic-menu-container {
-  left: 2px !important;
-}
 </style>
 <style lang="scss">
+@mixin pinnedTabSlants {
+  content: "";
+  position: absolute;
+  height: 100%;
+  -webkit-transform-origin: 100% 0;
+  transform-origin: 100% 0;
+  z-index: -1;
+  border-top: 1px solid rgba(0, 0, 0, 0.05);
+  background: white;
+  width: 60px;
+}
+
 .custom-tactic-pinned-tabs > div {
   position: relative;
   left: -50%;
   border-top: 1px solid rgba(0, 0, 0, 0.05);
   &::after {
-    content: "";
-    position: absolute;
-    width: 100%;
-    height: 100%;
-    -webkit-transform-origin: 100% 0;
-    transform-origin: 100% 0;
-    z-index: -1;
-    border-top: 1px solid rgba(0, 0, 0, 0.05);
-    background: white;
-    width: 60px;
+    @include pinnedTabSlants;
     right: 0px;
-    -webkit-transform: skew(-45deg);
+    -webkit-transform: skew(45deg);
     transform: skew(45deg);
     border-right: 1.5px solid rgba(0, 0, 0, 0.05);
   }
   &::before {
-    content: "";
-    position: absolute;
-    width: 100%;
-    height: 100%;
-    -webkit-transform-origin: 100% 0;
-    transform-origin: 100% 0;
-    z-index: -1;
-    border-top: 1px solid rgba(0, 0, 0, 0.05);
-    background: white;
+    @include pinnedTabSlants;
     left: 0px;
-    width: 60px;
-    -webkit-transform: skew(45deg);
+    -webkit-transform: skew(-45deg);
     transform: skew(-45deg);
     border-left: 1.5px solid rgba(0, 0, 0, 0.05);
   }
