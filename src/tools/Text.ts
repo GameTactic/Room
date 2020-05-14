@@ -1,18 +1,19 @@
-import { TextInterface, Tracker } from '@/tools/Tool'
+import { TextData, TextInterface, ToolClass, Tracker } from '@/tools/Tool'
 import Konva from 'konva'
-import { CanvasElement } from '@/types/Canvas'
-import uuid from 'uuid'
+import { AdditionTools, CanvasElement, CanvasElementType, RequestCanvasEntity } from '@/types/Canvas'
 import TextCreator from '@/tools/shapes/TextCreator'
-import { EventBus } from '@/event-bus'
-import { CustomEvent, CustomStageEvent } from '@/util/PointerEventMapper'
+import { CustomEvent } from '@/util/PointerEventMapper'
+import { ISO } from '@/util/ISO'
+import uuid from 'uuid'
 
-export default class Text implements TextInterface {
+export default class Text extends ToolClass implements TextInterface {
   private textCreator: TextCreator
   constructor (public readonly name: string,
                public size: number,
                public colour: string,
                public temporary: boolean,
                public textString: string) {
+    super()
     this.textCreator = new TextCreator(
       this.temporary,
       this.size,
@@ -22,24 +23,25 @@ export default class Text implements TextInterface {
   }
 
   // eslint-disable-next-line
-  mouseDownAction = (event: CustomEvent, canvasElement: CanvasElement, layer: Konva.Layer, _socket: WebSocket): void => {
-
+  mouseDownAction = (event: CustomEvent): void => {
   }
 
   // eslint-disable-next-line
-  mouseMoveAction = (event: CustomEvent, canvasElement: CanvasElement, layer: Konva.Layer, socket: WebSocket): void => {
+  mouseMoveAction = (event: CustomEvent): void => {
   }
 
   // eslint-disable-next-line
-  mouseUpAction = (event: CustomEvent, canvasElement: CanvasElement, layer: Konva.Layer, socket: WebSocket): void => {
+  mouseUpAction = (event: CustomEvent): void => {
     const target = event.konvaPointerEvent.target
     if (target instanceof Konva.Stage || target instanceof Konva.Node) {
-      canvasElement.data = [event.globalOffset.x, event.globalOffset.y]
-      canvasElement.id = uuid()
-      canvasElement.tracker = Tracker.ADDITION
-      canvasElement.hasMoved = true
-      canvasElement.position = { x: 0, y: 0 }
-      canvasElement.tool = {
+      this.enableTool()
+      this.resetCanvasEntity()
+      this.canvasElement.type = CanvasElementType.SHAPE
+      this.canvasElement.isVisible = true
+      this.canvasElement.data = {
+        point: { x: event.globalOffset.x, y: event.globalOffset.y }
+      }
+      this.canvasElement.tool = {
         name: this.name,
         size: this.size,
         colour: this.colour,
@@ -52,12 +54,22 @@ export default class Text implements TextInterface {
         this.colour,
         this.textString
       )
-      const textArea = this.textCreator.createTextArea(canvasElement, layer, event)
-      const canvasElementCopy = { ...canvasElement }
+      const textArea = this.textCreator.createTextArea(event)
       const inputEvent = () => {
-        if ((textArea.scrollHeight - 1) > textArea.getBoundingClientRect().height) {
-          textArea.value = textArea.value.slice(0, -1)
+        const maxDimensions = {
+          maxWidth: parseInt(textArea.style.maxWidth.substring(0, textArea.style.maxWidth.length - 2)),
+          maxHeight: parseInt(textArea.style.maxHeight.substring(0, textArea.style.maxHeight.length - 2))
         }
+        if (maxDimensions.maxWidth < textArea.scrollWidth) {
+          textArea.value = [textArea.value.slice(0, textArea.value.length - 1), '\n', textArea.value.slice(textArea.value.length - 1)].join('')
+        }
+        if (maxDimensions.maxHeight < textArea.scrollHeight) {
+          textArea.value = textArea.value.slice(0, textArea.value.length - 2)
+        }
+        textArea.style.height = '30px'
+        textArea.style.width = '100px'
+        textArea.style.height = `${textArea.scrollHeight}px`
+        textArea.style.width = `${textArea.scrollWidth}px`
       }
       const keyBoardEvent = (e: KeyboardEvent) => {
         if (e.key === 'Enter' && !e.shiftKey) {
@@ -65,54 +77,56 @@ export default class Text implements TextInterface {
         }
       }
       const focusOutEvent = () => {
-        canvasElementCopy.tool.textString = textArea.value
+        this.disableTool()
+        this.canvasElement.tool.textString = textArea.value
         textArea.remove()
-        EventBus.$emit('addText', canvasElementCopy)
+        this.textCreator.create(event)
+        this.canvasElement.position = this.textCreator.getGroup().getPosition()
+        if (this.canvasElement.tool.textString && this.canvasElement.tool.textString?.length > 0) {
+          this.sendAndAddToState({
+            id: uuid(),
+            jti: this.canvasElement.jti,
+            modifyType: Tracker.ADDITION,
+            modifyData: {
+              additions: [this.canvasElement.id],
+              tool: AdditionTools.TEXT
+            },
+            canvasElements: [this.canvasElement],
+            timestampModified: ISO.timestamp()
+          })
+        }
       }
       const onClickEvent = () => {
         textArea.blur()
+      }
+      const pasteEvent = (e: ClipboardEvent) => {
+        e.preventDefault()
       }
       textArea.addEventListener('mousedown', onClickEvent)
       textArea.addEventListener('keydown', keyBoardEvent)
       textArea.addEventListener('focusout', focusOutEvent)
       textArea.addEventListener('input', inputEvent)
+      textArea.addEventListener('paste', pasteEvent)
     }
   }
 
-  renderCanvas = (canvasElement: CanvasElement, layer: Konva.Layer, event: CustomEvent | CustomStageEvent): void => {
-    if (canvasElement.hasMoved) {
-      this.textCreator = new TextCreator(
-        canvasElement.tool.temporary || this.temporary,
-        canvasElement.tool.size || this.size,
-        canvasElement.tool.colour || this.colour,
-        canvasElement.tool.textString || this.textString
-      )
-      this.textCreator.create(canvasElement, layer, event)
-      layer.batchDraw()
-      if (canvasElement.tool.temporary) {
-        this.textCreator.runTemporaryAnimation(this.textCreator.getGroup(), layer)
+  renderCanvas = (request: RequestCanvasEntity): void => {
+    request.canvasElements.forEach((canvasElement: CanvasElement) => {
+      const data = canvasElement.data as TextData
+      if (data.point) {
+        this.textCreator = new TextCreator(
+          canvasElement.tool.temporary || this.temporary,
+          canvasElement.tool.size || this.size,
+          canvasElement.tool.colour || this.colour,
+          canvasElement.tool.textString || this.textString
+        )
+        this.textCreator.create(this.stageEvent, canvasElement)
+        if (canvasElement.tool.temporary) {
+          this.textCreator.runTemporaryAnimation(this.textCreator.getGroup())
+        } else {
+          this.layer.batchDraw()
+        }
       }
-    }
-  }
-
-  sendToWebSocket = (canvasElement: CanvasElement, socket: WebSocket) => {
-    const data: CanvasElement = {
-      jti: 'SAM',
-      id: canvasElement.id,
-      layerId: canvasElement.layerId,
-      tool: {
-        name: this.name,
-        colour: this.colour,
-        size: this.size,
-        temporary: this.temporary,
-        textString: this.textString
-      },
-      data: canvasElement.data,
-      tracker: Tracker.ADDITION,
-      change: false,
-      hasMoved: canvasElement.hasMoved,
-      position: canvasElement.position
-    }
-    // socket.send(JSON.stringify(data))
+    })
   }
 }

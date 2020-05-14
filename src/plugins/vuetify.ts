@@ -1,4 +1,5 @@
 import Vue from 'vue'
+import '@mdi/font/css/materialdesignicons.css'
 import '@fortawesome/fontawesome-free/css/all.css'
 import colours from '@/assets/scss/_variables.scss'
 import { DashedLine, DashedLineActive, NormalLine, NormalLineActive, TBarHead, TBarHeadActive } from '@/assets/tool-icons'
@@ -38,15 +39,17 @@ import Vuetify, {
   VRadioGroup,
   VRow,
   VSelect,
+  VSubheader,
+  VOverlay,
   VSheet,
   VSkeletonLoader,
   VSlider,
   VSpacer,
-  VSubheader,
   VSwitch,
   VTextField,
   VToolbar,
-  VTooltip
+  VTooltip,
+  VInput
 } from 'vuetify/lib'
 
 Vue.use(Vuetify, {
@@ -59,6 +62,7 @@ Vue.use(Vuetify, {
     VAutocomplete,
     VBadge,
     VRow,
+    VOverlay,
     VImg,
     VTooltip,
     VDivider,
@@ -68,6 +72,7 @@ Vue.use(Vuetify, {
     VSpacer,
     VBtn,
     VIcon,
+    VDialog,
     VCol,
     VBtnToggle,
     VMenu,
@@ -91,11 +96,11 @@ Vue.use(Vuetify, {
     VChipGroup,
     VChip,
     VSkeletonLoader,
-    VCardText,
+    VInput,
     VCardTitle,
-    VDialog
+    VCardText
   },
-  directives: { }
+  directives: {}
 })
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -121,7 +126,7 @@ const opts: Record<string, any> = {
         component: TBarHeadActive
       }
     },
-    iconfont: 'fa' // 'mdi' || 'mdiSvg' || 'md' || 'fa' || 'fa4',
+    iconfont: 'fa' || 'mdi' // || 'mdiSvg' || 'md' || 'fa' || 'fa4',
   },
   theme: {
     options: {

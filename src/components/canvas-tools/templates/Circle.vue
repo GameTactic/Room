@@ -4,7 +4,7 @@
       {{ $t('tool.template.fill') }}
     </v-card-subtitle>
     <v-card-actions class="py-0">
-      <colour-picker-transparency :value.sync="circleColour" />
+      <colour-picker :swatchProp.sync="transparentSwatches" :value.sync="circleColour" />
     </v-card-actions>
     <v-card-subtitle class="py-0 pl-5 custom-hide-text">
       {{ $t('tool.template.size') }}
@@ -67,15 +67,13 @@ import { namespace } from 'vuex-class'
 import { Namespaces } from '@/store'
 import { ToolGetters, ToolsAction } from '@/store/modules/tools'
 import ColourPicker from '@/components/canvas-tools/templates/template-tools/ColourPicker.vue'
-import ColourPickerTransparency from '@/components/canvas-tools/templates/template-tools/ColourPickerTransparency.vue'
 import SizePicker from '@/components/canvas-tools/templates/template-tools/SizePicker.vue'
 
 const Tools = namespace(Namespaces.TOOLS)
 
 @Component({
   name: 'DrawCircle',
-  components: { SizePicker, ColourPicker, ColourPickerTransparency },
-  computed: {}
+  components: { SizePicker, ColourPicker }
 })
 export default class PopoutButton extends Vue {
   @Tools.Getter(ToolGetters.TOOL) findTool!: (name: string) => Tool
@@ -85,6 +83,14 @@ export default class PopoutButton extends Vue {
   @Tools.Action(ToolsAction.SET_OUTLINE_COLOUR) setOutlineColour!: (outlineColour: string) => void
   @Tools.Action(ToolsAction.SET_TEMPORARY) setTemporary!: (temporary: boolean) => void
   @Tools.Action(ToolsAction.SET_STROKE_STYLE) setStrokeStyle!: (strokeStyle: number) => void
+
+  transparentSwatches = [
+    ['#CE000080', '#40476D80'],
+    ['#D74E0980', '#79238780'],
+    ['#F2BB0580', '#3349F480'],
+    ['#08A04580', '#4392F180'],
+    ['#F7FFF780', '#66666680']
+  ]
 
   get circleSize () {
     return this.findTool('circle').size || 5

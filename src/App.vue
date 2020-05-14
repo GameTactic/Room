@@ -48,7 +48,7 @@ export default class TheApp extends Vue {
         }
         if (localToken) {
           switch (this.game) {
-            case 'wows':
+            case GameName['WOWS']:
               await getWowsApiData(localToken, this.setGameApi)
               break
             default:

@@ -1,5 +1,5 @@
 <template>
-  <p>You're begin redirected...</p>
+  <p>You're being redirected...</p>
 </template>
 
 <script lang="ts">

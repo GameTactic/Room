@@ -1,15 +1,17 @@
 <template>
-  <div class="full-width-height"
+  <div
+    :class="`full-width-height ${dragEnabled ? 'dragEnabled' : ''}`"
     ref="app"
-    @mousedown="canvasDown"
-    @mousemove="canvasMove"
-    @mouseup="canvasUp"
+    @mousedown="mouseDownAction"
+    @mousemove="mouseMoveAction"
+    @mouseup="mouseUpAction"
   >
-    <the-canvas ref="stage" :id="id"/>
-    <the-nav-large class="the-nav-large" :id="id"/>
-    <the-nav-small class="the-nav-small" :id="id"/>
-    <the-tool-panel class="custom-hide-on-mobile" :id="id"/>
-    <the-entity-panel  class="custom-hide-on-mobile" :id="id"/>
+    <the-canvas v-show="isLoadCanvas" ref="stage" :id="id"/>
+    <the-nav-large class="the-nav-large" :id="id" :isLoadCanvas="isLoadCanvas"/>
+    <the-nav-small class="the-nav-small" :id="id" :isLoadCanvas="isLoadCanvas"/>
+    <the-tool-panel class="custom-hide-on-mobile" :id="id" :isLoadCanvas="isLoadCanvas"/>
+    <the-entity-panel  class="custom-hide-on-mobile" :id="id" :isLoadCanvas="isLoadCanvas"/>
+    <the-create-new-tactic-overlay :id="id" />
   </div>
 </template>
 
@@ -19,21 +21,22 @@ import TheNavSmall from '@/components/navigation/TheNavSmall.vue'
 import TheToolPanel from '@/components/TheToolPanel.vue'
 import TheCanvas from '@/components/TheCanvas.vue'
 import TheEntityPanel from '@/components/TheEntityPanel.vue'
-import Component from 'vue-class-component'
-import { Prop, Watch } from 'vue-property-decorator'
-import Vue from 'vue'
-import { namespace, Action } from 'vuex-class'
-import { Namespaces } from '@/store'
+import Component, { mixins } from 'vue-class-component'
+import { Prop } from 'vue-property-decorator'
+import { CanvasElement, VueKonvaStage } from '@/types/Canvas'
+import TheCreateNewTacticOverlay from '@/components/overlays/TheCreateNewTacticOverlay.vue'
+import { StageActions, StageGetters } from '@/store/modules/stage'
+import { CustomStageConfig } from '@/util/PointerEventMapper'
+import { CanvasAction } from '@/store/modules/canvas'
+import { Action, Getter } from 'vuex-class'
 import { EventBus } from '@/event-bus'
-import { VueKonvaStage } from '@/types/Canvas'
-import { AuthenticationGetters, ExtendedJWT } from '@/store/modules/authentication'
-import { Socket } from 'vue-socket.io-extended'
-
-const authNamespace = namespace(Namespaces.AUTH)
+import RoomSocket from '@/mixins/RoomSockets'
 
   @Component({
     name: 'Room',
+    mixins: [RoomSocket],
     components: {
+      TheCreateNewTacticOverlay,
       TheNavLarge,
       TheNavSmall,
       TheToolPanel,
@@ -41,57 +44,50 @@ const authNamespace = namespace(Namespaces.AUTH)
       TheEntityPanel
     }
   })
-export default class extends Vue {
+export default class Room extends mixins(RoomSocket) {
   @Prop() id!: string
-  @authNamespace.Getter(AuthenticationGetters.IS_AUTH) isAuth!: boolean
-  @authNamespace.Getter(AuthenticationGetters.JWT) jwt!: ExtendedJWT
-  @Action('socket/joinRoom') joinRoom!: (id: string) => void
-  @Socket() // --> listens to the event by method name, e.g. `connect`
-  connect () {
-    // eslint-disable-next-line
-    console.log('connection established')
-    this.joinRoom(this.id)
-  }
+  @Action(`canvas/${CanvasAction.SET_CANVAS_ELEMENT}`) setCanvasElements!: (canvasElements: CanvasElement[]) => void
+  @Action(`canvas/${CanvasAction.SET_CANVAS_ELEMENT_HISTORY}`) setCanvasElementsHistory!: (canvasElements: CanvasElement[]) => void
+  @Getter(`stage/${StageGetters.STAGE_CONFIG}`) stageConfig!: CustomStageConfig
+  @Action(`stage/${StageActions.SET_MAP_SRC}`) setMapSrc!: (mapSrc: string) => void
+  @Action(`stage/${StageActions.SET_CONFIG}`) setConfig!: (config: CustomStageConfig) => void
 
   $refs!: {
     app: HTMLDivElement;
     stage: VueKonvaStage;
   }
+  loadCanvas = true
+  dragEnabled = false
 
   created () {
-    this.initialiseSocketIO(this.isAuth)
+    EventBus.$on('loadCanvas', () => {
+      if (this.isAuth) {
+        this.loadCanvas = true
+      }
+    })
   }
 
-  @Watch('isAuth')
-  onPropertyChanged (isAuth: boolean) {
-    this.initialiseSocketIO(isAuth)
+  get isLoadCanvas (): boolean {
+    return (this.loadCanvas && this.isAuth)
   }
 
-  initialiseSocketIO (isAuth?: boolean) {
-    if (isAuth) {
-      // start socket.io with registered user
-      this.$socket.client.io.opts.query = { Authorization: this.jwt.encoded } // First set the token.
-      this.$socket.client.open() // Then open the socket and use it anywhere else.
-    } else {
-      // start socket.io with anonymous user
+  mouseDownAction (e: MouseEvent) {
+    this.dragEnabled = true
+    if (e.target === this.$refs.app && !(e.target instanceof HTMLCanvasElement)) {
+      EventBus.$emit('mouseAction', e)
     }
   }
 
-  canvasDown (e: MouseEvent) {
-    if (e.target === this.$refs.app && !(e.target instanceof HTMLCanvasElement)) {
-      EventBus.$emit('mouseDown', e)
+  mouseMoveAction (e: MouseEvent) {
+    if (this.dragEnabled && e.target === this.$refs.app && !(e.target instanceof HTMLCanvasElement)) {
+      EventBus.$emit('mouseAction', e)
     }
   }
 
-  canvasMove (e: MouseEvent) {
-    if (e.target === this.$refs.app && !(e.target instanceof HTMLCanvasElement)) {
-      EventBus.$emit('mouseMove', e)
-    }
-  }
-
-  canvasUp (e: MouseEvent) {
-    if (e.target === this.$refs.app && !(e.target instanceof HTMLCanvasElement)) {
-      EventBus.$emit('mouseUp', e)
+  mouseUpAction (e: MouseEvent) {
+    if (this.dragEnabled && e.target === this.$refs.app && !(e.target instanceof HTMLCanvasElement)) {
+      this.dragEnabled = false
+      EventBus.$emit('mouseAction', e)
     }
   }
 }
@@ -101,6 +97,10 @@ export default class extends Vue {
     width: 100%;
     height: 100%;
     overflow-x: hidden;
+
+    &.dragEnabled::v-deep {
+      cursor: move !important;
+    }
   }
 
   @media (max-width: 899px) {

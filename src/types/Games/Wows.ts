@@ -1,5 +1,3 @@
-import { GameName } from '@/store/modules/room'
-
 export interface WowsShipsApiResponse {
   data: {
     status: string;

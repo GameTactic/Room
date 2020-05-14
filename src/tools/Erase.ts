@@ -1,78 +1,70 @@
-import { EraseInterface, Tracker } from '@/tools/Tool'
+import { ToolClass, Tracker } from '@/tools/Tool'
 import Konva from 'konva'
-import { CanvasElement } from '@/types/Canvas'
-import uuid from 'uuid'
 import { CustomEvent } from '@/util/PointerEventMapper'
+import { ISO } from '@/util/ISO'
+import { RemovalData, RequestCanvasEntity } from '@/types/Canvas'
+import uuid from 'uuid'
 
-export default class Erase implements EraseInterface {
-  // eslint-disable-next-line no-useless-constructor
+export default class Erase extends ToolClass {
   constructor (public readonly name: string,
-               public erase: string[],
                public readonly temporary: boolean) {
+    super()
   }
-  // eslint-disable-next-line
-  mouseDownAction = (event: CustomEvent, canvasElement: CanvasElement, layer: Konva.Layer, socket: WebSocket): void => {
-    canvasElement.data = [event.globalOffset.x, event.globalOffset.y]
-    canvasElement.id = uuid()
-    canvasElement.hasMoved = true
-    canvasElement.tracker = Tracker.REMOVAL
-    canvasElement.tool = {
+
+  mouseDownAction = (event: CustomEvent): void => {
+    this.enableTool()
+    this.resetCanvasEntity()
+    this.canvasEntity.modifyData = {
+      removals: []
+    }
+    this.canvasElement.tool = {
       name: this.name,
-      erase: this.erase,
       temporary: false
     }
-    this.findAndHide(event, canvasElement, layer)
+    this.findAndHide(event)
   }
+
+  mouseMoveAction = (event: CustomEvent): void => {
+    if (this.enabled) {
+      this.findAndHide(event)
+    }
+  }
+
   // eslint-disable-next-line
-  mouseMoveAction = (event: CustomEvent, canvasElement: CanvasElement, layer: Konva.Layer, socket: WebSocket): void => {
-    this.findAndHide(event, canvasElement, layer)
-  }
-
-  mouseUpAction = (event: CustomEvent, canvasElement: CanvasElement, layer: Konva.Layer, socket: WebSocket): void => {
-    this.findAndHide(event, canvasElement, layer)
-    this.sendToWebSocket(canvasElement, socket)
-  }
-
-  hideGroup = (layer: Konva.Layer, group?: string[]): void => {
-    if (group) {
-      group.forEach((groupId: string) => {
-        const group: Konva.Collection<Konva.Node> = layer.getChildren(node => node.attrs.id === groupId)
-        group.each(child => child.hide())
-        layer.batchDraw()
+  mouseUpAction = (event: CustomEvent): void => {
+    const data = this.canvasEntity.modifyData as RemovalData
+    if (this.enabled && data.removals) {
+      this.disableTool()
+      this.sendAndAddToState({
+        id: uuid(),
+        jti: this.canvasElement.jti,
+        modifyType: Tracker.REMOVAL,
+        modifyData: data,
+        canvasElements: [],
+        timestampModified: ISO.timestamp()
       })
     }
   }
 
-  findAndHide = (event: CustomEvent, canvasElement: CanvasElement, layer: Konva.Layer): void => {
+  hideGroup = (groupId: string): void => {
+    const foundGroup = this.layer.findOne((group: Konva.Group) => group.attrs.id === groupId)
+    if (foundGroup) { foundGroup.destroy() }
+    this.layer.batchDraw()
+  }
+
+  findAndHide = (event: CustomEvent): void => {
     const group = event.konvaPointerEvent.target.parent
-    if (group && group instanceof Konva.Group && group.attrs.id && canvasElement.tool.erase && !canvasElement.tool.erase.includes(group.attrs.id)) {
-      canvasElement.tool.erase.push(group.attrs.id)
-    }
-    this.hideGroup(layer, canvasElement.tool.erase)
-  }
-
-  renderCanvas = (canvasElement: CanvasElement, layer: Konva.Layer): void => {
-    if (canvasElement.tracker === Tracker.REMOVAL) {
-      this.hideGroup(layer, canvasElement.tool.erase)
+    const data = this.canvasEntity.modifyData as RemovalData
+    if (group && group instanceof Konva.Group && group.attrs.id && data.removals && !(data.removals.includes(group.attrs.id)) && group.attrs.type !== 'map') {
+      data.removals = [ ...data.removals, group.attrs.id ]
+      this.hideGroup(group.attrs.id)
     }
   }
 
-  sendToWebSocket = (canvasElement: CanvasElement, socket: WebSocket) => {
-    const data: CanvasElement = {
-      jti: 'SAM',
-      id: canvasElement.id,
-      layerId: canvasElement.layerId,
-      tool: {
-        name: this.name,
-        erase: canvasElement.tool.erase,
-        temporary: this.temporary
-      },
-      data: canvasElement.data,
-      tracker: Tracker.REMOVAL,
-      change: false,
-      hasMoved: true,
-      position: canvasElement.position
+  renderCanvas = (request: RequestCanvasEntity): void => {
+    const data = request.modifyData as RemovalData
+    if (data.removals && data.removals.length > 0) {
+      data.removals.forEach((groupId: string) => this.hideGroup(groupId))
     }
-    // socket.send(JSON.stringify(data))
   }
 }

@@ -22,6 +22,8 @@ new Vue({
   render: h => h(App)
 }).$mount('#app')
 
+export default store
+
 // Development related
 if (module.hot) {
   module.hot.accept(values(localeFiles), async () => {

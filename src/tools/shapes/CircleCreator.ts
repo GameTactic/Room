@@ -1,7 +1,8 @@
 import Konva from 'konva'
-import { CanvasElement } from '@/types/Canvas'
+import { CanvasElement, CanvasElementType } from '@/types/Canvas'
 import Shape, { CircleCreatorInterface } from '@/tools/shapes/Shape'
 import { CustomEvent, CustomStageEvent } from '@/util/PointerEventMapper'
+import { CircleData } from '@/tools/Tool'
 
 export default class CircleCreator extends Shape implements CircleCreatorInterface {
   private line: Konva.Line
@@ -19,44 +20,50 @@ export default class CircleCreator extends Shape implements CircleCreatorInterfa
     this.circle = new Konva.Circle()
   }
 
-  create = (canvasElement: CanvasElement, layer: Konva.Layer, event: CustomEvent | CustomStageEvent): void => {
+  create = (event: CustomEvent | CustomStageEvent, canvasElement?: CanvasElement): void => {
+    if (!canvasElement) { canvasElement = this.canvasElement }
     this.group = new Konva.Group()
-    this.group.attrs.temporary = this.temporary
     if (this.showRadius && canvasElement.tool.showRadius) {
-      layer.add(this.group.id(canvasElement.id).add(
-        this.circle = this.createCircleElement(canvasElement, event),
-        this.line = this.createLineElement(canvasElement, event)
-      ))
+      this.layer.add(this.group.id(canvasElement.id)
+        .add(this.circle = this.createCircleElement(canvasElement, event),
+          this.line = this.createLineElement(canvasElement, event)
+        )
+      )
+      this.group.attrs.type = CanvasElementType.SHAPE
     } else {
-      layer.add(this.group.id(canvasElement.id).add(
+      this.layer.add(this.group.id(canvasElement.id).add(
         this.circle = this.createCircleElement(canvasElement, event)
       ))
+      this.group.attrs.type = CanvasElementType.SHAPE
     }
   }
   // eslint-disable-next-line
-  move = (canvasElement: CanvasElement, layer: Konva.Layer, pos: Position, event: CustomEvent | CustomStageEvent): void => {
+  move = (event: CustomEvent | CustomStageEvent, canvasElement?: CanvasElement): void => {
+    if (!canvasElement) { canvasElement = this.canvasElement }
+    const data = canvasElement.data as CircleData
     this.circle.radius(
       this.calcRadius(
-        this.formatX(canvasElement.data[0], event),
-        this.formatY(canvasElement.data[1], event),
-        this.formatX(pos.x, event),
-        this.formatY(pos.y, event)
+        this.formatX(data.from.x, event),
+        this.formatY(data.from.y, event),
+        this.formatX(data.to.x, event),
+        this.formatY(data.to.y, event)
       )
     )
     if (canvasElement.tool.showRadius && this.line !== undefined) {
       this.line.points([
-        this.formatX(canvasElement.data[0], event),
-        this.formatY(canvasElement.data[1], event),
-        this.formatX(pos.x, event),
-        this.formatY(pos.y, event)]
+        this.formatX(data.from.x, event),
+        this.formatY(data.from.y, event),
+        this.formatX(data.to.x, event),
+        this.formatY(data.to.y, event)]
       )
     }
   }
 
   createLineElement = (canvasElement: CanvasElement, event: CustomEvent | CustomStageEvent, outlineColour?: string, size?: number, strokeStyle?: number): Konva.Shape & Konva.Line => {
+    const data = canvasElement.data as CircleData
     return new Konva.Line({
       globalCompositeOperation: 'source-over',
-      points: canvasElement.data.map((num, index) => (index % 2) ? this.formatX(num, event) : this.formatY(num, event)),
+      points: [ data.from.x, data.from.y, data.to.x, data.to.y ],
       stroke: outlineColour || canvasElement.tool.outlineColour || this.outlineColour,
       strokeWidth: size || canvasElement.tool.size || this.size,
       lineCap: 'mitter',
@@ -67,6 +74,7 @@ export default class CircleCreator extends Shape implements CircleCreatorInterfa
   }
 
   createCircleElement = (canvasElement: CanvasElement, event: CustomEvent | CustomStageEvent, colour?: string, size?: number, radius?: number, strokeStyle?: number, outlineColour?: string): Konva.Shape & Konva.Circle => {
+    const data = canvasElement.data as CircleData
     return new Konva.Circle({
       id: canvasElement.id,
       globalCompositeOperation: 'source-over',
@@ -74,8 +82,8 @@ export default class CircleCreator extends Shape implements CircleCreatorInterfa
       stroke: outlineColour || canvasElement.tool.outlineColour || this.outlineColour,
       strokeWidth: size || canvasElement.tool.size || this.size,
       radius: radius || 0,
-      x: this.formatX(canvasElement.data[0], event),
-      y: this.formatY(canvasElement.data[1], event),
+      x: this.formatX(data.from.x, event),
+      y: this.formatY(data.from.y, event),
       hitStrokeWidth: this.hitStroke,
       dash: this.stroke[strokeStyle || canvasElement.tool.strokeStyle || this.strokeStyle || 0]
     })
@@ -89,9 +97,4 @@ export default class CircleCreator extends Shape implements CircleCreatorInterfa
 
   // eslint-disable-next-line
   [key: string]: any;
-}
-
-export interface Position {
-  x: number;
-  y: number;
 }

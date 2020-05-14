@@ -1,98 +1,97 @@
-import { FreeDrawInterface, Tracker } from '@/tools/Tool'
-import Konva from 'konva'
-import { CanvasElement } from '@/types/Canvas'
-import uuid from 'uuid'
+import { FreeDrawData, FreeDrawInterface, ToolClass, Tracker } from '@/tools/Tool'
+import { AdditionTools, CanvasElement, CanvasElementType, RequestCanvasEntity } from '@/types/Canvas'
+import FreeDrawCreator from '@/tools/shapes/FreeDrawCreator'
+import { CustomEvent } from '@/util/PointerEventMapper'
 import throttle from 'lodash.throttle'
-import FreedrawCreator from '@/tools/shapes/FreedrawCreator'
-import { CustomEvent, CustomStageEvent } from '@/util/PointerEventMapper'
+import { ISO } from '@/util/ISO'
+import uuid from 'uuid'
 
-export default class FreeDraw implements FreeDrawInterface {
-  private freedrawCreator: FreedrawCreator
+export default class FreeDraw extends ToolClass implements FreeDrawInterface {
+  private freeDrawCreator: FreeDrawCreator
   constructor (public readonly name: string,
                public size: number,
                public colour: string,
                public temporary: boolean) {
-    this.freedrawCreator = new FreedrawCreator(
+    super()
+    this.freeDrawCreator = new FreeDrawCreator(
       this.temporary,
       this.size,
       this.colour
     )
   }
 
-  // eslint-disable-next-line
-  mouseDownAction = (event: CustomEvent, canvasElement: CanvasElement, layer: Konva.Layer, _socket: WebSocket): void => {
-    canvasElement.data = [event.globalOffset.x, event.globalOffset.y]
-    canvasElement.id = uuid()
-    canvasElement.hasMoved = false
-    canvasElement.tracker = Tracker.ADDITION
-    canvasElement.tool = {
+  mouseDownAction = (event: CustomEvent): void => {
+    this.enableTool()
+    this.resetCanvasEntity()
+    this.canvasElement.type = CanvasElementType.SHAPE
+    this.canvasElement.isVisible = true
+    this.canvasElement.data = { points: [event.globalOffset.x, event.globalOffset.y] }
+    this.canvasElement.tool = {
       name: this.name,
       size: this.size,
       colour: this.colour,
       temporary: this.temporary
     }
-    this.freedrawCreator = new FreedrawCreator(
+    this.freeDrawCreator = new FreeDrawCreator(
       this.temporary,
       this.size,
       this.colour
     )
-    this.freedrawCreator.create(canvasElement, layer, event)
-    canvasElement.position = this.freedrawCreator.getGroup().position()
+    this.freeDrawCreator.create(event)
+    this.canvasElement.position = this.freeDrawCreator.getGroup().getPosition()
   }
+
+  mouseMoveAction = throttle((event: CustomEvent): void => {
+    if (this.enabled) {
+      if (!this.canvasEntity.hasMoved) { this.canvasEntity.hasMoved = true }
+      const data = this.canvasElement.data as FreeDrawData
+      data.points = [ ...data.points, event.globalOffset.x, event.globalOffset.y ]
+      this.freeDrawCreator.move(event)
+      this.layer.batchDraw()
+    }
+  }, 10)
 
   // eslint-disable-next-line
-  mouseMoveAction = throttle((event: CustomEvent, canvasElement: CanvasElement, layer: Konva.Layer, socket: WebSocket): void => {
-    if (!canvasElement.hasMoved) {
-      canvasElement.hasMoved = true
-    }
-    canvasElement.data = canvasElement.data.concat([event.globalOffset.x, event.globalOffset.y])
-    this.freedrawCreator.move(canvasElement, layer, event)
-    layer.batchDraw()
-  }, 0)
-
-  mouseUpAction = (event: CustomEvent, canvasElement: CanvasElement, layer: Konva.Layer, socket: WebSocket): void => {
-    if (!canvasElement.hasMoved) {
-      this.freedrawCreator.destroy(canvasElement, layer)
-    } else {
-      if (canvasElement.tool.temporary) {
-        this.freedrawCreator.runTemporaryAnimation(this.freedrawCreator.getGroup(), layer)
-      }
-      this.sendToWebSocket(canvasElement, socket)
-    }
-  }
-
-  renderCanvas = (canvasElement: CanvasElement, layer: Konva.Layer, event: CustomEvent | CustomStageEvent): void => {
-    if (canvasElement.hasMoved) {
-      this.freedrawCreator = new FreedrawCreator(
-        canvasElement.tool.temporary || this.temporary,
-        canvasElement.tool.size || this.size,
-        canvasElement.tool.colour || this.colour
-      )
-      this.freedrawCreator.create(canvasElement, layer, event)
-      layer.batchDraw()
-      if (canvasElement.tool.temporary) {
-        this.freedrawCreator.runTemporaryAnimation(this.freedrawCreator.getGroup(), layer)
+  mouseUpAction = (event: CustomEvent): void => {
+    if (this.enabled) {
+      this.disableTool()
+      if (!this.canvasEntity.hasMoved) {
+        this.freeDrawCreator.destroy()
+      } else {
+        if (this.canvasElement.tool.temporary) {
+          this.freeDrawCreator.runTemporaryAnimation(this.freeDrawCreator.getGroup())
+        }
+        this.sendAndAddToState({
+          id: uuid(),
+          jti: this.canvasElement.jti,
+          modifyData: {
+            additions: [this.canvasElement.id],
+            tool: AdditionTools.FREEDRAW
+          },
+          modifyType: Tracker.ADDITION,
+          canvasElements: [this.canvasElement],
+          timestampModified: ISO.timestamp()
+        })
       }
     }
   }
 
-  sendToWebSocket = (canvasElement: CanvasElement, socket: WebSocket) => {
-    const data: CanvasElement = {
-      jti: 'SAM',
-      id: canvasElement.id,
-      layerId: canvasElement.layerId,
-      tool: {
-        name: this.name,
-        colour: this.colour,
-        size: this.size,
-        temporary: this.temporary
-      },
-      data: canvasElement.data,
-      tracker: Tracker.ADDITION,
-      change: false,
-      hasMoved: canvasElement.hasMoved,
-      position: canvasElement.position
-    }
-    // socket.send(JSON.stringify(data))
+  renderCanvas = (request: RequestCanvasEntity): void => {
+    request.canvasElements.forEach((canvasElement: CanvasElement) => {
+      const data = canvasElement.data as FreeDrawData
+      if (data.points) {
+        this.freeDrawCreator = new FreeDrawCreator(
+          canvasElement.tool.temporary || this.temporary,
+          canvasElement.tool.size || this.size,
+          canvasElement.tool.colour || this.colour
+        )
+        this.freeDrawCreator.create(this.stageEvent, canvasElement)
+        if (canvasElement.tool.temporary) {
+          this.freeDrawCreator.runTemporaryAnimation(this.freeDrawCreator.getGroup())
+        } else {
+          this.layer.batchDraw()
+        }
+      }
+    })
   }
 }
