@@ -2,7 +2,7 @@
   <v-menu
     v-if="popout"
     transition="scale-transition"
-    content-class="v-menu-content-class"
+    content-class="ml-8 elevation-2"
     :close-on-content-click="false"
     offset-x
     ref="menu"
@@ -147,10 +147,6 @@ interface MenuElement extends Vue {
 
 </script>
 <style scoped lang="scss">
-.v-menu-content-class {
-  margin-left: 30px;
-  box-shadow: 0px 4px 4px -3px rgba(0, 0, 0, 0.2), 0px 2px 2px 0px rgba(0, 0, 0, 0.14), 0px 1px 5px 0px rgba(0, 0, 0, 0.12)
-}
 .tools-caret-down-active {
   width:24px;
 }

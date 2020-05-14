@@ -1,5 +1,9 @@
 <template>
-  <v-menu v-if="!mobile" offset-y>
+  <v-menu
+    v-if="!mobile"
+    offset-y
+    content-class="elevation-2 v-sheet--tile"
+  >
     <template v-slot:activator="{ on: menu }">
       <v-tooltip
         bottom
@@ -8,8 +12,8 @@
       >
         <template v-slot:activator="{ on: tooltip }">
           <v-btn
-            dark
-            icon
+            color="primary"
+            elevation="0"
             v-on="{ ...tooltip, ...menu }"
           >
             <v-icon size="20">fa-cog</v-icon>

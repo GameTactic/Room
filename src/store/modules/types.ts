@@ -44,9 +44,11 @@ export interface Tactic {
   collectionId: string;
   lockedBy: string | undefined;
   map: Map;
+  pinned: boolean;
   createdBy: string;
   canvasElements: CanvasElement[];
   canvasElementsHistory: CanvasElementHistory[];
+  [key: string]: string | Map | CanvasElement[] | CanvasElementHistory[] | boolean | undefined;
 }
 
 export interface Collection {

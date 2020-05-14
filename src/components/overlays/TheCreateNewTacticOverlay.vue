@@ -1,5 +1,5 @@
 <template>
-    <v-dialog v-if="isAuth" v-model="overlay" width="700" class="custom-overlay">
+    <v-dialog v-model="overlay" width="700" class="custom-overlay">
       <v-card class="pa-12">
         <v-row>
           <v-col>
@@ -8,7 +8,6 @@
             </v-card-title>
             <v-card-actions>
               <v-text-field
-                :rules="[rules.length]"
                 prepend-icon="fa-file"
                 label="SwitchTactic name"
                 v-model="tactic.name"
@@ -43,7 +42,7 @@
             <v-card-subtitle>
               <v-btn
                 color="primary"
-                :disabled="!tactic.name.length"
+                :disabled="isDisabled()"
                 @click="createTactic()"
               >
                 {{ $t('tactic.createTacticOverlay.create') }}
@@ -73,21 +72,18 @@ import { CanvasAction } from '@/store/modules/canvas'
 import { CanvasElement, CanvasElementHistory } from '@/types/Canvas'
 import TacticWatcher from '@/mixins/TacticWatcher'
 import uuid from 'uuid'
-import { AuthenticationGetters, JWT } from '@/store/modules/authentication'
+import { AuthenticationGetters } from '@/store/modules/authentication'
 
 @Component({
   name: 'TheCreateNewTacticOverlay',
   data: () => ({
-    rules: {
-      length: (v: string) => (v || '').length >= 1 || 'Name can not be empty'
-    },
     tactic: {
       map: {
         name: '',
         icon: '',
         desc: '',
-        width: 1,
-        height: 1,
+        width: 0,
+        height: 0,
         ratio: 0,
         id: 0
       },
@@ -102,8 +98,6 @@ export default class CreateNewTacticOverlay extends mixins(TacticWatcher) {
   @Action(`stage/${StageActions.SET_CONFIG}`) setConfig!: (config: CustomStageConfig) => void
   @Action(`canvas/${CanvasAction.SET_CANVAS_ELEMENT}`) setCanvasElements!: (canvasElements: CanvasElement[]) => void
   @Action(`canvas/${CanvasAction.SET_CANVAS_ELEMENT_HISTORY}`) setCanvasElementsHistory!: (canvasElements: CanvasElementHistory[]) => void
-  @Getter(`authentication/${AuthenticationGetters.IS_AUTH}`) isAuth!: boolean
-  @Getter(`authentication/${AuthenticationGetters.JWT}`) jwt!: JWT | null
 
   overlay = false
   created () {
@@ -126,10 +120,13 @@ export default class CreateNewTacticOverlay extends mixins(TacticWatcher) {
     imgName: HTMLHeadingElement;
   }
 
+  isDisabled (): boolean {
+    return !(this.$data.tactic.name && this.$data.tactic.map.icon)
+  }
+
   // Need to do more to this, but we dont have the collection stuff created yet so this is temporary.
   createTactic (): void {
-    if (this.$data.tactic.name && this.isAuth && this.jwt !== null) {
-      EventBus.$emit('loadCanvas')
+    if (!this.isDisabled()) {
       this.newTactic({
         id: uuid(),
         name: this.$data.tactic.name,
@@ -137,7 +134,8 @@ export default class CreateNewTacticOverlay extends mixins(TacticWatcher) {
         canvasElements: [],
         canvasElementsHistory: [],
         lockedBy: undefined,
-        createdBy: this.jwt.jti,
+        pinned: false,
+        createdBy: this.$store.getters[`authentication/${AuthenticationGetters.JWT}`].jti,
         map: this.$data.tactic.map
       })
       this.resetTacticForm()

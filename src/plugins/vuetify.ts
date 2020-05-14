@@ -6,6 +6,7 @@ import { DashedLine, NormalLine, TBarHead, DashedLineActive, NormalLineActive, T
 
 import Vuetify, {
   VApp,
+  VAvatar,
   VRadio,
   VRadioGroup,
   VAutocomplete,
@@ -49,12 +50,16 @@ import Vuetify, {
   VSkeletonLoader,
   VInput,
   VCardTitle,
- VCardText,
+  VTreeview,
+  VTab,
+  VTabsSlider,
+  VTabs
 } from 'vuetify/lib'
 
 Vue.use(Vuetify, {
   components: {
     VApp,
+    VAvatar,
     VRadioGroup,
     VSwitch,
     VRadio,
@@ -98,7 +103,10 @@ Vue.use(Vuetify, {
     VSkeletonLoader,
     VInput,
     VCardTitle,
-    VCardText
+    VTreeview,
+    VTab,
+    VTabsSlider,
+    VTabs
   },
   directives: { }
 })

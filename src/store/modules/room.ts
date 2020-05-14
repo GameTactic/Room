@@ -1,5 +1,6 @@
 import { ActionContext, Module } from 'vuex'
 import { Game, Collection, Tactic, User, PresentationPayload, Api } from './types'
+import TacticWatcher from '@/mixins/TacticWatcher'
 
 export enum GameName {
   NONE = '',
@@ -41,6 +42,7 @@ export enum RoomAction {
   DELETE_COLLECTION = 'deleteCollection',
   SET_TACTICS = 'setTactics',
   SET_TACTIC = 'setTactic',
+  TOGGLE_PIN_TACTIC = 'togglePinTactic',
   UPDATE_TACTIC = 'updateTactic',
   DELETE_TACTIC = 'deleteTactic',
   SET_USERS = 'setUsers',
@@ -62,6 +64,7 @@ export enum RoomMutation {
   DELETE_COLLECTION = 'DELETE_COLLECTION',
   SET_TACTICS = 'SET_TACTICS',
   SET_TACTIC = 'SET_TACTIC',
+  TOGGLE_PIN_TACTIC = 'TOGGLE_PIN_TACTIC',
   UPDATE_TACTIC = 'UPDATE_TACTIC',
   DELETE_TACTIC = 'DELETE_TACTIC',
   SET_USERS = 'SET_USERS',
@@ -80,11 +83,11 @@ export enum RoomGetters {
   COLLECTION = 'collection',
   TACTICS = 'tactics',
   TACTIC = 'tactic',
+  PINNED_TACTICS = 'pinnedTactics',
   USERS = 'users',
   USER = 'user',
   PRESENTATION = 'presentation',
   IS_PRIVATE = 'isPrivate'
-  ROOM_MAPS = 'roomMaps'
 }
 
 export interface RoomState {
@@ -120,6 +123,12 @@ const RoomModule: Module<RoomState, {}> = {
   getters: {
     [RoomGetters.LOCALE]: state => state.locale,
     [RoomGetters.GAME_NAME]: state => state.game.name,
+    [RoomGetters.GAME_API]: state => state.game.api,
+    [RoomGetters.COLLECTIONS]: state => state.collections,
+    [RoomGetters.COLLECTION]: (state) => (id: string) => state.collections.find((collection: Collection) => collection.id === id),
+    [RoomGetters.TACTICS]: state => state.tactics,
+    [RoomGetters.TACTIC]: (state) => (id: string) => state.tactics.find((tactic: Tactic) => tactic.id === id),
+    [RoomGetters.PINNED_TACTICS]: state => state.tactics.filter((tactic: Tactic) => tactic.pinned),
     [RoomGetters.USERS]: state => state.users,
     [RoomGetters.USER]: (state) => (jti: string) => state.users.find((user: User) => user.jti === jti),
     [RoomGetters.PRESENTATION]: state => ({ isPresentationEnabled: state.isPresentationEnabled, presentationEnabledBy: state.presentationEnabledBy }),
@@ -152,6 +161,9 @@ const RoomModule: Module<RoomState, {}> = {
     },
     [RoomMutation.SET_TACTICS] (state: RoomState, payload: Tactic[]) {
       state.tactics = payload
+    },
+    [RoomMutation.TOGGLE_PIN_TACTIC] (state: RoomState, payload: Tactic) {
+      state.tactics.splice(state.tactics.findIndex((tactic: Tactic) => tactic.id === payload.id), 1, { ...payload, pinned: !payload.pinned })
     },
     [RoomMutation.SET_TACTIC] (state: RoomState, payload: Tactic) {
       state.tactics.push(payload)
@@ -213,6 +225,9 @@ const RoomModule: Module<RoomState, {}> = {
     },
     [RoomAction.SET_TACTIC] (context: RoomActionContext, payload: Tactic) {
       context.commit('SET_TACTIC', payload)
+    },
+    [RoomAction.TOGGLE_PIN_TACTIC] (context: RoomActionContext, payload: Tactic) {
+      context.commit('TOGGLE_PIN_TACTIC', payload)
     },
     [RoomAction.UPDATE_TACTIC] (context: RoomActionContext, payload: Tactic) {
       context.commit('UPDATE_TACTIC', payload)

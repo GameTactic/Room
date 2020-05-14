@@ -16,8 +16,8 @@
       >
         <template v-slot:activator="{ on }">
           <v-btn
-            dark
-            icon
+            color="primary"
+            elevation="0"
             v-on="on"
           >
             <v-icon size="20">fa-save</v-icon>
