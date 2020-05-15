@@ -118,7 +118,7 @@ export default class MapButtons extends Vue {
     ...this.teams
   ]
 
-  clickedItemKey = 0
+  clickedItemKey = -1
 
   images = {
     wows: require('@/assets/wows-icon2.png'),

@@ -36,9 +36,7 @@
       </template>
       <v-card tile style="height: 300px;">
         <v-sheet class="pa-1 primary d-flex" tile>
-          <!-- <v-btn icon color="white" class="mr-2" @click="manageTacticsOnClickHandler">
-            <v-icon small>fa-cog</v-icon>
-          </v-btn> -->
+          <div style="width: 2.5rem;"></div>
           <v-text-field
             v-model="search"
             :label="$t('tactic.textField.label')"
@@ -193,12 +191,10 @@
 
 <script lang="ts">
 import { Component, Prop, Vue } from 'vue-property-decorator'
-import { Tool } from '@/tools/Tool'
-import { namespace, Getter, Action } from 'vuex-class'
-import { RoomGetters, RoomAction } from '@/store/modules/room'
+import { Getter, Action } from 'vuex-class'
+import { TacticGetters, TacticAction } from '@/store/modules/tactic'
 import { Tactic } from '@/store/modules/types'
 import { EventBus } from '../../event-bus'
-import { MenuItem } from '../TheEntityPanel.vue'
 
 interface TacticMenuItem {
   action: string;
@@ -213,16 +209,15 @@ interface TacticMenuItem {
 export default class TheTacticSelector extends Vue {
   @Prop() private id!: string
   @Prop() private icon!: string
-  @Getter(`room/${RoomGetters.TACTICS}`) tactics!: Tactic[]
-  @Getter(`room/${RoomGetters.PINNED_TACTICS}`) pinnedTactics!: Tactic[]
-  @Action(`room/${RoomAction.DELETE_TACTIC}`) deleteTactic!: (id: string) => void
-  @Action(`room/${RoomAction.UPDATE_TACTIC}`) updateTactic!: (tactic: Tactic) => void
-  @Action(`room/${RoomAction.TOGGLE_PIN_TACTIC}`) togglePinTactic!: (tactic: Tactic) => void
+  @Getter(`tactic/${TacticGetters.TACTICS}`) tactics!: Tactic[]
+  @Getter(`tactic/${TacticGetters.PINNED_TACTICS}`) pinnedTactics!: Tactic[]
+  @Action(`tactic/${TacticAction.DELETE_TACTIC}`) deleteTactic!: (id: string) => void
+  @Action(`tactic/${TacticAction.UPDATE_TACTIC}`) updateTactic!: (tactic: Tactic) => void
+  @Action(`tactic/${TacticAction.TOGGLE_PIN_TACTIC}`) togglePinTactic!: (tactic: Tactic) => void
 
   open = []
   search = null
   isEditTacticDialogVisible = false
-  selectedTactic: Tactic | undefined
   cardMenuItems: TacticMenuItem[] = [{
     action: 'edit',
     title: `Edit Tactic`,
@@ -263,10 +258,8 @@ export default class TheTacticSelector extends Vue {
   }
 
   tacticMenuOnClickHandler (menuItem: TacticMenuItem, tactic: Tactic) {
-    console.log('menuItem', menuItem)
     switch (menuItem.action) {
       case 'edit':
-        console.log('in here')
         EventBus.$emit('openManageTacticsOverlay', tactic)
         break
       case 'delete':
@@ -281,7 +274,7 @@ export default class TheTacticSelector extends Vue {
   }
 
   // To be implemented correctly when user management has been added
-  numberUsersOnTactic (tactic: Tactic) {
+  numberUsersOnTactic () {
     return 1
   }
 }

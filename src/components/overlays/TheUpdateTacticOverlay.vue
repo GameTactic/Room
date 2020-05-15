@@ -1,5 +1,10 @@
 <template>
-    <v-dialog v-model="overlay" width="700" class="custom-overlay">
+    <v-dialog
+      v-if="selectedTactic && selectedTactic.map"
+      v-model="overlay"
+      width="700"
+      class="custom-overlay"
+    >
       <v-card class="pa-12">
         <v-row>
           <v-col>
@@ -70,9 +75,6 @@ import { CustomStageConfig } from '@/util/PointerEventMapper'
 import { CanvasAction } from '@/store/modules/canvas'
 import { CanvasElement, CanvasElementHistory } from '@/types/Canvas'
 import TacticWatcher from '@/mixins/TacticWatcher'
-import uuid from 'uuid'
-import { AuthenticationGetters } from '@/store/modules/authentication'
-import { Prop } from 'vue-property-decorator'
 
 @Component({
   name: 'TheUpdateTacticOverlay',
@@ -85,7 +87,7 @@ export default class TheUpdateTacticOverlay extends mixins(TacticWatcher) {
   @Action(`canvas/${CanvasAction.SET_CANVAS_ELEMENT_HISTORY}`) setCanvasElementsHistory!: (canvasElements: CanvasElementHistory[]) => void
 
   search = ''
-  selectedTactic: Tactic | undefined
+  selectedTactic: Tactic | {} = {}
   overlay = false
   created () {
     EventBus.$on('openManageTacticsOverlay', (tactic: Tactic) => {
@@ -110,8 +112,8 @@ export default class TheUpdateTacticOverlay extends mixins(TacticWatcher) {
 
   // Need to do more to this, but we dont have the collection stuff created yet so this is temporary.
   updateTacticOnClickHandler (): void {
-    if (this.selectedTactic) {
-      this.updateTactic(this.selectedTactic)
+    if (this.selectedTactic && !Object.keys(this.selectedTactic).length) {
+      this.updateTactic(this.selectedTactic as Tactic)
       this.resetTacticForm()
     }
     this.overlay = false

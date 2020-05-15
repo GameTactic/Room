@@ -60,6 +60,11 @@ export interface Collection {
 }
 
 export interface PresentationPayload {
-  isPresentationEnabled: boolean;
-  presentationEnabledBy: string;
+  enabledBy: string;
+  tacticId: string;
+}
+
+export interface Presentation {
+  enabledBy: string | undefined;
+  tacticId: string | undefined;
 }
