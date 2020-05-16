@@ -1,7 +1,7 @@
 import { EntityData, ToolClass, Tracker } from '@/tools/Tool'
 import { AdditionTools, CanvasElement, CanvasElementType, RequestCanvasEntity } from '@/types/Canvas'
 import { CustomEvent } from '@/util/PointerEventMapper'
-import { Item } from '@/types/Games'
+import { Item } from '@/types/Games/Index'
 import EntityCreator from '@/tools/shapes/EntityCreator'
 import uuid from 'uuid'
 import { ISO } from '@/util/ISO'

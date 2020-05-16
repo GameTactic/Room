@@ -17,7 +17,7 @@ import { LayerGetters } from '@/store/modules/layer'
 import { ToolGetters, ToolsAction } from '@/store/modules/tools'
 import { CanvasAction, CanvasGetters } from '@/store/modules/canvas'
 import { Dimensions } from '@/mixins/StageWatcher'
-import { Item } from '@/types/Games'
+import { Item } from '@/types/Games/Index'
 
 export type CanvasDownAction = (event: CustomEvent, stage: VueKonvaStage) => void;
 export type CanvasMoveAction = (event: CustomEvent, stage: VueKonvaStage) => void;

@@ -196,7 +196,6 @@ import { Getter, Action } from 'vuex-class'
 import { TacticGetters, TacticAction } from '@/store/modules/tactic'
 import { Tactic } from '@/store/modules/types'
 import { EventBus } from '../../event-bus'
-import { RoomGetters } from '../../store/modules/room'
 import { AuthenticationGetters, ExtendedJWT } from '../../store/modules/authentication'
 
 interface TacticMenuItem {

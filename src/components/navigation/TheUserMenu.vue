@@ -65,11 +65,10 @@
 
 <script lang="ts">
 import { Component, Prop, Vue } from 'vue-property-decorator'
-import { namespace, Getter } from 'vuex-class'
+import { namespace } from 'vuex-class'
 import { Namespaces } from '@/store'
 import { AuthenticationActions, AuthenticationGetters } from '@/store/modules/authentication'
 import GLoginCard from '@/components/navigation/LoginCard.vue'
-import { RoomGetters } from '../../store/modules/room'
 
 interface UserMenuItem {
   text: string;
