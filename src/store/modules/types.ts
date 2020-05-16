@@ -1,5 +1,5 @@
 import { GameName } from '@/store/modules/room'
-import {CanvasElement, CanvasElementHistory} from '@/types/Canvas'
+import { CanvasElement, CanvasElementHistory } from '@/types/Canvas'
 
 export interface Api {
   name: string;
@@ -23,10 +23,24 @@ export interface Game {
   api: Api[];
 }
 
+export type RoleId = 'roomOwner' | 'admin';
+
+export interface Role {
+  id: string;
+  roleId: RoleId;
+  assignedBy: string;
+}
+
 export interface User {
   jti: string;
-  isRoomOwner: boolean;
+  name: string;
+  onTacticId: string;
+  isOnline: boolean;
+  lastOnline: Date | undefined;
+  joined: Date;
   isAuthN: boolean;
+  bannedBy: string | undefined;
+  roles: Role[];
 }
 
 export interface Map {
@@ -44,7 +58,7 @@ export interface Tactic {
   collectionId: string;
   lockedBy: string | undefined;
   map: Map;
-  pinned: boolean;
+  isPinned: boolean;
   createdBy: string;
   canvasElements: CanvasElement[];
   canvasElementsHistory: CanvasElementHistory[];
@@ -53,9 +67,10 @@ export interface Tactic {
 
 export interface Collection {
   id: string;
-  collectionId: string;
-  isLocked: boolean;
+  parentCollectionId: string | undefined;
+  name: string;
   lockedBy: string | undefined;
+  isPinned: boolean;
   createdBy: string;
 }
 

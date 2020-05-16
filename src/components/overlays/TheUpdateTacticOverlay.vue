@@ -112,7 +112,7 @@ export default class TheUpdateTacticOverlay extends mixins(TacticWatcher) {
 
   // Need to do more to this, but we dont have the collection stuff created yet so this is temporary.
   updateTacticOnClickHandler (): void {
-    if (this.selectedTactic && !Object.keys(this.selectedTactic).length) {
+    if (this.selectedTactic && Object.keys(this.selectedTactic).length) {
       this.updateTactic(this.selectedTactic as Tactic)
       this.resetTacticForm()
     }

@@ -20,6 +20,7 @@
             <v-btn
               :class="['custom-tactic-selector-menu']"
               color="primary"
+              :disabled="!(jwt && jwt.jti)"
               ripple
               tile
               icon
@@ -195,6 +196,8 @@ import { Getter, Action } from 'vuex-class'
 import { TacticGetters, TacticAction } from '@/store/modules/tactic'
 import { Tactic } from '@/store/modules/types'
 import { EventBus } from '../../event-bus'
+import { RoomGetters } from '../../store/modules/room'
+import { AuthenticationGetters, ExtendedJWT } from '../../store/modules/authentication'
 
 interface TacticMenuItem {
   action: string;
@@ -207,8 +210,8 @@ interface TacticMenuItem {
   name: 'TheTacticSelector'
 })
 export default class TheTacticSelector extends Vue {
-  @Prop() private id!: string
   @Prop() private icon!: string
+  @Getter(`authentication/${AuthenticationGetters.JWT}`) jwt!: ExtendedJWT
   @Getter(`tactic/${TacticGetters.TACTICS}`) tactics!: Tactic[]
   @Getter(`tactic/${TacticGetters.PINNED_TACTICS}`) pinnedTactics!: Tactic[]
   @Action(`tactic/${TacticAction.DELETE_TACTIC}`) deleteTactic!: (id: string) => void

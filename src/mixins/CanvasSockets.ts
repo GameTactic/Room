@@ -2,7 +2,6 @@ import Vue from 'vue'
 import Component from 'vue-class-component'
 import { Socket } from 'vue-socket.io-extended'
 import { Action, Getter } from 'vuex-class'
-import { Prop } from 'vue-property-decorator'
 import { AdditionData, CanvasElement, CanvasElementHistory, MoveData, RedoData, RemovalData, RemovalTools, RequestCanvasEntity, UndoData } from '@/types/Canvas'
 import { Tool, Tracker } from '@/tools/Tool'
 import { ToolGetters } from '@/store/modules/tools'
@@ -15,7 +14,6 @@ import { SocketCanvasToolsEmit } from '@/store/modules/socket'
   name: 'CanvasSocket'
 })
 export default class CanvasSocket extends Vue {
-  @Prop() id!: string
   @Getter(`tools/${ToolGetters.TOOLS}`) tools!: Tool[]
   @Getter(`canvas/${CanvasGetters.CANVAS_ELEMENTS}`) canvasElements!: CanvasElement[]
   @Getter(`canvas/${CanvasGetters.CANVAS_ELEMENTS_HISTORY}`) canvasElementsHistory!: CanvasElementHistory[]

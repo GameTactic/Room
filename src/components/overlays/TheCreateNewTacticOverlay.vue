@@ -9,7 +9,7 @@
             <v-card-actions>
               <v-text-field
                 prepend-icon="fa-file"
-                label="SwitchTactic name"
+                :label="$t('tactic.overlay.name')"
                 v-model="tactic.name"
               />
             </v-card-actions>
@@ -22,8 +22,8 @@
                 color="primary"
                 hide-no-data
                 hide-selected
-                :label="$t('tactic.createTacticOverlay.maps')"
-                :placeholder="$t('tactic.createTacticOverlay.search')"
+                :label="$t('tactic.overlay.maps')"
+                :placeholder="$t('tactic.overlay.search')"
                 prepend-icon="fa-search"
                 autocomplete="new-password"
                 return-object
@@ -65,7 +65,7 @@ import Component, { mixins } from 'vue-class-component'
 import { EventBus } from '@/event-bus'
 import { RoomGetters } from '@/store/modules/room'
 import { Action, Getter } from 'vuex-class'
-import { Api } from '@/store/modules/types'
+import { Api, Collection } from '@/store/modules/types'
 import { StageActions } from '@/store/modules/stage'
 import { CustomStageConfig } from '@/util/PointerEventMapper'
 import { CanvasAction } from '@/store/modules/canvas'
@@ -73,6 +73,7 @@ import { CanvasElement, CanvasElementHistory } from '@/types/Canvas'
 import TacticWatcher from '@/mixins/TacticWatcher'
 import uuid from 'uuid'
 import { AuthenticationGetters } from '@/store/modules/authentication'
+import { TacticGetters } from '../../store/modules/tactic'
 
 @Component({
   name: 'TheCreateNewTacticOverlay',
@@ -95,6 +96,7 @@ import { AuthenticationGetters } from '@/store/modules/authentication'
 })
 export default class CreateNewTacticOverlay extends mixins(TacticWatcher) {
   @Getter(`room/${RoomGetters.GAME_API}`) gameApi!: Api[]
+  @Getter(`tactic/${TacticGetters.COLLECTIONS}`) collections!: Collection[]
   @Action(`stage/${StageActions.SET_CONFIG}`) setConfig!: (config: CustomStageConfig) => void
   @Action(`canvas/${CanvasAction.SET_CANVAS_ELEMENT}`) setCanvasElements!: (canvasElements: CanvasElement[]) => void
   @Action(`canvas/${CanvasAction.SET_CANVAS_ELEMENT_HISTORY}`) setCanvasElementsHistory!: (canvasElements: CanvasElementHistory[]) => void
@@ -126,15 +128,16 @@ export default class CreateNewTacticOverlay extends mixins(TacticWatcher) {
 
   // Need to do more to this, but we dont have the collection stuff created yet so this is temporary.
   createTactic (): void {
-    if (!this.isDisabled()) {
+    const foundCollection = this.collections.find((collection: Collection) => collection.name === 'root')
+    if (!this.isDisabled() && foundCollection) {
       this.newTactic({
         id: uuid(),
         name: this.$data.tactic.name,
-        collectionId: uuid(),
+        collectionId: foundCollection.id,
         canvasElements: [],
         canvasElementsHistory: [],
         lockedBy: undefined,
-        pinned: false,
+        isPinned: false,
         createdBy: this.$store.getters[`authentication/${AuthenticationGetters.JWT}`].jti,
         map: this.$data.tactic.map
       })

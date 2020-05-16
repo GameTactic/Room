@@ -1,6 +1,6 @@
 <template>
   <v-menu
-    v-if="!mobile"
+    v-if="!isMobile"
     offset-y
     content-class="elevation-2"
   >
@@ -10,6 +10,7 @@
           <v-btn
             color="primary"
             elevation="0"
+            small
             style="margin-right:2px"
             v-on="{ ...tooltip, ...menu }"
           >
@@ -64,10 +65,11 @@
 
 <script lang="ts">
 import { Component, Prop, Vue } from 'vue-property-decorator'
-import { namespace } from 'vuex-class'
+import { namespace, Getter } from 'vuex-class'
 import { Namespaces } from '@/store'
 import { AuthenticationActions, AuthenticationGetters } from '@/store/modules/authentication'
 import GLoginCard from '@/components/navigation/LoginCard.vue'
+import { RoomGetters } from '../../store/modules/room'
 
 interface UserMenuItem {
   text: string;
@@ -81,7 +83,7 @@ const authNamespace = namespace(Namespaces.AUTH)
   components: { GLoginCard }
 })
 export default class TheUserMenu extends Vue {
-  @Prop() private mobile!: boolean;
+  @Prop() private isMobile!: boolean;
   @authNamespace.Getter(AuthenticationGetters.IS_AUTH) isAuth!: boolean
   @authNamespace.Action(AuthenticationActions.LOGIN_WG) authenticate!: (region: string) => void;
   @authNamespace.Action(AuthenticationActions.LOGOUT) logout!: () => void

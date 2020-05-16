@@ -29,6 +29,7 @@
             <v-divider></v-divider>
             <div>
               <v-list
+                :disabled="!isCanvasLoaded"
                 dense
                 nav
               >
@@ -44,7 +45,7 @@
                     <v-list-item
                       v-on="on"
                       dark
-                      active-class="test"
+                      active-class="custom-list-item-active-class"
                       :input-value="clickedItemKey === item.key"
                       class="custom-list-item-center"
                       @click="onItemClickHandler(item.key)"
@@ -54,11 +55,11 @@
                           v-if="index"
                           :content="item.noOfEntities"
                         >
-                          <v-icon :color="item.color">{{ item.icon }}</v-icon>
+                          <v-icon :color="!isCanvasLoaded ? 'white' : item.color">{{ item.icon }}</v-icon>
                         </v-badge>
                         <v-icon
                           v-else
-                          :color="item.color"
+                          :color="!isCanvasLoaded ? 'white' : item.color"
                         >
                           {{ item.icon }}
                         </v-icon>
@@ -81,7 +82,7 @@
 </template>
 
 <script lang="ts">
-import { Component, Prop, Vue } from 'vue-property-decorator'
+import { Component, Vue } from 'vue-property-decorator'
 import { RoomGetters, GameName } from '@/store/modules/room'
 import { Getter } from 'vuex-class'
 import { WowsPanel, WotPanel } from './entity-panel'
@@ -102,9 +103,8 @@ export interface MenuItem {
   }
 })
 export default class MapButtons extends Vue {
-  @Prop() private id!: string;
-  @Prop() private isLoadCanvas!: string;
   @Getter(`room/${RoomGetters.GAME_NAME}`) private readonly gameName!: GameName;
+  @Getter(`room/${RoomGetters.IS_CANVAS_LOADED}`) isCanvasLoaded!: boolean
 
   show = false
 
@@ -229,7 +229,7 @@ export default class MapButtons extends Vue {
     background-color: white;
   }
 }
-.test {
+.custom-list-item-active-class {
   background-color: rgba(white, 0.001);
   color: white;
 }
