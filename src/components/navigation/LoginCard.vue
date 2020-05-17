@@ -2,7 +2,7 @@
   <v-card class="login-card">
     <v-card-title class="login-card-title">Select a login option</v-card-title>
     <v-card-text class="login-card-content">
-      <ProviderBlock v-for="(provider, name) in providers" :provider-name="name" :provider="provider" :key="name" class="login-card-content-block">
+      <ProviderBlock v-for="(provider, name) in providers" :provider-name="name" :provider="provider" :key="name">
       </ProviderBlock>
     </v-card-text>
   </v-card>
@@ -34,15 +34,6 @@ export default class extends Vue {
   .login-card {
     &-title {
       font-weight: bold;
-    }
-    &-content {
-      display: grid;
-      grid-template-columns: 1fr;
-      grid-row-gap: 10px;
-
-      &-block {
-        margin-top: 10px;
-      }
     }
   }
 </style>

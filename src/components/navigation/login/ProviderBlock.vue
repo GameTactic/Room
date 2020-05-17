@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="provider-container">
     <h3>{{providerName}}</h3>
     <v-divider>
     </v-divider>
@@ -42,5 +42,9 @@ export default class extends Vue {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
     grid-column-gap: 5px;
+  }
+
+  .provider-container {
+    margin-top: 10px;
   }
 </style>
