@@ -1,33 +1,33 @@
 <template>
   <span>
     <v-menu
-      transition="slide-y-reverse-transition"
       :close-on-content-click="false"
       :close-on-click="false"
-      offset-y
+      ref="tactic"
+      transition="slide-y-reverse-transition"
       content-class="elevation-2 custom-tactic-menu-container"
       nudge-right="0"
+      offset-y
       top
-      ref="tactic"
     >
       <template v-slot:activator="{ on: menu }">
         <v-tooltip
+          :open-delay="500"
           right
           nudge-right="10"
-          :open-delay="500"
         >
           <template v-slot:activator="{ on: tooltip }">
             <v-btn
-              :class="['custom-tactic-selector-menu']"
-              color="primary"
               :disabled="!(jwt && jwt.jti)"
+              class="custom-tactic-selector-menu"
+              color="primary"
+              width="48"
+              elevation="0"
               ripple
               tile
               icon
-              width="48"
               large
               v-on="{ ...menu, ...tooltip }"
-              elevation="0"
             >
               <v-icon dense>fa-layer-group</v-icon>
             </v-btn>
@@ -35,7 +35,7 @@
           <span>{{ $t(`tactic.button.tooltip`) }}</span>
         </v-tooltip>
       </template>
-      <v-card tile style="height: 300px;">
+      <v-card tile class="custom-tactic-card">
         <v-sheet class="pa-1 primary d-flex" tile>
           <div style="width: 2.5rem;"></div>
           <v-text-field
@@ -49,29 +49,46 @@
             solo-inverted
             hide-details
             clearable
-          ></v-text-field>
-          <v-btn icon color="white" class="ml-2" @click="newTacticOnClickHandler">
+          />
+          <v-btn
+            icon
+            color="white"
+            class="ml-2"
+            @click="newTacticOnClickHandler"
+          >
             <v-icon small>fa-plus</v-icon>
           </v-btn>
         </v-sheet>
-        <div v-if="tactics.length" class="custom-treeview-container">
+        <div
+          v-if="tactics.length"
+          class="custom-treeview-container"
+        >
           <v-treeview
             :items="tactics"
-            item-text="name"
-            item-key="id"
             :search="search"
             :open.sync="open"
+            item-key="id"
+            item-text="name"
             hoverable
             activatable
             open-on-click
           >
             <template v-slot:prepend="{ item: tactic }">
-              <v-icon v-if="tactic.children" small v-text="'fa-folder'" />
-              <v-icon v-else id="tactic-button" small v-text="'fa-map'" />
+              <v-icon
+                v-if="tactic.children"
+                small
+                v-text="'fa-folder'"
+              />
+              <v-icon
+                v-else
+                id="tactic-button"
+                small
+                v-text="'fa-map'"
+              />
             </template>
             <template v-slot:label="{ item: tactic }">
               <span class="d-flex justify-space-between align-center">
-                <span class="d-flex flex-column ">
+                <span class="d-flex flex-column">
                   <span class="body-2" v-text="tactic.name" />
                   <span class="caption" v-text="tactic.map.name" />
                 </span>
@@ -105,9 +122,9 @@
                 <template v-slot:activator="{ on: menuItem }">
                   <v-btn
                     elevation="0"
-                    tile
                     color="white"
                     height="30"
+                    tile
                     x-small
                     ripple
                     v-on="menuItem"
@@ -138,9 +155,7 @@
             </template>
           </v-treeview>
         </div>
-        <v-sheet
-          v-else
-        >
+        <v-sheet v-else>
           <v-subheader>{{ $t('tactic.noTacticsFound') }}</v-subheader>
         </v-sheet>
       </v-card>
@@ -150,25 +165,22 @@
       :class="['custom-tactic-tabs', pinnedTactics.length ? 'custom-tactic-pinned-tabs' : '']"
       next-icon="fa-arrow-right"
       prev-icon="fa-arrow-left"
-      show-arrows
       height="42"
+      show-arrows
       icons-and-text
     >
-      <v-tabs-slider color="primary"></v-tabs-slider>
+      <v-tabs-slider color="primary" />
       <v-menu
         v-for="pinnedTactic in pinnedTactics"
         :key="pinnedTactic.id"
-        open-on-hover
         content-class="elevation-1"
+        z-index="100"
+        open-on-hover
         top
         offset-y
-        z-index="100"
       >
         <template v-slot:activator="{ on: pinnedTab }">
-          <v-tab
-            :href="'#tab-' + pinnedTactic.id"
-            v-on="pinnedTab"
-          >
+          <v-tab :href="`#tab-'${pinnedTactic.id}`" v-on="pinnedTab">
             <div class="caption" v-text="pinnedTactic.name" />
           </v-tab>
         </template>
@@ -217,8 +229,8 @@ export default class TheTacticSelector extends Vue {
   @Action(`tactic/${TacticAction.UPDATE_TACTIC}`) updateTactic!: (tactic: Tactic) => void
   @Action(`tactic/${TacticAction.TOGGLE_PIN_TACTIC}`) togglePinTactic!: (tactic: Tactic) => void
 
-  open = []
-  search = null
+  open: string[] = []
+  search: string | null = null
   isEditTacticDialogVisible = false
   cardMenuItems: TacticMenuItem[] = [{
     action: 'edit',
@@ -319,6 +331,9 @@ export default class TheTacticSelector extends Vue {
   margin-top: 0.5rem;
 }
 
+.custom-tactic-card {
+  height: 300px;
+}
 </style>
 <style lang="scss">
 @mixin pinnedTabSlants {

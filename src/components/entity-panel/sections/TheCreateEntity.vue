@@ -184,7 +184,7 @@
           </v-col>
         </v-row>
         <v-subheader>
-          <p class="caption" v-html="$t('entity.cards.note')"></p>
+          <p class="caption" v-html="`<b>${$t('entity.cards.note.inBold')}: </b>${$t('entity.cards.note.afterBold')}`" />
         </v-subheader>
       </v-container>
     </template>
