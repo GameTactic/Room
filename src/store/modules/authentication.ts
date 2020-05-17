@@ -134,10 +134,6 @@ const AuthenticationModule: Module<AuthenticationState, {}> = {
           throw Error('Could not fetch authentication providers')
         }
         const providers = response.data.providers
-        providers['test others'] = {
-          facebook: 'testFB',
-          google: 'testGoogle'
-        }
         context.commit(AuthenticationMutation.SET_PROVIDERS, mapProviders(providers))
       } else {
         throw Error('Authentication URI is not set')

@@ -1,6 +1,6 @@
 <template>
   <v-card class="login-card">
-    <v-card-title class="login-card-title">Select a login option</v-card-title>
+    <v-card-title class="login-card-title">{{ $t('navigation.login.card.title') }}</v-card-title>
     <v-card-text class="login-card-content">
       <ProviderBlock v-for="(provider, name) in providers" :provider-name="name" :provider="provider" :key="name">
       </ProviderBlock>
