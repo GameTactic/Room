@@ -91,7 +91,7 @@ export default class TheUpdateTacticOverlay extends mixins(TacticWatcher) {
   overlay = false
   created () {
     EventBus.$on('openManageTacticsOverlay', (tactic: Tactic) => {
-      this.overlay = !this.overlay
+      this.overlay = true
       this.selectedTactic = { ...tactic }
     })
   }
@@ -125,8 +125,8 @@ export default class TheUpdateTacticOverlay extends mixins(TacticWatcher) {
         name: '',
         icon: '',
         desc: '',
-        width: 0,
-        height: 0,
+        width: 1,
+        height: 1,
         ratio: 0,
         id: 0
       },

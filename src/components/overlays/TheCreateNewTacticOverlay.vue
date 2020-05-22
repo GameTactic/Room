@@ -152,8 +152,8 @@ export default class CreateNewTacticOverlay extends mixins(TacticWatcher) {
         name: '',
         icon: '',
         desc: '',
-        width: 0,
-        height: 0,
+        width: 1,
+        height: 1,
         ratio: 0,
         id: 0
       },

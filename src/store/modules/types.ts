@@ -23,11 +23,14 @@ export interface Game {
   api: Api[];
 }
 
-export type RoleId = 'roomOwner' | 'admin';
+export enum RoleTypes { 
+  ROON_OWNER = 'roomOwner',
+  ADMIN = 'admin'
+}
 
 export interface Role {
   id: string;
-  roleId: RoleId;
+  roleTypes: RoleTypes;
   assignedBy: string;
 }
 

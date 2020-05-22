@@ -217,6 +217,12 @@ interface TacticMenuItem {
   icon: string;
 }
 
+enum TacticMenuOptions {
+  EDIT = 'edit',
+  PIN = 'pin',
+  DELETE = 'delete',
+}
+
 @Component({
   name: 'TheTacticSelector'
 })
@@ -233,24 +239,24 @@ export default class TheTacticSelector extends Vue {
   search: string | null = null
   isEditTacticDialogVisible = false
   cardMenuItems: TacticMenuItem[] = [{
-    action: 'edit',
+    action: TacticMenuOptions.EDIT,
     title: `Edit Tactic`,
     icon: 'fa-edit'
   }, {
-    action: 'pin',
+    action: TacticMenuOptions.PIN,
     title: `Pin Tactic`,
     titleTwo: `Unpin Tactic`,
     icon: 'fa-bookmark'
   }, {
-    action: 'delete',
+    action: TacticMenuOptions.DELETE,
     title: `Delete Tactic`,
     icon: 'fa-times'
   }]
 
   tacticMenuColour (tactic: Tactic, item: TacticMenuItem) {
-    if (item.action === 'pin' && tactic.pinned) {
+    if (item.action === TacticMenuOptions.PIN && tactic.pinned) {
       return 'primary'
-    } else if (item.action === 'delete') {
+    } else if (item.action === TacticMenuOptions.DELETE) {
       return 'error'
     }
     return ''
@@ -261,7 +267,7 @@ export default class TheTacticSelector extends Vue {
   }
 
   tacticMenuPinText (tactic: Tactic, item: TacticMenuItem) {
-    if (item.action === 'pin' && tactic.pinned && item.titleTwo) {
+    if (item.action === TacticMenuOptions.PIN && tactic.pinned && item.titleTwo) {
       return item.titleTwo
     }
     return item.title
@@ -273,13 +279,13 @@ export default class TheTacticSelector extends Vue {
 
   tacticMenuOnClickHandler (menuItem: TacticMenuItem, tactic: Tactic) {
     switch (menuItem.action) {
-      case 'edit':
+      case TacticMenuOptions.EDIT:
         EventBus.$emit('openManageTacticsOverlay', tactic)
         break
-      case 'delete':
+      case TacticMenuOptions.DELETE:
         this.deleteTactic(tactic.id)
         break
-      case 'pin':
+      case TacticMenuOptions.PIN:
         this.togglePinTactic(tactic)
         break
       default:

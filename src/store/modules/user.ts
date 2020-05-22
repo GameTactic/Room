@@ -1,11 +1,6 @@
 import { ActionContext, Module } from 'vuex'
 import { User } from './types'
 
-export enum RoleId {
-  ROOM_OWNER = 'roomOwner',
-  ADMIN = 'admin'
-}
-
 export enum UserAction {
   SET_USERS = 'setUsers',
   SET_USER = 'setUser',
