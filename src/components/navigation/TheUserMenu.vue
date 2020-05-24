@@ -1,18 +1,4 @@
 <template>
-  
-  <v-btn
-    dark
-    icon
-    style="margin-right:2px"
-    v-if="!mobile && !isAuth"
-    @click="doOpen"
-  >
-    Login
-    <v-dialog v-model="isDialogOpen" @click:outside="onClickCloseDialog"
-              max-width="500px">
-      <LoginCard></LoginCard>
-    </v-dialog>
-  </v-btn>
   <v-menu
     v-if="!isMobile"
     offset-y
@@ -35,8 +21,14 @@
       </v-tooltip>
     </template>
     <v-list>
-      <v-list-item @click="onClickLogout">
+      <v-list-item v-if="isAuth" @click="onClickLogout">
         <v-list-item-title>{{ $t('navigation.login.logout') }}</v-list-item-title>
+      </v-list-item>
+      <v-list-item v-else @click="openLoginDialog">
+        <v-list-item-title>{{ $t('navigation.login.title') }}</v-list-item-title>
+        <v-dialog v-model="isDialogOpen" @click:outside="onClickCloseLoginDialog" max-width="500px">
+          <LoginCard></LoginCard>
+        </v-dialog>
       </v-list-item>
       <v-list-item
         v-for="(userMenuItem, index) in userMenuItems"
@@ -53,10 +45,10 @@
     <v-list-item v-if="isAuth" @click="onClickLogout">
       <v-list-item-title>{{ $t('navigation.login.logout') }}</v-list-item-title>
     </v-list-item>
-    <v-list-item v-else @click="doOpen">
+    <v-list-item v-else @click="openLoginDialog">
       <v-list-item-title>{{ $t('navigation.login.title') }}</v-list-item-title>
-      <v-dialog v-model="isDialogOpen" @click:outside="onClickCloseDialog" fullscreen>
-        <LoginCard></LoginCard>
+      <v-dialog v-model="isDialogOpen" @click:outside="onClickCloseLoginDialog" fullscreen>
+        <LoginCard :is-mobile="isMobile" v-on:close-handler="onClickCloseLoginDialog"></LoginCard>
       </v-dialog>
     </v-list-item>
     <v-list-item
@@ -99,13 +91,13 @@ export default class TheUserMenu extends Vue {
 
     isDialogOpen = false
 
-    doOpen () {
+    openLoginDialog () {
       setTimeout(() => {
         this.isDialogOpen = true
       })
     }
 
-    onClickCloseDialog () {
+    onClickCloseLoginDialog () {
       this.isDialogOpen = false
     }
 
