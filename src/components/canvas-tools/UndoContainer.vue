@@ -6,7 +6,7 @@
   >
     <template v-slot:activator="{ on }">
       <v-btn
-        :disabled="isDisabled || !isLoadCanvas"
+        :disabled="isDisabled || !isCanvasLoaded"
         class="undoBtn"
         icon
         elevation=""
@@ -28,24 +28,25 @@ import { CanvasAction, CanvasGetters } from '@/store/modules/canvas'
 import { CanvasElement, CanvasElementHistory } from '@/types/Canvas'
 import HandleUndoRedo from '@/util/HandleUndoRedo'
 import HandleRenderShapes from '@/util/HandleRenderShapes'
+import { RoomGetters } from '../../store/modules/room'
 
 @Component({
   name: 'UndoContainer.vue'
 })
 export default class UndoContainer extends Vue {
-    @Prop() private id!: string
     @Prop() private icon!: string
     @Prop() private toolname!: string
-    @Prop() private isLoadCanvas!: boolean
+    @Getter(`room/${RoomGetters.IS_CANVAS_LOADED}`) isCanvasLoaded!: boolean
     @Getter(`canvas/${CanvasGetters.CANVAS_ELEMENTS_HISTORY}`) canvasElementsHistory!: CanvasElementHistory[]
     @Getter(`canvas/${CanvasGetters.CANVAS_ELEMENTS}`) canvasElements!: CanvasElement[]
     @Action(`canvas/${CanvasAction.ADD_CANVAS_ELEMENT_HISTORY}`) addCanvasElementHistory!: (canvasElement: CanvasElement) => void
+    @Getter(`canvas/${CanvasGetters.CANVAS_ELEMENT_HISTORY_BY_ID}`) canvasElementHistoryById!: (id: string) => CanvasElementHistory | void
+    @Getter(`canvas/${CanvasGetters.CANVAS_ELEMENT_BY_ID}`) canvasElementById!: (id: string) => CanvasElement | void
 
     onButtonClickHandler () {
       const handleUndoRedo = new HandleUndoRedo()
       handleUndoRedo.handleUndoRedo('Undo')
-      const renderShapes = new HandleRenderShapes(this.$store)
-      renderShapes.handle()
+      new HandleRenderShapes(this.$store).handle()
     }
 
     get isDisabled (): boolean {

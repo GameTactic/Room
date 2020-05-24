@@ -1,11 +1,16 @@
 <template>
-  <v-menu v-if="!mobile" offset-y>
+  <v-menu
+    v-if="!isMobile"
+    offset-y
+    content-class="elevation-2"
+  >
     <template v-slot:activator="{ on: menu }">
       <v-tooltip bottom :open-delay="500">
         <template v-slot:activator="{ on: tooltip }">
           <v-btn
-            dark
-            icon
+            color="primary"
+            elevation="0"
+            small
             style="margin-right:2px"
             v-on="{ ...tooltip, ...menu }"
           >
@@ -77,7 +82,7 @@ const authNamespace = namespace(Namespaces.AUTH)
   components: { GLoginCard }
 })
 export default class TheUserMenu extends Vue {
-  @Prop() private mobile!: boolean;
+  @Prop() private isMobile!: boolean;
   @authNamespace.Getter(AuthenticationGetters.IS_AUTH) isAuth!: boolean
   @authNamespace.Action(AuthenticationActions.LOGIN_WG) authenticate!: (region: string) => void;
   @authNamespace.Action(AuthenticationActions.LOGOUT) logout!: () => void

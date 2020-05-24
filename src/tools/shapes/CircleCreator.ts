@@ -29,13 +29,12 @@ export default class CircleCreator extends Shape implements CircleCreatorInterfa
           this.line = this.createLineElement(canvasElement, event)
         )
       )
-      this.group.attrs.type = CanvasElementType.SHAPE
     } else {
       this.layer.add(this.group.id(canvasElement.id).add(
         this.circle = this.createCircleElement(canvasElement, event)
       ))
-      this.group.attrs.type = CanvasElementType.SHAPE
     }
+    this.group.attrs.type = CanvasElementType.SHAPE
   }
   // eslint-disable-next-line
   move = (event: CustomEvent | CustomStageEvent, canvasElement?: CanvasElement): void => {

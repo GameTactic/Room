@@ -6,6 +6,8 @@ import StageModule from '@/store/modules/stage'
 import LayerModule from '@/store/modules/layer'
 import ToolModule from '@/store/modules/tools'
 import RoomModule from '@/store/modules/room'
+import TacticModule from '@/store/modules/tactic'
+import UserModule from '@/store/modules/user'
 import Vue from 'vue'
 import Vuex from 'vuex'
 
@@ -19,7 +21,9 @@ export enum Namespaces {
   STAGE = 'stage',
   TOOLS = 'tools',
   LAYER = 'layer',
-  ROOM = 'room'
+  ROOM = 'room',
+  TACTIC = 'tactic',
+  USER = 'user'
 }
 
 // eslint-disable-next-line
@@ -32,6 +36,8 @@ export default new Vuex.Store<any>({
     [Namespaces.LAYER]: LayerModule,
     [Namespaces.STAGE]: StageModule,
     [Namespaces.TOOLS]: ToolModule,
-    [Namespaces.ROOM]: RoomModule
+    [Namespaces.ROOM]: RoomModule,
+    [Namespaces.TACTIC]: TacticModule,
+    [Namespaces.USER]: UserModule
   }
 })

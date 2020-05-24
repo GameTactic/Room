@@ -9,6 +9,7 @@ import Line from '@/tools/Line'
 import Ruler from '@/tools/Ruler'
 import Text from '@/tools/Text'
 import Move from '@/tools/Move'
+import Entity from '@/tools/Entity'
 
 export enum ToolGetters {
   ENABLED_TOOL = 'enabledTool',
@@ -72,7 +73,8 @@ const ToolModule: Module<ToolState, {}> = {
         new Ruler('ruler', 3, '#C2C4BD80', false, true),
         new Text('text', 5, '#CE0000FF', false, ''),
         new Move('move', false),
-        new MoveCanvas('moveCanvas', false)
+        new MoveCanvas('moveCanvas', false),
+        new Entity('entity', false)
       ]
     }
   },

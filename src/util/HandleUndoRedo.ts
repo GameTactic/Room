@@ -4,7 +4,7 @@ import store from '@/main'
 import { ISO } from '@/util/ISO'
 import uuid from 'uuid'
 import { AuthenticationGetters, JWT } from '@/store/modules/authentication'
-import { SocketActions } from '@/store/modules/socket'
+import { SocketActions, SocketCanvasToolsEmit } from '@/store/modules/socket'
 import {
   AdditionData,
   CanvasElement,
@@ -17,13 +17,15 @@ import {
 
 export default class HandleUndoRedo {
   handleUndoRedo = (undoRedoString: string): void => {
-    const canvasElementsHistory = (store.getters[`canvas/${CanvasGetters.CANVAS_ELEMENTS_HISTORY}`])
-    const foundElement: CanvasElementHistory = this['find' + undoRedoString](this.sortHistory([...canvasElementsHistory]))
-    if (foundElement) {
-      if (undoRedoString === 'Undo') {
-        this.undo(Tracker.UNDO, { historyId: foundElement.id })
-      } else if (undoRedoString === 'Redo') {
-        this.redo(Tracker.REDO, foundElement)
+    const canvasElementsHistory: CanvasElementHistory[] | void = (store.getters[`canvas/${CanvasGetters.CANVAS_ELEMENTS_HISTORY}`])
+    if (canvasElementsHistory) {
+      const foundElement: CanvasElementHistory = this['find' + undoRedoString](this.sortHistory([...canvasElementsHistory]))
+      if (foundElement) {
+        if (undoRedoString === 'Undo') {
+          this.undo(Tracker.UNDO, { historyId: foundElement.id })
+        } else if (undoRedoString === 'Redo') {
+          this.redo(Tracker.REDO, foundElement)
+        }
       }
     }
   }
@@ -100,7 +102,7 @@ export default class HandleUndoRedo {
           break
       }
       store.dispatch(`canvas/${CanvasAction.ADD_CANVAS_ELEMENT_HISTORY}`, data)
-      this.sendToSocket(data)
+      this.sendToSocket(data, SocketCanvasToolsEmit.CANVAS_TOOLS_UNDO)
     }
   }
 
@@ -129,7 +131,7 @@ export default class HandleUndoRedo {
           break
       }
       store.dispatch(`canvas/${CanvasAction.ADD_CANVAS_ELEMENT_HISTORY}`, data)
-      this.sendToSocket(data)
+      this.sendToSocket(data, SocketCanvasToolsEmit.CANVAS_TOOLS_REDO)
     }
   }
 
@@ -223,8 +225,8 @@ export default class HandleUndoRedo {
     })
   }
 
-  sendToSocket (history: CanvasElementHistory) {
-    store.dispatch(`socket/${SocketActions.REQUEST_CANVAS_ENTITY}`, { ...history, canvasElements: [] })
+  sendToSocket (history: CanvasElementHistory, emit: string) {
+    store.dispatch(`socket/${SocketActions.EMIT}`, { data: { ...history, canvasElements: [] }, emit: emit })
   }
   // eslint-disable-next-line
   [key: string]: any

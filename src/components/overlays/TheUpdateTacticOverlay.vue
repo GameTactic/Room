@@ -1,16 +1,21 @@
 <template>
-    <v-dialog v-model="overlay" width="700" class="custom-overlay">
+    <v-dialog
+      v-if="selectedTactic && selectedTactic.map"
+      v-model="overlay"
+      width="700"
+      class="custom-overlay"
+    >
       <v-card class="pa-12">
         <v-row>
           <v-col>
             <v-card-title>
-              {{ $t('tactic.createTacticOverlay.title') }}
+              {{ $t('tactic.updateTacticOverlay.title') }}
             </v-card-title>
             <v-card-actions>
               <v-text-field
                 prepend-icon="fa-file"
                 :label="$t('tactic.overlay.name')"
-                v-model="tactic.name"
+                v-model="selectedTactic.name"
               />
             </v-card-actions>
             <v-card-actions v-if="maps !== false">
@@ -18,7 +23,7 @@
                 :items="maps"
                 item-text="name"
                 :search-input.sync="search"
-                v-model="tactic.map"
+                v-model="selectedTactic.map"
                 color="primary"
                 hide-no-data
                 hide-selected
@@ -42,19 +47,18 @@
             <v-card-subtitle>
               <v-btn
                 color="primary"
-                :disabled="isDisabled()"
-                @click="createTactic()"
+                @click="updateTacticOnClickHandler()"
               >
-                {{ $t('tactic.createTacticOverlay.create') }}
+                {{ $t('tactic.updateTacticOverlay.update') }}
               </v-btn>
             </v-card-subtitle>
           </v-col>
           <v-divider class="d-none" vertical />
           <v-col>
             <v-card-subtitle>
-              <v-img v-if="tactic.map.icon" :src="tactic.map.icon" max-width="200px"/>
+              <v-img v-if="selectedTactic.map.icon" :src="selectedTactic.map.icon" max-width="200px"/>
             </v-card-subtitle>
-            <v-card-subtitle>{{ tactic.map.name }}</v-card-subtitle>
+            <v-card-subtitle>{{ selectedTactic.map.name }}</v-card-subtitle>
           </v-col>
         </v-row>
       </v-card>
@@ -65,46 +69,30 @@ import Component, { mixins } from 'vue-class-component'
 import { EventBus } from '@/event-bus'
 import { RoomGetters } from '@/store/modules/room'
 import { Action, Getter } from 'vuex-class'
-import { Api, Collection } from '@/store/modules/types'
+import { Api, Tactic } from '@/store/modules/types'
 import { StageActions } from '@/store/modules/stage'
 import { CustomStageConfig } from '@/util/PointerEventMapper'
 import { CanvasAction } from '@/store/modules/canvas'
 import { CanvasElement, CanvasElementHistory } from '@/types/Canvas'
 import TacticWatcher from '@/mixins/TacticWatcher'
-import uuid from 'uuid'
-import { AuthenticationGetters } from '@/store/modules/authentication'
-import { TacticGetters } from '../../store/modules/tactic'
 
 @Component({
-  name: 'TheCreateNewTacticOverlay',
-  data: () => ({
-    tactic: {
-      map: {
-        name: '',
-        icon: '',
-        desc: '',
-        width: 0,
-        height: 0,
-        ratio: 0,
-        id: 0
-      },
-      name: ''
-    },
-    search: ''
-  }),
+  name: 'TheUpdateTacticOverlay',
   mixins: [TacticWatcher]
 })
-export default class CreateNewTacticOverlay extends mixins(TacticWatcher) {
+export default class TheUpdateTacticOverlay extends mixins(TacticWatcher) {
   @Getter(`room/${RoomGetters.GAME_API}`) gameApi!: Api[]
-  @Getter(`tactic/${TacticGetters.COLLECTIONS}`) collections!: Collection[]
   @Action(`stage/${StageActions.SET_CONFIG}`) setConfig!: (config: CustomStageConfig) => void
   @Action(`canvas/${CanvasAction.SET_CANVAS_ELEMENT}`) setCanvasElements!: (canvasElements: CanvasElement[]) => void
   @Action(`canvas/${CanvasAction.SET_CANVAS_ELEMENT_HISTORY}`) setCanvasElementsHistory!: (canvasElements: CanvasElementHistory[]) => void
 
+  search = ''
+  selectedTactic: Tactic | {} = {}
   overlay = false
   created () {
-    EventBus.$on('openCreateNewTacticOverlay', () => {
-      this.overlay = !this.overlay
+    EventBus.$on('openManageTacticsOverlay', (tactic: Tactic) => {
+      this.overlay = true
+      this.selectedTactic = { ...tactic }
     })
   }
 
@@ -122,28 +110,13 @@ export default class CreateNewTacticOverlay extends mixins(TacticWatcher) {
     imgName: HTMLHeadingElement;
   }
 
-  isDisabled (): boolean {
-    return !(this.$data.tactic.name && this.$data.tactic.map.icon)
-  }
-
   // Need to do more to this, but we dont have the collection stuff created yet so this is temporary.
-  createTactic (): void {
-    const foundCollection = this.collections.find((collection: Collection) => collection.name === 'root')
-    if (!this.isDisabled() && foundCollection) {
-      this.newTactic({
-        id: uuid(),
-        name: this.$data.tactic.name,
-        collectionId: foundCollection.id,
-        canvasElements: [],
-        canvasElementsHistory: [],
-        lockedBy: undefined,
-        isPinned: false,
-        createdBy: this.$store.getters[`authentication/${AuthenticationGetters.JWT}`].jti,
-        map: this.$data.tactic.map
-      })
+  updateTacticOnClickHandler (): void {
+    if (this.selectedTactic && Object.keys(this.selectedTactic).length) {
+      this.updateTactic(this.selectedTactic as Tactic)
       this.resetTacticForm()
-      this.overlay = false
     }
+    this.overlay = false
   }
 
   resetTacticForm () {

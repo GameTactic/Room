@@ -6,22 +6,7 @@
           <v-img class="ml-3 mr-12" max-width="160" max-height="45" :src="require('@/assets/logo.png')"></v-img>
           <v-spacer />
           <div>
-            <v-tooltip
-              bottom
-              nudge-bottom="10"
-              :open-delay="500"
-            >
-              <template v-slot:activator="{ on }">
-                <v-btn
-                  dark
-                  icon
-                  v-on="on"
-                >
-                  <v-icon size="20">fa-save</v-icon>
-                </v-btn>
-              </template>
-              <span>{{ $t('navigation.navigation.saveRoom') }}</span>
-            </v-tooltip>
+            <the-room-save />
             <v-btn
               class="mr-2"
               icon
@@ -34,7 +19,7 @@
       </v-col>
       <v-col cols="12">
         <v-toolbar dense flat class="navbar-toolbar-center justify-center custom-background-transparent">
-          <the-canvas-tools v-if="this.isLoadCanvas" class="custom-clickable" :mobile="true"/>
+          <the-canvas-tools v-if="isCanvasLoaded" class="custom-clickable" :mobile="true"/>
         </v-toolbar>
       </v-col>
     </v-row>
@@ -55,11 +40,14 @@
       </v-btn>
       </v-list-item>
       <v-list-item>
-        <the-room-menu :mobile="true" />
+        <the-presentation-mode :isMobile="true"/>
+      </v-list-item>
+      <v-list-item>
+        <the-manage-room :isMobile="true"/>
       </v-list-item>
       <v-divider />
       <v-list-item>
-        <the-user-menu :mobile="true" />
+        <the-user-menu :isMobile="true" />
       </v-list-item>
     </v-list>
   </v-navigation-drawer>
@@ -67,22 +55,27 @@
 </template>
 
 <script lang="ts">
-import { Component, Prop, Vue } from 'vue-property-decorator'
-import TheRoomMenu from './TheRoomMenu.vue'
+import { Component, Vue } from 'vue-property-decorator'
+import TheRoomSave from './buttons/TheRoomSave.vue'
+import ThePresentationMode from './buttons/ThePresentationMode.vue'
+import TheManageRoom from './buttons/TheManageRoom.vue'
 import TheUserMenu from './TheUserMenu.vue'
 import TheCanvasTools from './TheCanvasTools.vue'
+import { Getter } from 'vuex-class'
+import { RoomGetters } from '../../store/modules/room'
 
 @Component({
   name: 'TheNavSmall',
   components: {
-    TheRoomMenu,
+    TheRoomSave,
+    ThePresentationMode,
+    TheManageRoom,
     TheUserMenu,
     TheCanvasTools
   }
 })
 export default class TheNavSmall extends Vue {
-  @Prop() private id!: string;
-  @Prop() private isLoadCanvas!: boolean;
+  @Getter(`room/${RoomGetters.IS_CANVAS_LOADED}`) isCanvasLoaded!: boolean
   drawer = false
 }
 </script>

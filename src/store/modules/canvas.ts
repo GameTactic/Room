@@ -10,7 +10,7 @@ export enum CanvasMutation {
   ADD_CANVAS_ELEMENT = 'ADD_CANVAS_ELEMENT',
   HIDE_CANVAS_ELEMENT = 'HIDE_CANVAS_ELEMENT',
   SHOW_CANVAS_ELEMENT = 'SHOW_CANVAS_ELEMENT',
-  ADD_CANVAS_ELEMENT_HISTORY = 'ADD_CANVAS_ELEMENT_HISTORY'
+  ADD_CANVAS_ELEMENT_HISTORY = 'ADD_CANVAS_ELEMENT_HISTORY',
 }
 
 export enum CanvasAction {
@@ -47,7 +47,8 @@ const CanvasModule: Module<CanvasState, RootState> = {
   state () {
     return {
       canvasElements: [],
-      canvasElementsHistory: []
+      canvasElementsHistory: [],
+      isCanvasLoaded: false
     }
   },
   getters: {

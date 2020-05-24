@@ -2,7 +2,7 @@
   <v-menu
     v-if="popout"
     transition="scale-transition"
-    content-class="v-menu-content-class"
+    content-class="ml-8 elevation-2"
     :close-on-content-click="false"
     offset-x
     ref="menu"
@@ -19,7 +19,7 @@
               :class="[isEnabledClass, 'border-btn']"
               icon
               tile
-              :disabled="!isLoadCanvas"
+              :disabled="!isCanvasLoaded"
               v-on="tooltip"
               elevation="0"
               @click="onButtonClickHandler"
@@ -33,7 +33,7 @@
           x-small
           :class="['tools-caret-down', isEnabledButtonClass]"
           icon
-          v-if="isLoadCanvas"
+          v-if="isCanvasLoaded"
           elevation="0"
           tile
           absolute
@@ -58,7 +58,7 @@
       <v-btn
         :class="[isEnabledClass, 'border-btn']"
         icon
-        :disabled="!isLoadCanvas"
+        :disabled="!isCanvasLoaded"
         tile
         elevation="0"
         v-on="tooltip1"
@@ -74,9 +74,10 @@
 <script lang="ts">
 import { Component, Prop, Vue } from 'vue-property-decorator'
 import { Tool } from '@/tools/Tool'
-import { namespace } from 'vuex-class'
+import { namespace, Getter } from 'vuex-class'
 import { Namespaces } from '@/store'
 import { ToolGetters, ToolsAction } from '@/store/modules/tools'
+import { RoomGetters } from '../../store/modules/room'
 
 const Tools = namespace(Namespaces.TOOLS)
 
@@ -89,11 +90,10 @@ const Tools = namespace(Namespaces.TOOLS)
   }
 })
 export default class ToolContainer extends Vue {
-  @Prop() private id!: string
   @Prop() private icon!: string
   @Prop() private popout!: boolean
   @Prop() private toolname!: string
-  @Prop() private isLoadCanvas!: boolean
+  @Getter(`room/${RoomGetters.IS_CANVAS_LOADED}`) isCanvasLoaded!: boolean
   @Tools.Action(ToolsAction.ENABLE_TOOL) enableTool!: (toolName: string) => void
   @Tools.Action(ToolsAction.DISABLE_TOOL) disableTool!: () => void
   @Tools.Getter(ToolGetters.ENABLED_TOOL) enabledTool?: Tool
@@ -147,10 +147,6 @@ interface MenuElement extends Vue {
 
 </script>
 <style scoped lang="scss">
-.v-menu-content-class {
-  margin-left: 30px;
-  box-shadow: 0px 4px 4px -3px rgba(0, 0, 0, 0.2), 0px 2px 2px 0px rgba(0, 0, 0, 0.14), 0px 1px 5px 0px rgba(0, 0, 0, 0.12)
-}
 .tools-caret-down-active {
   width:24px;
 }
