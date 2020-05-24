@@ -5,49 +5,40 @@
       <v-spacer />
     </v-toolbar>
     <v-toolbar dense flat class="navbar-toolbar-center justify-center custom-not-clickable-large custom-background-transparent">
-      <the-canvas-tools v-if="this.isLoadCanvas" class="custom-clickable"/>
+      <the-canvas-tools v-if="isCanvasLoaded" class="custom-clickable"/>
     </v-toolbar>
     <v-toolbar dense flat class="navbar-toolbar-right custom-clickable">
       <v-spacer />
-      <v-tooltip
-        bottom
-        nudge-bottom="10"
-        :open-delay="500"
-      >
-        <template v-slot:activator="{ on }">
-          <v-btn
-            dark
-            icon
-            v-on="on"
-          >
-            <v-icon size="20">fa-save</v-icon>
-          </v-btn>
-        </template>
-        <span>{{ $t('navigation.navigation.saveRoom') }}</span>
-      </v-tooltip>
-      <the-room-menu />
+      <the-room-save />
+      <the-presentation-mode />
+      <the-manage-room />
       <the-user-menu />
     </v-toolbar>
   </v-row>
 </template>
 
 <script lang="ts">
-import { Component, Prop, Vue } from 'vue-property-decorator'
-import TheRoomMenu from './TheRoomMenu.vue'
+import { Component, Vue } from 'vue-property-decorator'
+import TheRoomSave from './buttons/TheRoomSave.vue'
+import ThePresentationMode from './buttons/ThePresentationMode.vue'
+import TheManageRoom from './buttons/TheManageRoom.vue'
 import TheUserMenu from './TheUserMenu.vue'
 import TheCanvasTools from './TheCanvasTools.vue'
+import { Getter } from 'vuex-class'
+import { RoomGetters } from '../../store/modules/room'
 
 @Component({
   name: 'TheNavLarge',
   components: {
-    TheRoomMenu,
+    TheRoomSave,
+    ThePresentationMode,
+    TheManageRoom,
     TheUserMenu,
     TheCanvasTools
   }
 })
 export default class TheNavLarge extends Vue {
-  @Prop() private id!: string;
-  @Prop() private isLoadCanvas!: boolean;
+  @Getter(`room/${RoomGetters.IS_CANVAS_LOADED}`) isCanvasLoaded!: boolean
 }
 </script>
 <style lang="scss">

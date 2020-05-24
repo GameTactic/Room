@@ -4,7 +4,7 @@ import { GameName } from '@/store/modules/room'
 export interface Item {
   text: string;
   shortText: string;
-  type: 'AirCarrier' | 'Battleship' | 'Cruiser'  | 'Destroyer';
+  type: 'AirCarrier' | 'Battleship' | 'Cruiser' | 'Destroyer';
   value: number;
   tier: number;
   image: string | undefined;

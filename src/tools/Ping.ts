@@ -5,6 +5,7 @@ import PingCreator from '@/tools/shapes/PingCreator'
 import { CustomEvent } from '@/util/PointerEventMapper'
 import { ISO } from '@/util/ISO'
 import uuid from 'uuid'
+import { SocketCanvasToolsEmit } from '@/store/modules/socket'
 
 export default class Ping extends ToolClass implements PingInterface {
   private pingCreator: PingCreator
@@ -66,7 +67,7 @@ export default class Ping extends ToolClass implements PingInterface {
       },
       canvasElements: [this.canvasElement],
       timestampModified: ISO.timestamp()
-    })
+    }, SocketCanvasToolsEmit.CANVAS_TOOLS_PING)
   }
 
   renderCanvas = (request: RequestCanvasEntity): void => {

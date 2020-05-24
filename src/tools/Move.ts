@@ -4,6 +4,7 @@ import { CustomEvent } from '@/util/PointerEventMapper'
 import { ISO } from '@/util/ISO'
 import { MoveData, RequestCanvasEntity } from '@/types/Canvas'
 import uuid from 'uuid'
+import { SocketCanvasToolsEmit } from '@/store/modules/socket'
 
 export default class Move extends ToolClass implements ToolClassInterface {
   constructor (public readonly name: string,
@@ -81,7 +82,7 @@ export default class Move extends ToolClass implements ToolClassInterface {
         modifyType: Tracker.MOVE,
         timestampModified: ISO.timestamp(),
         canvasElements: []
-      })
+      }, SocketCanvasToolsEmit.CANVAS_TOOLS_MOVE)
     }
   }
 

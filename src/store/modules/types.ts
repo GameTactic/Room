@@ -1,5 +1,5 @@
 import { GameName } from '@/store/modules/room'
-import {CanvasElement, CanvasElementHistory} from '@/types/Canvas'
+import { CanvasElement, CanvasElementHistory } from '@/types/Canvas'
 
 export interface Api {
   name: string;
@@ -13,6 +13,7 @@ export interface Entity {
   shortText: string;
   value: string;
   image: string | undefined;
+  type: string;
   // eslint-disable-next-line
   data: any;
 }
@@ -22,10 +23,27 @@ export interface Game {
   api: Api[];
 }
 
+export enum RoleTypes { 
+  ROON_OWNER = 'roomOwner',
+  ADMIN = 'admin'
+}
+
+export interface Role {
+  id: string;
+  roleTypes: RoleTypes;
+  assignedBy: string;
+}
+
 export interface User {
   jti: string;
-  isRoomOwner: boolean;
+  name: string;
+  onTacticId: string;
+  isOnline: boolean;
+  lastOnline: Date | undefined;
+  joined: Date;
   isAuthN: boolean;
+  bannedBy: string | undefined;
+  roles: Role[];
 }
 
 export interface Map {
@@ -43,20 +61,28 @@ export interface Tactic {
   collectionId: string;
   lockedBy: string | undefined;
   map: Map;
+  isPinned: boolean;
   createdBy: string;
   canvasElements: CanvasElement[];
   canvasElementsHistory: CanvasElementHistory[];
+  [key: string]: string | Map | CanvasElement[] | CanvasElementHistory[] | boolean | undefined;
 }
 
 export interface Collection {
   id: string;
-  collectionId: string;
-  isLocked: boolean;
+  parentCollectionId: string | undefined;
+  name: string;
   lockedBy: string | undefined;
+  isPinned: boolean;
   createdBy: string;
 }
 
 export interface PresentationPayload {
-  isPresentationEnabled: boolean;
-  presentationEnabledBy: string;
+  enabledBy: string;
+  tacticId: string;
+}
+
+export interface Presentation {
+  enabledBy: string | undefined;
+  tacticId: string | undefined;
 }

@@ -1,5 +1,5 @@
 import { ActionContext, Module } from 'vuex'
-import { Game, Collection, Tactic, User, PresentationPayload, Api } from './types'
+import { Game, PresentationPayload, Api, Presentation } from './types'
 
 export enum GameName {
   NONE = '',
@@ -35,20 +35,11 @@ export enum RoomAction {
   SET_GAME_NAME = 'setGameName',
   SET_GAME_API = 'setGameApi',
   DELETE_GAME_API = 'deleteGameApi',
-  SET_COLLECTIONS = 'setCollections',
-  SET_COLLECTION = 'setCollection',
-  UPDATE_COLLECTION = 'updateCollection',
-  DELETE_COLLECTION = 'deleteCollection',
-  SET_TACTICS = 'setTactics',
-  SET_TACTIC = 'setTactic',
-  UPDATE_TACTIC = 'updateTactic',
-  DELETE_TACTIC = 'deleteTactic',
-  SET_USERS = 'setUsers',
-  SET_USER = 'setUser',
-  UPDATE_USER = 'updateUser',
-  DELETE_USER = 'deleteUser',
   SET_PRESENTATION = 'setPresentation',
-  SET_IS_PRIVATE = 'setIsPrivate'
+  UNSET_PRESENTATION = 'unsetPresentation',
+  SET_IS_PRIVATE = 'setIsPrivate',
+  SET_IS_CANVAS_LOADED = 'setIsCanvasLoaded',
+  SET_ROOM_ID = 'setRoomId'
 }
 
 export enum RoomMutation {
@@ -56,45 +47,30 @@ export enum RoomMutation {
   SET_GAME_NAME = 'SET_GAME_NAME',
   SET_GAME_API = 'SET_GAME_API',
   DELETE_GAME_API = 'DELETE_GAME_API',
-  SET_COLLECTIONS = 'SET_COLLECTIONS',
-  SET_COLLECTION = 'SET_COLLECTION',
-  UPDATE_COLLECTION = 'UPDATE_COLLECTION',
-  DELETE_COLLECTION = 'DELETE_COLLECTION',
-  SET_TACTICS = 'SET_TACTICS',
-  SET_TACTIC = 'SET_TACTIC',
-  UPDATE_TACTIC = 'UPDATE_TACTIC',
-  DELETE_TACTIC = 'DELETE_TACTIC',
-  SET_USERS = 'SET_USERS',
-  SET_USER = 'SET_USER',
-  UPDATE_USER = 'UPDATE_USER',
-  DELETE_USER = 'DELETE_USER',
   SET_PRESENTATION = 'SET_PRESENTATION',
-  SET_IS_PRIVATE = 'SET_IS_PRIVATE'
+  UNSET_PRESENTATION = 'UNSET_PRESENTATION',
+  SET_IS_PRIVATE = 'SET_IS_PRIVATE',
+  SET_IS_CANVAS_LOADED = 'SET_IS_CANVAS_LOADED',
+  SET_ROOM_ID = 'SET_ROOM_ID'
 }
 
 export enum RoomGetters {
   LOCALE = 'locale',
   GAME_NAME = 'gameName',
   GAME_API = 'gameApi',
-  COLLECTIONS = 'collections',
-  COLLECTION = 'collection',
-  TACTICS = 'tactics',
-  TACTIC = 'tactic',
-  USERS = 'users',
-  USER = 'user',
   PRESENTATION = 'presentation',
-  IS_PRIVATE = 'isPrivate'
+  IS_PRIVATE = 'isPrivate',
+  IS_CANVAS_LOADED = 'isCanvasLoaded',
+  ROOM_ID = 'roomId'
 }
 
 export interface RoomState {
   locale: Locale;
   game: Game;
-  collections: Collection[];
-  tactics: Tactic[];
-  users: User[];
-  isPresentationEnabled: boolean;
-  presentationEnabledBy: string | undefined;
+  presentation: Presentation;
   isPrivate: boolean;
+  isCanvasLoaded: boolean;
+  roomId: string | undefined;
 }
 
 type RoomActionContext = ActionContext<RoomState, {}>
@@ -108,26 +84,26 @@ const RoomModule: Module<RoomState, {}> = {
         name: GameName['NONE'],
         api: []
       },
-      collections: [],
-      tactics: [],
-      users: [],
-      isPresentationEnabled: false,
-      presentationEnabledBy: undefined,
-      isPrivate: false
+      presentation: {
+        enabledBy: undefined,
+        tacticId: undefined
+      },
+      isPrivate: false,
+      isCanvasLoaded: false,
+      roomId: undefined
     }
   },
   getters: {
     [RoomGetters.LOCALE]: state => state.locale,
     [RoomGetters.GAME_NAME]: state => state.game.name,
     [RoomGetters.GAME_API]: state => state.game.api,
-    [RoomGetters.COLLECTIONS]: state => state.collections,
-    [RoomGetters.COLLECTION]: (state) => (id: string) => state.collections.find((collection: Collection) => collection.id === id),
-    [RoomGetters.TACTICS]: state => state.tactics,
-    [RoomGetters.TACTIC]: (state) => (id: string) => state.tactics.find((tactic: Tactic) => tactic.id === id),
-    [RoomGetters.USERS]: state => state.users,
-    [RoomGetters.USER]: (state) => (jti: string) => state.users.find((user: User) => user.jti === jti),
-    [RoomGetters.PRESENTATION]: state => ({ isPresentationEnabled: state.isPresentationEnabled, presentationEnabledBy: state.presentationEnabledBy }),
-    [RoomGetters.IS_PRIVATE]: state => state.isPrivate
+    [RoomGetters.PRESENTATION]: state => ({
+      enabledBy: state.presentation.enabledBy,
+      tacticId: state.presentation.tacticId
+    }),
+    [RoomGetters.IS_PRIVATE]: state => state.isPrivate,
+    [RoomGetters.IS_CANVAS_LOADED]: state => state.isCanvasLoaded,
+    [RoomGetters.ROOM_ID]: state => state.roomId
   },
   mutations: {
     [RoomMutation.SET_LOCALE] (state: RoomState, payload: Locale) {
@@ -142,48 +118,22 @@ const RoomModule: Module<RoomState, {}> = {
     [RoomMutation.DELETE_GAME_API] (state: RoomState) {
       state.game.api = []
     },
-    [RoomMutation.SET_COLLECTIONS] (state: RoomState, payload: Collection[]) {
-      state.collections = payload
-    },
-    [RoomMutation.SET_COLLECTION] (state: RoomState, payload: Collection) {
-      state.collections.push(payload)
-    },
-    [RoomMutation.UPDATE_COLLECTION] (state: RoomState, payload: Collection) {
-      state.collections.splice(state.collections.findIndex((collection: Collection) => collection.id === payload.id), 1, payload)
-    },
-    [RoomMutation.DELETE_COLLECTION] (state: RoomState, id: string) {
-      state.collections.splice(state.collections.findIndex((collection: Collection) => collection.id === id), 1)
-    },
-    [RoomMutation.SET_TACTICS] (state: RoomState, payload: Tactic[]) {
-      state.tactics = payload
-    },
-    [RoomMutation.SET_TACTIC] (state: RoomState, payload: Tactic) {
-      state.tactics.push(payload)
-    },
-    [RoomMutation.UPDATE_TACTIC] (state: RoomState, payload: Tactic) {
-      state.tactics.splice(state.tactics.findIndex((tactic: Tactic) => tactic.id === payload.id), 1, payload)
-    },
-    [RoomMutation.DELETE_TACTIC] (state: RoomState, id: string) {
-      state.tactics.splice(state.tactics.findIndex((tactic: Tactic) => tactic.id === id), 1)
-    },
-    [RoomMutation.SET_USERS] (state: RoomState, payload: User[]) {
-      state.users = payload
-    },
-    [RoomMutation.SET_USER] (state: RoomState, payload: User) {
-      state.users.push(payload)
-    },
-    [RoomMutation.UPDATE_USER] (state: RoomState, payload: User) {
-      state.users.splice(state.users.findIndex((user: User) => user.jti === payload.jti), 1, payload)
-    },
-    [RoomMutation.DELETE_USER] (state: RoomState, jti: string) {
-      state.users.splice(state.users.findIndex((user: User) => user.jti === jti), 1)
-    },
     [RoomMutation.SET_PRESENTATION] (state: RoomState, payload: PresentationPayload) {
-      state.isPresentationEnabled = payload.isPresentationEnabled
-      state.presentationEnabledBy = payload.presentationEnabledBy
+      state.presentation.enabledBy = payload.enabledBy
+      state.presentation.tacticId = payload.tacticId
+    },
+    [RoomMutation.UNSET_PRESENTATION] (state: RoomState) {
+      state.presentation.enabledBy = undefined
+      state.presentation.tacticId = undefined
     },
     [RoomMutation.SET_IS_PRIVATE] (state: RoomState, isPrivate: boolean) {
       state.isPrivate = isPrivate
+    },
+    [RoomMutation.SET_IS_CANVAS_LOADED] (state: RoomState, isCanvasLoaded: boolean) {
+      state.isCanvasLoaded = isCanvasLoaded
+    },
+    [RoomMutation.SET_ROOM_ID] (state: RoomState, roomId: string) {
+      state.roomId = roomId
     }
   },
   actions: {
@@ -200,47 +150,20 @@ const RoomModule: Module<RoomState, {}> = {
     [RoomAction.DELETE_GAME_API] (context: RoomActionContext) {
       context.commit('DELETE_GAME_API')
     },
-    [RoomAction.SET_COLLECTIONS] (context: RoomActionContext, payload: Collection[]) {
-      context.commit('SET_COLLECTIONS', payload)
-    },
-    [RoomAction.SET_COLLECTION] (context: RoomActionContext, payload: Collection) {
-      context.commit('SET_COLLECTION', payload)
-    },
-    [RoomAction.UPDATE_COLLECTION] (context: RoomActionContext, payload: Collection) {
-      context.commit('UPDATE_COLLECTION', payload)
-    },
-    [RoomAction.DELETE_COLLECTION] (context: RoomActionContext, id: string) {
-      context.commit('DELETE_COLLECTION', id)
-    },
-    [RoomAction.SET_TACTICS] (context: RoomActionContext, payload: Tactic[]) {
-      context.commit('SET_TACTICS', payload)
-    },
-    [RoomAction.SET_TACTIC] (context: RoomActionContext, payload: Tactic) {
-      context.commit('SET_TACTIC', payload)
-    },
-    [RoomAction.UPDATE_TACTIC] (context: RoomActionContext, payload: Tactic) {
-      context.commit('UPDATE_TACTIC', payload)
-    },
-    [RoomAction.DELETE_TACTIC] (context: RoomActionContext, id: string) {
-      context.commit('DELETE_TACTIC', id)
-    },
-    [RoomAction.SET_USERS] (context: RoomActionContext, payload: User[]) {
-      context.commit('SET_USERS', payload)
-    },
-    [RoomAction.SET_USER] (context: RoomActionContext, payload: User) {
-      context.commit('SET_USER', payload)
-    },
-    [RoomAction.UPDATE_USER] (context: RoomActionContext, payload: User) {
-      context.commit('UPDATE_USER', payload)
-    },
-    [RoomAction.DELETE_USER] (context: RoomActionContext, jti: string) {
-      context.commit('DELETE_USER', jti)
-    },
     [RoomAction.SET_PRESENTATION] (context: RoomActionContext, payload: PresentationPayload) {
       context.commit('SET_PRESENTATION', payload)
     },
+    [RoomAction.UNSET_PRESENTATION] (context: RoomActionContext) {
+      context.commit('SET_PRESENTATION')
+    },
     [RoomAction.SET_IS_PRIVATE] (context: RoomActionContext, isPrivate: boolean) {
       context.commit('SET_IS_PRIVATE', isPrivate)
+    },
+    [RoomAction.SET_IS_CANVAS_LOADED] (context: RoomActionContext, isCanvasLoaded: boolean) {
+      context.commit('SET_IS_CANVAS_LOADED', isCanvasLoaded)
+    },
+    [RoomAction.SET_ROOM_ID] (context: RoomActionContext, roomId: string) {
+      context.commit('SET_ROOM_ID', roomId)
     }
   }
 }

@@ -7,6 +7,7 @@ import { DashedLine, DashedLineActive, NormalLine, NormalLineActive, TBarHead, T
 import Vuetify, {
   VApp,
   VAutocomplete,
+  VAvatar,
   VBadge,
   VBtn,
   VBtnToggle,
@@ -25,6 +26,7 @@ import Vuetify, {
   VDivider,
   VIcon,
   VImg,
+  VInput,
   VItemGroup,
   VList,
   VListItem,
@@ -35,26 +37,30 @@ import Vuetify, {
   VListItemTitle,
   VMenu,
   VNavigationDrawer,
+  VOverlay,
   VRadio,
   VRadioGroup,
   VRow,
   VSelect,
-  VSubheader,
-  VOverlay,
   VSheet,
   VSkeletonLoader,
   VSlider,
   VSpacer,
+  VSubheader,
   VSwitch,
+  VTab,
+  VTabs,
+  VTabsSlider,
   VTextField,
   VToolbar,
   VTooltip,
-  VInput
+  VTreeview
 } from 'vuetify/lib'
 
 Vue.use(Vuetify, {
   components: {
     VApp,
+    VAvatar,
     VRadioGroup,
     VSwitch,
     VRadio,
@@ -86,6 +92,7 @@ Vue.use(Vuetify, {
     VContent,
     VSubheader,
     VCard,
+    VCardText,
     VCardActions,
     VSheet,
     VColorPicker,
@@ -98,7 +105,10 @@ Vue.use(Vuetify, {
     VSkeletonLoader,
     VInput,
     VCardTitle,
-    VCardText
+    VTreeview,
+    VTab,
+    VTabsSlider,
+    VTabs
   },
   directives: {}
 })

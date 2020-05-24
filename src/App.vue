@@ -60,16 +60,15 @@ export default class TheApp extends Vue {
 }
 </script>
 <style lang="scss">
-  #app {
-    font-family: 'Avenir', Helvetica, Arial, sans-serif;
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
-    height: 100vh;
-    background-color: $room-secondary;
-    font-size: $app-fontsize;
-  }
-
-  html, .v-application--wrap {
-    overflow: hidden;
-  }
+#app {
+  font-family: 'Avenir', Helvetica, Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  height: 100vh;
+  background-color: $room-secondary;
+  font-size: $app-fontsize;
+}
+html, .v-application--wrap {
+  overflow: hidden;
+}
 </style>

@@ -4,6 +4,7 @@ import CircleCreator from '@/tools/shapes/CircleCreator'
 import { CustomEvent } from '@/util/PointerEventMapper'
 import { ISO } from '@/util/ISO'
 import uuid from 'uuid'
+import { SocketCanvasToolsEmit } from '@/store/modules/socket'
 
 export default class Circle extends ToolClass implements CircleInterface {
   private circleCreator: CircleCreator
@@ -90,7 +91,7 @@ export default class Circle extends ToolClass implements CircleInterface {
           modifyType: Tracker.ADDITION,
           canvasElements: [this.canvasElement],
           timestampModified: ISO.timestamp()
-        })
+        }, SocketCanvasToolsEmit.CANVAS_TOOLS_CIRCLE)
       }
     }
   }

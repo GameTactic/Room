@@ -1,15 +1,15 @@
 <template>
-    <v-btn-toggle class="flex-column side-toolbar">
-      <slot/>
-    </v-btn-toggle>
+  <v-btn-toggle class="flex-column side-toolbar">
+    <slot/>
+  </v-btn-toggle>
 </template>
 
 <script lang="ts">
 import { Component, Vue } from 'vue-property-decorator'
 
-  @Component({
-    name: 'side-toolbar'
-  })
+@Component({
+  name: 'side-toolbar'
+})
 export default class SideToolbar extends Vue {
 }
 </script>

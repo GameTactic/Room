@@ -5,6 +5,7 @@ import TextCreator from '@/tools/shapes/TextCreator'
 import { CustomEvent } from '@/util/PointerEventMapper'
 import { ISO } from '@/util/ISO'
 import uuid from 'uuid'
+import { SocketCanvasToolsEmit } from '@/store/modules/socket'
 
 export default class Text extends ToolClass implements TextInterface {
   private textCreator: TextCreator
@@ -93,7 +94,7 @@ export default class Text extends ToolClass implements TextInterface {
             },
             canvasElements: [this.canvasElement],
             timestampModified: ISO.timestamp()
-          })
+          }, SocketCanvasToolsEmit.CANVAS_TOOLS_TEXT)
         }
       }
       const onClickEvent = () => {

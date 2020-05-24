@@ -117,6 +117,7 @@
                   class="custom-entity-card"
                   tile
                   draggable
+                  @dragstart="onDragStartHandler({ ...entity }, $event)"
                   @mouseover="entityCardOnMouseHoverHandler(entity.value)"
                 >
                   <v-badge
@@ -143,7 +144,7 @@
                       class="custom-entity-card"
                       raised
                       tile
-                      draggable
+                      draggable="false"
                       @mouseover="entityCardOnMouseHoverHandler(entity.value)"
                     >
                       <v-container class="pa-1">
@@ -183,7 +184,7 @@
           </v-col>
         </v-row>
         <v-subheader>
-          <p class="caption" v-html="$t('entity.cards.note')"></p>
+          <p class="caption" v-html="`<b>${$t('entity.cards.note.inBold')}: </b>${$t('entity.cards.note.afterBold')}`" />
         </v-subheader>
       </v-container>
     </template>
@@ -251,6 +252,12 @@ export default class TheCreateEntity extends Games {
     icon: 'fa-times'
   }]
   isEntityPropertiesShown = false
+  shipIcons = {
+    Battleship: require('@/assets/games/wows/icons/Battleship.svg'),
+    AirCarrier: require('@/assets/games/wows/icons/AirCarrier.svg'),
+    Cruiser: require('@/assets/games/wows/icons/Cruiser.svg'),
+    Destroyer: require('@/assets/games/wows/icons/Destroyer.svg')
+  }
 
   get updatedEntities (): Item[] {
     return this.entities
@@ -286,6 +293,18 @@ export default class TheCreateEntity extends Games {
   chipOnClickHandler (color: string) {
     this.$data.chipColour = color
   }
+
+  onDragStartHandler (entity: Item, e: DragEvent) {
+    if (e.dataTransfer) {
+      entity.image = (this.shipIcons[entity.type]) ? this.shipIcons[entity.type] : entity.image
+      const image = new Image()
+      if (entity.image) {
+        image.src = entity.image
+        e.dataTransfer.setData('entity', JSON.stringify(entity))
+        e.dataTransfer.setDragImage(image, 0, 0)
+      }
+    }
+  }
 }
 </script>
 <style lang="scss">
@@ -298,7 +317,7 @@ export default class TheCreateEntity extends Games {
 }
 
 .custom-chip-group {
-  margin: 0px 0.5rem;
+  margin: 0 0.5rem;
 }
 
 .custom-chip-active-class i:first-child {

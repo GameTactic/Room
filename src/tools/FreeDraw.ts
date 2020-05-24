@@ -5,6 +5,7 @@ import { CustomEvent } from '@/util/PointerEventMapper'
 import throttle from 'lodash.throttle'
 import { ISO } from '@/util/ISO'
 import uuid from 'uuid'
+import { SocketCanvasToolsEmit } from '@/store/modules/socket'
 
 export default class FreeDraw extends ToolClass implements FreeDrawInterface {
   private freeDrawCreator: FreeDrawCreator
@@ -71,7 +72,7 @@ export default class FreeDraw extends ToolClass implements FreeDrawInterface {
           modifyType: Tracker.ADDITION,
           canvasElements: [this.canvasElement],
           timestampModified: ISO.timestamp()
-        })
+        }, SocketCanvasToolsEmit.CANVAS_TOOLS_FREE_DRAW)
       }
     }
   }

@@ -16,7 +16,6 @@
 </template>
 
 <script lang="ts">
-import { Prop } from 'vue-property-decorator'
 import Component, { mixins } from 'vue-class-component'
 import { Tool } from '@/tools/Tool'
 import { CanvasElement, VueKonvaLayer, VueKonvaStage } from '@/types/Canvas'
@@ -39,7 +38,6 @@ import StageWatcher from '@/mixins/StageWatcher'
 })
 
 export default class TheCanvas extends mixins(CanvasSockets, StageWatcher) {
-  @Prop() id!: string
   @Getter(`tools/${ToolGetters.ENABLED_TOOL}`) enabledTool!: Tool
   @Getter(`tools/${ToolGetters.TOOLS}`) tools!: Tool[]
   @Action(`canvas/${CanvasAction.ADD_CANVAS_ELEMENT}`) addCanvasElement!: (canvasElement: CanvasElement) => void

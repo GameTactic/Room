@@ -1,22 +1,22 @@
 <template>
   <div class="custom-tool-panel-container btn-toggle-box pa-0 pt-1">
     <v-btn-toggle class="flex-column custom-tool-bar">
-      <tool-container :id="id" :isLoadCanvas="isLoadCanvas" icon="fa-arrows-alt" toolname="move" :popout="false" />
-      <tool-container :id="id" :isLoadCanvas="isLoadCanvas" icon="fa-map-pin" toolname="ping" :popout="false" />
-      <tool-container :id="id" :isLoadCanvas="isLoadCanvas" icon="fa-pen" toolname="freeDraw" :popout="true"><free-draw-template /></tool-container>
-      <tool-container :id="id" :isLoadCanvas="isLoadCanvas" icon="fa-slash" toolname="line" :popout="true"><line-template /></tool-container>
-      <tool-container :id="id" :isLoadCanvas="isLoadCanvas" icon="far fa-circle" toolname="circle" :popout="true"><circle-template /></tool-container>
-      <tool-container :id="id" :isLoadCanvas="isLoadCanvas" icon="fa-ruler" toolname="ruler" :popout="true"><ruler-template /></tool-container>
-      <tool-container :id="id" :isLoadCanvas="isLoadCanvas" icon="fa-font" toolname="text" :popout="true"><text-template /></tool-container>
-      <tool-container :id="id" :isLoadCanvas="isLoadCanvas" icon="fa-eraser" toolname="erase" :popout="false"></tool-container>
-      <undo-container :id="id" :isLoadCanvas="isLoadCanvas" icon="fa-undo" toolname="undo"></undo-container>
-      <redo-container :id="id" :isLoadCanvas="isLoadCanvas" icon="fa-redo" toolname="redo"></redo-container>
+      <tool-container icon="fa-arrows-alt" toolname="move" :popout="false" />
+      <tool-container icon="fa-map-pin" toolname="ping" :popout="false" />
+      <tool-container icon="fa-pen" toolname="freeDraw" :popout="true"><free-draw-template /></tool-container>
+      <tool-container icon="fa-slash" toolname="line" :popout="true"><line-template /></tool-container>
+      <tool-container icon="far fa-circle" toolname="circle" :popout="true"><circle-template /></tool-container>
+      <tool-container icon="fa-ruler" toolname="ruler" :popout="true"><ruler-template /></tool-container>
+      <tool-container icon="fa-font" toolname="text" :popout="true"><text-template /></tool-container>
+      <tool-container icon="fa-eraser" toolname="erase" :popout="false"></tool-container>
+      <undo-container icon="fa-undo" toolname="undo"></undo-container>
+      <redo-container icon="fa-redo" toolname="redo"></redo-container>
     </v-btn-toggle>
   </div>
 </template>
 
 <script lang="ts">
-import { Component, Prop, Vue } from 'vue-property-decorator'
+import { Component, Vue } from 'vue-property-decorator'
 import ToolContainer from './canvas-tools/ToolContainer.vue'
 import UndoContainer from './canvas-tools/UndoContainer.vue'
 import RedoContainer from './canvas-tools/RedoContainer.vue'
@@ -43,8 +43,6 @@ import { ToolsAction } from '@/store/modules/tools'
   }
 })
 export default class TheToolPanel extends Vue {
-  @Prop() private id!: string;
-  @Prop() private isLoadCanvas!: boolean;
   @Action(`tools/${ToolsAction.DISABLE_TOOL}`) disableTool!: () => void
 
   tools: Tool[] = []
