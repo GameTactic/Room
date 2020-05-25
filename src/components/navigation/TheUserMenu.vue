@@ -1,6 +1,6 @@
 <template>
   <v-menu
-    v-if="!isMobile && isAuth"
+    v-if="!isSM && isAuth"
     offset-y
     content-class="elevation-2"
   >
@@ -96,7 +96,7 @@ interface UserMenuItem {
   components: { TheLoginCard }
 })
 export default class TheUserMenu extends Vue {
-  @Prop() private isMobile!: boolean;
+  @Prop() private isSM!: boolean;
   @AppAuthentication.Getter(AppAuthenticationGetters.IS_AUTH) isAuth!: boolean
   @AppAuthentication.Action(AppAuthenticationActions.LOGIN_WG) authenticate!: (region: string) => void;
   @AppAuthentication.Action(AppAuthenticationActions.LOGOUT) onClickLogout!: () => void

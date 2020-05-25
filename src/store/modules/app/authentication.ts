@@ -1,6 +1,7 @@
 import { ActionContext, Module } from 'vuex'
 import axios from 'axios'
 import { verify } from 'jsonwebtoken'
+import i18n from '@/lib/I18n'
 import { mapProviders, Providers } from '@/util/ProvidersUtil'
 
 export const JWT_KEY = 'jsonwebtoken'
@@ -46,9 +47,34 @@ export interface AppAuthenticationState {
   providers: Providers;
 }
 
+export interface RefreshTokenResponse {
+  data: {
+    token: string;
+  };
+  status: number;
+}
+
+export interface AuthenticationResponse {
+  data: {
+    issuer: string;
+    audience: string;
+    publicKey: string;
+    currentToken: string;
+    providers: {
+      wargaming: {
+        ru: string;
+        eu: string;
+        na: string;
+        asia: string;
+      };
+    };
+  };
+  status: number;
+}
+
 export enum AppAuthenticationActions {
   AUTHENTICATE = 'authenticate',
-  CHECK_TOKEN_EXPIRY = 'checkTokenExpiry',
+  REFRESH_TOKEN = 'refreshToken',
   LOAD_PROVIDERS = 'loadProviders',
   LOGIN_WG = 'auth_wg',
   LOGOUT = 'logout',
@@ -56,7 +82,7 @@ export enum AppAuthenticationActions {
 }
 
 export enum AppAuthenticationMutation {
-  SET_AUTHENTICATION_TOKEN = 'SET_AUTHENTICATION_TOKEN',
+  SET_AUTHENTICATION_JWT = 'SET_AUTHENTICATION_JWT',
   SET_PROVIDERS = 'SET_PROVIDERS'
 }
 
@@ -86,7 +112,7 @@ const AppAuthenticationModule: Module<AppAuthenticationState, {}> = {
     [AppAuthenticationGetters.PROVIDER]: state => (name: string) => state.providers[name]
   },
   mutations: {
-    [AppAuthenticationMutation.SET_AUTHENTICATION_TOKEN] (state: AppAuthenticationState, payload: ExtendedJWT) {
+    [AppAuthenticationMutation.SET_AUTHENTICATION_JWT] (state: AppAuthenticationState, payload: ExtendedJWT) {
       state.jwt = payload
     },
     [AppAuthenticationMutation.SET_PROVIDERS] (state: AppAuthenticationState, payload: Providers) {
@@ -95,43 +121,22 @@ const AppAuthenticationModule: Module<AppAuthenticationState, {}> = {
   },
   actions: {
     async [AppAuthenticationActions.AUTHENTICATE] (context: AppAuthenticationActionContext, token: string) {
-      // TODO: This is just placeholder logic. Please check it works. -Niko
-
       const response = await axios.get((process.env.VUE_APP_MS_AUTH as string))
       if (response.status !== 200) {
-        throw Error('Could not reach authentication server.')
+        throw Error(i18n.tc('authentication.error.reachServer'))
       }
-
       const jwt = verify(token, response.data.publicKey) as JWT
-      const extended: ExtendedJWT = { ...jwt, ...{ encoded: token } }
+      const extendedToken: ExtendedJWT = { ...jwt, ...{ encoded: token } }
 
-      // TODO: You probably want put this into the `state`. -Niko
-      // Im not sure how this should be done, so I did it as I know.
-      context.commit('SET_AUTHENTICATION_TOKEN', extended)
-      return extended
+      context.commit(AppAuthenticationMutation.SET_AUTHENTICATION_JWT, extendedToken)
+      context.dispatch(AppAuthenticationActions.STORE_TOKEN, token)
     },
-    async [AppAuthenticationActions.CHECK_TOKEN_EXPIRY] (context: AppAuthenticationActionContext) {
-      const response = await axios.get((process.env.VUE_APP_MS_AUTH as string))
-      let isTokenValid = true
-      if (response.status !== 200) {
-        throw Error('Could not reach authentication server.')
+    async [AppAuthenticationActions.REFRESH_TOKEN] (context: AppAuthenticationActionContext, token: string) {
+      const response: RefreshTokenResponse = await axios.get(`${process.env.VUE_APP_MS_AUTH}/refresh/${token}`)
+      const refreshToken: string = response.data.token
+      if (refreshToken) {
+        context.dispatch(AppAuthenticationActions.STORE_TOKEN, refreshToken)
       }
-      const stateJwt = context.state.jwt
-      if (stateJwt) {
-        try {
-          const verifiedToken = verify(stateJwt.encoded, response.data.publicKey) as JWT
-          // eslint-disable-next-line
-          console.log('verifiedToken', verifiedToken)
-          isTokenValid = true
-          // Need to handle tokens that are nearly expired - Sam
-        } catch (error) {
-          // Placeholder until modal has been created - Sam
-          isTokenValid = false
-          context.dispatch(AppAuthenticationActions.LOGOUT)
-          alert('Your session has expired and you have been logged out. Please login again/')
-        }
-      }
-      return isTokenValid
     },
     [AppAuthenticationActions.STORE_TOKEN] (context: AppAuthenticationActionContext, token: string) {
       localStorage.setItem(JWT_KEY, token)
@@ -142,7 +147,7 @@ const AppAuthenticationModule: Module<AppAuthenticationState, {}> = {
     },
     [AppAuthenticationActions.LOGOUT] (context: AppAuthenticationActionContext) {
       localStorage.removeItem(JWT_KEY)
-      context.commit(AppAuthenticationMutation.SET_AUTHENTICATION_TOKEN, null)
+      context.commit(AppAuthenticationMutation.SET_AUTHENTICATION_JWT, null)
     },
     async [AppAuthenticationActions.LOAD_PROVIDERS] (context: AppAuthenticationActionContext) {
       if (process.env.VUE_APP_MS_AUTH) {

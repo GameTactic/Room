@@ -1,6 +1,6 @@
 <template>
   <v-tooltip
-    v-if="!isMobile"
+    v-if="!isSM"
     bottom
     nudge-bottom="10"
     :open-delay="500"
@@ -42,7 +42,7 @@ const AppRoom = namespace(Namespaces.APP_ROOM)
   name: 'ThePresentationMode'
 })
 export default class ThePresentationMode extends Vue {
-  @Prop() readonly isMobile!: boolean
+  @Prop() readonly isSM!: boolean
   @AppRoom.Getter(AppRoomGetters.IS_CANVAS_LOADED) isCanvasLoaded!: boolean
   @AppAuthentication.Getter(AppAuthenticationGetters.IS_AUTH) isAuth!: boolean
 
