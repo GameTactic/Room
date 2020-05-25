@@ -21,6 +21,7 @@ export default class PingCreator extends Shape implements PingCreatorInterface {
       this.ping = this.createPingElement(canvasElement, event)
     )
     this.group.attrs.type = CanvasElementType.SHAPE
+    this.group.attrs.temporary = this.temporary
     this.layer.add(this.group)
     this.runAnimation(this.ping)
   }

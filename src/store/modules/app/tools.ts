@@ -11,14 +11,14 @@ import Text from '@/tools/Text'
 import Move from '@/tools/Move'
 import Entity from '@/tools/Entity'
 
-export enum ToolGetters {
+export enum AppToolGetters {
   ENABLED_TOOL = 'enabledTool',
   TOOLS = 'tools',
   TOOL = 'tool',
   ENABLED = 'enabled'
 }
 
-export enum ToolsAction {
+export enum AppToolsAction {
   ENABLE_TOOL = 'enableTool',
   DISABLE_TOOL = 'disableTool',
   ENABLE = 'enable',
@@ -34,13 +34,13 @@ export enum ToolsAction {
   SET_STROKE_STYLE = 'setStrokeStyle'
 }
 
-export interface ToolState {
+export interface AppToolState {
   enabledTool?: Tool;
   enabled: boolean;
   tools: Tool[];
 }
 
-export enum ToolsMutation {
+export enum AppToolsMutation {
   SET_ENABLED_TOOL = 'SET_ENABLED_TOOL',
   SET_DISABLED_TOOL = 'SET_DISABLED_TOOL',
   SET_ENABLED = 'SET_ENABLED',
@@ -56,9 +56,9 @@ export enum ToolsMutation {
   SET_STROKE_STYLE = 'SET_STROKE_STYLE'
 }
 
-type ToolActionContext = ActionContext<ToolState, {}>;
+type AppToolActionContext = ActionContext<AppToolState, {}>;
 
-const ToolModule: Module<ToolState, {}> = {
+const AppToolModule: Module<AppToolState, {}> = {
   namespaced: true,
   state () {
     return {
@@ -79,25 +79,25 @@ const ToolModule: Module<ToolState, {}> = {
     }
   },
   getters: {
-    [ToolGetters.TOOLS]: state => state.tools,
-    [ToolGetters.ENABLED_TOOL]: state => state.enabledTool,
-    [ToolGetters.TOOL]: (state) => (name: string) => state.tools.find(tool => tool.name === name),
-    [ToolGetters.ENABLED]: state => state.enabled
+    [AppToolGetters.TOOLS]: state => state.tools,
+    [AppToolGetters.ENABLED_TOOL]: state => state.enabledTool,
+    [AppToolGetters.TOOL]: (state) => (name: string) => state.tools.find(tool => tool.name === name),
+    [AppToolGetters.ENABLED]: state => state.enabled
   },
   mutations: {
-    [ToolsMutation.SET_ENABLED_TOOL] (state: ToolState, payload: string) {
+    [AppToolsMutation.SET_ENABLED_TOOL] (state: AppToolState, payload: string) {
       state.enabledTool = state.tools.find(tool => tool.name === payload)
     },
-    [ToolsMutation.SET_DISABLED_TOOL] (state: ToolState) {
+    [AppToolsMutation.SET_DISABLED_TOOL] (state: AppToolState) {
       state.enabledTool = undefined
     },
-    [ToolsMutation.SET_ENABLED] (state: ToolState) {
+    [AppToolsMutation.SET_ENABLED] (state: AppToolState) {
       state.enabled = true
     },
-    [ToolsMutation.SET_DISABLED] (state: ToolState) {
+    [AppToolsMutation.SET_DISABLED] (state: AppToolState) {
       state.enabled = false
     },
-    [ToolsMutation.SET_TOOL] (state: ToolState, payload: Tool) {
+    [AppToolsMutation.SET_TOOL] (state: AppToolState, payload: Tool) {
       let foundIndex = -1
       const found = state.tools.find((tool: Tool, index: number) => {
         foundIndex = index
@@ -109,88 +109,88 @@ const ToolModule: Module<ToolState, {}> = {
       }
       state.enabledTool = payload
     },
-    [ToolsMutation.SET_COLOUR] (state: ToolState, colour: string) {
+    [AppToolsMutation.SET_COLOUR] (state: AppToolState, colour: string) {
       if (state.enabledTool) {
         state.enabledTool.colour = colour
       }
     },
-    [ToolsMutation.SET_SIZE] (state: ToolState, size: number) {
+    [AppToolsMutation.SET_SIZE] (state: AppToolState, size: number) {
       if (state.enabledTool) {
         state.enabledTool.size = size
       }
     },
-    [ToolsMutation.SET_END_STYLE] (state: ToolState, endStyle: string) {
+    [AppToolsMutation.SET_END_STYLE] (state: AppToolState, endStyle: string) {
       if (state.enabledTool) {
         state.enabledTool.endStyle = endStyle
       }
     },
-    [ToolsMutation.SET_OUTLINE_COLOUR] (state: ToolState, outlineColour: string) {
+    [AppToolsMutation.SET_OUTLINE_COLOUR] (state: AppToolState, outlineColour: string) {
       if (state.enabledTool) {
         state.enabledTool.outlineColour = outlineColour
       }
     },
-    [ToolsMutation.SET_SHOW_RADIUS] (state: ToolState, showRadius: boolean) {
+    [AppToolsMutation.SET_SHOW_RADIUS] (state: AppToolState, showRadius: boolean) {
       if (state.enabledTool) {
         state.enabledTool.showRadius = showRadius
       }
     },
-    [ToolsMutation.SET_SHOW_CIRCLE] (state: ToolState, showCircle: boolean) {
+    [AppToolsMutation.SET_SHOW_CIRCLE] (state: AppToolState, showCircle: boolean) {
       if (state.enabledTool) {
         state.enabledTool.showCircle = showCircle
       }
     },
-    [ToolsMutation.SET_TEMPORARY] (state: ToolState, temporary: boolean) {
+    [AppToolsMutation.SET_TEMPORARY] (state: AppToolState, temporary: boolean) {
       if (state.enabledTool) {
         state.enabledTool.temporary = temporary
       }
     },
-    [ToolsMutation.SET_STROKE_STYLE] (state: ToolState, strokeStyle: number) {
+    [AppToolsMutation.SET_STROKE_STYLE] (state: AppToolState, strokeStyle: number) {
       if (state.enabledTool) {
         state.enabledTool.strokeStyle = strokeStyle
       }
     }
   },
   actions: {
-    [ToolsAction.ENABLE_TOOL] (context: ToolActionContext, toolName: string) {
-      context.commit(ToolsMutation.SET_ENABLED_TOOL, toolName)
+    [AppToolsAction.ENABLE_TOOL] (context: AppToolActionContext, toolName: string) {
+      context.commit(AppToolsMutation.SET_ENABLED_TOOL, toolName)
     },
-    [ToolsAction.DISABLE_TOOL] (context: ToolActionContext) {
-      context.commit(ToolsMutation.SET_DISABLED_TOOL)
+    [AppToolsAction.DISABLE_TOOL] (context: AppToolActionContext) {
+      context.commit(AppToolsMutation.SET_DISABLED_TOOL)
     },
-    [ToolsAction.ENABLE] (context: ToolActionContext) {
-      context.commit(ToolsMutation.SET_ENABLED)
+    [AppToolsAction.ENABLE] (context: AppToolActionContext) {
+      context.commit(AppToolsMutation.SET_ENABLED)
     },
-    [ToolsAction.DISABLE] (context: ToolActionContext) {
-      context.commit(ToolsMutation.SET_DISABLED)
+    [AppToolsAction.DISABLE] (context: AppToolActionContext) {
+      context.commit(AppToolsMutation.SET_DISABLED)
     },
-    [ToolsAction.SET_TOOL] (context: ToolActionContext, tool: Tool) {
-      context.commit(ToolsMutation.SET_TOOL, tool)
+    [AppToolsAction.SET_TOOL] (context: AppToolActionContext, tool: Tool) {
+      context.commit(AppToolsMutation.SET_TOOL, tool)
     },
-    [ToolsAction.SET_COLOUR] (context: ToolActionContext, colour: string) {
-      context.commit(ToolsMutation.SET_COLOUR, colour)
+    [AppToolsAction.SET_COLOUR] (context: AppToolActionContext, colour: string) {
+      context.commit(AppToolsMutation.SET_COLOUR, colour)
     },
-    [ToolsAction.SET_SIZE] (context: ToolActionContext, size: number) {
-      context.commit(ToolsMutation.SET_SIZE, size)
+    [AppToolsAction.SET_SIZE] (context: AppToolActionContext, size: number) {
+      context.commit(AppToolsMutation.SET_SIZE, size)
     },
-    [ToolsAction.SET_END_STYLE] (context: ToolActionContext, endStyle: string) {
-      context.commit(ToolsMutation.SET_END_STYLE, endStyle)
+    [AppToolsAction.SET_END_STYLE] (context: AppToolActionContext, endStyle: string) {
+      context.commit(AppToolsMutation.SET_END_STYLE, endStyle)
     },
-    [ToolsAction.SET_OUTLINE_COLOUR] (context: ToolActionContext, outlineColour: string) {
-      context.commit(ToolsMutation.SET_OUTLINE_COLOUR, outlineColour)
+    [AppToolsAction.SET_OUTLINE_COLOUR] (context: AppToolActionContext, outlineColour: string) {
+      context.commit(AppToolsMutation.SET_OUTLINE_COLOUR, outlineColour)
     },
-    [ToolsAction.SET_SHOW_RADIUS] (context: ToolActionContext, showRadius: boolean) {
-      context.commit(ToolsMutation.SET_SHOW_RADIUS, showRadius)
+    [AppToolsAction.SET_SHOW_RADIUS] (context: AppToolActionContext, showRadius: boolean) {
+      context.commit(AppToolsMutation.SET_SHOW_RADIUS, showRadius)
     },
-    [ToolsAction.SET_SHOW_CIRCLE] (context: ToolActionContext, showCircle: boolean) {
-      context.commit(ToolsMutation.SET_SHOW_CIRCLE, showCircle)
+    [AppToolsAction.SET_SHOW_CIRCLE] (context: AppToolActionContext, showCircle: boolean) {
+      context.commit(AppToolsMutation.SET_SHOW_CIRCLE, showCircle)
     },
-    [ToolsAction.SET_TEMPORARY] (context: ToolActionContext, temporarily: boolean) {
-      context.commit(ToolsMutation.SET_TEMPORARY, temporarily)
+    [AppToolsAction.SET_TEMPORARY] (context: AppToolActionContext, temporarily: boolean) {
+      context.commit(AppToolsMutation.SET_TEMPORARY, temporarily)
     },
-    [ToolsAction.SET_STROKE_STYLE] (context: ToolActionContext, strokeStyle: number) {
-      context.commit(ToolsMutation.SET_STROKE_STYLE, strokeStyle)
+    [AppToolsAction.SET_STROKE_STYLE] (context: AppToolActionContext, strokeStyle: number) {
+      context.commit(AppToolsMutation.SET_STROKE_STYLE, strokeStyle)
     }
   }
 }
 
-export default ToolModule
+export default AppToolModule

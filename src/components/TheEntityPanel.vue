@@ -9,8 +9,8 @@
           tile
           class="custom-entity-panel"
         >
-          <wows-panel v-if="gameName === 'wows'" :clickedItemKey="clickedItemKey" :teams="teams" />
-          <wot-panel v-if="gameName === 'wot'" :clickedItemKey="clickedItemKey" :teams="teams" />
+          <wows-panel v-if="game === 'wows'" :clickedItemKey="clickedItemKey" :teams="teams" />
+          <wot-panel v-if="game === 'wot'" :clickedItemKey="clickedItemKey" :teams="teams" />
         </v-card>
       </v-col>
       <v-col class="pt-1">
@@ -23,7 +23,7 @@
           <div>
             <v-list-item class="px-2">
               <v-list-item-avatar>
-                <v-img :src="images[gameName]"></v-img>
+                <v-img :src="images[game]"></v-img>
               </v-list-item-avatar>
             </v-list-item>
             <v-divider></v-divider>
@@ -83,9 +83,14 @@
 
 <script lang="ts">
 import { Component, Vue } from 'vue-property-decorator'
-import { RoomGetters, GameName } from '@/store/modules/room'
-import { Getter } from 'vuex-class'
+import { AppRoomGetters } from '@/store/modules/app/room'
+import { SocketRoomGetters, Game } from '@/store/modules/socket/room'
+import { namespace } from 'vuex-class'
 import { WowsPanel, WotPanel } from './entity-panel'
+import { Namespaces } from '@/store'
+
+const AppRoom = namespace(Namespaces.APP_ROOM)
+const SocketRoom = namespace(Namespaces.SOCKET_ROOM)
 
 export interface MenuItem {
   key: number;
@@ -103,8 +108,8 @@ export interface MenuItem {
   }
 })
 export default class MapButtons extends Vue {
-  @Getter(`room/${RoomGetters.GAME_NAME}`) private readonly gameName!: GameName;
-  @Getter(`room/${RoomGetters.IS_CANVAS_LOADED}`) isCanvasLoaded!: boolean
+  @SocketRoom.Getter(SocketRoomGetters.GAME) private readonly game!: Game;
+  @AppRoom.Getter(AppRoomGetters.IS_CANVAS_LOADED) isCanvasLoaded!: boolean
 
   show = false
 

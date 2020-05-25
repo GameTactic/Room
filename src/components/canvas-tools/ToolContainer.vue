@@ -27,7 +27,7 @@
               <v-icon dense :color="iconColour">{{icon}}</v-icon>
             </v-btn>
           </template>
-          <span>{{ $t(`tool.container.${toolName}`) }}</span>
+          <span>{{ $t(`tool.container.${toolname}`) }}</span>
         </v-tooltip>
         <v-btn
           x-small
@@ -67,47 +67,45 @@
         <v-icon dense :color="iconColour">{{icon}}</v-icon>
       </v-btn>
     </template>
-    <span>{{ $t(`tool.container.${toolName}`) }}</span>
+    <span>{{ $t(`tool.container.${toolname}`) }}</span>
   </v-tooltip>
 </template>
 
 <script lang="ts">
 import { Component, Prop, Vue } from 'vue-property-decorator'
 import { Tool } from '@/tools/Tool'
-import { namespace, Getter } from 'vuex-class'
+import { namespace } from 'vuex-class'
 import { Namespaces } from '@/store'
-import { ToolGetters, ToolsAction } from '@/store/modules/tools'
-import { RoomGetters } from '../../store/modules/room'
+import { AppToolGetters, AppToolsAction } from '@/store/modules/app/tools'
+import { AppRoomGetters } from '@/store/modules/app/room'
 
-const Tools = namespace(Namespaces.TOOLS)
+const AppTools = namespace(Namespaces.APP_TOOLS)
+const AppRoom = namespace(Namespaces.APP_ROOM)
+
+interface MenuElement extends Vue {
+  isActive: boolean;
+}
 
 @Component({
-  name: 'ToolContainer',
-  data: function () {
-    return {
-      isActive: false
-    }
-  }
+  name: 'ToolContainer'
 })
 export default class ToolContainer extends Vue {
   @Prop() private icon!: string
   @Prop() private popout!: boolean
   @Prop() private toolname!: string
-  @Getter(`room/${RoomGetters.IS_CANVAS_LOADED}`) isCanvasLoaded!: boolean
-  @Tools.Action(ToolsAction.ENABLE_TOOL) enableTool!: (toolName: string) => void
-  @Tools.Action(ToolsAction.DISABLE_TOOL) disableTool!: () => void
-  @Tools.Getter(ToolGetters.ENABLED_TOOL) enabledTool?: Tool
+  @AppRoom.Getter(AppRoomGetters.IS_CANVAS_LOADED) isCanvasLoaded!: boolean
+  @AppTools.Getter(AppToolGetters.ENABLED_TOOL) enabledTool?: Tool
+  @AppTools.Action(AppToolsAction.ENABLE_TOOL) enableTool!: (toolname: string) => void
+  @AppTools.Action(AppToolsAction.DISABLE_TOOL) disableTool!: () => void
+
+  isActive = false
 
   getIsActive (): boolean {
     const menu = this.$refs['menu'] as MenuElement
     if (menu) {
-      this.$data.isActive = menu.isActive
+      this.isActive = menu.isActive
     }
-    return this.$data.isActive
-  }
-
-  get toolName (): string {
-    return this.toolname
+    return this.isActive
   }
 
   get iconColour (): string {
@@ -119,7 +117,7 @@ export default class ToolContainer extends Vue {
   }
 
   get isEnabledButtonClass (): string {
-    if (this.$data.isActive) {
+    if (this.isActive) {
       return 'px-3'
     } else {
       return 'px-0'
@@ -140,16 +138,12 @@ export default class ToolContainer extends Vue {
     }
   }
 }
-
-interface MenuElement extends Vue {
-  isActive: boolean;
-}
-
 </script>
 <style scoped lang="scss">
 .tools-caret-down-active {
   width:24px;
 }
+
 .tools-caret-down {
   margin-top:3px;
   border-radius: 0px 8px 8px 0px;
@@ -159,21 +153,27 @@ interface MenuElement extends Vue {
   color: white;
   transition:0.2s ease-in-out;
 }
+
 .rotate90 {
   transform: rotate(-90deg);
 }
+
 .v-btn--active {
   background-color: $room-primary;
 }
+
 .custom-btn-disabled::before {
   opacity: 0;
 }
+
 .custom-btn-disabled {
   background-color: rgba(0, 0, 0, 0);
 }
+
 .custom-btn-disabled .v-icon {
   color: var(--v-primary-base) !important; // override
 }
+
 .border-btn {
   border-color: rgba(0, 0, 0, 0.12);
   border-style:solid;
@@ -185,6 +185,7 @@ interface MenuElement extends Vue {
 .custom-hide-text {
   display: block;
 }
+
 @media screen and (max-height: 450px) {
   .custom-hide-text {
     display: none;

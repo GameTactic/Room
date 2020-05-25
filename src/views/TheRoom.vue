@@ -34,51 +34,65 @@ import { Prop, Watch } from 'vue-property-decorator'
 import { CanvasElement, VueKonvaStage } from '@/types/Canvas'
 import TheCreateNewTacticOverlay from '@/components/overlays/TheCreateNewTacticOverlay.vue'
 import TheUpdateTacticOverlay from '@/components/overlays/TheUpdateTacticOverlay.vue'
-import { StageActions, StageGetters } from '@/store/modules/stage'
+import { SocketStageActions, SocketStageGetters } from '@/store/modules/socket/stage'
 import PointerEventMapper, { CustomStageConfig } from '@/util/PointerEventMapper'
-import { CanvasAction } from '@/store/modules/canvas'
-import { Action, Getter } from 'vuex-class'
+import { SocketCanvasAction } from '@/store/modules/socket/canvas'
+import { namespace } from 'vuex-class'
 import { EventBus } from '@/event-bus'
 import RoomSocket from '@/mixins/RoomSockets'
 import { Item } from '@/types/Games/Index'
-import { ToolGetters } from '@/store/modules/tools'
+import { AppToolGetters } from '@/store/modules/app/tools'
 import { Tool } from '@/tools/Tool'
-import { TacticGetters, TacticAction } from '../store/modules/tactic'
-import { Tactic, Collection } from '../store/modules/types'
+import { SocketTacticGetters, SocketTacticAction } from '../store/modules/socket/tactic'
+import { Tactic, Collection } from '../store/types'
 import uuid from 'uuid'
-import { AuthenticationGetters, ExtendedJWT } from '../store/modules/authentication'
-import { RoomAction, RoomGetters } from '../store/modules/room'
+import { AppAuthenticationGetters, ExtendedJWT } from '../store/modules/app/authentication'
+import { SocketRoomAction, SocketRoomGetters } from '../store/modules/socket/room'
+import { AppRoomAction, AppRoomGetters } from '../store/modules/app/room'
+import { Namespaces } from '@/store'
 
-  @Component({
-    name: 'Room',
-    mixins: [RoomSocket],
-    components: {
-      TheCreateNewTacticOverlay,
-      TheUpdateTacticOverlay,
-      TheNavLarge,
-      TheNavSmall,
-      TheToolPanel,
-      TheCanvas,
-      TheEntityPanel,
-      TheTacticSelector
-    }
-  })
-export default class Room extends mixins(RoomSocket) {
+const AppAuthentication = namespace(Namespaces.APP_AUTHENTICATION)
+const AppRoom = namespace(Namespaces.APP_ROOM)
+const AppTools = namespace(Namespaces.APP_TOOLS)
+const SocketCanvas = namespace(Namespaces.SOCKET_CANVAS)
+const SocketRoom = namespace(Namespaces.SOCKET_ROOM)
+const SocketStage = namespace(Namespaces.SOCKET_STAGE)
+const SocketTactic = namespace(Namespaces.SOCKET_TACTIC)
+
+@Component({
+  name: 'TheRoom',
+  mixins: [RoomSocket],
+  components: {
+    TheCreateNewTacticOverlay,
+    TheUpdateTacticOverlay,
+    TheNavLarge,
+    TheNavSmall,
+    TheToolPanel,
+    TheCanvas,
+    TheEntityPanel,
+    TheTacticSelector
+  }
+})
+export default class TheRoom extends mixins(RoomSocket) {
   @Prop() id!: string
-  @Getter(`stage/${StageGetters.STAGE_CONFIG}`) stageConfig!: CustomStageConfig
-  @Getter(`tools/${ToolGetters.TOOL}`) findTool!: (name: string) => Tool | void
-  @Getter(`tactic/${TacticGetters.TACTICS}`) tactics!: () => Tactic[]
-  @Getter(`tactic/${TacticGetters.COLLECTIONS}`) collections!: () => Collection[]
-  @Getter(`authentication/${AuthenticationGetters.JWT}`) jwt!: ExtendedJWT
-  @Getter(`room/${RoomGetters.IS_CANVAS_LOADED}`) isCanvasLoaded!: boolean
-  @Action(`canvas/${CanvasAction.SET_CANVAS_ELEMENT}`) setCanvasElements!: (canvasElements: CanvasElement[]) => void
-  @Action(`canvas/${CanvasAction.SET_CANVAS_ELEMENT_HISTORY}`) setCanvasElementsHistory!: (canvasElements: CanvasElement[]) => void
-  @Action(`stage/${StageActions.SET_MAP_SRC}`) setMapSrc!: (mapSrc: string) => void
-  @Action(`stage/${StageActions.SET_CONFIG}`) setConfig!: (config: CustomStageConfig) => void
-  @Action(`tactic/${TacticAction.SET_COLLECTIONS}`) setCollections!: (collections: Collection[]) => void
-  @Action(`tactic/${TacticAction.SET_TACTICS}`) setTactics!: (tactics: Tactic[]) => void
-  @Action(`room/${RoomAction.SET_IS_CANVAS_LOADED}`) setIsCanvasLoaded!: (isCanvasLoaded: boolean) => void
+  @SocketStage.Getter(SocketStageGetters.STAGE_CONFIG) stageConfig!: CustomStageConfig
+  @AppTools.Getter(AppToolGetters.TOOL) findTool!: (name: string) => Tool | void
+  @SocketTactic.Getter(SocketTacticGetters.TACTICS) tactics!: () => Tactic[]
+  @SocketTactic.Getter(SocketTacticGetters.COLLECTIONS) collections!: () => Collection[]
+  @AppAuthentication.Getter(AppAuthenticationGetters.JWT) jwt!: ExtendedJWT
+  @AppRoom.Getter(AppRoomGetters.IS_CANVAS_LOADED) isCanvasLoaded!: boolean
+  @SocketCanvas.Action(SocketCanvasAction.SET_CANVAS_ELEMENT) setCanvasElements!: (canvasElements: CanvasElement[]) => void
+  @SocketCanvas.Action(SocketCanvasAction.SET_CANVAS_ELEMENT_HISTORY) setCanvasElementsHistory!: (canvasElements: CanvasElement[]) => void
+  @SocketStage.Action(SocketStageActions.SET_MAP_SRC) setMapSrc!: (mapSrc: string) => void
+  @SocketStage.Action(SocketStageActions.SET_CONFIG) setConfig!: (config: CustomStageConfig) => void
+  @SocketTactic.Action(SocketTacticAction.SET_COLLECTIONS) setCollections!: (collections: Collection[]) => void
+  @SocketTactic.Action(SocketTacticAction.SET_TACTICS) setTactics!: (tactics: Tactic[]) => void
+  @AppRoom.Action(AppRoomAction.SET_IS_CANVAS_LOADED) setIsCanvasLoaded!: (isCanvasLoaded: boolean) => void
+  @SocketRoom.Action(SocketRoomAction.SET_ROOM_ID) setRoomId!: (roomId: string) => void
 
+  created () {
+    this.setRoomId(window.location.pathname.replace('/', ''))
+  }
   $refs!: {
     app: HTMLDivElement;
     stage: VueKonvaStage;

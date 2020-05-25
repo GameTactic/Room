@@ -29,6 +29,7 @@ export default class TextCreator extends Shape implements TextCreatorInterface {
       this.text = this.createTextElement(canvasElement, event)
     )
     this.group.attrs.type = CanvasElementType.SHAPE
+    this.group.attrs.temporary = this.temporary
     this.layer.add(this.group).batchDraw()
   }
 

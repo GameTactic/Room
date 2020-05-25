@@ -30,6 +30,7 @@ export default class EntityCreator extends Shape {
       })
       this.group.add(image)
       this.group.attrs.type = CanvasElementType.ENTITY
+      this.group.attrs.temporary = this.temporary
       this.layer.add(this.group)
       this.group.draw()
     })

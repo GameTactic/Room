@@ -21,7 +21,7 @@
       <div
         class="custom-zoom-percentage-button caption"
       >
-        {{ this.zoomPercentage }}%
+        {{ this.stageZoom }}%
       </div>
       <v-tooltip bottom :open-delay="500">
         <template v-slot:activator="{ on }">
@@ -83,32 +83,35 @@
 
 <script lang="ts">
 import { Component, Vue, Prop } from 'vue-property-decorator'
-import { Action, Getter, namespace } from 'vuex-class'
-import { ToolGetters, ToolsAction } from '@/store/modules/tools'
+import { namespace } from 'vuex-class'
+import { AppToolGetters, AppToolsAction } from '@/store/modules/app/tools'
 import { Tool } from '@/tools/Tool'
 import { Namespaces } from '@/store'
-import { StageActions, StageGetters } from '@/store/modules/stage'
+import { AppStageActions, AppStageGetters } from '@/store/modules/app/stage'
+import { SocketStageActions, SocketStageGetters } from '@/store/modules/socket/stage'
 import Konva from 'konva'
 import { CustomStageConfig } from '@/util/PointerEventMapper'
 import CenterCanvas from '@/tools/util/CenterCanvas'
 
-const Tools = namespace(Namespaces.TOOLS)
+const AppTools = namespace(Namespaces.APP_TOOLS)
+const AppStage = namespace(Namespaces.APP_STAGE)
+const SocketStage = namespace(Namespaces.SOCKET_STAGE)
 
 @Component({
   name: 'TheCanvasTools'
 })
 export default class TheCanvasTools extends Vue {
   @Prop() private mobile!: boolean;
-  @Getter(`stage/${StageGetters.STAGE_ZOOM}`) stageZoom!: number
-  @Getter(`stage/${StageGetters.STAGE}`) stage!: Konva.Stage
-  @Getter(`stage/${StageGetters.STAGE_CONFIG}`) stageConfig!: CustomStageConfig
-  @Action(`stage/${StageActions.SET_ZOOM}`) setZoom!: (payload: number) => void
-  @Action(`stage/${StageActions.ZOOM_OUT}`) zoomOut!: () => void
-  @Action(`stage/${StageActions.ZOOM_IN}`) zoomIn!: () => void
-  @Action(`stage/${StageActions.SET_CONFIG}`) setStageConfig!: (config: CustomStageConfig) => void
-  @Tools.Action(ToolsAction.ENABLE_TOOL) enableTool!: (toolName: string) => void
-  @Tools.Action(ToolsAction.DISABLE_TOOL) disableTool!: () => void
-  @Tools.Getter(ToolGetters.ENABLED_TOOL) enabledTool?: Tool
+  @AppStage.Getter(AppStageGetters.STAGE_ZOOM) stageZoom!: number
+  @AppStage.Getter(AppStageGetters.STAGE) stage!: Konva.Stage
+  @SocketStage.Getter(SocketStageGetters.STAGE_CONFIG) stageConfig!: CustomStageConfig
+  @AppTools.Getter(AppToolGetters.ENABLED_TOOL) enabledTool?: Tool
+  @AppStage.Action(AppStageActions.SET_ZOOM) setZoom!: (payload: number) => void
+  @AppStage.Action(AppStageActions.SET_ZOOM_OUT) zoomOut!: () => void
+  @AppStage.Action(AppStageActions.SET_ZOOM_IN) zoomIn!: () => void
+  @AppTools.Action(AppToolsAction.ENABLE_TOOL) enableTool!: (toolName: string) => void
+  @AppTools.Action(AppToolsAction.DISABLE_TOOL) disableTool!: () => void
+  @SocketStage.Action(SocketStageActions.SET_CONFIG) setStageConfig!: (config: CustomStageConfig) => void
 
   mounted () {
     const centerCanvas = new CenterCanvas()
@@ -120,10 +123,6 @@ export default class TheCanvasTools extends Vue {
 
   beforeDestroy () {
     window.removeEventListener('resize', () => null)
-  }
-
-  get zoomPercentage (): number {
-    return this.stageZoom
   }
 
   activateMoveCanvasTool (): void {

@@ -30,15 +30,18 @@
 
 <script lang="ts">
 import { Component, Vue, Prop } from 'vue-property-decorator'
-import { Getter } from 'vuex-class'
-import { RoomGetters } from '../../../store/modules/room'
+import { namespace } from 'vuex-class'
+import { AppRoomGetters } from '@/store/modules/app/room'
+import { Namespaces } from '@/store'
+
+const AppRoom = namespace(Namespaces.APP_ROOM)
 
 @Component({
   name: 'ThePresentationMode'
 })
 export default class ThePresentationMode extends Vue {
   @Prop() readonly isMobile!: boolean
-  @Getter(`room/${RoomGetters.IS_CANVAS_LOADED}`) isCanvasLoaded!: boolean
+  @AppRoom.Getter(AppRoomGetters.IS_CANVAS_LOADED) isCanvasLoaded!: boolean
   isEnabled = false
   presentationModeOnClickHandler () {
     this.isEnabled = !this.isEnabled

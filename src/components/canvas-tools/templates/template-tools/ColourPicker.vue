@@ -39,6 +39,7 @@ export default class ColourPicker extends Vue {
 .v-color-picker__controls {
   display: none;
 }
+
 .color-picker-border .v-color-picker__color div {
   border: 1px solid #6D6D6D4D !important;
   border-radius: 2px;

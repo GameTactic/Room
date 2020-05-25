@@ -1,4 +1,4 @@
-import { Map } from '@/store/modules/types'
+import { Map } from '@/store/types'
 
 export default class WowsMaps {
   private maps: Map[] = [

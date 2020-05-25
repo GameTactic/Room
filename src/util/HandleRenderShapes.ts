@@ -2,11 +2,13 @@ import Konva from 'konva'
 import { AdditionData, CanvasElement, CanvasElementHistory } from '@/types/Canvas'
 import { Tool, Tracker } from '@/tools/Tool'
 import { CustomStageConfig } from '@/util/PointerEventMapper'
-import { LayerGetters } from '@/store/modules/layer'
-import { CanvasGetters } from '@/store/modules/canvas'
-import { StageGetters } from '@/store/modules/stage'
-import { ToolGetters } from '@/store/modules/tools'
+import { AppLayerGetters } from '@/store/modules/app/layer'
+import { SocketCanvasGetters } from '@/store/modules/socket/canvas'
+import { SocketStageGetters } from '@/store/modules/socket/stage'
+import { AppStageGetters } from '@/store/modules/app/stage'
+import { AppToolGetters } from '@/store/modules/app/tools'
 import { Store } from 'vuex'
+import { Namespaces } from '@/store'
 
 export default class HandleRenderShapes {
   // eslint-disable-next-line no-useless-constructor
@@ -16,13 +18,14 @@ export default class HandleRenderShapes {
   public canvasElementsHistory: CanvasElementHistory[]
   public tools: Tool[]
   public stage: Konva.Stage
+
   constructor (private propStore: Store<string>) {
-    this.layer = this.propStore.getters[`layer/${LayerGetters.LAYER}`]
-    this.canvasElements = this.propStore.getters[`canvas/${CanvasGetters.CANVAS_ELEMENTS}`]
-    this.stageConfig = this.propStore.getters[`stage/${StageGetters.STAGE_CONFIG}`]
-    this.canvasElementsHistory = this.propStore.getters[`canvas/${CanvasGetters.CANVAS_ELEMENTS_HISTORY}`]
-    this.tools = this.propStore.getters[`tools/${ToolGetters.TOOLS}`]
-    this.stage = this.propStore.getters[`stage/${StageGetters.STAGE}`]
+    this.layer = this.propStore.getters[`${Namespaces.APP_LAYER}/${AppLayerGetters.LAYER}`]
+    this.canvasElements = this.propStore.getters[`${Namespaces.SOCKET_CANVAS}/${SocketCanvasGetters.CANVAS_ELEMENTS}`]
+    this.stageConfig = this.propStore.getters[`${Namespaces.SOCKET_STAGE}/${SocketStageGetters.STAGE_CONFIG}`]
+    this.canvasElementsHistory = this.propStore.getters[`${Namespaces.SOCKET_CANVAS}/${SocketCanvasGetters.CANVAS_ELEMENTS_HISTORY}`]
+    this.tools = this.propStore.getters[`${Namespaces.APP_TOOLS}/${AppToolGetters.TOOLS}`]
+    this.stage = this.propStore.getters[`${Namespaces.APP_STAGE}/${AppStageGetters.STAGE}`]
   }
 
   handle = (): void => {

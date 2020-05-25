@@ -19,36 +19,46 @@
 import Component, { mixins } from 'vue-class-component'
 import { Tool } from '@/tools/Tool'
 import { CanvasElement, VueKonvaLayer, VueKonvaStage } from '@/types/Canvas'
-import { Action, Getter } from 'vuex-class'
-import { ToolGetters } from '@/store/modules/tools'
-import { CanvasAction, CanvasGetters } from '@/store/modules/canvas'
+import { namespace } from 'vuex-class'
+import { AppToolGetters } from '@/store/modules/app/tools'
+import { SocketCanvasAction, SocketCanvasGetters } from '@/store/modules/socket/canvas'
 import Konva from 'konva'
 import { EventBus } from '@/event-bus'
 import PointerEventMapper, { CustomStageConfig } from '@/util/PointerEventMapper'
 import { KonvaPointerEvent } from 'konva/types/PointerEvents'
 import HandleRenderShapes from '@/util/HandleRenderShapes'
-import { StageActions, StageGetters } from '@/store/modules/stage'
-import { LayerActions, LayerGetters } from '@/store/modules/layer'
-import { CanvasEntityGetters, CanvasEntityState } from '@/store/modules/canvasEntity'
+import { AppStageActions, AppStageGetters } from '@/store/modules/app/stage'
+import { SocketStageActions, SocketStageGetters } from '@/store/modules/socket/stage'
+import { AppLayerActions, AppLayerGetters } from '@/store/modules/app/layer'
+import { AppCanvasEntityGetters, AppCanvasEntityState } from '@/store/modules/app/canvasEntity'
 import CanvasSockets from '@/mixins/CanvasSockets'
 import StageWatcher from '@/mixins/StageWatcher'
+import { Namespaces } from '@/store'
+
+const AppCanvasEntity = namespace(Namespaces.APP_CANVAS_ENTITY)
+const AppLayer = namespace(Namespaces.APP_LAYER)
+const AppStage = namespace(Namespaces.APP_STAGE)
+const AppTools = namespace(Namespaces.APP_TOOLS)
+const SocketCanvas = namespace(Namespaces.SOCKET_CANVAS)
+const SocketStage = namespace(Namespaces.SOCKET_STAGE)
+
 @Component({
   name: 'TheCanvas',
   mixins: [CanvasSockets, StageWatcher]
 })
 
 export default class TheCanvas extends mixins(CanvasSockets, StageWatcher) {
-  @Getter(`tools/${ToolGetters.ENABLED_TOOL}`) enabledTool!: Tool
-  @Getter(`tools/${ToolGetters.TOOLS}`) tools!: Tool[]
-  @Action(`canvas/${CanvasAction.ADD_CANVAS_ELEMENT}`) addCanvasElement!: (canvasElement: CanvasElement) => void
-  @Getter(`canvas/${CanvasGetters.CANVAS_ELEMENTS}`) canvasElements!: CanvasElement[]
-  @Getter(`stage/${StageGetters.STAGE_ZOOM}`) stageZoom!: number
-  @Getter(`stage/${StageGetters.STAGE_CONFIG}`) stageConfig!: CustomStageConfig
-  @Action(`layer/${LayerActions.LAYER_SET}`) setLayer!: (layer: Konva.Layer) => void
-  @Getter(`layer/${LayerGetters.LAYER}`) layerNode!: Konva.Layer
-  @Action(`stage/${StageActions.SET_STAGE}`) setStage!: (stage: Konva.Stage) => void
-  @Getter(`stage/${StageGetters.STAGE}`) stage!: Konva.Stage
-  @Getter(`canvasEntity/${CanvasEntityGetters.CANVAS_ENTITY}`) canvasEntity!: CanvasEntityState
+  @AppCanvasEntity.Getter(AppCanvasEntityGetters.CANVAS_ENTITY) canvasEntity!: AppCanvasEntityState
+  @AppTools.Getter(AppToolGetters.ENABLED_TOOL) enabledTool!: Tool
+  @AppTools.Getter(AppToolGetters.TOOLS) tools!: Tool[]
+  @AppLayer.Getter(AppLayerGetters.LAYER) layerNode!: Konva.Layer
+  @AppStage.Getter(AppStageGetters.STAGE) stage!: Konva.Stage
+  @AppStage.Getter(AppStageGetters.STAGE_ZOOM) stageZoom!: number
+  @SocketCanvas.Getter(SocketCanvasGetters.CANVAS_ELEMENTS) canvasElements!: CanvasElement[]
+  @SocketStage.Getter(SocketStageGetters.STAGE_CONFIG) stageConfig!: CustomStageConfig
+  @AppLayer.Action(AppLayerActions.LAYER_SET) setLayer!: (layer: Konva.Layer) => void
+  @AppStage.Action(AppStageActions.SET_STAGE) setStage!: (stage: Konva.Stage) => void
+  @SocketCanvas.Action(SocketCanvasAction.ADD_CANVAS_ELEMENT) addCanvasElement!: (canvasElement: CanvasElement) => void
 
   $refs!: {
     layer: VueKonvaLayer;

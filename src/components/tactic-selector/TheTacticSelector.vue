@@ -204,11 +204,15 @@
 
 <script lang="ts">
 import { Component, Prop, Vue } from 'vue-property-decorator'
-import { Getter, Action } from 'vuex-class'
-import { TacticGetters, TacticAction } from '@/store/modules/tactic'
-import { Tactic } from '@/store/modules/types'
+import { namespace } from 'vuex-class'
+import { SocketTacticGetters, SocketTacticAction } from '@/store/modules/socket/tactic'
+import { Tactic } from '@/store/types'
 import { EventBus } from '../../event-bus'
-import { AuthenticationGetters, ExtendedJWT } from '../../store/modules/authentication'
+import { AppAuthenticationGetters, ExtendedJWT } from '../../store/modules/app/authentication'
+import { Namespaces } from '@/store'
+
+const SocketTactic = namespace(Namespaces.SOCKET_TACTIC)
+const AppAuthentication = namespace(Namespaces.APP_AUTHENTICATION)
 
 interface TacticMenuItem {
   action: string;
@@ -228,12 +232,12 @@ enum TacticMenuOptions {
 })
 export default class TheTacticSelector extends Vue {
   @Prop() private icon!: string
-  @Getter(`authentication/${AuthenticationGetters.JWT}`) jwt!: ExtendedJWT
-  @Getter(`tactic/${TacticGetters.TACTICS}`) tactics!: Tactic[]
-  @Getter(`tactic/${TacticGetters.PINNED_TACTICS}`) pinnedTactics!: Tactic[]
-  @Action(`tactic/${TacticAction.DELETE_TACTIC}`) deleteTactic!: (id: string) => void
-  @Action(`tactic/${TacticAction.UPDATE_TACTIC}`) updateTactic!: (tactic: Tactic) => void
-  @Action(`tactic/${TacticAction.TOGGLE_PIN_TACTIC}`) togglePinTactic!: (tactic: Tactic) => void
+  @AppAuthentication.Getter(AppAuthenticationGetters.JWT) jwt!: ExtendedJWT
+  @SocketTactic.Getter(SocketTacticGetters.TACTICS) tactics!: Tactic[]
+  @SocketTactic.Getter(SocketTacticGetters.PINNED_TACTICS) pinnedTactics!: Tactic[]
+  @SocketTactic.Action(SocketTacticAction.DELETE_TACTIC) deleteTactic!: (id: string) => void
+  @SocketTactic.Action(SocketTacticAction.UPDATE_TACTIC) updateTactic!: (tactic: Tactic) => void
+  @SocketTactic.Action(SocketTacticAction.TOGGLE_PIN_TACTIC) togglePinTactic!: (tactic: Tactic) => void
 
   open: string[] = []
   search: string | null = null

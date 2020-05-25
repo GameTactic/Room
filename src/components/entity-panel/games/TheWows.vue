@@ -20,26 +20,31 @@
 <script lang="ts">
 import axios from 'axios'
 import { Component, Prop, Vue } from 'vue-property-decorator'
-import { RoomGetters, GameName } from '@/store/modules/room'
-import { Getter } from 'vuex-class'
+import { AppRoomGetters } from '@/store/modules/app/room'
+import { Game } from '@/store/modules/socket/room'
+import { namespace } from 'vuex-class'
 import { MenuItem } from '@/components/TheEntityPanel.vue'
 import { Field, ApiHeader, Item } from '@/types/Games/Index'
 import TheCreateEntity from '@/components/entity-panel/sections/TheCreateEntity.vue'
-import { Api, Entity } from '../../../store/modules/types'
-import { Ship } from '../../../types/Games/Wows'
-import { AuthenticationGetters, ExtendedJWT } from '../../../store/modules/authentication'
+import { Api, Entity } from '@/store/types'
+import { Ship } from '@/types/Games/Wows'
+import { AppAuthenticationGetters, ExtendedJWT } from '@/store/modules/app/authentication'
+import { Namespaces } from '@/store'
+
+const AppRoom = namespace(Namespaces.APP_ROOM)
+const AppAuthentication = namespace(Namespaces.APP_AUTHENTICATION)
 
 @Component({
-  name: 'WOWS',
+  name: 'TheWows',
   components: {
     TheCreateEntity
   }
 })
-export default class Wows extends Vue {
+export default class TheWows extends Vue {
   @Prop() private clickedItemKey!: number;
   @Prop() private teams!: MenuItem[];
-  @Getter(`room/${RoomGetters.GAME_API}`) gameApi!: Api[];
-  @Getter(`authentication/${AuthenticationGetters.JWT}`) jwt!: ExtendedJWT;
+  @AppRoom.Getter(AppRoomGetters.API) api!: Api[];
+  @AppAuthentication.Getter(AppAuthenticationGetters.JWT) jwt!: ExtendedJWT;
 
   entities: Entity[] = []
 
@@ -94,8 +99,8 @@ export default class Wows extends Vue {
   }]
 
   get shipsData (): Entity[] {
-    const gameInfo = this.gameApi.find((api: Api) => api.name === 'wows.encyclopedia.info')
-    const gameShips = this.gameApi.find((api: Api) => api.name === 'wows.encyclopedia.ships')
+    const gameInfo = this.api.find((api: Api) => api.name === 'wows.encyclopedia.info')
+    const gameShips = this.api.find((api: Api) => api.name === 'wows.encyclopedia.ships')
     if (gameInfo?.data && gameShips?.data) {
       return [{
         text: 'Aircraft Carrier (CV)',
@@ -148,7 +153,7 @@ export default class Wows extends Vue {
       const headers: ApiHeader = {
         'Authorization': this.jwt.encoded,
         'X-Region': this.jwt.region,
-        'X-Game': GameName['WOWS']
+        'X-Game': Game['WOWS']
       }
       const response = await axios.get(`${process.env.VUE_APP_MS_WG_API}/wows/encyclopedia/shipprofile/?ship_id=${shipItem.value}`, { headers })
       const shipData = response.data.data[shipItem.value]
@@ -161,4 +166,5 @@ export default class Wows extends Vue {
 }
 </script>
 <style lang="scss">
+
 </style>

@@ -23,18 +23,17 @@ import { Component, Vue } from 'vue-property-decorator'
 import { Tool } from '@/tools/Tool'
 import { namespace } from 'vuex-class'
 import { Namespaces } from '@/store'
-import { ToolGetters, ToolsAction } from '@/store/modules/tools'
+import { AppToolGetters, AppToolsAction } from '@/store/modules/app/tools'
 
-const Tools = namespace(Namespaces.TOOLS)
+const AppTools = namespace(Namespaces.APP_TOOLS)
 
 @Component({
-  name: 'Ruler',
-  computed: {}
+  name: 'Ruler'
 })
 export default class PopoutButton extends Vue {
-  @Tools.Getter(ToolGetters.TOOL) findTool!: (name: string) => Tool
-  @Tools.Action(ToolsAction.SET_TEMPORARY) setTemporary!: (temporary: boolean) => void
-  @Tools.Action(ToolsAction.SET_SHOW_CIRCLE) setShowCircle!: (showCircle: boolean) => void
+  @AppTools.Getter(AppToolGetters.TOOL) findTool!: (name: string) => Tool
+  @AppTools.Action(AppToolsAction.SET_TEMPORARY) setTemporary!: (temporary: boolean) => void
+  @AppTools.Action(AppToolsAction.SET_SHOW_CIRCLE) setShowCircle!: (showCircle: boolean) => void
 
   get rulerTemporary (): boolean {
     return !this.findTool('ruler').temporary || false

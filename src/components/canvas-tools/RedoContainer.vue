@@ -22,23 +22,27 @@
 
 <script lang="ts">
 import { Component, Prop, Vue } from 'vue-property-decorator'
-import { Action, Getter } from 'vuex-class'
-import { CanvasAction, CanvasGetters } from '@/store/modules/canvas'
+import { namespace } from 'vuex-class'
+import { SocketCanvasAction, SocketCanvasGetters } from '@/store/modules/socket/canvas'
 import { CanvasElement, CanvasElementHistory } from '@/types/Canvas'
 import HandleUndoRedo from '@/util/HandleUndoRedo'
 import HandleRenderShapes from '@/util/HandleRenderShapes'
-import { RoomGetters } from '../../store/modules/room'
+import { AppRoomGetters } from '@/store/modules/app/room'
+import { Namespaces } from '@/store'
+
+const AppRoom = namespace(Namespaces.APP_TOOLS)
+const SocketCanvas = namespace(Namespaces.SOCKET_CANVAS)
 
 @Component({
-  name: 'RedoContainer.vue'
+  name: 'RedoContainer'
 })
 export default class RedoContainer extends Vue {
   @Prop() private icon!: string
   @Prop() private toolname!: string
-  @Getter(`room/${RoomGetters.IS_CANVAS_LOADED}`) isCanvasLoaded!: boolean
-  @Getter(`canvas/${CanvasGetters.CANVAS_ELEMENTS_HISTORY}`) canvasElementsHistory!: CanvasElementHistory[]
-  @Getter(`canvas/${CanvasGetters.CANVAS_ELEMENTS}`) canvasElements!: CanvasElement[]
-  @Action(`canvas/${CanvasAction.ADD_CANVAS_ELEMENT_HISTORY}`) addCanvasElementHistory!: (canvasElement: CanvasElement) => void
+  @AppRoom.Getter(AppRoomGetters.IS_CANVAS_LOADED) isCanvasLoaded!: boolean
+  @SocketCanvas.Getter(SocketCanvasGetters.CANVAS_ELEMENTS_HISTORY) canvasElementsHistory!: CanvasElementHistory[]
+  @SocketCanvas.Getter(SocketCanvasGetters.CANVAS_ELEMENTS) canvasElements!: CanvasElement[]
+  @SocketCanvas.Action(SocketCanvasAction.ADD_CANVAS_ELEMENT_HISTORY) addCanvasElementHistory!: (canvasElement: CanvasElement) => void
 
   onButtonClickHandler () {
     const handleUndoRedo = new HandleUndoRedo()
@@ -66,14 +70,17 @@ export default class RedoContainer extends Vue {
   margin-left: 5px;
   box-shadow: 0 4px 4px -3px rgba(0, 0, 0, 0.2), 0px 2px 2px 0px rgba(0, 0, 0, 0.14), 0px 1px 5px 0px rgba(0, 0, 0, 0.12)
 }
+
 .tools-caret-down {
   right:2px;
   transition:0.2s ease-in-out;
   margin-top:28px;
 }
+
 .rotate90 {
   transform: rotate(-90deg);
 }
+
 .redoBtn {
   background-color: white;
   padding: 0 12px;

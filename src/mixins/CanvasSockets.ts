@@ -1,29 +1,33 @@
 import Vue from 'vue'
 import Component from 'vue-class-component'
 import { Socket } from 'vue-socket.io-extended'
-import { Action, Getter } from 'vuex-class'
+import { namespace } from 'vuex-class'
 import { AdditionData, CanvasElement, CanvasElementHistory, MoveData, RedoData, RemovalData, RemovalTools, RequestCanvasEntity, UndoData } from '@/types/Canvas'
 import { Tool, Tracker } from '@/tools/Tool'
-import { ToolGetters } from '@/store/modules/tools'
-import { CanvasAction, CanvasGetters } from '@/store/modules/canvas'
+import { AppToolGetters } from '@/store/modules/app/tools'
+import { SocketCanvasAction, SocketCanvasGetters } from '@/store/modules/socket/canvas'
 import HandleRenderShapes from '@/util/HandleRenderShapes'
 import HandleUndoRedo from '@/util/HandleUndoRedo'
 import { SocketCanvasToolsEmit } from '@/store/modules/socket'
+import { Namespaces } from '@/store'
+
+const AppTools = namespace(Namespaces.APP_TOOLS)
+const SocketCanvas = namespace(Namespaces.SOCKET_CANVAS)
 
 @Component({
-  name: 'CanvasSocket'
+  name: 'CanvasSockets'
 })
 export default class CanvasSocket extends Vue {
-  @Getter(`tools/${ToolGetters.TOOLS}`) tools!: Tool[]
-  @Getter(`canvas/${CanvasGetters.CANVAS_ELEMENTS}`) canvasElements!: CanvasElement[]
-  @Getter(`canvas/${CanvasGetters.CANVAS_ELEMENTS_HISTORY}`) canvasElementsHistory!: CanvasElementHistory[]
-  @Getter(`canvas/${CanvasGetters.CANVAS_ELEMENT_BY_ID}`) canvasElementById!: (id: string) => CanvasElement | void
-  @Getter(`canvas/${CanvasGetters.CANVAS_ELEMENT_HISTORY_BY_ID}`) canvasElementHistoryById!: (id: string) => CanvasElementHistory | void
-  @Getter(`tools/${ToolGetters.TOOL}`) findTool!: (name: string) => Tool | void
-  @Action(`canvas/${CanvasAction.ADD_CANVAS_ELEMENT}`) addCanvasElement!: (canvasElement: CanvasElement) => void
-  @Action(`canvas/${CanvasAction.ADD_CANVAS_ELEMENT_HISTORY}`) addCanvasElementHistory!: (canvasElementHistory: CanvasElementHistory) => void
-  @Action(`canvas/${CanvasAction.SHOW_CANVAS_ELEMENT}`) showCanvasElement!: (canvasElement: CanvasElement) => void
-  @Action(`canvas/${CanvasAction.HIDE_CANVAS_ELEMENT}`) hideCanvasElement!: (canvasElement: CanvasElement) => void
+  @AppTools.Getter(AppToolGetters.TOOLS) tools!: Tool[]
+  @SocketCanvas.Getter(SocketCanvasGetters.CANVAS_ELEMENTS) canvasElements!: CanvasElement[]
+  @SocketCanvas.Getter(SocketCanvasGetters.CANVAS_ELEMENTS_HISTORY) canvasElementsHistory!: CanvasElementHistory[]
+  @SocketCanvas.Getter(SocketCanvasGetters.CANVAS_ELEMENT_BY_ID) canvasElementById!: (id: string) => CanvasElement | void
+  @SocketCanvas.Getter(SocketCanvasGetters.CANVAS_ELEMENT_HISTORY_BY_ID) canvasElementHistoryById!: (id: string) => CanvasElementHistory | void
+  @AppTools.Getter(AppToolGetters.TOOL) findTool!: (name: string) => Tool | void
+  @SocketCanvas.Action(SocketCanvasAction.ADD_CANVAS_ELEMENT) addCanvasElement!: (canvasElement: CanvasElement) => void
+  @SocketCanvas.Action(SocketCanvasAction.ADD_CANVAS_ELEMENT_HISTORY) addCanvasElementHistory!: (canvasElementHistory: CanvasElementHistory) => void
+  @SocketCanvas.Action(SocketCanvasAction.SHOW_CANVAS_ELEMENT) showCanvasElement!: (canvasElement: CanvasElement) => void
+  @SocketCanvas.Action(SocketCanvasAction.HIDE_CANVAS_ELEMENT) hideCanvasElement!: (canvasElement: CanvasElement) => void
 
   // On Circle hook
   @Socket(SocketCanvasToolsEmit.CANVAS_TOOLS_CIRCLE)

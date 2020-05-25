@@ -67,28 +67,34 @@
 <script lang="ts">
 import Component, { mixins } from 'vue-class-component'
 import { EventBus } from '@/event-bus'
-import { RoomGetters } from '@/store/modules/room'
-import { Action, Getter } from 'vuex-class'
-import { Api, Tactic } from '@/store/modules/types'
-import { StageActions } from '@/store/modules/stage'
+import { AppRoomGetters } from '@/store/modules/app/room'
+import { namespace } from 'vuex-class'
+import { Api, Tactic } from '@/store/types'
+import { SocketStageActions } from '@/store/modules/socket/stage'
 import { CustomStageConfig } from '@/util/PointerEventMapper'
-import { CanvasAction } from '@/store/modules/canvas'
+import { SocketCanvasAction } from '@/store/modules/socket/canvas'
 import { CanvasElement, CanvasElementHistory } from '@/types/Canvas'
 import TacticWatcher from '@/mixins/TacticWatcher'
+import { Namespaces } from '@/store'
+
+const AppRoom = namespace(Namespaces.APP_ROOM)
+const SocketStage = namespace(Namespaces.SOCKET_STAGE)
+const SocketCanvas = namespace(Namespaces.SOCKET_CANVAS)
 
 @Component({
   name: 'TheUpdateTacticOverlay',
   mixins: [TacticWatcher]
 })
 export default class TheUpdateTacticOverlay extends mixins(TacticWatcher) {
-  @Getter(`room/${RoomGetters.GAME_API}`) gameApi!: Api[]
-  @Action(`stage/${StageActions.SET_CONFIG}`) setConfig!: (config: CustomStageConfig) => void
-  @Action(`canvas/${CanvasAction.SET_CANVAS_ELEMENT}`) setCanvasElements!: (canvasElements: CanvasElement[]) => void
-  @Action(`canvas/${CanvasAction.SET_CANVAS_ELEMENT_HISTORY}`) setCanvasElementsHistory!: (canvasElements: CanvasElementHistory[]) => void
+  @AppRoom.Getter(AppRoomGetters.API) api!: Api[]
+  @SocketStage.Action(SocketStageActions.SET_CONFIG) setConfig!: (config: CustomStageConfig) => void
+  @SocketCanvas.Action(SocketCanvasAction.SET_CANVAS_ELEMENT) setCanvasElements!: (canvasElements: CanvasElement[]) => void
+  @SocketCanvas.Action(SocketCanvasAction.SET_CANVAS_ELEMENT_HISTORY) setCanvasElementsHistory!: (canvasElements: CanvasElementHistory[]) => void
 
   search = ''
   selectedTactic: Tactic | {} = {}
   overlay = false
+
   created () {
     EventBus.$on('openManageTacticsOverlay', (tactic: Tactic) => {
       this.overlay = true
@@ -97,7 +103,7 @@ export default class TheUpdateTacticOverlay extends mixins(TacticWatcher) {
   }
 
   get maps () {
-    const mapApi: Api[] = this.gameApi.filter((api: Api) => api.name === 'wows.encyclopedia.maps')
+    const mapApi: Api[] = this.api.filter((api: Api) => api.name === 'wows.encyclopedia.maps')
     if (mapApi.length === 1) {
       return mapApi[0].data
     } else {

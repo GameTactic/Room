@@ -1,5 +1,5 @@
-import { JWTRegion } from '@/store/modules/authentication'
-import { GameName } from '@/store/modules/room'
+import { JWTRegion } from '@/store/modules/app/authentication'
+import { Game } from '@/store/modules/socket/room'
 
 export interface Item {
   text: string;
@@ -24,5 +24,5 @@ export interface Field {
 export interface ApiHeader {
   Authorization: string;
   'X-Region': JWTRegion;
-  'X-Game': GameName;
+  'X-Game': Game;
 }

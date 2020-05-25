@@ -26,8 +26,11 @@ import LineTemplate from './canvas-tools/templates/Line.vue'
 import { Tool } from '@/tools/Tool'
 import CircleTemplate from './canvas-tools/templates/Circle.vue'
 import TextTemplate from './canvas-tools/templates/Text.vue'
-import { Action } from 'vuex-class'
-import { ToolsAction } from '@/store/modules/tools'
+import { namespace } from 'vuex-class'
+import { AppToolsAction } from '@/store/modules/app/tools'
+import { Namespaces } from '@/store'
+
+const AppTools = namespace(Namespaces.APP_TOOLS)
 
 @Component({
   name: 'TheToolPanel',
@@ -43,7 +46,7 @@ import { ToolsAction } from '@/store/modules/tools'
   }
 })
 export default class TheToolPanel extends Vue {
-  @Action(`tools/${ToolsAction.DISABLE_TOOL}`) disableTool!: () => void
+  @AppTools.Action(AppToolsAction.DISABLE_TOOL) disableTool!: () => void
 
   tools: Tool[] = []
 
@@ -65,6 +68,7 @@ export default class TheToolPanel extends Vue {
   width: 72px;
   background: transparent;
 }
+
 .custom-tool-bar {
   border-radius: 0;
 }

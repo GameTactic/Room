@@ -1,4 +1,3 @@
-import { GameName } from '@/store/modules/room'
 import { CanvasElement, CanvasElementHistory } from '@/types/Canvas'
 
 export interface Api {
@@ -18,12 +17,7 @@ export interface Entity {
   data: any;
 }
 
-export interface Game {
-  name: GameName;
-  api: Api[];
-}
-
-export enum RoleTypes {
+export enum RoleTypes { 
   ROON_OWNER = 'roomOwner',
   ADMIN = 'admin'
 }

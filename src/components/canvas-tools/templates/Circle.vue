@@ -65,24 +65,24 @@ import { Component, Vue } from 'vue-property-decorator'
 import { Tool } from '@/tools/Tool'
 import { namespace } from 'vuex-class'
 import { Namespaces } from '@/store'
-import { ToolGetters, ToolsAction } from '@/store/modules/tools'
+import { AppToolGetters, AppToolsAction } from '@/store/modules/app/tools'
 import ColourPicker from '@/components/canvas-tools/templates/template-tools/ColourPicker.vue'
 import SizePicker from '@/components/canvas-tools/templates/template-tools/SizePicker.vue'
 
-const Tools = namespace(Namespaces.TOOLS)
+const AppTools = namespace(Namespaces.APP_TOOLS)
 
 @Component({
   name: 'DrawCircle',
   components: { SizePicker, ColourPicker }
 })
 export default class PopoutButton extends Vue {
-  @Tools.Getter(ToolGetters.TOOL) findTool!: (name: string) => Tool
-  @Tools.Action(ToolsAction.SET_SIZE) setSize!: (size: number) => void
-  @Tools.Action(ToolsAction.SET_COLOUR) setColour!: (colour: string) => void
-  @Tools.Action(ToolsAction.SET_SHOW_RADIUS) setShowRadius!: (showRadius: boolean) => void
-  @Tools.Action(ToolsAction.SET_OUTLINE_COLOUR) setOutlineColour!: (outlineColour: string) => void
-  @Tools.Action(ToolsAction.SET_TEMPORARY) setTemporary!: (temporary: boolean) => void
-  @Tools.Action(ToolsAction.SET_STROKE_STYLE) setStrokeStyle!: (strokeStyle: number) => void
+  @AppTools.Getter(AppToolGetters.TOOL) findTool!: (name: string) => Tool
+  @AppTools.Action(AppToolsAction.SET_SIZE) setSize!: (size: number) => void
+  @AppTools.Action(AppToolsAction.SET_COLOUR) setColour!: (colour: string) => void
+  @AppTools.Action(AppToolsAction.SET_SHOW_RADIUS) setShowRadius!: (showRadius: boolean) => void
+  @AppTools.Action(AppToolsAction.SET_OUTLINE_COLOUR) setOutlineColour!: (outlineColour: string) => void
+  @AppTools.Action(AppToolsAction.SET_TEMPORARY) setTemporary!: (temporary: boolean) => void
+  @AppTools.Action(AppToolsAction.SET_STROKE_STYLE) setStrokeStyle!: (strokeStyle: number) => void
 
   transparentSwatches = [
     ['#CE000080', '#40476D80'],
