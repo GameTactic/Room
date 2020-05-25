@@ -1,9 +1,9 @@
 <template>
-  <div class="provider-container">
+  <div class="custom-provider-container">
     <h3>{{providerName}}</h3>
     <v-divider>
     </v-divider>
-    <div class="login-btn-container">
+    <div class="custom-login-btn-container">
       <v-btn v-for="entry of entries" @click="authenticate(entry.endpoint)" :key="entry.key"
              class="login-btn" color="primary">
         {{entry.key}}
@@ -37,14 +37,14 @@ export default class extends Vue {
 </script>
 
 <style scoped lang="scss">
-  .login-btn-container {
+  .custom-login-btn-container {
     margin-top: 5px;
     display: grid;
     grid-template-columns: repeat(4, 1fr);
     grid-column-gap: 5px;
   }
 
-  .provider-container {
+  .custom-provider-container {
     margin-top: 10px;
   }
 </style>

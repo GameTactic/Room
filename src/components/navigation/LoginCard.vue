@@ -1,14 +1,15 @@
 <template>
   <v-card class="login-card">
-    <v-card-title class="login-card-title">
+    <v-card-title class="custom-login-card-title">
       <div>{{ $t('navigation.login.card.title') }}</div>
       <v-btn icon @click="closeHandler" v-if="isMobile">
-        <v-icon>mdi-close</v-icon>
+        <v-icon>fa-times</v-icon>
       </v-btn>
     </v-card-title>
-    <v-card-text class="login-card-content">
-      <ProviderBlock v-for="(provider, name) in providers" :provider-name="name" :provider="provider" :key="name">
-      </ProviderBlock>
+    <v-card-text>
+      <provider-block v-for="(provider, name) in providers"
+                     :provider-name="name" :provider="provider" :key="name">
+      </provider-block>
     </v-card-text>
   </v-card>
 </template>
@@ -41,7 +42,7 @@ export default class extends Vue {
 </script>
 
 <style scoped>
-  .login-card-title {
+  .custom-login-card-title {
       font-weight: bold;
       display: flex;
       justify-content: space-between;

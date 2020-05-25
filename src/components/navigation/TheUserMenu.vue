@@ -27,7 +27,7 @@
       <v-list-item v-else @click="openLoginDialog">
         <v-list-item-title>{{ $t('navigation.login.title') }}</v-list-item-title>
         <v-dialog v-model="isDialogOpen" @click:outside="onClickCloseLoginDialog" max-width="500px">
-          <LoginCard></LoginCard>
+          <login-card></login-card>
         </v-dialog>
       </v-list-item>
       <v-list-item
@@ -48,7 +48,7 @@
     <v-list-item v-else @click="openLoginDialog">
       <v-list-item-title>{{ $t('navigation.login.title') }}</v-list-item-title>
       <v-dialog v-model="isDialogOpen" @click:outside="onClickCloseLoginDialog" fullscreen>
-        <LoginCard :is-mobile="isMobile" v-on:close-handler="onClickCloseLoginDialog"></LoginCard>
+        <login-card :is-mobile="isMobile" v-on:close-handler="onClickCloseLoginDialog"></login-card>
       </v-dialog>
     </v-list-item>
     <v-list-item
