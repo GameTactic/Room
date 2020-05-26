@@ -17,17 +17,17 @@
             <v-icon size="20">fa-user-circle</v-icon>
           </v-btn>
         </template>
-        <span>Sign in / Sign out</span>
+        <span>{{ $t('user.profile') }}</span>
       </v-tooltip>
     </template>
     <v-list>
-      <v-list-item v-if="isAuth" @click="logout">
-        <v-list-item-title>Logout</v-list-item-title>
+      <v-list-item v-if="isAuth" @click="onClickLogout">
+        <v-list-item-title>{{ $t('navigation.login.logout') }}</v-list-item-title>
       </v-list-item>
-      <v-list-item v-else @click="doOpen">
-        <v-list-item-title>Login</v-list-item-title>
-        <v-dialog v-model="dialogOpen" @click:outside="dialogOpen = false" max-width="300px">
-          <g-login-card></g-login-card>
+      <v-list-item v-else @click="openLoginDialog">
+        <v-list-item-title>{{ $t('navigation.login.title') }}</v-list-item-title>
+        <v-dialog v-model="isDialogOpen" @click:outside="onClickCloseLoginDialog" max-width="500px">
+          <login-card></login-card>
         </v-dialog>
       </v-list-item>
       <v-list-item
@@ -41,14 +41,14 @@
     </v-list>
   </v-menu>
   <v-list v-else dense style="width: 100%;">
-    <v-subheader>User Profile</v-subheader>
-    <v-list-item v-if="isAuth" @click="logout">
-      <v-list-item-title>Logout</v-list-item-title>
+    <v-subheader>{{ $t('user.profile') }}</v-subheader>
+    <v-list-item v-if="isAuth" @click="onClickLogout">
+      <v-list-item-title>{{ $t('navigation.login.logout') }}</v-list-item-title>
     </v-list-item>
-    <v-list-item v-else @click="doOpen">
-      <v-list-item-title>Login</v-list-item-title>
-      <v-dialog v-model="dialogOpen" @click:outside="dialogOpen = false" fullscreen>
-        <g-login-card></g-login-card>
+    <v-list-item v-else @click="openLoginDialog">
+      <v-list-item-title>{{ $t('navigation.login.title') }}</v-list-item-title>
+      <v-dialog v-model="isDialogOpen" @click:outside="onClickCloseLoginDialog" fullscreen>
+        <login-card :is-mobile="isMobile" v-on:close-handler="onClickCloseLoginDialog"></login-card>
       </v-dialog>
     </v-list-item>
     <v-list-item
@@ -68,35 +68,45 @@ import { Component, Prop, Vue } from 'vue-property-decorator'
 import { namespace } from 'vuex-class'
 import { Namespaces } from '@/store'
 import { AuthenticationActions, AuthenticationGetters } from '@/store/modules/authentication'
-import GLoginCard from '@/components/navigation/LoginCard.vue'
-
-interface UserMenuItem {
-  text: string;
-  title: string;
-}
+import LoginCard from '@/components/navigation/LoginCard.vue'
 
 const authNamespace = namespace(Namespaces.AUTH)
 
-@Component({
-  name: 'TheUserMenu',
-  components: { GLoginCard }
-})
+  interface UserMenuItem {
+    text: string;
+    title: string;
+  }
+
+  @Component({
+    name: 'TheUserMenu',
+    components: { LoginCard }
+  })
 export default class TheUserMenu extends Vue {
   @Prop() private isMobile!: boolean;
   @authNamespace.Getter(AuthenticationGetters.IS_AUTH) isAuth!: boolean
   @authNamespace.Action(AuthenticationActions.LOGIN_WG) authenticate!: (region: string) => void;
-  @authNamespace.Action(AuthenticationActions.LOGOUT) logout!: () => void
+  @authNamespace.Action(AuthenticationActions.LOGOUT) onClickLogout!: () => void
 
-  dialogOpen = false
-  doOpen () {
-    setTimeout(() => { this.dialogOpen = true })
-  }
-  userMenuItems: UserMenuItem[] = []
+    @Prop() private mobile!: boolean
 
-  // eslint-disable-next-line
-  userMenuItemsClickHandler (item: UserMenuItem) {
-    // do stuff
-  }
+    isDialogOpen = false
+
+    openLoginDialog () {
+      setTimeout(() => {
+        this.isDialogOpen = true
+      })
+    }
+
+    onClickCloseLoginDialog () {
+      this.isDialogOpen = false
+    }
+
+    userMenuItems: UserMenuItem[] = []
+
+    // eslint-disable-next-line
+    userMenuItemsClickHandler(item: UserMenuItem) {
+      // do stuff
+    }
 }
 
 </script>

@@ -23,7 +23,7 @@ export interface Game {
   api: Api[];
 }
 
-export enum RoleTypes { 
+export enum RoleTypes {
   ROON_OWNER = 'roomOwner',
   ADMIN = 'admin'
 }
