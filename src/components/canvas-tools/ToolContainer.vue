@@ -27,7 +27,7 @@
               <v-icon dense :color="iconColour">{{icon}}</v-icon>
             </v-btn>
           </template>
-          <span>{{ $t(`tool.container.${toolname}`) }}</span>
+          <span>{{ $t(`tool.container.${toolName}`) }}</span>
         </v-tooltip>
         <v-btn
           x-small
@@ -67,7 +67,7 @@
         <v-icon dense :color="iconColour">{{icon}}</v-icon>
       </v-btn>
     </template>
-    <span>{{ $t(`tool.container.${toolname}`) }}</span>
+    <span>{{ $t(`tool.container.${toolName}`) }}</span>
   </v-tooltip>
 </template>
 
@@ -92,10 +92,10 @@ interface MenuElement extends Vue {
 export default class ToolContainer extends Vue {
   @Prop() private icon!: string
   @Prop() private popout!: boolean
-  @Prop() private toolname!: string
+  @Prop() private toolName!: string
   @AppRoom.Getter(AppRoomGetters.IS_CANVAS_LOADED) isCanvasLoaded!: boolean
   @AppTools.Getter(AppToolGetters.ENABLED_TOOL) enabledTool?: Tool
-  @AppTools.Action(AppToolsAction.ENABLE_TOOL) enableTool!: (toolname: string) => void
+  @AppTools.Action(AppToolsAction.ENABLE_TOOL) enableTool!: (toolName: string) => void
   @AppTools.Action(AppToolsAction.DISABLE_TOOL) disableTool!: () => void
 
   isActive = false
@@ -109,11 +109,11 @@ export default class ToolContainer extends Vue {
   }
 
   get iconColour (): string {
-    return (this.enabledTool?.name === this.toolname) ? 'white' : 'primary'
+    return (this.enabledTool?.name === this.toolName) ? 'white' : 'primary'
   }
 
   get isEnabledClass (): string {
-    return (this.enabledTool?.name === this.toolname) ? 'v-btn--active' : 'custom-btn-disabled'
+    return (this.enabledTool?.name === this.toolName) ? 'v-btn--active' : 'custom-btn-disabled'
   }
 
   get isEnabledButtonClass (): string {
@@ -125,16 +125,16 @@ export default class ToolContainer extends Vue {
   }
 
   onButtonClickHandler () {
-    if (this.enabledTool?.name !== this.toolname) {
-      this.enableTool(this.toolname)
+    if (this.enabledTool?.name !== this.toolName) {
+      this.enableTool(this.toolName)
     } else {
       this.disableTool()
     }
   }
 
   onButtonClickHandlerCaret () {
-    if (this.enabledTool?.name !== this.toolname) {
-      this.enableTool(this.toolname)
+    if (this.enabledTool?.name !== this.toolName) {
+      this.enableTool(this.toolName)
     }
   }
 }

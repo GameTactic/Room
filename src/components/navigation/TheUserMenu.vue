@@ -1,6 +1,6 @@
 <template>
   <v-menu
-    v-if="!isMobile"
+    v-if="!isMobile && isAuth"
     offset-y
     content-class="elevation-2"
   >
@@ -17,18 +17,12 @@
             <v-icon size="20">fa-user-circle</v-icon>
           </v-btn>
         </template>
-        <span>Sign in / Sign out</span>
+        <span>{{ $t('user.profile') }}</span>
       </v-tooltip>
     </template>
     <v-list>
-      <v-list-item v-if="isAuth" @click="logout">
-        <v-list-item-title>Logout</v-list-item-title>
-      </v-list-item>
-      <v-list-item v-else @click="doOpen">
-        <v-list-item-title>Login</v-list-item-title>
-        <v-dialog v-model="dialogOpen" @click:outside="dialogOpen = false" max-width="300px">
-          <the-login-card></the-login-card>
-        </v-dialog>
+      <v-list-item v-if="isAuth" @click="onClickLogout">
+        <v-list-item-title>{{ $t('navigation.login.logout') }}</v-list-item-title>
       </v-list-item>
       <v-list-item
         v-for="(userMenuItem, index) in userMenuItems"
@@ -40,15 +34,35 @@
       </v-list-item>
     </v-list>
   </v-menu>
+  <v-btn
+    v-else-if="!isMobile && !isAuth"
+    color="primary"
+    elevation="0"
+    small
+    @click.stop="onClickOpenLoginDialog"
+  >
+    {{ $t('navigation.login.title') }}
+    <v-dialog
+      v-model="isDialogOpen"
+      max-width="500px"
+      @click:outside="onClickCloseLoginDialog"
+    >
+      <the-login-card />
+    </v-dialog>
+  </v-btn>
   <v-list v-else dense style="width: 100%;">
-    <v-subheader>User Profile</v-subheader>
-    <v-list-item v-if="isAuth" @click="logout">
-      <v-list-item-title>Logout</v-list-item-title>
+    <v-subheader v-text="$t('user.profile')" />
+    <v-list-item v-if="isAuth" @click="onClickLogout">
+      <v-list-item-title>{{ $t('navigation.login.logout') }}</v-list-item-title>
     </v-list-item>
-    <v-list-item v-else @click="doOpen">
-      <v-list-item-title>Login</v-list-item-title>
-      <v-dialog v-model="dialogOpen" @click:outside="dialogOpen = false" fullscreen>
-        <the-login-card></the-login-card>
+    <v-list-item v-else @click.stop="onClickOpenLoginDialog">
+      <v-list-item-title>{{ $t('navigation.login.title') }}</v-list-item-title>
+      <v-dialog
+        v-model="isDialogOpen"
+        fullscreen
+        @click:outside="onClickCloseLoginDialog"
+      >
+        <the-login-card :is-mobile="isMobile" v-on:close-handler="onClickCloseLoginDialog" />
       </v-dialog>
     </v-list-item>
     <v-list-item
@@ -57,7 +71,7 @@
       link
     >
       <v-list-item-content>
-        <v-list-item-title>{{ item.text }}</v-list-item-title>
+        <v-list-item-title v-text="item.text" />
       </v-list-item-content>
     </v-list-item>
   </v-list>
@@ -79,24 +93,26 @@ interface UserMenuItem {
 
 @Component({
   name: 'TheUserMenu',
-  components: {
-    TheLoginCard
-  }
+  components: { TheLoginCard }
 })
 export default class TheUserMenu extends Vue {
   @Prop() private isMobile!: boolean;
   @AppAuthentication.Getter(AppAuthenticationGetters.IS_AUTH) isAuth!: boolean
   @AppAuthentication.Action(AppAuthenticationActions.LOGIN_WG) authenticate!: (region: string) => void;
-  @AppAuthentication.Action(AppAuthenticationActions.LOGOUT) logout!: () => void
+  @AppAuthentication.Action(AppAuthenticationActions.LOGOUT) onClickLogout!: () => void
 
-  dialogOpen = false
-  doOpen () {
-    setTimeout(() => { this.dialogOpen = true })
-  }
+  isDialogOpen = false
   userMenuItems: UserMenuItem[] = []
 
+  onClickOpenLoginDialog () {
+    this.isDialogOpen = true
+  }
+
+  onClickCloseLoginDialog () {
+    this.isDialogOpen = false
+  }
   // eslint-disable-next-line
-  userMenuItemsClickHandler (item: UserMenuItem) {
+  userMenuItemsClickHandler(item: UserMenuItem) {
     // do stuff
   }
 }

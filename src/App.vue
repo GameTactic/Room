@@ -30,6 +30,7 @@ export default class TheApp extends Vue {
   @AppAuthentication.Action(AppAuthenticationActions.AUTHENTICATE) authenticate!: (token: string) => Promise<ExtendedJWT>
   @AppAuthentication.Action(AppAuthenticationActions.CHECK_TOKEN_EXPIRY) checkTokenExpiry!: () => Promise<boolean>
   @AppAuthentication.Action(AppAuthenticationActions.STORE_TOKEN) storeToken!: (token: string) => void
+  @AppAuthentication.Action(AppAuthenticationActions.LOAD_PROVIDERS) loadProviders!: () => void
   @AppAuthentication.Getter(AppAuthenticationGetters.JWT) jwt!: ExtendedJWT
 
   async created () {
@@ -39,6 +40,7 @@ export default class TheApp extends Vue {
   }
 
   async initAuthentication () {
+    this.loadProviders()
     const localToken = localStorage.getItem(JWT_KEY)
 
     if (this.checkTokenExpiry()) {

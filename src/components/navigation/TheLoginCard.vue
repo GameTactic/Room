@@ -1,54 +1,49 @@
 <template>
   <v-card>
-    <v-card-title>Login</v-card-title>
-    <v-divider></v-divider>
+    <v-card-title class="custom-login-card-title">
+      <div v-text="$t('navigation.login.card.title')" />
+      <v-btn icon @click="closeHandler" v-if="isMobile">
+        <v-icon v-text="'fa-times'" />
+      </v-btn>
+    </v-card-title>
     <v-card-text>
-      <h4>Please select a realm to log in with</h4>
+      <provider-block
+        v-for="(provider, name) in providers"
+        :provider-name="name"
+        :provider="provider"
+        :key="name"
+      />
     </v-card-text>
-    <v-card-actions>
-      <v-btn color="primary" @click="authEU" depressed>
-        EU
-      </v-btn>
-      <v-btn color="primary" @click="authNA" depressed>
-        NA
-      </v-btn>
-      <v-btn color="primary" @click="authASIA" depressed>
-        ASIA
-      </v-btn>
-      <v-btn color="primary" @click="authRU" depressed>
-        CIS
-      </v-btn>
-    </v-card-actions>
   </v-card>
 </template>
 
 <script lang="ts">
-import { Component, Vue } from 'vue-property-decorator'
+import { Component, Vue, Prop, Emit } from 'vue-property-decorator'
 import { namespace } from 'vuex-class'
 import { Namespaces } from '@/store'
-import { AppAuthenticationActions, JWTRegion } from '@/store/modules/app/authentication'
+import { AppAuthenticationActions, AppAuthenticationGetters } from '@/store/modules/app/authentication'
+import { Providers } from '@/util/ProvidersUtil'
+import ProviderBlock from '@/components/navigation/login/ProviderBlock.vue'
 
 const AppAuthentication = namespace(Namespaces.APP_AUTHENTICATION)
 
 @Component({
-  name: 'TheLoginCard'
+  name: 'TheLoginCard',
+  components: { ProviderBlock }
 })
-export default class extends Vue {
-  @AppAuthentication.Action(AppAuthenticationActions.LOGIN_WG) authenticate!: (region: string) => void;
-  authEU () {
-    this.authenticate(JWTRegion.EU)
-  }
-  authNA () {
-    this.authenticate(JWTRegion.NA)
-  }
-  authASIA () {
-    this.authenticate(JWTRegion.SA)
-  }
-  authRU () {
-    this.authenticate(JWTRegion.RU)
+export default class TheLoginCard extends Vue {
+  @Prop({ default: false }) isMobile!: boolean
+  @AppAuthentication.Action(AppAuthenticationActions.LOGIN_WG) authenticate!: (endpoint: string) => void
+  @AppAuthentication.Getter(AppAuthenticationGetters.PROVIDERS) providers!: Providers
+  @Emit() closeHandler () {
+    return null
   }
 }
 </script>
 <style scoped>
-
+.custom-login-card-title {
+  font-weight: bold;
+  display: flex;
+  justify-content: space-between;
+}
 </style>

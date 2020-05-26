@@ -1,6 +1,7 @@
 import { ActionContext, Module } from 'vuex'
 import axios from 'axios'
 import { verify } from 'jsonwebtoken'
+import { mapProviders, Providers } from '@/util/ProvidersUtil'
 
 export const JWT_KEY = 'jsonwebtoken'
 
@@ -42,23 +43,29 @@ export interface ExtendedJWT extends JWT {
 
 export interface AppAuthenticationState {
   jwt: ExtendedJWT | null;
+  providers: Providers;
 }
 
 export enum AppAuthenticationActions {
   AUTHENTICATE = 'authenticate',
   CHECK_TOKEN_EXPIRY = 'checkTokenExpiry',
+  LOAD_PROVIDERS = 'loadProviders',
   LOGIN_WG = 'auth_wg',
   LOGOUT = 'logout',
-  STORE_TOKEN = 'storeToken'
+  STORE_TOKEN = 'storeToken',
 }
 
 export enum AppAuthenticationMutation {
-  SET_AUTHENTICATION_TOKEN = 'SET_AUTHENTICATION_TOKEN'
+  SET_AUTHENTICATION_TOKEN = 'SET_AUTHENTICATION_TOKEN',
+  SET_PROVIDERS = 'SET_PROVIDERS'
 }
 
 export enum AppAuthenticationGetters {
   JWT = 'jwt',
-  IS_AUTH = 'authenticated'
+  IS_AUTH = 'authenticated',
+  PROVIDER_NAMES = 'providers',
+  PROVIDER = 'provider',
+  PROVIDERS = 'providers'
 }
 
 type AppAuthenticationActionContext = ActionContext<AppAuthenticationState, {}>
@@ -67,16 +74,23 @@ const AppAuthenticationModule: Module<AppAuthenticationState, {}> = {
   namespaced: true,
   state () {
     return {
-      jwt: null
+      jwt: null,
+      providers: {}
     }
   },
   getters: {
     [AppAuthenticationGetters.JWT]: state => state.jwt,
-    [AppAuthenticationGetters.IS_AUTH]: state => state.jwt !== null
+    [AppAuthenticationGetters.IS_AUTH]: state => state.jwt !== null,
+    [AppAuthenticationGetters.PROVIDER_NAMES]: state => Object.getOwnPropertyNames(state.providers),
+    [AppAuthenticationGetters.PROVIDERS]: state => state.providers,
+    [AppAuthenticationGetters.PROVIDER]: state => (name: string) => state.providers[name]
   },
   mutations: {
     [AppAuthenticationMutation.SET_AUTHENTICATION_TOKEN] (state: AppAuthenticationState, payload: ExtendedJWT) {
       state.jwt = payload
+    },
+    [AppAuthenticationMutation.SET_PROVIDERS] (state: AppAuthenticationState, payload: Providers) {
+      state.providers = payload
     }
   },
   actions: {
@@ -122,14 +136,25 @@ const AppAuthenticationModule: Module<AppAuthenticationState, {}> = {
     [AppAuthenticationActions.STORE_TOKEN] (context: AppAuthenticationActionContext, token: string) {
       localStorage.setItem(JWT_KEY, token)
     },
-    [AppAuthenticationActions.LOGIN_WG] (context: AppAuthenticationActionContext, region: JWTRegion) {
-      // TODO: This is just placeholder logic. Please check it works. -Niko
-      const returnUrl = process.env.VUE_APP_MS_AUTH + `/connect/wargaming/${regionDomain(region)}/${window.location.href}`
+    [AppAuthenticationActions.LOGIN_WG] (context: AppAuthenticationActionContext, endpoint: string) {
+      const returnUrl = `${process.env.VUE_APP_MS_AUTH}${endpoint}/${window.location.href}`
       location.assign(returnUrl)
     },
     [AppAuthenticationActions.LOGOUT] (context: AppAuthenticationActionContext) {
       localStorage.removeItem(JWT_KEY)
       context.commit(AppAuthenticationMutation.SET_AUTHENTICATION_TOKEN, null)
+    },
+    async [AppAuthenticationActions.LOAD_PROVIDERS] (context: AppAuthenticationActionContext) {
+      if (process.env.VUE_APP_MS_AUTH) {
+        const response = await axios.get(process.env.VUE_APP_MS_AUTH)
+        if (response.status !== 200 || !(response.data?.providers)) {
+          throw Error('Could not fetch authentication providers')
+        }
+        const providers = response.data.providers
+        context.commit(AppAuthenticationMutation.SET_PROVIDERS, mapProviders(providers))
+      } else {
+        throw Error('Authentication URI is not set')
+      }
     }
   }
 }
