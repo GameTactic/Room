@@ -35,7 +35,7 @@
     </v-list>
   </v-menu>
   <v-btn
-    v-else-if="!isMobile && !isAuth"
+    v-else-if="!isSM && !isAuth"
     color="primary"
     elevation="0"
     small
@@ -62,7 +62,7 @@
         fullscreen
         @click:outside="onClickCloseLoginDialog"
       >
-        <the-login-card :is-mobile="isMobile" v-on:close-handler="onClickCloseLoginDialog" />
+        <the-login-card :is-mobile="isSM" v-on:close-handler="onClickCloseLoginDialog" />
       </v-dialog>
     </v-list-item>
     <v-list-item

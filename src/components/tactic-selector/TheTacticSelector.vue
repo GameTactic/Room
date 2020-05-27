@@ -164,7 +164,7 @@
     </v-menu>
 
     <v-tabs
-      :class="['custom-tactic-tabs', pinnedTactics.length ? 'custom-tactic-pinned-tabs' : '']"
+      :class="['custom-tactic-tabs', 'd-none d-sm-flex', pinnedTactics.length ? 'custom-tactic-pinned-tabs' : '']"
       next-icon="fa-arrow-right"
       prev-icon="fa-arrow-left"
       height="42"

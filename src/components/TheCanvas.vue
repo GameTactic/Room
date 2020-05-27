@@ -28,7 +28,7 @@ import PointerEventMapper, { CustomStageConfig } from '@/util/PointerEventMapper
 import { KonvaPointerEvent } from 'konva/types/PointerEvents'
 import HandleRenderShapes from '@/util/HandleRenderShapes'
 import { AppStageActions, AppStageGetters } from '@/store/modules/app/stage'
-import { SocketStageActions, SocketStageGetters } from '@/store/modules/socket/stage'
+import { SocketStageGetters } from '@/store/modules/socket/stage'
 import { AppLayerActions, AppLayerGetters } from '@/store/modules/app/layer'
 import { AppCanvasEntityGetters, AppCanvasEntityState } from '@/store/modules/app/canvasEntity'
 import CanvasSockets from '@/mixins/CanvasSockets'
