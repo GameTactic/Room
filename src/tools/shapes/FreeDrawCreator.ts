@@ -20,6 +20,7 @@ export default class FreeDrawCreator extends Shape implements FreeDrawCreatorInt
       this.freeDraw = this.createFreeDrawElement(canvasElement, event)
     )
     this.group.attrs.type = CanvasElementType.SHAPE
+    this.group.attrs.temporary = this.temporary
     this.layer.add(this.group)
   }
 

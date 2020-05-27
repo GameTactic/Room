@@ -10,14 +10,16 @@ import {
 import { CustomEvent, CustomStageEvent } from '@/util/PointerEventMapper'
 import store from '@/main'
 import { SocketActions } from '@/store/modules/socket'
-import { StageGetters } from '@/store/modules/stage'
+import { SocketStageGetters } from '@/store/modules/socket/stage'
+import { AppStageGetters } from '@/store/modules/app/stage'
 import { Point } from 'konva/types/Util'
-import { CanvasEntityActions, CanvasEntityGetters, CanvasEntityState } from '@/store/modules/canvasEntity'
-import { LayerGetters } from '@/store/modules/layer'
-import { ToolGetters, ToolsAction } from '@/store/modules/tools'
-import { CanvasAction, CanvasGetters } from '@/store/modules/canvas'
+import { AppCanvasEntityActions, AppCanvasEntityGetters, AppCanvasEntityState } from '@/store/modules/app/canvasEntity'
+import { AppLayerGetters } from '@/store/modules/app/layer'
+import { AppToolGetters, AppToolsAction } from '@/store/modules/app/tools'
+import { SocketCanvasAction, SocketCanvasGetters } from '@/store/modules/socket/canvas'
 import { Dimensions } from '@/mixins/StageWatcher'
 import { Item } from '@/types/Games/Index'
+import { Namespaces } from '@/store'
 
 export type CanvasDownAction = (event: CustomEvent, stage: VueKonvaStage) => void;
 export type CanvasMoveAction = (event: CustomEvent, stage: VueKonvaStage) => void;
@@ -37,15 +39,15 @@ export enum Tracker {
 
 export class ToolClass {
   get enabled (): boolean {
-    return store.getters[`tools/${ToolGetters.ENABLED}`]
+    return store.getters[`${Namespaces.APP_TOOLS}/${AppToolGetters.ENABLED}`]
   }
 
   disableTool = (): void => {
-    store.dispatch(`tools/${ToolsAction.DISABLE}`)
+    store.dispatch(`${Namespaces.APP_TOOLS}/${AppToolsAction.DISABLE}`)
   }
 
   enableTool = (): void => {
-    store.dispatch(`tools/${ToolsAction.ENABLE}`)
+    store.dispatch(`${Namespaces.APP_TOOLS}/${AppToolsAction.ENABLE}`)
   }
 
   sendAndAddToState = (request: RequestCanvasEntity, emit: string): void => {
@@ -58,7 +60,7 @@ export class ToolClass {
       case Tracker.ADDITION :
         const additionsData = request.modifyData as AdditionData
         if (request.canvasElements.length === additionsData.additions.length && request.canvasElements.length > 0) {
-          store.dispatch(`canvas/${CanvasAction.ADD_CANVAS_ELEMENT_HISTORY}`, {
+          store.dispatch(`${Namespaces.SOCKET_CANVAS}/${SocketCanvasAction.ADD_CANVAS_ELEMENT_HISTORY}`, {
             jti: request.jti,
             id: request.id,
             modifyType: request.modifyType,
@@ -66,22 +68,22 @@ export class ToolClass {
             timestampModified: request.timestampModified
           })
           request.canvasElements.forEach((canvasElement: CanvasElement) => {
-            store.dispatch(`canvas/${CanvasAction.ADD_CANVAS_ELEMENT}`, canvasElement)
+            store.dispatch(`${Namespaces.SOCKET_CANVAS}/${SocketCanvasAction.ADD_CANVAS_ELEMENT}`, canvasElement)
           })
         }
         break
       case Tracker.REMOVAL:
         const removalsData = request.modifyData as RemovalData
         if (removalsData.removals && removalsData.removals.length > 0) {
-          const canvasElements = store.getters[`canvas/${CanvasGetters.CANVAS_ELEMENTS}`]
+          const canvasElements = store.getters[`${Namespaces.SOCKET_CANVAS}/${SocketCanvasGetters.CANVAS_ELEMENTS}`]
           if (canvasElements) {
             removalsData.removals.forEach((groupId: string) => {
               const foundElement: CanvasElement = canvasElements.find((canvasElement: CanvasElement) => canvasElement.id === groupId)
               if (foundElement) {
-                store.dispatch(`canvas/${CanvasAction.HIDE_CANVAS_ELEMENT}`, foundElement)
+                store.dispatch(`${Namespaces.SOCKET_CANVAS}/${SocketCanvasAction.HIDE_CANVAS_ELEMENT}`, foundElement)
               }
             })
-            store.dispatch(`canvas/${CanvasAction.ADD_CANVAS_ELEMENT_HISTORY}`, {
+            store.dispatch(`${Namespaces.SOCKET_CANVAS}/${SocketCanvasAction.ADD_CANVAS_ELEMENT_HISTORY}`, {
               jti: request.jti,
               id: request.id,
               modifyType: request.modifyType,
@@ -94,7 +96,7 @@ export class ToolClass {
       case Tracker.MOVE:
         const moveData = request.modifyData as MoveData
         if (moveData.to && moveData.from && moveData.groups.length > 0) {
-          const canvasElements = store.getters[`canvas/${CanvasGetters.CANVAS_ELEMENTS}`]
+          const canvasElements = store.getters[`${Namespaces.SOCKET_CANVAS}/${SocketCanvasGetters.CANVAS_ELEMENTS}`]
           if (canvasElements) {
             moveData.groups.forEach((groupId: string) => {
               const foundElement: CanvasElement = canvasElements.find((canvasElement: CanvasElement) => canvasElement.id === groupId)
@@ -105,7 +107,7 @@ export class ToolClass {
                 }
               }
             })
-            store.dispatch(`canvas/${CanvasAction.ADD_CANVAS_ELEMENT_HISTORY}`, {
+            store.dispatch(`${Namespaces.SOCKET_CANVAS}/${SocketCanvasAction.ADD_CANVAS_ELEMENT_HISTORY}`, {
               jti: request.jti,
               id: request.id,
               modifyType: request.modifyType,
@@ -119,46 +121,46 @@ export class ToolClass {
   }
 
   send = (request: RequestCanvasEntity, emit: string): void => {
-    store.dispatch(`socket/${SocketActions.EMIT}`, { data: request, emit: emit })
+    store.dispatch(`${Namespaces.SOCKET}/${SocketActions.EMIT}`, { data: request, emit: emit })
   }
 
   get stageEvent (): CustomStageEvent {
     return {
-      stage: store.getters?.[`stage/${StageGetters.STAGE}`],
-      stageConfig: store.getters?.[`stage/${StageGetters.STAGE_CONFIG}`],
-      zoom: store.getters?.[`stage/${StageGetters.STAGE_ZOOM}`]
+      stage: store.getters?.[`${Namespaces.APP_STAGE}/${AppStageGetters.STAGE}`],
+      stageConfig: store.getters?.[`${Namespaces.SOCKET_STAGE}/${SocketStageGetters.STAGE_CONFIG}`],
+      zoom: store.getters?.[`${Namespaces.APP_STAGE}/${AppStageGetters.STAGE_ZOOM}`]
     }
   }
 
-  resetCanvasEntity = (): CanvasEntityState => {
-    store.dispatch(`canvasEntity/${CanvasEntityActions.RESET_CANVAS_ENTITY}`)
-    const canvasEntity: CanvasEntityState = store.getters[`canvasEntity/${CanvasEntityGetters.CANVAS_ENTITY}`]
+  resetCanvasEntity = (): AppCanvasEntityState => {
+    store.dispatch(`${Namespaces.APP_CANVAS_ENTITY}/${AppCanvasEntityActions.RESET_CANVAS_ENTITY}`)
+    const canvasEntity: AppCanvasEntityState = store.getters[`${Namespaces.APP_CANVAS_ENTITY}/${AppCanvasEntityGetters.CANVAS_ENTITY}`]
     canvasEntity.hasMoved = false
     return canvasEntity
   }
 
   get canvasElement (): CanvasElement {
-    return store.getters[`canvasEntity/${CanvasEntityGetters.CANVAS_ELEMENT}`]
+    return store.getters[`${Namespaces.APP_CANVAS_ENTITY}/${AppCanvasEntityGetters.CANVAS_ELEMENT}`]
   }
 
   set canvasElement (canvasElement: CanvasElement) {
-    store.dispatch(`canvasEntity/${CanvasEntityActions.SET_CANVAS_ELEMENT}`, canvasElement)
+    store.dispatch(`${Namespaces.APP_CANVAS_ENTITY}/${AppCanvasEntityActions.SET_CANVAS_ELEMENT}`, canvasElement)
   }
 
-  get canvasEntity (): CanvasEntityState {
-    return store.getters[`canvasEntity/${CanvasEntityGetters.CANVAS_ENTITY}`]
+  get canvasEntity (): AppCanvasEntityState {
+    return store.getters[`${Namespaces.APP_CANVAS_ENTITY}/${AppCanvasEntityGetters.CANVAS_ENTITY}`]
   }
 
-  set canvasEntity (canvasEntity: CanvasEntityState) {
-    store.dispatch(`canvasEntity/${CanvasEntityActions.SET_CANVAS_ENTITY}`, canvasEntity)
+  set canvasEntity (canvasEntity: AppCanvasEntityState) {
+    store.dispatch(`${Namespaces.APP_CANVAS_ENTITY}/${AppCanvasEntityActions.SET_CANVAS_ENTITY}`, canvasEntity)
   }
 
   get layer (): Konva.Layer {
-    return store.getters[`layer/${LayerGetters.LAYER}`]
+    return store.getters[`${Namespaces.APP_LAYER}/${AppLayerGetters.LAYER}`]
   }
 
   get canvasElements (): CanvasElement[] {
-    return store.getters[`canvas/${CanvasGetters.CANVAS_ELEMENTS}`]
+    return store.getters[`${Namespaces.SOCKET_CANVAS}/${SocketCanvasGetters.CANVAS_ELEMENTS}`]
   }
 }
 

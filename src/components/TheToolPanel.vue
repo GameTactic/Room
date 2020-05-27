@@ -1,16 +1,16 @@
 <template>
   <div class="custom-tool-panel-container btn-toggle-box pa-0 pt-1">
     <v-btn-toggle class="flex-column custom-tool-bar">
-      <tool-container icon="fa-arrows-alt" toolname="move" :popout="false" />
-      <tool-container icon="fa-map-pin" toolname="ping" :popout="false" />
-      <tool-container icon="fa-pen" toolname="freeDraw" :popout="true"><free-draw-template /></tool-container>
-      <tool-container icon="fa-slash" toolname="line" :popout="true"><line-template /></tool-container>
-      <tool-container icon="far fa-circle" toolname="circle" :popout="true"><circle-template /></tool-container>
-      <tool-container icon="fa-ruler" toolname="ruler" :popout="true"><ruler-template /></tool-container>
-      <tool-container icon="fa-font" toolname="text" :popout="true"><text-template /></tool-container>
-      <tool-container icon="fa-eraser" toolname="erase" :popout="false"></tool-container>
-      <undo-container icon="fa-undo" toolname="undo"></undo-container>
-      <redo-container icon="fa-redo" toolname="redo"></redo-container>
+      <tool-container icon="fa-arrows-alt" toolName="move" :popout="false" />
+      <tool-container icon="fa-map-pin" toolName="ping" :popout="false" />
+      <tool-container icon="fa-pen" toolName="freeDraw" :popout="true"><free-draw-template /></tool-container>
+      <tool-container icon="fa-slash" toolName="line" :popout="true"><line-template /></tool-container>
+      <tool-container icon="far fa-circle" toolName="circle" :popout="true"><circle-template /></tool-container>
+      <tool-container icon="fa-ruler" toolName="ruler" :popout="true"><ruler-template /></tool-container>
+      <tool-container icon="fa-font" toolName="text" :popout="true"><text-template /></tool-container>
+      <tool-container icon="fa-eraser" toolName="erase" :popout="false"></tool-container>
+      <undo-container icon="fa-undo" toolName="undo"></undo-container>
+      <redo-container icon="fa-redo" toolName="redo"></redo-container>
     </v-btn-toggle>
   </div>
 </template>
@@ -26,8 +26,11 @@ import LineTemplate from './canvas-tools/templates/Line.vue'
 import { Tool } from '@/tools/Tool'
 import CircleTemplate from './canvas-tools/templates/Circle.vue'
 import TextTemplate from './canvas-tools/templates/Text.vue'
-import { Action } from 'vuex-class'
-import { ToolsAction } from '@/store/modules/tools'
+import { namespace } from 'vuex-class'
+import { AppToolsAction } from '@/store/modules/app/tools'
+import { Namespaces } from '@/store'
+
+const AppTools = namespace(Namespaces.APP_TOOLS)
 
 @Component({
   name: 'TheToolPanel',
@@ -43,7 +46,7 @@ import { ToolsAction } from '@/store/modules/tools'
   }
 })
 export default class TheToolPanel extends Vue {
-  @Action(`tools/${ToolsAction.DISABLE_TOOL}`) disableTool!: () => void
+  @AppTools.Action(AppToolsAction.DISABLE_TOOL) disableTool!: () => void
 
   tools: Tool[] = []
 
@@ -65,6 +68,7 @@ export default class TheToolPanel extends Vue {
   width: 72px;
   background: transparent;
 }
+
 .custom-tool-bar {
   border-radius: 0;
 }

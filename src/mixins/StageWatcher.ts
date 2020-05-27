@@ -1,27 +1,32 @@
-import { StageActions, StageGetters } from '@/store/modules/stage'
+import { SocketStageActions, SocketStageGetters } from '@/store/modules/socket/stage'
+import { AppStageGetters } from '@/store/modules/app/stage'
 import { CustomStageConfig } from '@/util/PointerEventMapper'
 import CenterCanvas from '@/tools/util/CenterCanvas'
 import { Watch } from 'vue-property-decorator'
-import { Action, Getter } from 'vuex-class'
+import { namespace } from 'vuex-class'
 import Component from 'vue-class-component'
 import Konva from 'konva'
 import Vue from 'vue'
 import MapCanvas from '@/tools/util/MapCanvas'
 import HandleRenderShapes from '@/util/HandleRenderShapes'
+import { Namespaces } from '@/store'
+
+const AppStage = namespace(Namespaces.APP_STAGE)
+const SocketStage = namespace(Namespaces.SOCKET_STAGE)
 
 @Component({
-  name: 'StageWatch'
+  name: 'StageWatcher'
 })
 export default class StageWatch extends Vue {
-  @Getter(`stage/${StageGetters.STAGE_DIMENSIONS_INITIAL}`) stageDimensionsInitial!: Dimensions
-  @Getter(`stage/${StageGetters.STAGE_DIMENSIONS}`) stageDimensions!: Dimensions
-  @Getter(`stage/${StageGetters.STAGE_CONFIG}`) stageConfig!: CustomStageConfig
-  @Getter(`stage/${StageGetters.STAGE_ZOOM}`) stageZoom!: number
-  @Getter(`stage/${StageGetters.STAGE}`) stage!: Konva.Stage
-  @Action(`stage/${StageActions.SET_DIMENSIONS}`) setStageDimensions!: (dimensions: Dimensions) => void
-  @Action(`stage/${StageActions.SET_SCALE}`) setScale!: (scale: number) => void
-  @Action(`stage/${StageActions.SET_DIMENSIONS_INITIAL}`) setDimensionsInitial!: (dimensions: Dimensions) => void
-  @Getter(`stage/${StageGetters.STAGE_MAP_SRC}`) stageMapSrc!: string
+  @AppStage.Getter(AppStageGetters.STAGE_ZOOM) stageZoom!: number
+  @AppStage.Getter(AppStageGetters.STAGE) stage!: Konva.Stage
+  @SocketStage.Getter(SocketStageGetters.STAGE_DIMENSIONS_INITIAL) stageDimensionsInitial!: Dimensions
+  @SocketStage.Getter(SocketStageGetters.STAGE_DIMENSIONS) stageDimensions!: Dimensions
+  @SocketStage.Getter(SocketStageGetters.STAGE_CONFIG) stageConfig!: CustomStageConfig
+  @SocketStage.Getter(SocketStageGetters.STAGE_MAP_SRC) stageMapSrc!: string
+  @SocketStage.Action(SocketStageActions.SET_DIMENSIONS) setStageDimensions!: (dimensions: Dimensions) => void
+  @SocketStage.Action(SocketStageActions.SET_SCALE) setScale!: (scale: number) => void
+  @SocketStage.Action(SocketStageActions.SET_DIMENSIONS_INITIAL) setDimensionsInitial!: (dimensions: Dimensions) => void
 
   @Watch('stageDimensionsInitial', { immediate: true })
   onStageInitialDimensions () {

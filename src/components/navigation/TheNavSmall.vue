@@ -61,8 +61,11 @@ import ThePresentationMode from './buttons/ThePresentationMode.vue'
 import TheManageRoom from './buttons/TheManageRoom.vue'
 import TheUserMenu from './TheUserMenu.vue'
 import TheCanvasTools from './TheCanvasTools.vue'
-import { Getter } from 'vuex-class'
-import { RoomGetters } from '../../store/modules/room'
+import { namespace } from 'vuex-class'
+import { AppRoomGetters } from '../../store/modules/app/room'
+import { Namespaces } from '@/store'
+
+const AppRoom = namespace(Namespaces.APP_ROOM)
 
 @Component({
   name: 'TheNavSmall',
@@ -75,7 +78,7 @@ import { RoomGetters } from '../../store/modules/room'
   }
 })
 export default class TheNavSmall extends Vue {
-  @Getter(`room/${RoomGetters.IS_CANVAS_LOADED}`) isCanvasLoaded!: boolean
+  @AppRoom.Getter(AppRoomGetters.IS_CANVAS_LOADED) isCanvasLoaded!: boolean
   drawer = false
 }
 </script>
@@ -87,6 +90,7 @@ export default class TheNavSmall extends Vue {
     padding: 0;
   }
 }
+
 header.navbar-toolbar-left.navbar-toolbar-left.navbar-toolbar-left {
   background-color: $room-primary;
   color: $room-text;
@@ -98,6 +102,7 @@ header.navbar-toolbar-left.navbar-toolbar-left.navbar-toolbar-left {
     margin: 0.25rem;
   }
 }
+
 .navbar-toolbar-center {
   color: black;
   >div {
@@ -105,6 +110,7 @@ header.navbar-toolbar-left.navbar-toolbar-left.navbar-toolbar-left {
     align-items: start;
   }
 }
+
 .navbar-toolbar-right.navbar-toolbar-right.navbar-toolbar-right {
   background-color: $room-primary;
   color: $room-text;
@@ -116,6 +122,7 @@ header.navbar-toolbar-left.navbar-toolbar-left.navbar-toolbar-left {
     margin-right: 10px;
   }
 }
+
 @media screen and (max-width: 960px) {
   .navbar-toolbar-left, .navbar-toolbar-right  {
     flex: 1 1 auto;
@@ -129,6 +136,7 @@ header.navbar-toolbar-left.navbar-toolbar-left.navbar-toolbar-left {
 .custom-clickable {
   pointer-events: auto;
 }
+
 .custom-not-clickable {
   pointer-events: none;
 }

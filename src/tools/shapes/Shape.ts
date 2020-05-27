@@ -1,9 +1,10 @@
 import Konva from 'konva'
 import { CanvasElement } from '@/types/Canvas'
 import { CustomEvent, CustomStageEvent } from '@/util/PointerEventMapper'
-import { CanvasEntityActions, CanvasEntityGetters } from '@/store/modules/canvasEntity'
+import { AppCanvasEntityActions, AppCanvasEntityGetters } from '@/store/modules/app/canvasEntity'
 import store from '@/main'
-import { LayerActions, LayerGetters } from '@/store/modules/layer'
+import { AppLayerActions, AppLayerGetters } from '@/store/modules/app/layer'
+import { Namespaces } from '@/store'
 
 export default class Shape {
   private readonly decayTime = 500
@@ -28,7 +29,7 @@ export default class Shape {
   }
 
   destroy = (): void => {
-    store.dispatch(`layer/${LayerActions.LAYER_DESTROY_GROUP}`, this.group)
+    store.dispatch(`${Namespaces.APP_LAYER}/${AppLayerActions.LAYER_DESTROY_GROUP}`, this.group)
   }
 
   formatX = (num: number, event: CustomEvent | CustomStageEvent): number => {
@@ -40,15 +41,15 @@ export default class Shape {
   }
 
   get canvasElement (): CanvasElement {
-    return store.getters[`canvasEntity/${CanvasEntityGetters.CANVAS_ELEMENT}`]
+    return store.getters[`${Namespaces.APP_CANVAS_ENTITY}/${AppCanvasEntityGetters.CANVAS_ELEMENT}`]
   }
 
   set canvasElement (canvasElement: CanvasElement) {
-    store.dispatch(`canvasEntity(${CanvasEntityActions.SET_CANVAS_ELEMENT}`, canvasElement)
+    store.dispatch(`${Namespaces.APP_CANVAS_ENTITY}(${AppCanvasEntityActions.SET_CANVAS_ELEMENT}`, canvasElement)
   }
 
   get layer (): Konva.Layer {
-    return store.getters[`layer/${LayerGetters.LAYER}`]
+    return store.getters[`${Namespaces.APP_LAYER}/${AppLayerGetters.LAYER}`]
   }
 }
 

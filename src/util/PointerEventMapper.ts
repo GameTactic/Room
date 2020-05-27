@@ -1,7 +1,9 @@
 import Konva from 'konva'
 import { NodeConfig } from 'konva/types/Node'
-import { StageGetters } from '@/store/modules/stage'
+import { AppStageGetters } from '@/store/modules/app/stage'
+import { SocketStageGetters } from '@/store/modules/socket/stage'
 import store from '@/main'
+import { Namespaces } from '@/store'
 
 export default class PointerEventMapper {
   static touchEventMapper = (event: TouchEvent): object => {
@@ -40,9 +42,9 @@ export default class PointerEventMapper {
   }
 
   static globalEventMapper = (e: Konva.KonvaPointerEvent | DragEvent): CustomEvent => {
-    const stageConfig: CustomStageConfig = store.getters[`stage/${StageGetters.STAGE_CONFIG}`]
-    const stageZoom: number = store.getters[`stage/${StageGetters.STAGE_ZOOM}`]
-    const stage: Konva.Stage = store.getters[`stage/${StageGetters.STAGE}`]
+    const stageConfig: CustomStageConfig = store.getters[`${Namespaces.SOCKET_STAGE}/${SocketStageGetters.STAGE_CONFIG}`]
+    const stageZoom: number = store.getters[`${Namespaces.APP_STAGE}/${AppStageGetters.STAGE_ZOOM}`]
+    const stage: Konva.Stage = store.getters[`${Namespaces.APP_STAGE}/${AppStageGetters.STAGE}`]
     let pageX = 0
     let pageY = 0
     if ('evt' in e) {

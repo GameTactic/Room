@@ -222,15 +222,13 @@ import Component from 'vue-class-component'
 import { Item, Field } from '@/types/Games/Index'
 import { MenuItem } from '@/components/TheEntityPanel.vue'
 import Games from '@/mixins/Games'
-import { GameName } from '@/store/modules/room'
+import { Game } from '@/store/modules/socket/room'
 import EntityCard from '../EntityCard.vue'
 
 @Component({
   name: 'TheCreateEntity',
   mixins: [Games],
-  components: {
-    EntityCard
-  }
+  components: { EntityCard }
 })
 export default class TheCreateEntity extends Games {
   @Prop() private clickedItemKey!: number;
@@ -238,7 +236,7 @@ export default class TheCreateEntity extends Games {
   @Prop() private entityData!: Item[];
   @Prop() private entities!: Item[];
   @Prop() private fields!: Field[];
-  @Prop() private game!: GameName;
+  @Prop() private game!: Game;
   @Prop() private autoCompleteOnChangeHandler!: (shipItem: Item) => void
 
   chipColour = 'green'

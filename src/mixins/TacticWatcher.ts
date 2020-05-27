@@ -1,30 +1,38 @@
 import Component from 'vue-class-component'
 import Vue from 'vue'
-import { Tactic } from '@/store/modules/types'
+import { Tactic } from '@/store/types'
 import { Socket } from 'vue-socket.io-extended'
-import { CanvasAction } from '@/store/modules/canvas'
+import { SocketCanvasAction } from '@/store/modules/socket/canvas'
 import { CanvasElement, CanvasElementHistory } from '@/types/Canvas'
-import { Action, Getter } from 'vuex-class'
-import { StageActions } from '@/store/modules/stage'
-import { LayerActions } from '@/store/modules/layer'
+import { namespace } from 'vuex-class'
+import { SocketStageActions } from '@/store/modules/socket/stage'
+import { AppLayerActions } from '@/store/modules/app/layer'
 import { SocketActions, SocketCanvasTacticEmit } from '@/store/modules/socket'
 import { EventBus } from '@/event-bus'
-import { TacticAction } from '@/store/modules/tactic'
-import { RoomGetters, RoomAction } from '@/store/modules/room'
+import { SocketTacticAction } from '@/store/modules/socket/tactic'
+import { AppRoomGetters, AppRoomAction } from '@/store/modules/app/room'
+import { Namespaces } from '@/store'
+
+const AppLayer = namespace(Namespaces.APP_LAYER)
+const AppRoom = namespace(Namespaces.APP_ROOM)
+const SocketCanvas = namespace(Namespaces.SOCKET_CANVAS)
+const SocketStage = namespace(Namespaces.SOCKET_STAGE)
+const SocketNamespace = namespace(Namespaces.SOCKET)
+const SocketTactic = namespace(Namespaces.SOCKET_TACTIC)
 
 @Component({
-  name: 'StageWatch'
+  name: 'TacticWatcher'
 })
 export default class TacticWatcher extends Vue {
-  @Getter(`room/${RoomGetters.IS_CANVAS_LOADED}`) isCanvasLoaded!: boolean
-  @Action(`canvas/${CanvasAction.SET_CANVAS_ELEMENT}`) setCanvasElements!: (canvasElements: CanvasElement[]) => void
-  @Action(`canvas/${CanvasAction.SET_CANVAS_ELEMENT_HISTORY}`) setCanvasElementsHistory!: (canvasElements: CanvasElementHistory[]) => void
-  @Action(`layer/${LayerActions.LAYER_CLEAR}`) layerClear!: () => void
-  @Action(`room/${RoomAction.SET_IS_CANVAS_LOADED}`) setIsCanvasLoaded!: (isCanvasLoaded: boolean) => void
-  @Action(`socket/${SocketActions.EMIT}`) emit!: (payload: { data: object; emit: string }) => void
-  @Action(`stage/${StageActions.SET_STAGE_TACTIC}`) setStageTactic!: (tactic: Tactic) => void
-  @Action(`tactic/${TacticAction.SET_TACTIC}`) setTactic!: (tactic: Tactic) => void
-  @Action(`tactic/${TacticAction.UPDATE_TACTIC}`) updateTactic!: (tactic: Tactic) => void
+  @AppRoom.Getter(AppRoomGetters.IS_CANVAS_LOADED) isCanvasLoaded!: boolean
+  @SocketCanvas.Action(SocketCanvasAction.SET_CANVAS_ELEMENT) setCanvasElements!: (canvasElements: CanvasElement[]) => void
+  @SocketCanvas.Action(SocketCanvasAction.SET_CANVAS_ELEMENT_HISTORY) setCanvasElementsHistory!: (canvasElements: CanvasElementHistory[]) => void
+  @AppLayer.Action(AppLayerActions.LAYER_CLEAR) layerClear!: () => void
+  @AppRoom.Action(AppRoomAction.SET_IS_CANVAS_LOADED) setIsCanvasLoaded!: (isCanvasLoaded: boolean) => void
+  @SocketNamespace.Action(SocketActions.EMIT) emit!: (payload: { data: object; emit: string }) => void
+  @SocketStage.Action(SocketStageActions.SET_STAGE_TACTIC) setStageTactic!: (tactic: Tactic) => void
+  @SocketTactic.Action(SocketTacticAction.SET_TACTIC) setTactic!: (tactic: Tactic) => void
+  @SocketTactic.Action(SocketTacticAction.UPDATE_TACTIC) updateTactic!: (tactic: Tactic) => void
 
   created () {
     EventBus.$on('newTactic', (tactic: Tactic) => {

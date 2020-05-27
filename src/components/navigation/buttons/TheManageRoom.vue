@@ -7,7 +7,7 @@
   >
     <template v-slot:activator="{ on }">
       <v-btn
-        :disabled="!isCanvasLoaded"
+        :disabled="!isItemEnabled"
         color="primary"
         elevation="0"
         small
@@ -28,15 +28,26 @@
 
 <script lang="ts">
 import { Component, Vue, Prop } from 'vue-property-decorator'
-import { Getter } from 'vuex-class'
-import { RoomGetters } from '../../../store/modules/room'
+import { namespace } from 'vuex-class'
+import { AppRoomGetters } from '@/store/modules/app/room'
+import { Namespaces } from '@/store'
+import { AppAuthenticationGetters } from '../../../store/modules/app/authentication'
+
+const AppAuthentication = namespace(Namespaces.APP_AUTHENTICATION)
+const AppRoom = namespace(Namespaces.APP_ROOM)
 
 @Component({
   name: 'TheManageRoom'
 })
 export default class TheManageRoom extends Vue {
   @Prop() readonly isMobile!: boolean
-  @Getter(`room/${RoomGetters.IS_CANVAS_LOADED}`) isCanvasLoaded!: boolean
+  @AppRoom.Getter(AppRoomGetters.IS_CANVAS_LOADED) isCanvasLoaded!: boolean
+  @AppAuthentication.Getter(AppAuthenticationGetters.IS_AUTH) isAuth!: boolean
+
+  get isItemEnabled () {
+    return this.isCanvasLoaded && this.isAuth
+  }
+
   manageRoomOnClickHandler () {
     // Do something
   }

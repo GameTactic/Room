@@ -3,8 +3,9 @@ import { CanvasElement, CanvasElementType } from '@/types/Canvas'
 import Shape, { RulerCreatorInterface } from '@/tools/shapes/Shape'
 import { CustomEvent, CustomStageConfig, CustomStageEvent } from '@/util/PointerEventMapper'
 import store from '@/main'
-import { StageGetters } from '@/store/modules/stage'
+import { SocketStageGetters } from '@/store/modules/socket/stage'
 import { RulerData } from '@/tools/Tool'
+import { Namespaces } from '@/store'
 
 export default class RulerCreator extends Shape implements RulerCreatorInterface {
   private line: Konva.Line
@@ -37,6 +38,7 @@ export default class RulerCreator extends Shape implements RulerCreatorInterface
       )
     }
     this.group.attrs.type = CanvasElementType.SHAPE
+    this.group.attrs.temporary = this.temporary
     this.layer.add(this.group)
   }
 
@@ -139,7 +141,7 @@ export default class RulerCreator extends Shape implements RulerCreatorInterface
   }
 
   getText = (radius: number, event: CustomEvent | CustomStageEvent): string => {
-    const stageConfig: CustomStageConfig = store.getters[`stage/${StageGetters.STAGE_CONFIG}`]
+    const stageConfig: CustomStageConfig = store.getters[`${Namespaces.SOCKET_STAGE}/${SocketStageGetters.STAGE_CONFIG}`]
     const range = Math.floor(this.formatX(radius, event) / (event.stageConfig.initialWidth * 0.75) * stageConfig.mapRatio * 10) / 10
     return (range !== 0) ? `${range} km` : '? km'
   }

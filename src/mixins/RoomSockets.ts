@@ -1,20 +1,26 @@
 import Vue from 'vue'
 import Component from 'vue-class-component'
 import { Socket } from 'vue-socket.io-extended'
-import { Action, Getter } from 'vuex-class'
+import { namespace } from 'vuex-class'
 import { Watch } from 'vue-property-decorator'
-import { AuthenticationGetters, ExtendedJWT } from '@/store/modules/authentication'
+import { AppAuthenticationGetters, ExtendedJWT } from '@/store/modules/app/authentication'
 import { SocketActions, SocketRoomEmit, SocketRoomListen } from '@/store/modules/socket'
-import { RoomGetters } from '@/store/modules/room'
+import { SocketRoomGetters } from '@/store/modules/socket/room'
+import { Namespaces } from '@/store'
+
+const SocketRoom = namespace(Namespaces.SOCKET_ROOM)
+const AppAuthentication = namespace(Namespaces.APP_AUTHENTICATION)
+const SocketNamespace = namespace(Namespaces.SOCKET)
 
 @Component({
-  name: 'RoomSocket'
+  name: 'RoomSockets'
 })
 export default class RoomSocket extends Vue {
-  @Getter(`room/${RoomGetters.ROOM_ID}`) roomId!: string
-  @Getter(`authentication/${AuthenticationGetters.IS_AUTH}`) isAuth!: boolean
-  @Getter(`authentication/${AuthenticationGetters.JWT}`) jwt!: ExtendedJWT
-  @Action(`socket/${SocketActions.EMIT}`) emit!: (payload: { data: object; emit: string }) => void
+  @SocketRoom.Getter(SocketRoomGetters.ROOM_ID) roomId!: string
+  @AppAuthentication.Getter(AppAuthenticationGetters.IS_AUTH) isAuth!: boolean
+  @AppAuthentication.Getter(AppAuthenticationGetters.JWT) jwt!: ExtendedJWT
+  @SocketNamespace.Action(SocketActions.EMIT) emit!: (payload: { data: object; emit: string }) => void
+
   @Socket()
   connect () {
     this.emit({ data: { roomId: this.roomId }, emit: SocketRoomEmit.ROOM_JOIN })

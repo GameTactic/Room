@@ -31,6 +31,7 @@ export default class LineCreator extends Shape implements LineCreatorInterface {
       this.line = this.createLineElement(canvasElement, event)
     )
     this.group.attrs.type = CanvasElementType.SHAPE
+    this.group.attrs.temporary = this.temporary
     this.layer.add(this.group)
   }
 
@@ -41,6 +42,7 @@ export default class LineCreator extends Shape implements LineCreatorInterface {
       this.arrow = this.createArrowElement(canvasElement, event)
     )
     this.group.attrs.type = CanvasElementType.SHAPE
+    this.group.attrs.temporary = this.temporary
     this.layer.add(this.group)
   }
 
@@ -52,6 +54,7 @@ export default class LineCreator extends Shape implements LineCreatorInterface {
       this.tBar = this.createTElement(canvasElement, event)
     )
     this.group.attrs.type = CanvasElementType.SHAPE
+    this.group.attrs.temporary = this.temporary
     this.layer.add(this.group)
   }
 

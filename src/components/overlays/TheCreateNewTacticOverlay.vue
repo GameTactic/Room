@@ -63,45 +63,50 @@
 <script lang="ts">
 import Component, { mixins } from 'vue-class-component'
 import { EventBus } from '@/event-bus'
-import { RoomGetters } from '@/store/modules/room'
-import { Action, Getter } from 'vuex-class'
-import { Api, Collection } from '@/store/modules/types'
-import { StageActions } from '@/store/modules/stage'
+import { AppRoomGetters } from '@/store/modules/app/room'
+import { namespace } from 'vuex-class'
+import { Api, Collection } from '@/store/types'
+import { SocketStageActions } from '@/store/modules/socket/stage'
 import { CustomStageConfig } from '@/util/PointerEventMapper'
-import { CanvasAction } from '@/store/modules/canvas'
+import { SocketCanvasAction } from '@/store/modules/socket/canvas'
 import { CanvasElement, CanvasElementHistory } from '@/types/Canvas'
 import TacticWatcher from '@/mixins/TacticWatcher'
 import uuid from 'uuid'
-import { AuthenticationGetters } from '@/store/modules/authentication'
-import { TacticGetters } from '../../store/modules/tactic'
+import { AppAuthenticationGetters } from '@/store/modules/app/authentication'
+import { SocketTacticGetters } from '../../store/modules/socket/tactic'
+import { Namespaces } from '@/store'
+
+const AppRoom = namespace(Namespaces.APP_ROOM)
+const SocketTactic = namespace(Namespaces.SOCKET_TACTIC)
+const SocketStage = namespace(Namespaces.SOCKET_STAGE)
+const SocketCanvas = namespace(Namespaces.SOCKET_CANVAS)
 
 @Component({
   name: 'TheCreateNewTacticOverlay',
-  data: () => ({
-    tactic: {
-      map: {
-        name: '',
-        icon: '',
-        desc: '',
-        width: 0,
-        height: 0,
-        ratio: 0,
-        id: 0
-      },
-      name: ''
-    },
-    search: ''
-  }),
   mixins: [TacticWatcher]
 })
 export default class CreateNewTacticOverlay extends mixins(TacticWatcher) {
-  @Getter(`room/${RoomGetters.GAME_API}`) gameApi!: Api[]
-  @Getter(`tactic/${TacticGetters.COLLECTIONS}`) collections!: Collection[]
-  @Action(`stage/${StageActions.SET_CONFIG}`) setConfig!: (config: CustomStageConfig) => void
-  @Action(`canvas/${CanvasAction.SET_CANVAS_ELEMENT}`) setCanvasElements!: (canvasElements: CanvasElement[]) => void
-  @Action(`canvas/${CanvasAction.SET_CANVAS_ELEMENT_HISTORY}`) setCanvasElementsHistory!: (canvasElements: CanvasElementHistory[]) => void
+  @AppRoom.Getter(AppRoomGetters.API) api!: Api[]
+  @SocketTactic.Getter(SocketTacticGetters.COLLECTIONS) collections!: Collection[]
+  @SocketStage.Action(SocketStageActions.SET_CONFIG) setConfig!: (config: CustomStageConfig) => void
+  @SocketCanvas.Action(SocketCanvasAction.SET_CANVAS_ELEMENT) setCanvasElements!: (canvasElements: CanvasElement[]) => void
+  @SocketCanvas.Action(SocketCanvasAction.SET_CANVAS_ELEMENT_HISTORY) setCanvasElementsHistory!: (canvasElements: CanvasElementHistory[]) => void
 
+  tactic = {
+    map: {
+      name: '',
+      icon: '',
+      desc: '',
+      width: 0,
+      height: 0,
+      ratio: 0,
+      id: 0
+    },
+    name: ''
+  }
+  search = ''
   overlay = false
+
   created () {
     EventBus.$on('openCreateNewTacticOverlay', () => {
       this.overlay = !this.overlay
@@ -109,7 +114,7 @@ export default class CreateNewTacticOverlay extends mixins(TacticWatcher) {
   }
 
   get maps () {
-    const mapApi: Api[] = this.gameApi.filter((api: Api) => api.name === 'wows.encyclopedia.maps')
+    const mapApi: Api[] = this.api.filter((api: Api) => api.name === 'wows.encyclopedia.maps')
     if (mapApi.length === 1) {
       return mapApi[0].data
     } else {
@@ -123,7 +128,7 @@ export default class CreateNewTacticOverlay extends mixins(TacticWatcher) {
   }
 
   isDisabled (): boolean {
-    return !(this.$data.tactic.name && this.$data.tactic.map.icon)
+    return !(this.tactic.name && this.tactic.map.icon)
   }
 
   // Need to do more to this, but we dont have the collection stuff created yet so this is temporary.
@@ -132,14 +137,14 @@ export default class CreateNewTacticOverlay extends mixins(TacticWatcher) {
     if (!this.isDisabled() && foundCollection) {
       this.newTactic({
         id: uuid(),
-        name: this.$data.tactic.name,
+        name: this.tactic.name,
         collectionId: foundCollection.id,
         canvasElements: [],
         canvasElementsHistory: [],
         lockedBy: undefined,
         isPinned: false,
-        createdBy: this.$store.getters[`authentication/${AuthenticationGetters.JWT}`].jti,
-        map: this.$data.tactic.map
+        createdBy: this.$store.getters[`${Namespaces.APP_AUTHENTICATION}/${AppAuthenticationGetters.JWT}`].jti,
+        map: this.tactic.map
       })
       this.resetTacticForm()
       this.overlay = false
@@ -147,7 +152,7 @@ export default class CreateNewTacticOverlay extends mixins(TacticWatcher) {
   }
 
   resetTacticForm () {
-    this.$data.tactic = {
+    this.tactic = {
       map: {
         name: '',
         icon: '',

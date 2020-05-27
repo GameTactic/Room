@@ -35,6 +35,7 @@ export default class CircleCreator extends Shape implements CircleCreatorInterfa
       ))
     }
     this.group.attrs.type = CanvasElementType.SHAPE
+    this.group.attrs.temporary = this.temporary
   }
   // eslint-disable-next-line
   move = (event: CustomEvent | CustomStageEvent, canvasElement?: CanvasElement): void => {

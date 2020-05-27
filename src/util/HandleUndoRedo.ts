@@ -1,9 +1,9 @@
 import { Tracker } from '@/tools/Tool'
-import { CanvasAction, CanvasGetters } from '@/store/modules/canvas'
+import { SocketCanvasAction, SocketCanvasGetters } from '@/store/modules/socket/canvas'
 import store from '@/main'
 import { ISO } from '@/util/ISO'
 import uuid from 'uuid'
-import { AuthenticationGetters, JWT } from '@/store/modules/authentication'
+import { AppAuthenticationGetters, JWT } from '@/store/modules/app/authentication'
 import { SocketActions, SocketCanvasToolsEmit } from '@/store/modules/socket'
 import {
   AdditionData,
@@ -14,10 +14,11 @@ import {
   RemovalData,
   UndoData
 } from '@/types/Canvas'
+import { Namespaces } from '@/store'
 
 export default class HandleUndoRedo {
   handleUndoRedo = (undoRedoString: string): void => {
-    const canvasElementsHistory: CanvasElementHistory[] | void = (store.getters[`canvas/${CanvasGetters.CANVAS_ELEMENTS_HISTORY}`])
+    const canvasElementsHistory: CanvasElementHistory[] | void = (store.getters[`${Namespaces.SOCKET_CANVAS}/${SocketCanvasGetters.CANVAS_ELEMENTS_HISTORY}`])
     if (canvasElementsHistory) {
       const foundElement: CanvasElementHistory = this['find' + undoRedoString](this.sortHistory([...canvasElementsHistory]))
       if (foundElement) {
@@ -81,13 +82,13 @@ export default class HandleUndoRedo {
   undo (modifyType: Tracker, modifyData: UndoData) {
     const data: CanvasElementHistory = {
       id: uuid(),
-      jti: (store.getters[`authentication/${AuthenticationGetters.JWT}`]).jti,
+      jti: (store.getters[`${Namespaces.APP_AUTHENTICATION}/${AppAuthenticationGetters.JWT}`]).jti,
       modifyType: modifyType,
       modifyData: modifyData,
       timestampModified: ISO.timestamp()
     }
-    const canvasElements = store.getters[`canvas/${CanvasGetters.CANVAS_ELEMENTS}`]
-    const canvasElementHistory = store.getters[`canvas/${CanvasGetters.CANVAS_ELEMENTS_HISTORY}`]
+    const canvasElements = store.getters[`${Namespaces.SOCKET_CANVAS}/${SocketCanvasGetters.CANVAS_ELEMENTS}`]
+    const canvasElementHistory = store.getters[`${Namespaces.SOCKET_CANVAS}/${SocketCanvasGetters.CANVAS_ELEMENTS_HISTORY}`]
     const undo: CanvasElementHistory = canvasElementHistory.find((history: CanvasElementHistory) => history.id === modifyData.historyId)
     if (undo) {
       switch (undo.modifyType) {
@@ -101,7 +102,7 @@ export default class HandleUndoRedo {
           this.undoMove(undo, canvasElements)
           break
       }
-      store.dispatch(`canvas/${CanvasAction.ADD_CANVAS_ELEMENT_HISTORY}`, data)
+      store.dispatch(`${Namespaces.SOCKET_CANVAS}/${SocketCanvasAction.ADD_CANVAS_ELEMENT_HISTORY}`, data)
       this.sendToSocket(data, SocketCanvasToolsEmit.CANVAS_TOOLS_UNDO)
     }
   }
@@ -109,13 +110,13 @@ export default class HandleUndoRedo {
   redo (modifyType: Tracker, history: CanvasElementHistory) {
     const data: CanvasElementHistory = {
       id: uuid(),
-      jti: (store.getters[`authentication/${AuthenticationGetters.JWT}`]).jti,
+      jti: (store.getters[`${Namespaces.APP_AUTHENTICATION}/${AppAuthenticationGetters.JWT}`]).jti,
       modifyType: modifyType,
       modifyData: { historyId: history.id },
       timestampModified: ISO.timestamp()
     }
-    const canvasElements = store.getters[`canvas/${CanvasGetters.CANVAS_ELEMENTS}`]
-    const canvasElementHistory = store.getters[`canvas/${CanvasGetters.CANVAS_ELEMENTS_HISTORY}`]
+    const canvasElements = store.getters[`${Namespaces.SOCKET_CANVAS}/${SocketCanvasGetters.CANVAS_ELEMENTS}`]
+    const canvasElementHistory = store.getters[`${Namespaces.SOCKET_CANVAS}/${SocketCanvasGetters.CANVAS_ELEMENTS_HISTORY}`]
     const modifier = history.modifyData as UndoData
     const redo: CanvasElementHistory = canvasElementHistory.find((history: CanvasElementHistory) => history.id === modifier.historyId)
     if (redo) {
@@ -130,7 +131,7 @@ export default class HandleUndoRedo {
           this.redoMove(redo, canvasElements)
           break
       }
-      store.dispatch(`canvas/${CanvasAction.ADD_CANVAS_ELEMENT_HISTORY}`, data)
+      store.dispatch(`${Namespaces.SOCKET_CANVAS}/${SocketCanvasAction.ADD_CANVAS_ELEMENT_HISTORY}`, data)
       this.sendToSocket(data, SocketCanvasToolsEmit.CANVAS_TOOLS_REDO)
     }
   }
@@ -141,7 +142,7 @@ export default class HandleUndoRedo {
       additions.forEach((canvasElementId: string) => {
         const foundElement: CanvasElement | undefined = canvasElements.find((canvasElement: CanvasElement) => canvasElement.id === canvasElementId)
         if (foundElement) {
-          store.dispatch(`canvas/${CanvasAction.HIDE_CANVAS_ELEMENT}`, foundElement)
+          store.dispatch(`${Namespaces.SOCKET_CANVAS}/${SocketCanvasAction.HIDE_CANVAS_ELEMENT}`, foundElement)
         }
       })
     }
@@ -153,7 +154,7 @@ export default class HandleUndoRedo {
       removals.forEach((canvasElementId: string) => {
         const foundElement: CanvasElement | undefined = canvasElements.find((canvasElement: CanvasElement) => canvasElement.id === canvasElementId)
         if (foundElement) {
-          store.dispatch(`canvas/${CanvasAction.SHOW_CANVAS_ELEMENT}`, foundElement)
+          store.dispatch(`${Namespaces.SOCKET_CANVAS}/${SocketCanvasAction.SHOW_CANVAS_ELEMENT}`, foundElement)
         }
       })
     }
@@ -182,7 +183,7 @@ export default class HandleUndoRedo {
       additions.forEach((canvasElementId: string) => {
         const foundElement: CanvasElement | undefined = canvasElements.find((canvasElement: CanvasElement) => canvasElement.id === canvasElementId)
         if (foundElement) {
-          store.dispatch(`canvas/${CanvasAction.SHOW_CANVAS_ELEMENT}`, foundElement)
+          store.dispatch(`${Namespaces.SOCKET_CANVAS}/${SocketCanvasAction.SHOW_CANVAS_ELEMENT}`, foundElement)
         }
       })
     }
@@ -194,7 +195,7 @@ export default class HandleUndoRedo {
       removals.forEach((canvasElementId: string) => {
         const foundElement: CanvasElement | undefined = canvasElements.find((canvasElement: CanvasElement) => canvasElement.id === canvasElementId)
         if (foundElement) {
-          store.dispatch(`canvas/${CanvasAction.HIDE_CANVAS_ELEMENT}`, foundElement)
+          store.dispatch(`${Namespaces.SOCKET_CANVAS}/${SocketCanvasAction.HIDE_CANVAS_ELEMENT}`, foundElement)
         }
       })
     }
@@ -218,7 +219,7 @@ export default class HandleUndoRedo {
   }
 
   sortHistory (history: CanvasElementHistory[]) {
-    const jwt = store.getters[`authentication/${AuthenticationGetters.JWT}`] as JWT
+    const jwt = store.getters[`${Namespaces.APP_AUTHENTICATION}/${AppAuthenticationGetters.JWT}`] as JWT
     const filtered = history.filter((canvasElementHistory: CanvasElementHistory) => canvasElementHistory.jti === jwt.jti)
     return filtered.sort((a: CanvasElementHistory, b: CanvasElementHistory) => {
       return (a.timestampModified < b.timestampModified) ? -1 : (a.timestampModified > b.timestampModified ? 1 : 0)
@@ -226,7 +227,7 @@ export default class HandleUndoRedo {
   }
 
   sendToSocket (history: CanvasElementHistory, emit: string) {
-    store.dispatch(`socket/${SocketActions.EMIT}`, { data: { ...history, canvasElements: [] }, emit: emit })
+    store.dispatch(`${Namespaces.SOCKET}/${SocketActions.EMIT}`, { data: { ...history, canvasElements: [] }, emit: emit })
   }
   // eslint-disable-next-line
   [key: string]: any

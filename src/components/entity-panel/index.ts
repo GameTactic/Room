@@ -1,2 +1,2 @@
-export { default as WowsPanel } from './games/Wows.vue'
-export { default as WotPanel } from './games/Wot.vue'
+export { default as WowsPanel } from './games/TheWows.vue'
+export { default as WotPanel } from './games/TheWot.vue'
