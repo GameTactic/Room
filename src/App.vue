@@ -37,7 +37,6 @@ export default class TheApp extends Vue {
   @AppAuthentication.Action(AppAuthenticationActions.REFRESH_TOKEN) refreshToken!: (token: string) => void
   @AppAuthentication.Action(AppAuthenticationActions.LOAD_PROVIDERS) loadProviders!: () => void
   @SocketRoom.Action(SocketRoomAction.SET_GAME) setGame!: (name: string) => void
-  @AppAuthentication.Getter(AppAuthenticationGetters.JWT) jwt!: ExtendedJWT
 
   localToken = localStorage.getItem(JWT_KEY)
 
