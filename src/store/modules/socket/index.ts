@@ -39,10 +39,6 @@ const SocketModule: Module<{}, {}> = {
   namespaced: true,
   actions: {
     [SocketActions.EMIT] (_context: SocketActionContext, payload: { data: object; emit: string }) {
-      console.log('payload.emit', payload.emit)
-      console.log('payload.data', payload.data)
-      console.log('socket', socket)
-      console.log(socket.connected)
       socket.emit(payload.emit, payload.data)
     }
   }
