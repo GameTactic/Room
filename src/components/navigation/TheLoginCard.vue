@@ -2,7 +2,7 @@
   <v-card>
     <v-card-title class="custom-login-card-title">
       <div v-text="$t('navigation.login.card.title')" />
-      <v-btn icon @click="closeHandler" v-if="isSM">
+      <v-btn icon @click="closeHandler" >
         <v-icon v-text="'fa-times'" />
       </v-btn>
     </v-card-title>
@@ -24,7 +24,9 @@ import { Namespaces } from '@/store'
 import { AppAuthenticationActions, AppAuthenticationGetters } from '@/store/modules/app/authentication'
 import { Providers } from '@/util/ProvidersUtil'
 import ProviderBlock from '@/components/navigation/login/ProviderBlock.vue'
+
 const AppAuthentication = namespace(Namespaces.APP_AUTHENTICATION)
+
 @Component({
   name: 'TheLoginCard',
   components: { ProviderBlock }

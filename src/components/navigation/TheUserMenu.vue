@@ -62,7 +62,7 @@
         fullscreen
         @click:outside="onClickCloseLoginDialog"
       >
-        <the-login-card :is-mobile="isSM" v-on:close-handler="onClickCloseLoginDialog" />
+        <the-login-card :is-mobile="isSM" @close-handler="onClickCloseLoginDialog" />
       </v-dialog>
     </v-list-item>
     <v-list-item

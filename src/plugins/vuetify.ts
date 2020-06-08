@@ -49,7 +49,9 @@ import Vuetify, {
   VSubheader,
   VSwitch,
   VTab,
+  VTabItem,
   VTabs,
+  VTabsItems,
   VTabsSlider,
   VTextField,
   VToolbar,
@@ -108,7 +110,9 @@ Vue.use(Vuetify, {
     VTreeview,
     VTab,
     VTabsSlider,
-    VTabs
+    VTabItem,
+    VTabs,
+    VTabsItems
   },
   directives: {}
 })

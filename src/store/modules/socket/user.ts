@@ -18,6 +18,8 @@ export enum SocketUserMutation {
 export enum SocketUserGetters {
   USERS = 'users',
   USER = 'user',
+  ONLINE_USERS = 'onlineUsers',
+  OFFLINE_USERS = 'offlineUsers'
 }
 
 export interface SocketUserState {
@@ -35,6 +37,8 @@ const SocketUserModule: Module<SocketUserState, {}> = {
   },
   getters: {
     [SocketUserGetters.USERS]: state => state.users,
+    [SocketUserGetters.ONLINE_USERS]: state => state.users.filter((user: User) => user.isOnline),
+    [SocketUserGetters.OFFLINE_USERS]: state => state.users.filter((user: User) => !user.isOnline),
     [SocketUserGetters.USER]: (state) => (jti: string) => state.users.find((user: User) => user.jti === jti)
   },
   mutations: {

@@ -172,4 +172,9 @@ export default class TheNav extends Vue {
     background-color: transparent;
   }
 }
+
+.custom-nav-right>div {
+  padding-left: 0px;
+  padding-right: 0px;
+}
 </style>

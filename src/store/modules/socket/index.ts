@@ -1,4 +1,5 @@
 import { Module, ActionContext } from 'vuex'
+import { socket } from '@/plugins/socket'
 
 export enum SocketCanvasToolsEmit {
   CANVAS_TOOLS_CIRCLE = 'canvasToolsCircle',
@@ -19,11 +20,13 @@ export enum SocketCanvasTacticEmit {
 }
 
 export enum SocketRoomEmit {
-  ROOM_JOIN = 'roomJoin'
+  ROOM_CONNECT = 'roomConnectionConnect',
+  ROOM_DISCONNECT = 'roomConnectionDisconnect'
 }
 
 export enum SocketRoomListen {
-  ROOM_USER_JOINED = 'roomUserJoined'
+  ROOM_USER_CONNECTED = 'roomConnectionUserConnected',
+  ROOM_USER_DISCONNECTED = 'roomConnectionUserDisconnected'
 }
 
 export enum SocketActions {
@@ -36,9 +39,11 @@ const SocketModule: Module<{}, {}> = {
   namespaced: true,
   actions: {
     [SocketActions.EMIT] (_context: SocketActionContext, payload: { data: object; emit: string }) {
-      // eslint-disable-next-line
-      const vm: any = this
-      vm._vm.$socket.client.emit(payload.emit, payload.data)
+      console.log('payload.emit', payload.emit)
+      console.log('payload.data', payload.data)
+      console.log('socket', socket)
+      console.log(socket.connected)
+      socket.emit(payload.emit, payload.data)
     }
   }
 }
