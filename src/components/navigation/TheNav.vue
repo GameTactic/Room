@@ -175,6 +175,5 @@ export default class TheNav extends Vue {
 .custom-nav-right>div {
   padding-left: 0px;
   padding-right: 0px;
-  justify-content: flex-end;
 }
 </style>

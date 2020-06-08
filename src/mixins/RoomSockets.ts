@@ -28,21 +28,28 @@ export default class RoomSocket extends Vue {
 
   @Socket()
   connect () {
+    console.log('connected')
     this.emit({ data: { roomId: this.roomId }, emit: SocketRoomEmit.ROOM_CONNECT })
   }
 
   @Socket(SocketRoomListen.ROOM_USER_CONNECTED)
   onUserConnected (user: User) {
+    // Someone joined the room
+    console.log('someoneJoinedRoom', user)
     // another user has joined
     if (user.jti !== this.jwt.jti) {
+      console.log('a unique user has joined')
       this.setUser(user)
     }
   }
 
   @Socket(SocketRoomListen.ROOM_USER_DISCONNECTED)
   onUserDisconnected (jti: string) {
+    // Someone joined the room
+    console.log('someoneLeftRoom', jti)
     // another user has joined
     if (jti !== this.jwt.jti) {
+      console.log('a unique user has left the room')
       this.deleteUser(jti)
     }
   }
