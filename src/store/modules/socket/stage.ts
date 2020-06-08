@@ -2,6 +2,8 @@ import { ActionContext, Module } from 'vuex'
 import { CustomStageConfig } from '@/util/PointerEventMapper'
 import { Dimensions } from '@/mixins/StageWatcher'
 import { Tactic, Map } from '@/store/types'
+import { AppRoomGetters } from '../app/room'
+import { Namespaces } from '@/store'
 
 export enum SocketStageGetters {
   STAGE_CONFIG = 'stageConfig',
@@ -92,7 +94,9 @@ const SocketStageModule: Module<SocketStageState, {}> = {
       context.commit(SocketStageMutations.SET_CONFIG, config)
     },
     [SocketStageActions.SET_DIMENSIONS] (context: SocketStageActionContext, dimensions: Dimensions) {
-      context.commit(SocketStageMutations.SET_CONFIG_DIMENSIONS, dimensions)
+      if (context.rootGetters[`${Namespaces.APP_ROOM}/${AppRoomGetters.IS_CANVAS_LOADED}`]) {
+        context.commit(SocketStageMutations.SET_CONFIG_DIMENSIONS, dimensions)
+      }
     },
     [SocketStageActions.SET_MAP_SRC] (context: SocketStageActionContext, map: Map) {
       context.commit(SocketStageMutations.SET_MAP_SRC, map.icon)

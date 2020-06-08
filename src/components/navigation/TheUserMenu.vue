@@ -1,6 +1,6 @@
 <template>
   <v-menu
-    v-if="!isMobile && isAuth"
+    v-if="!isSM && isAuth"
     offset-y
     content-class="elevation-2"
   >
@@ -35,7 +35,7 @@
     </v-list>
   </v-menu>
   <v-btn
-    v-else-if="!isMobile && !isAuth"
+    v-else-if="!isSM && !isAuth"
     color="primary"
     elevation="0"
     small
@@ -62,7 +62,7 @@
         fullscreen
         @click:outside="onClickCloseLoginDialog"
       >
-        <the-login-card :is-mobile="isMobile" v-on:close-handler="onClickCloseLoginDialog" />
+        <the-login-card :is-mobile="isSM" v-on:close-handler="onClickCloseLoginDialog" />
       </v-dialog>
     </v-list-item>
     <v-list-item
@@ -96,7 +96,7 @@ interface UserMenuItem {
   components: { TheLoginCard }
 })
 export default class TheUserMenu extends Vue {
-  @Prop() private isMobile!: boolean;
+  @Prop() private isSM!: boolean;
   @AppAuthentication.Getter(AppAuthenticationGetters.IS_AUTH) isAuth!: boolean
   @AppAuthentication.Action(AppAuthenticationActions.LOGIN_WG) authenticate!: (region: string) => void;
   @AppAuthentication.Action(AppAuthenticationActions.LOGOUT) onClickLogout!: () => void

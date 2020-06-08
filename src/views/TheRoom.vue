@@ -12,19 +12,17 @@
       v-show="isCanvasLoaded"
       ref="stage"
     />
-    <the-nav-large class="the-nav-large" />
-    <the-nav-small class="the-nav-small" />
-    <the-tool-panel class="custom-hide-on-mobile" />
-    <the-entity-panel class="custom-hide-on-mobile" />
-    <the-tactic-selector class="custom-hide-on-mobile"  />
+    <the-nav />
+    <the-tool-panel class="d-none d-sm-flex" />
+    <the-entity-panel class="d-none d-sm-flex" />
+    <the-tactic-selector />
     <the-create-new-tactic-overlay />
     <the-update-tactic-overlay />
   </div>
 </template>
 
 <script lang="ts">
-import TheNavLarge from '@/components/navigation/TheNavLarge.vue'
-import TheNavSmall from '@/components/navigation/TheNavSmall.vue'
+import TheNav from '@/components/navigation/TheNav.vue'
 import TheToolPanel from '@/components/TheToolPanel.vue'
 import TheCanvas from '@/components/TheCanvas.vue'
 import TheEntityPanel from '@/components/TheEntityPanel.vue'
@@ -47,7 +45,7 @@ import { SocketTacticGetters, SocketTacticAction } from '../store/modules/socket
 import { Tactic, Collection } from '../store/types'
 import uuid from 'uuid'
 import { AppAuthenticationGetters, ExtendedJWT } from '../store/modules/app/authentication'
-import { SocketRoomAction, SocketRoomGetters } from '../store/modules/socket/room'
+import { SocketRoomAction } from '../store/modules/socket/room'
 import { AppRoomAction, AppRoomGetters } from '../store/modules/app/room'
 import { Namespaces } from '@/store'
 
@@ -65,8 +63,7 @@ const SocketTactic = namespace(Namespaces.SOCKET_TACTIC)
   components: {
     TheCreateNewTacticOverlay,
     TheUpdateTacticOverlay,
-    TheNavLarge,
-    TheNavSmall,
+    TheNav,
     TheToolPanel,
     TheCanvas,
     TheEntityPanel,
@@ -162,24 +159,6 @@ export default class TheRoom extends mixins(RoomSocket) {
 
     &.dragEnabled::v-deep {
       cursor: move !important;
-    }
-  }
-
-  @media (max-width: 899px) {
-    .custom-hide-on-mobile {
-      display: none;
-    }
-  }
-
-  @media (max-width: 899px) {
-    .the-nav-large {
-      display: none;
-    }
-  }
-
-  @media (min-width: 900px) {
-    .the-nav-small {
-      display: none;
     }
   }
 </style>

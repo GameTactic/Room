@@ -6,7 +6,7 @@
           <v-btn
             tile
             icon
-            :small="mobile"
+            :small="isSM"
             v-on="on"
             class="custom-move-disabled"
             color="primary"
@@ -28,7 +28,7 @@
           <v-btn
             tile
             icon
-            :small="mobile"
+            :small="isSM"
             v-on="on"
             class="custom-move-disabled"
             color="primary"
@@ -48,7 +48,7 @@
           <v-btn
             tile
             icon
-            :small="mobile"
+            :small="isSM"
             :class="[isEnabledClass]"
             v-on="on"
             color="primary"
@@ -65,7 +65,7 @@
           <v-btn
             tile
             icon
-            :small="mobile"
+            :small="isSM"
             v-on="on"
             class="custom-move-disabled"
             color="primary"
@@ -101,7 +101,7 @@ const SocketStage = namespace(Namespaces.SOCKET_STAGE)
   name: 'TheCanvasTools'
 })
 export default class TheCanvasTools extends Vue {
-  @Prop() private mobile!: boolean;
+  @Prop() private isSM!: boolean;
   @AppStage.Getter(AppStageGetters.STAGE_ZOOM) stageZoom!: number
   @AppStage.Getter(AppStageGetters.STAGE) stage!: Konva.Stage
   @SocketStage.Getter(SocketStageGetters.STAGE_CONFIG) stageConfig!: CustomStageConfig

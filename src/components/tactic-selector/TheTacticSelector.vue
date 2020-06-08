@@ -51,13 +51,15 @@
             clearable
           />
           <v-btn
+            :disabled="!api.length"
             icon
             color="white"
-            class="ml-2"
+            class="ml-2 d-none d-sm-flex"
             @click="newTacticOnClickHandler"
           >
             <v-icon small>fa-plus</v-icon>
           </v-btn>
+          <div class="d-flex d-sm-none" style="width: 2.5rem;"></div>
         </v-sheet>
         <div
           v-if="tactics.length"
@@ -162,7 +164,7 @@
     </v-menu>
 
     <v-tabs
-      :class="['custom-tactic-tabs', pinnedTactics.length ? 'custom-tactic-pinned-tabs' : '']"
+      :class="['custom-tactic-tabs', 'd-none d-sm-flex', pinnedTactics.length ? 'custom-tactic-pinned-tabs' : '']"
       next-icon="fa-arrow-right"
       prev-icon="fa-arrow-left"
       height="42"
@@ -206,13 +208,15 @@
 import { Component, Prop, Vue } from 'vue-property-decorator'
 import { namespace } from 'vuex-class'
 import { SocketTacticGetters, SocketTacticAction } from '@/store/modules/socket/tactic'
-import { Tactic } from '@/store/types'
+import { Tactic, Api } from '@/store/types'
 import { EventBus } from '../../event-bus'
 import { AppAuthenticationGetters, ExtendedJWT } from '../../store/modules/app/authentication'
 import { Namespaces } from '@/store'
+import { AppRoomGetters } from '../../store/modules/app/room'
 
 const SocketTactic = namespace(Namespaces.SOCKET_TACTIC)
 const AppAuthentication = namespace(Namespaces.APP_AUTHENTICATION)
+const appRoom = namespace(Namespaces.APP_ROOM)
 
 interface TacticMenuItem {
   action: string;
@@ -233,6 +237,7 @@ enum TacticMenuOptions {
 export default class TheTacticSelector extends Vue {
   @Prop() private icon!: string
   @AppAuthentication.Getter(AppAuthenticationGetters.JWT) jwt!: ExtendedJWT
+  @appRoom.Getter(AppRoomGetters.API) api!: Api[]
   @SocketTactic.Getter(SocketTacticGetters.TACTICS) tactics!: Tactic[]
   @SocketTactic.Getter(SocketTacticGetters.PINNED_TACTICS) pinnedTactics!: Tactic[]
   @SocketTactic.Action(SocketTacticAction.DELETE_TACTIC) deleteTactic!: (id: string) => void
