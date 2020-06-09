@@ -43,14 +43,13 @@
         flat
         color="primary"
       >
-        <v-spacer />
         <the-room-save />
-        <span class="d-none d-md-flex">
+        <span class="d-none d-lg-flex">
           <the-presentation-mode />
           <the-manage-room />
           <the-user-menu />
         </span>
-        <span class="d-flex d-md-none">
+        <span class="d-flex d-lg-none">
           <v-btn
             class="mr-2"
             icon
@@ -171,5 +170,11 @@ export default class TheNav extends Vue {
     align-items: start;
     background-color: transparent;
   }
+}
+
+.custom-nav-right>div {
+  padding-left: 0px;
+  padding-right: 0px;
+  justify-content: flex-end;
 }
 </style>

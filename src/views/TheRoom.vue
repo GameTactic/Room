@@ -16,6 +16,7 @@
     <the-tool-panel class="d-none d-sm-flex" />
     <the-entity-panel class="d-none d-sm-flex" />
     <the-tactic-selector />
+    <the-user-panel />
     <the-create-new-tactic-overlay />
     <the-update-tactic-overlay />
   </div>
@@ -27,6 +28,7 @@ import TheToolPanel from '@/components/TheToolPanel.vue'
 import TheCanvas from '@/components/TheCanvas.vue'
 import TheEntityPanel from '@/components/TheEntityPanel.vue'
 import TheTacticSelector from '@/components/tactic-selector/TheTacticSelector.vue'
+import TheUserPanel from '@/components/user-panel/TheUserPanel.vue'
 import Component, { mixins } from 'vue-class-component'
 import { Prop, Watch } from 'vue-property-decorator'
 import { CanvasElement, VueKonvaStage } from '@/types/Canvas'
@@ -67,7 +69,8 @@ const SocketTactic = namespace(Namespaces.SOCKET_TACTIC)
     TheToolPanel,
     TheCanvas,
     TheEntityPanel,
-    TheTacticSelector
+    TheTacticSelector,
+    TheUserPanel
   }
 })
 export default class TheRoom extends mixins(RoomSocket) {

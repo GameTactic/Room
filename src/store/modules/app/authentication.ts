@@ -3,6 +3,7 @@ import axios from 'axios'
 import { verify } from 'jsonwebtoken'
 import i18n from '@/lib/I18n'
 import { mapProviders, Providers } from '@/util/ProvidersUtil'
+import { socket } from '@/plugins/socket'
 
 export const JWT_KEY = 'jsonwebtoken'
 
@@ -130,6 +131,8 @@ const AppAuthenticationModule: Module<AppAuthenticationState, {}> = {
 
       context.commit(AppAuthenticationMutation.SET_AUTHENTICATION_JWT, extendedToken)
       context.dispatch(AppAuthenticationActions.STORE_TOKEN, token)
+      socket.io.opts.query = `Authorization=${token}`
+      socket.open()
     },
     async [AppAuthenticationActions.REFRESH_TOKEN] (context: AppAuthenticationActionContext, token: string) {
       const response: RefreshTokenResponse = await axios.get(`${process.env.VUE_APP_MS_AUTH}/refresh/${token}`)
@@ -139,6 +142,10 @@ const AppAuthenticationModule: Module<AppAuthenticationState, {}> = {
       }
     },
     [AppAuthenticationActions.STORE_TOKEN] (context: AppAuthenticationActionContext, token: string) {
+      // if a token already exists remove it first
+      if (localStorage.getItem(JWT_KEY)) {
+        localStorage.removeItem(JWT_KEY)
+      }
       localStorage.setItem(JWT_KEY, token)
     },
     [AppAuthenticationActions.LOGIN_WG] (context: AppAuthenticationActionContext, endpoint: string) {
@@ -148,6 +155,7 @@ const AppAuthenticationModule: Module<AppAuthenticationState, {}> = {
     [AppAuthenticationActions.LOGOUT] (context: AppAuthenticationActionContext) {
       localStorage.removeItem(JWT_KEY)
       context.commit(AppAuthenticationMutation.SET_AUTHENTICATION_JWT, null)
+      socket.close()
     },
     async [AppAuthenticationActions.LOAD_PROVIDERS] (context: AppAuthenticationActionContext) {
       if (process.env.VUE_APP_MS_AUTH) {

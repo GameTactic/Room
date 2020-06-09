@@ -19,7 +19,8 @@ export interface Entity {
 
 export enum RoleTypes { 
   ROON_OWNER = 'roomOwner',
-  ADMIN = 'admin'
+  ADMIN = 'admin',
+  USER = 'user'
 }
 
 export interface Role {
@@ -34,9 +35,6 @@ export interface User {
   onTacticId: string;
   isOnline: boolean;
   lastOnline: Date | undefined;
-  joined: Date;
-  isAuthN: boolean;
-  bannedBy: string | undefined;
   roles: Role[];
 }
 

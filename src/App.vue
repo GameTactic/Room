@@ -65,29 +65,34 @@ export default class TheApp extends Vue {
       if (response.status !== 200) {
         throw Error(this.$tc('authentication.error.reachServer'))
       }
-      const verifiedLocalToken = verify(this.localToken, response.data.publicKey) as JWT
-      const localTokenExpiryEpoch: number = verifiedLocalToken.exp
-      const localTokenExpiryDate: Date = new Date(0)
-      localTokenExpiryDate.setUTCSeconds(verifiedLocalToken.exp)
-      const currentDate: Date = new Date()
-      const localTokenExpiryRefreshEpoch: number = localTokenExpiryDate.setHours(localTokenExpiryDate.getHours() - Number(process.env.VUE_APP_AUTH_EXPIRY_PERIOD))
-      if (this.jwt) {
-        // if the token has not expired
-        if (localTokenExpiryEpoch < currentDate.getTime()) {
-          if (currentDate.getTime() > localTokenExpiryRefreshEpoch) {
-            // refresh and store the token
-            this.refreshToken(this.localToken)
-          }
+      try {
+        const verifiedLocalToken = verify(this.localToken, response.data.publicKey) as JWT
+        const localTokenExpiryEpoch: number = verifiedLocalToken.exp
+        const localTokenExpiryDate: Date = new Date(0)
+        localTokenExpiryDate.setUTCSeconds(localTokenExpiryEpoch)
+        const currentDate: Date = new Date()
+        const localTokenExpiryRefreshEpoch: number = localTokenExpiryDate.setHours(localTokenExpiryDate.getHours() - Number(process.env.VUE_APP_AUTH_EXPIRY_PERIOD))
+        if (this.jwt && currentDate.getTime() > localTokenExpiryRefreshEpoch) {
+          // refresh and store the token
+          this.refreshToken(this.localToken)
         } else {
-          // token has expired
-          this.logout()
+          this.authenticate(this.localToken)
         }
-      } else {
-        this.authenticate(this.localToken)
+      } catch (error) {
+        this.logout()
       }
     // else if the url contains the JWT token use it then store it
     } else if (this.$route?.query?.code) {
       this.authenticate(this.$route.query.code as string)
+    }
+
+    // clean out the JWT token from the address url leaving them just the roomId
+    if (this.$route?.query?.code) {
+      if (history.pushState) {
+        window.history.pushState('', '', this.$route.path)
+      } else {
+        document.location.href = this.$route.path
+      }
     }
   }
 }
