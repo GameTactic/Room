@@ -28,7 +28,6 @@ export default class RoomSocket extends Vue {
 
   @Socket()
   connect () {
-    console.log('connected')
     this.emit({ data: { roomId: this.roomId }, emit: SocketRoomEmit.ROOM_CONNECT })
   }
 
