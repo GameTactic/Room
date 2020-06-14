@@ -3,6 +3,7 @@ import { CanvasElement, CanvasElementType } from '@/types/Canvas'
 import uuid from 'uuid'
 import { AppAuthenticationGetters } from '@/store/modules/app/authentication'
 import { Namespaces } from '@/store'
+import { RootState } from '@/store/types'
 
 const defaultAppCanvasEntity: AppCanvasEntityState = {
   canvasElement: {
@@ -47,16 +48,16 @@ export interface AppCanvasEntityState {
   modifyData: {} | undefined;
 }
 
-type AppCanvasEntityActionContext = ActionContext<AppCanvasEntityState, {}>;
+type AppCanvasEntityActionContext = ActionContext<AppCanvasEntityState, RootState>;
 
-const AppCanvasEntityModule: Module<AppCanvasEntityState, {}> = {
+const AppCanvasEntityModule: Module<AppCanvasEntityState, RootState> = {
   namespaced: true,
   state () {
     return defaultAppCanvasEntity
   },
   getters: {
-    [AppCanvasEntityGetters.CANVAS_ELEMENT]: state => state.canvasElement,
-    [AppCanvasEntityGetters.CANVAS_ENTITY]: state => state
+    [AppCanvasEntityGetters.CANVAS_ELEMENT]: (state): CanvasElement => state.canvasElement,
+    [AppCanvasEntityGetters.CANVAS_ENTITY]: (state): AppCanvasEntityState => state
   },
   mutations: {
     [AppCanvasEntityMutations.SET_CANVAS_ENTITY] (state: AppCanvasEntityState, entity: AppCanvasEntityState) {

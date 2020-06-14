@@ -10,6 +10,7 @@ import Ruler from '@/tools/Ruler'
 import Text from '@/tools/Text'
 import Move from '@/tools/Move'
 import Entity from '@/tools/Entity'
+import { RootState } from '@/store/types'
 
 export enum AppToolGetters {
   ENABLED_TOOL = 'enabledTool',
@@ -56,9 +57,9 @@ export enum AppToolsMutation {
   SET_STROKE_STYLE = 'SET_STROKE_STYLE'
 }
 
-type AppToolActionContext = ActionContext<AppToolState, {}>;
+type AppToolActionContext = ActionContext<AppToolState, RootState>;
 
-const AppToolModule: Module<AppToolState, {}> = {
+const AppToolModule: Module<AppToolState, RootState> = {
   namespaced: true,
   state () {
     return {
@@ -79,10 +80,10 @@ const AppToolModule: Module<AppToolState, {}> = {
     }
   },
   getters: {
-    [AppToolGetters.TOOLS]: state => state.tools,
-    [AppToolGetters.ENABLED_TOOL]: state => state.enabledTool,
-    [AppToolGetters.TOOL]: (state) => (name: string) => state.tools.find(tool => tool.name === name),
-    [AppToolGetters.ENABLED]: state => state.enabled
+    [AppToolGetters.TOOLS]: (state): Tool[] => state.tools,
+    [AppToolGetters.ENABLED_TOOL]: (state): Tool | undefined => state.enabledTool,
+    [AppToolGetters.TOOL]: (state) => (name: string): Tool | undefined => state.tools.find(tool => tool.name === name),
+    [AppToolGetters.ENABLED]: (state): boolean => state.enabled
   },
   mutations: {
     [AppToolsMutation.SET_ENABLED_TOOL] (state: AppToolState, payload: string) {

@@ -1,7 +1,7 @@
 import { ActionContext, Module } from 'vuex'
 import { CustomStageConfig } from '@/util/PointerEventMapper'
 import { Dimensions } from '@/mixins/StageWatcher'
-import { Tactic, Map } from '@/store/types'
+import { Tactic, Map, RootState } from '@/store/types'
 import { AppRoomGetters } from '../app/room'
 import { Namespaces } from '@/store'
 
@@ -36,9 +36,14 @@ export interface SocketStageState {
   stageConfig: CustomStageConfig;
 }
 
-type SocketStageActionContext = ActionContext<SocketStageState, {}>;
+interface StageDimensions {
+  width: number;
+  height: number;
+}
 
-const SocketStageModule: Module<SocketStageState, {}> = {
+type SocketStageActionContext = ActionContext<SocketStageState, RootState>;
+
+const SocketStageModule: Module<SocketStageState, RootState> = {
   namespaced: true,
   state () {
     return {
@@ -57,10 +62,10 @@ const SocketStageModule: Module<SocketStageState, {}> = {
     }
   },
   getters: {
-    [SocketStageGetters.STAGE_CONFIG]: state => state.stageConfig,
-    [SocketStageGetters.STAGE_MAP_SRC]: state => state.stageConfig.mapSrc,
-    [SocketStageGetters.STAGE_DIMENSIONS]: state => ({ width: state.stageConfig.width, height: state.stageConfig.height }),
-    [SocketStageGetters.STAGE_DIMENSIONS_INITIAL]: state => ({ width: state.stageConfig.initialWidth, height: state.stageConfig.initialHeight })
+    [SocketStageGetters.STAGE_CONFIG]: (state): CustomStageConfig => state.stageConfig,
+    [SocketStageGetters.STAGE_MAP_SRC]: (state): string => state.stageConfig.mapSrc,
+    [SocketStageGetters.STAGE_DIMENSIONS]: (state): StageDimensions => ({ width: state.stageConfig.width, height: state.stageConfig.height }),
+    [SocketStageGetters.STAGE_DIMENSIONS_INITIAL]: (state): StageDimensions => ({ width: state.stageConfig.initialWidth, height: state.stageConfig.initialHeight })
   },
   mutations: {
     [SocketStageMutations.SET_MAP_RATIO] (state: SocketStageState, ratio: number) {

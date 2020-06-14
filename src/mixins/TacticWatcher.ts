@@ -10,7 +10,7 @@ import { AppLayerActions } from '@/store/modules/app/layer'
 import { SocketActions, SocketCanvasTacticEmit } from '@/store/modules/socket'
 import { EventBus } from '@/event-bus'
 import { SocketTacticAction } from '@/store/modules/socket/tactic'
-import { AppRoomGetters, AppRoomAction } from '@/store/modules/app/room'
+import { AppRoomAction } from '@/store/modules/app/room'
 import { Namespaces } from '@/store'
 
 const AppLayer = namespace(Namespaces.APP_LAYER)
@@ -24,7 +24,6 @@ const SocketTactic = namespace(Namespaces.SOCKET_TACTIC)
   name: 'TacticWatcher'
 })
 export default class TacticWatcher extends Vue {
-  @AppRoom.Getter(AppRoomGetters.IS_CANVAS_LOADED) isCanvasLoaded!: boolean
   @SocketCanvas.Action(SocketCanvasAction.SET_CANVAS_ELEMENT) setCanvasElements!: (canvasElements: CanvasElement[]) => void
   @SocketCanvas.Action(SocketCanvasAction.SET_CANVAS_ELEMENT_HISTORY) setCanvasElementsHistory!: (canvasElements: CanvasElementHistory[]) => void
   @AppLayer.Action(AppLayerActions.LAYER_CLEAR) layerClear!: () => void
