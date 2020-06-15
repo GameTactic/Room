@@ -39,7 +39,7 @@ export default class FreeDraw extends ToolClass implements FreeDrawInterface {
       this.colour
     )
     this.freeDrawCreator.create(event)
-    this.canvasElement.position = this.freeDrawCreator.getGroup().getPosition()
+    this.canvasElement.attrs.position = this.freeDrawCreator.getGroup().getPosition()
   }
 
   mouseMoveAction = throttle((event: CustomEvent): void => {

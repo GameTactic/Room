@@ -36,7 +36,7 @@ export default class Ping extends ToolClass implements PingInterface {
       temporary: this.temporary
     }
     this.triggerPing(event)
-    this.canvasElement.position = this.pingCreator.getGroup().getPosition()
+    this.canvasElement.attrs.position = this.pingCreator.getGroup().getPosition()
   }
 
   mouseMoveAction = throttle((event: CustomEvent): void => {

@@ -53,7 +53,7 @@ export default class Line extends ToolClass implements LineInterface {
       this.strokeStyle
     )
     this.lineCreator[`create${this.endStyle.toUpperCase()}`](event)
-    this.canvasElement.position = this.lineCreator.getGroup().getPosition()
+    this.canvasElement.attrs.position = this.lineCreator.getGroup().getPosition()
   }
 
   mouseMoveAction = (event: CustomEvent): void => {

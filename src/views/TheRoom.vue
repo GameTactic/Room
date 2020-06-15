@@ -92,6 +92,8 @@ export default class TheRoom extends mixins(RoomSocket) {
 
   created () {
     this.setRoomId(window.location.pathname.replace('/', ''))
+    this.setIsCanvasLoaded(true)
+    EventBus.$emit('createDummyTactic')
   }
   $refs!: {
     app: HTMLDivElement;

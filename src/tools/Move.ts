@@ -2,10 +2,10 @@ import { ToolClass, ToolClassInterface, Tracker } from '@/tools/Tool'
 import Konva from 'konva'
 import { CustomEvent } from '@/util/PointerEventMapper'
 import { ISO } from '@/util/ISO'
-import { MoveData, RequestCanvasEntity } from '@/types/Canvas'
+import { CanvasElementType, MoveData, RequestCanvasEntity } from '@/types/Canvas'
 import uuid from 'uuid'
 import { SocketCanvasToolsEmit } from '@/store/modules/socket'
-
+import Transformer from '@/tools/util/Transformer'
 export default class Move extends ToolClass implements ToolClassInterface {
   constructor (public readonly name: string,
                public temporary: boolean) {
@@ -16,10 +16,6 @@ export default class Move extends ToolClass implements ToolClassInterface {
   mouseDownAction = (event: CustomEvent): void => {
     this.enableTool()
     this.resetCanvasEntity()
-    this.canvasElement.position = {
-      x: event.globalOffset.x,
-      y: event.globalOffset.y
-    }
     this.canvasEntity.modifyData = {
       from: {
         x: event.globalOffset.x,
@@ -32,9 +28,9 @@ export default class Move extends ToolClass implements ToolClassInterface {
       groups: []
     }
     const targetGroup = event.konvaPointerEvent.target.parent
-    if (targetGroup && targetGroup instanceof Konva.Group && targetGroup.attrs.type !== 'map' && targetGroup.attrs.id) {
+    if (targetGroup && targetGroup instanceof Konva.Group && targetGroup.attrs.type !== CanvasElementType.MAP && targetGroup.attrs.id) {
       const data = this.canvasEntity.modifyData as MoveData
-      data.groups = [...data.groups, targetGroup.attrs.id]
+      data.groups = [targetGroup.attrs.id]
     }
     // If we want to move multiple groups at once we will have to add that in here
     // Requires code to create a mask when clicking and dragging instead of moving.
@@ -47,24 +43,20 @@ export default class Move extends ToolClass implements ToolClassInterface {
       if (!this.canvasEntity.hasMoved) { this.canvasEntity.hasMoved = true }
       const data = this.canvasEntity.modifyData as MoveData
       if (data.from && data.to && data.groups.length > 0) {
+        const prevMove = { ...data.to }
         data.to = {
           x: event.globalOffset.x,
           y: event.globalOffset.y
         }
         data.groups.forEach((groupId: string) => {
-          const foundGroup: Konva.Group = this.layer.findOne((group: Konva.Group) => group.attrs.id === groupId)
+          const foundGroup: Konva.Node = this.layer.findOne((node: Konva.Node) => node instanceof Konva.Group && node.attrs.id === groupId)
           if (foundGroup) {
-            const pos = {
-              x: (data.to.x - this.canvasElement.position.x),
-              y: (data.to.y - this.canvasElement.position.y)
-            }
             foundGroup.move({
-              x: ((pos.x / event.stageConfig.width) * event.stage.width()),
-              y: ((pos.y / event.stageConfig.height) * event.stage.height())
+              x: ((data.to.x - prevMove.x) / event.stageConfig.width * event.stage.width()),
+              y: ((data.to.y - prevMove.y) / event.stageConfig.height * event.stage.height())
             })
           }
         })
-        this.canvasElement.position = data.to
         this.layer.batchDraw()
       }
     }
@@ -83,6 +75,13 @@ export default class Move extends ToolClass implements ToolClassInterface {
         timestampModified: ISO.timestamp(),
         canvasElements: []
       }, SocketCanvasToolsEmit.CANVAS_TOOLS_MOVE)
+    } else if (this.enabled && !this.canvasEntity.hasMoved) {
+      this.disableTool()
+      const targetGroup = event.konvaPointerEvent.target.parent
+      if (targetGroup && targetGroup instanceof Konva.Group && targetGroup.attrs.type !== CanvasElementType.MAP) {
+        const tr = new Transformer(this.layer)
+        tr.setNodes([targetGroup])
+      }
     }
   }
 
@@ -91,7 +90,7 @@ export default class Move extends ToolClass implements ToolClassInterface {
     const data = request.modifyData as MoveData
     if (data.groups && data.groups.length > 0 && data.from && data.to) {
       data.groups.forEach((groupId: string) => {
-        const foundGroup: Konva.Group = this.layer.findOne((group: Konva.Group) => group.attrs.id === groupId)
+        const foundGroup: Konva.Node = this.layer.findOne((node: Konva.Node) => node instanceof Konva.Group && node.attrs.id === groupId)
         if (foundGroup) {
           const groupPos = foundGroup.getPosition()
           const pos = {

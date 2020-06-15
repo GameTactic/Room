@@ -12,6 +12,8 @@ import { EventBus } from '@/event-bus'
 import { SocketTacticAction } from '@/store/modules/socket/tactic'
 import { AppRoomGetters, AppRoomAction } from '@/store/modules/app/room'
 import { Namespaces } from '@/store'
+import uuid from 'uuid'
+import { AppAuthenticationGetters } from '@/store/modules/app/authentication'
 
 const AppLayer = namespace(Namespaces.APP_LAYER)
 const AppRoom = namespace(Namespaces.APP_ROOM)
@@ -37,6 +39,27 @@ export default class TacticWatcher extends Vue {
   created () {
     EventBus.$on('newTactic', (tactic: Tactic) => {
       this.newTactic(tactic)
+    })
+    // For development purposes
+    EventBus.$on('createDummyTactic', () => {
+      this.newTactic({
+        id: uuid(),
+        name: 'DummyTactic',
+        collectionId: '',
+        canvasElements: [],
+        canvasElementsHistory: [],
+        lockedBy: undefined,
+        isPinned: false,
+        createdBy: this.$store.getters[`${Namespaces.APP_AUTHENTICATION}/${AppAuthenticationGetters.JWT}`].jti,
+        map: {
+          desc: '',
+          icon: '',
+          ratio: 0,
+          name: 'DummyMap',
+          width: 1,
+          height: 1
+        }
+      })
     })
   }
 

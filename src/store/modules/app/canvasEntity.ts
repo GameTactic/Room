@@ -3,23 +3,46 @@ import { CanvasElement, CanvasElementType } from '@/types/Canvas'
 import uuid from 'uuid'
 import { AppAuthenticationGetters } from '@/store/modules/app/authentication'
 import { Namespaces } from '@/store'
+import store from '@/main'
 
-const defaultAppCanvasEntity: AppCanvasEntityState = {
-  canvasElement: {
-    jti: '',
-    id: '',
-    type: CanvasElementType.SHAPE,
-    data: {},
-    tool: {
-      name: '',
-      temporary: false
-    },
-    layerId: Math.random().toString(36), // TODO: Use some other method. (Do we even need this?)
-    isVisible: true,
-    position: { x: 0, y: 0 }
-  },
-  hasMoved: false,
-  modifyData: {}
+export class CanvasEntity {
+  private readonly _canvasElement: CanvasElement
+  private readonly _hasMoved: boolean
+  private readonly _modifyData: {}
+  constructor () {
+    this._canvasElement = {
+      jti: store?.getters[`${Namespaces.APP_AUTHENTICATION}/${AppAuthenticationGetters.JWT}`].jti || '',
+      id: uuid(),
+      type: CanvasElementType.UNKNOWN,
+      data: {},
+      tool: {
+        name: '',
+        temporary: false
+      },
+      layerId: Math.random().toString(36), // Do we even need this?
+      isVisible: true,
+      attrs: {
+        position: {
+          x: 0,
+          y: 0
+        },
+        scaleX: 1,
+        scaleY: 1,
+        skewX: 0,
+        skewY: 0,
+        rotation: 0
+      }
+    }
+    this._hasMoved = false
+    this._modifyData = {}
+  }
+  getCanvasEntity () {
+    return {
+      canvasElement: this._canvasElement,
+      hasMoved: this._hasMoved,
+      modifyData: this._modifyData
+    }
+  }
 }
 
 export enum AppCanvasEntityGetters {
@@ -44,7 +67,7 @@ export enum AppCanvasEntityMutations {
 export interface AppCanvasEntityState {
   canvasElement: CanvasElement;
   hasMoved: boolean;
-  modifyData: {} | undefined;
+  modifyData: {};
 }
 
 type AppCanvasEntityActionContext = ActionContext<AppCanvasEntityState, {}>;
@@ -52,7 +75,7 @@ type AppCanvasEntityActionContext = ActionContext<AppCanvasEntityState, {}>;
 const AppCanvasEntityModule: Module<AppCanvasEntityState, {}> = {
   namespaced: true,
   state () {
-    return defaultAppCanvasEntity
+    return new CanvasEntity().getCanvasEntity()
   },
   getters: {
     [AppCanvasEntityGetters.CANVAS_ELEMENT]: state => state.canvasElement,
@@ -69,8 +92,8 @@ const AppCanvasEntityModule: Module<AppCanvasEntityState, {}> = {
       state.canvasElement = canvasElement
     },
     [AppCanvasEntityMutations.RESET_CANVAS_ELEMENT] (state: AppCanvasEntityState) {
-      state.canvasElement = defaultAppCanvasEntity.canvasElement
-      state.canvasElement.id = uuid()
+      const canvasEntityClass = new CanvasEntity()
+      state.canvasElement = canvasEntityClass.getCanvasEntity().canvasElement
     }
   },
   actions: {
@@ -84,10 +107,10 @@ const AppCanvasEntityModule: Module<AppCanvasEntityState, {}> = {
       context.commit(AppCanvasEntityMutations.SET_CANVAS_ENTITY, entity)
     },
     [AppCanvasEntityActions.RESET_CANVAS_ENTITY] (context: AppCanvasEntityActionContext) {
-      const newState = defaultAppCanvasEntity
-      newState.canvasElement.id = uuid()
-      newState.canvasElement.jti = (context.rootGetters[`${Namespaces.APP_AUTHENTICATION}/${AppAuthenticationGetters.JWT}`]).jti
+      const canvasEntityClass = new CanvasEntity()
+      const newState = canvasEntityClass.getCanvasEntity()
       context.commit(AppCanvasEntityMutations.RESET_CANVAS_ENTITY, newState)
+      return newState
     }
   }
 }

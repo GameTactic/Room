@@ -2,6 +2,7 @@ import Vue from 'vue'
 import { Field, Item } from '@/types/Games/Index'
 
 export default class Games extends Vue {
+  // eslint-disable-next-line
   resolve = (path: string, gameData: any) => path.split('.').reduce((prev: any, curr: any) => prev ? prev[curr] : '', gameData || self)
 
   findField = (fields: Field[], clickedFieldId: string): Field | undefined => fields.find((field: Field): boolean => field.id === clickedFieldId)

@@ -167,8 +167,8 @@ export default class HandleUndoRedo {
         const foundElement: CanvasElement | undefined = canvasElements.find((canvasElement: CanvasElement) => canvasElement.id === groupId)
         if (foundElement) {
           const data = history.modifyData as MoveData
-          const prevPos = foundElement.position
-          foundElement.position = {
+          const prevPos = foundElement.attrs.position
+          foundElement.attrs.position = {
             x: -1 * ((data.to.x - data.from.x) - prevPos.x),
             y: -1 * ((data.to.y - data.from.y) - prevPos.y)
           }
@@ -208,8 +208,8 @@ export default class HandleUndoRedo {
         const foundElement: CanvasElement | undefined = canvasElements.find((canvasElement: CanvasElement) => canvasElement.id === groupId)
         if (foundElement) {
           const data = history.modifyData as MoveData
-          const prevPos = foundElement.position
-          foundElement.position = {
+          const prevPos = foundElement.attrs.position
+          foundElement.attrs.position = {
             x: (data.to.x - data.from.x) + prevPos.x,
             y: (data.to.y - data.from.y) + prevPos.y
           }

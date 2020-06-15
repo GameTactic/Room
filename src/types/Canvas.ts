@@ -1,5 +1,4 @@
 import Konva from 'konva'
-import { Point } from 'konva/types/Util'
 import { Tool, Tracker } from '@/tools/Tool'
 
 export type VueKonvaLayer = Konva.Layer & Vue & {
@@ -27,7 +26,9 @@ export enum RemovalTools {
 export enum CanvasElementType {
   MAP = 'map',
   SHAPE = 'shape',
-  ENTITY = 'entity'
+  ENTITY = 'entity',
+  TRANSFORMER = 'transformer',
+  UNKNOWN = 'unknown'
 }
 
 export interface CanvasElement {
@@ -38,7 +39,14 @@ export interface CanvasElement {
   layerId: string;
   jti: string;
   isVisible: boolean;
-  position: Point;
+  attrs: {
+    position: Point;
+    rotation: number;
+    scaleX: number;
+    scaleY: number;
+    skewX: number;
+    skewY: number;
+  };
 }
 
 export interface CanvasElementHistory {
@@ -83,4 +91,9 @@ export interface UndoData {
 export interface AdditionData {
   additions: string[];
   tool: AdditionTools;
+}
+
+export interface Point {
+  x: number;
+  y: number;
 }

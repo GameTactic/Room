@@ -17,7 +17,7 @@ export interface Entity {
   data: any;
 }
 
-export enum RoleTypes { 
+export enum RoleTypes {
   ROON_OWNER = 'roomOwner',
   ADMIN = 'admin',
   USER = 'user'

@@ -58,7 +58,7 @@ export default class Circle extends ToolClass implements CircleInterface {
       this.showRadius
     )
     this.circleCreator.create(event)
-    this.canvasElement.position = this.circleCreator.getGroup().getPosition()
+    this.canvasElement.attrs.position = this.circleCreator.getGroup().getPosition()
   }
 
   mouseMoveAction = (event: CustomEvent): void => {

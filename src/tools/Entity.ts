@@ -59,7 +59,7 @@ export default class Entity extends ToolClass {
       name: this.name,
       temporary: this.temporary
     }
-    this.canvasElement.position = { x: 0, y: 0 }
+    this.canvasElement.attrs.position = { x: 0, y: 0 }
     const request: RequestCanvasEntity = {
       id: uuid(),
       jti: this.canvasElement.jti,

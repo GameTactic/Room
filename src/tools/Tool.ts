@@ -3,6 +3,7 @@ import {
   AdditionData,
   CanvasElement,
   MoveData,
+  Point,
   RemovalData,
   RequestCanvasEntity,
   VueKonvaStage
@@ -12,7 +13,6 @@ import store from '@/main'
 import { SocketActions } from '@/store/modules/socket'
 import { SocketStageGetters } from '@/store/modules/socket/stage'
 import { AppStageGetters } from '@/store/modules/app/stage'
-import { Point } from 'konva/types/Util'
 import { AppCanvasEntityActions, AppCanvasEntityGetters, AppCanvasEntityState } from '@/store/modules/app/canvasEntity'
 import { AppLayerGetters } from '@/store/modules/app/layer'
 import { AppToolGetters, AppToolsAction } from '@/store/modules/app/tools'
@@ -57,7 +57,7 @@ export class ToolClass {
 
   addToState = (request: RequestCanvasEntity): void => {
     switch (request.modifyType) {
-      case Tracker.ADDITION :
+      case Tracker.ADDITION:
         const additionsData = request.modifyData as AdditionData
         if (request.canvasElements.length === additionsData.additions.length && request.canvasElements.length > 0) {
           store.dispatch(`${Namespaces.SOCKET_CANVAS}/${SocketCanvasAction.ADD_CANVAS_ELEMENT_HISTORY}`, {
@@ -68,7 +68,7 @@ export class ToolClass {
             timestampModified: request.timestampModified
           })
           request.canvasElements.forEach((canvasElement: CanvasElement) => {
-            store.dispatch(`${Namespaces.SOCKET_CANVAS}/${SocketCanvasAction.ADD_CANVAS_ELEMENT}`, canvasElement)
+            store.dispatch(`${Namespaces.SOCKET_CANVAS}/${SocketCanvasAction.ADD_CANVAS_ELEMENT}`, { ...canvasElement })
           })
         }
         break
@@ -101,10 +101,11 @@ export class ToolClass {
             moveData.groups.forEach((groupId: string) => {
               const foundElement: CanvasElement = canvasElements.find((canvasElement: CanvasElement) => canvasElement.id === groupId)
               if (foundElement) {
-                foundElement.position = {
-                  x: (moveData.to.x - moveData.from.x) + foundElement.position.x,
-                  y: (moveData.to.y - moveData.from.y) + foundElement.position.y
-                }
+                store.dispatch(`${Namespaces.SOCKET_CANVAS}/${SocketCanvasAction.MOVE_CANVAS_ELEMENT}`, {
+                  id: groupId,
+                  from: moveData.from,
+                  to: moveData.to
+                })
               }
             })
             store.dispatch(`${Namespaces.SOCKET_CANVAS}/${SocketCanvasAction.ADD_CANVAS_ELEMENT_HISTORY}`, {
@@ -134,9 +135,7 @@ export class ToolClass {
 
   resetCanvasEntity = (): AppCanvasEntityState => {
     store.dispatch(`${Namespaces.APP_CANVAS_ENTITY}/${AppCanvasEntityActions.RESET_CANVAS_ENTITY}`)
-    const canvasEntity: AppCanvasEntityState = store.getters[`${Namespaces.APP_CANVAS_ENTITY}/${AppCanvasEntityGetters.CANVAS_ENTITY}`]
-    canvasEntity.hasMoved = false
-    return canvasEntity
+    return store.getters[`${Namespaces.APP_CANVAS_ENTITY}/${AppCanvasEntityGetters.CANVAS_ENTITY}`]
   }
 
   get canvasElement (): CanvasElement {

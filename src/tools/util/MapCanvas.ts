@@ -29,8 +29,8 @@ export default class MapCanvas {
         width: (stageConfig.initialWidth * mapDimentionRatio),
         height: (stageConfig.initialHeight * mapDimentionRatio)
       })
-      const foundGroup: Konva.Group = layer.findOne((group: Konva.Group) => group.attrs.type && group.attrs.type === CanvasElementType.MAP)
-      if (foundGroup) {
+      const foundGroup: Konva.Node = layer.findOne((group: Konva.Node) => group instanceof Konva.Group && group.attrs.type && group.attrs.type === CanvasElementType.MAP)
+      if (foundGroup && foundGroup instanceof Konva.Group) {
         foundGroup.getChildren().each(child => child.destroy())
         layer.add(foundGroup.add(el))
       } else {
