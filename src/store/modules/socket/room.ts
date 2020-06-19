@@ -1,5 +1,11 @@
 import { ActionContext, Module } from 'vuex'
-import { PresentationPayload, Presentation, Game } from '@/store/types'
+import { PresentationPayload, Presentation, RootState } from '@/store/types'
+
+export enum Game {
+  NONE = '',
+  WOWS = 'wows',
+  WOT = 'wot'
+}
 
 export enum SocketRoomAction {
   SET_GAME = 'setGame',
@@ -31,9 +37,9 @@ export interface SocketRoomState {
   roomId: string | undefined;
 }
 
-type SocketRoomActionContext = ActionContext<SocketRoomState, {}>
+type SocketRoomActionContext = ActionContext<SocketRoomState, RootState>
 
-const SocketRoomModule: Module<SocketRoomState, {}> = {
+const SocketRoomModule: Module<SocketRoomState, RootState> = {
   namespaced: true,
   state () {
     return {
@@ -47,13 +53,13 @@ const SocketRoomModule: Module<SocketRoomState, {}> = {
     }
   },
   getters: {
-    [SocketRoomGetters.GAME]: state => state.game,
-    [SocketRoomGetters.PRESENTATION]: state => ({
+    [SocketRoomGetters.GAME]: (state): Game => state.game,
+    [SocketRoomGetters.PRESENTATION]: (state): Presentation => ({
       enabledBy: state.presentation.enabledBy,
       tacticId: state.presentation.tacticId
     }),
-    [SocketRoomGetters.IS_PRIVATE]: state => state.isPrivate,
-    [SocketRoomGetters.ROOM_ID]: state => state.roomId
+    [SocketRoomGetters.IS_PRIVATE]: (state): boolean => state.isPrivate,
+    [SocketRoomGetters.ROOM_ID]: (state): string | undefined => state.roomId
   },
   mutations: {
     [SocketRoomMutation.SET_GAME] (state: SocketRoomState, name: Game) {

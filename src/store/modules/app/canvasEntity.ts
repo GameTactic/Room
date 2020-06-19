@@ -4,6 +4,7 @@ import uuid from 'uuid'
 import { AppAuthenticationGetters } from '@/store/modules/app/authentication'
 import { Namespaces } from '@/store'
 import store from '@/main'
+import { RootState } from '@/store/types'
 
 export class CanvasEntityClass {
   private readonly canvasElement: CanvasElement
@@ -74,9 +75,9 @@ export interface AppCanvasEntityState {
   canvasEntity: CanvasEntity;
 }
 
-type AppCanvasEntityActionContext = ActionContext<AppCanvasEntityState, {}>;
+type AppCanvasEntityActionContext = ActionContext<AppCanvasEntityState, RootState>;
 
-const AppCanvasEntityModule: Module<AppCanvasEntityState, {}> = {
+const AppCanvasEntityModule: Module<AppCanvasEntityState, RootState> = {
   namespaced: true,
   state () {
     return {
@@ -84,8 +85,8 @@ const AppCanvasEntityModule: Module<AppCanvasEntityState, {}> = {
     }
   },
   getters: {
-    [AppCanvasEntityGetters.CANVAS_ELEMENT]: state => state.canvasEntity.canvasElement,
-    [AppCanvasEntityGetters.CANVAS_ENTITY]: state => state.canvasEntity
+    [AppCanvasEntityGetters.CANVAS_ELEMENT]: (state): CanvasElement => state.canvasEntity.canvasElement,
+    [AppCanvasEntityGetters.CANVAS_ENTITY]: (state): CanvasEntity => state.canvasEntity
   },
   mutations: {
     [AppCanvasEntityMutations.SET_CANVAS_ENTITY] (state: AppCanvasEntityState, entity: CanvasEntity) {

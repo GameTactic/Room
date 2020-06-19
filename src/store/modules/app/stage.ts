@@ -1,5 +1,6 @@
 import { ActionContext, Module } from 'vuex'
 import Konva from 'konva'
+import { RootState } from '@/store/types'
 
 export enum AppStageGetters {
   STAGE = 'stage',
@@ -32,9 +33,9 @@ export interface AppStageState {
   stageZoom: number;
 }
 
-type AppStageActionContext = ActionContext<AppStageState, {}>;
+type AppStageActionContext = ActionContext<AppStageState, RootState>;
 
-const AppStageModule: Module<AppStageState, {}> = {
+const AppStageModule: Module<AppStageState, RootState> = {
   namespaced: true,
   state () {
     return {
@@ -46,9 +47,9 @@ const AppStageModule: Module<AppStageState, {}> = {
     }
   },
   getters: {
-    [AppStageGetters.STAGE]: state => state.stage,
-    [AppStageGetters.STAGE_ZOOM]: state => state.stageZoom,
-    [AppStageGetters.STAGE_ZOOM_STEP]: state => state.stageZoomStep
+    [AppStageGetters.STAGE]: (state): Konva.Stage | undefined => state.stage,
+    [AppStageGetters.STAGE_ZOOM]: (state): number => state.stageZoom,
+    [AppStageGetters.STAGE_ZOOM_STEP]: (state): number => state.stageZoomStep
   },
   mutations: {
     [AppStageMutations.SET_STAGE] (state: AppStageState, stage: Konva.Stage) {

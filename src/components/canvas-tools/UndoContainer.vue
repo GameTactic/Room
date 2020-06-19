@@ -6,7 +6,7 @@
   >
     <template v-slot:activator="{ on }">
       <v-btn
-        :disabled="isDisabled || !isCanvasLoaded"
+        :disabled="isDisabled || !isAuthorisedCanvasLoaded"
         class="undoBtn"
         icon
         elevation=""
@@ -28,11 +28,11 @@ import { SocketCanvasAction, SocketCanvasGetters } from '@/store/modules/socket/
 import { CanvasElement, CanvasElementHistory } from '@/types/Canvas'
 import HandleUndoRedo from '@/util/HandleUndoRedo'
 import HandleRenderShapes from '@/util/HandleRenderShapes'
-import { AppRoomGetters } from '../../store/modules/app/room'
 import { Namespaces } from '@/store'
+import { SocketUserGetters } from '../../store/modules/socket/user'
 
 const SocketCanvas = namespace(Namespaces.SOCKET_CANVAS)
-const AppRoom = namespace(Namespaces.APP_ROOM)
+const SocketUser = namespace(Namespaces.SOCKET_USER)
 
 @Component({
   name: 'UndoContainer'
@@ -40,7 +40,7 @@ const AppRoom = namespace(Namespaces.APP_ROOM)
 export default class UndoContainer extends Vue {
   @Prop() private icon!: string
   @Prop() private toolname!: string
-  @AppRoom.Getter(AppRoomGetters.IS_CANVAS_LOADED) isCanvasLoaded!: boolean
+  @SocketUser.Getter(SocketUserGetters.IS_AUTHORISED_CANVAS_LOADED) isAuthorisedCanvasLoaded!: boolean
   @SocketCanvas.Getter(SocketCanvasGetters.CANVAS_ELEMENTS_HISTORY) canvasElementsHistory!: CanvasElementHistory[]
   @SocketCanvas.Getter(SocketCanvasGetters.CANVAS_ELEMENTS) canvasElements!: CanvasElement[]
   @SocketCanvas.Getter(SocketCanvasGetters.CANVAS_ELEMENT_HISTORY_BY_ID) canvasElementHistoryById!: (id: string) => CanvasElementHistory | void

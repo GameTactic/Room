@@ -39,9 +39,9 @@ import { Team, Game } from '@/store/types'
 import { SocketTacticGetters } from '@/store/modules/socket/tactic'
 import WowsEntitySection from '@/components/entity-panel/games/wows/WowsEntitySelector.vue'
 import WotEntitySection from '@/components/entity-panel/games/wot/WotEntitySelector.vue'
-const SocketRoom = namespace(Namespaces.SOCKET_ROOM)
 const SocketTeam = namespace(Namespaces.SOCKET_TEAM)
 const SocketTactic = namespace(Namespaces.SOCKET_TACTIC)
+const SocketRoom = namespace(Namespaces.SOCKET_ROOM)
 
 @Component({
   name: 'TheEntityPanel',

@@ -33,7 +33,6 @@ export enum Namespaces {
   SOCKET_USER = 'socketUser'
 }
 
-// eslint-disable-next-line
 export default new Vuex.Store<RootState>({
   modules: {
     [Namespaces.APP_AUTHENTICATION]: AppAuthenticationModule,

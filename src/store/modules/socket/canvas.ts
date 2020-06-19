@@ -1,5 +1,6 @@
 import { ActionContext, Module } from 'vuex'
 import { CanvasElement, CanvasElementHistory, Point } from '@/types/Canvas'
+import { RootState } from '@/store/types'
 
 export enum SocketCanvasMutation {
   SET_CANVAS_ELEMENT = 'SET_CANVAS_ELEMENT',
@@ -35,9 +36,9 @@ export interface SocketCanvasState {
   canvasElementsHistory: CanvasElementHistory[];
 }
 
-type SocketCanvasActionContext = ActionContext<SocketCanvasState, {}>
+type SocketCanvasActionContext = ActionContext<SocketCanvasState, RootState>
 
-const SocketCanvasModule: Module<SocketCanvasState, {}> = {
+const SocketCanvasModule: Module<SocketCanvasState, RootState> = {
   namespaced: true,
   state () {
     return {
@@ -46,10 +47,10 @@ const SocketCanvasModule: Module<SocketCanvasState, {}> = {
     }
   },
   getters: {
-    [SocketCanvasGetters.CANVAS_ELEMENTS]: state => state.canvasElements,
-    [SocketCanvasGetters.CANVAS_ELEMENTS_HISTORY]: state => state.canvasElementsHistory,
-    [SocketCanvasGetters.CANVAS_ELEMENT_BY_ID]: state => (id: string) => state.canvasElements.find(canvasElement => canvasElement.id === id),
-    [SocketCanvasGetters.CANVAS_ELEMENT_HISTORY_BY_ID]: state => (id: string) => state.canvasElementsHistory.find(canvasElementHistory => canvasElementHistory.id === id)
+    [SocketCanvasGetters.CANVAS_ELEMENTS]: (state): CanvasElement[] => state.canvasElements,
+    [SocketCanvasGetters.CANVAS_ELEMENTS_HISTORY]: (state): CanvasElementHistory[] => state.canvasElementsHistory,
+    [SocketCanvasGetters.CANVAS_ELEMENT_BY_ID]: state => (id: string): CanvasElement | undefined => state.canvasElements.find(canvasElement => canvasElement.id === id),
+    [SocketCanvasGetters.CANVAS_ELEMENT_HISTORY_BY_ID]: state => (id: string): CanvasElementHistory | undefined => state.canvasElementsHistory.find(canvasElementHistory => canvasElementHistory.id === id)
   },
   mutations: {
     [SocketCanvasMutation.SET_CANVAS_ELEMENT] (state: SocketCanvasState, payload: CanvasElement[]) {

@@ -8,7 +8,7 @@
     @dragover="$event.preventDefault()"
   >
     <the-canvas
-      v-show="isCanvasLoaded"
+      v-show="isAuthorisedCanvasLoaded"
       ref="stage"
     />
     <the-nav />
@@ -26,32 +26,27 @@ import TheCanvas from '@/components/TheCanvas.vue'
 import TheEntityPanel from '@/components/TheEntityPanel.vue'
 import Component, { mixins } from 'vue-class-component'
 import { Prop, Watch } from 'vue-property-decorator'
-import { CanvasElement, VueKonvaStage } from '@/types/Canvas'
+import { VueKonvaStage } from '@/types/Canvas'
 import TheCreateNewTacticOverlay from '@/components/overlays/TheCreateNewTacticOverlay.vue'
 import TheUpdateTacticOverlay from '@/components/overlays/TheUpdateTacticOverlay.vue'
-import { SocketStageActions, SocketStageGetters } from '@/store/modules/socket/stage'
-import { CustomStageConfig } from '@/util/PointerEventMapper'
-import { SocketCanvasAction } from '@/store/modules/socket/canvas'
 import { namespace } from 'vuex-class'
 import { EventBus } from '@/event-bus'
 import RoomSocket from '@/mixins/RoomSockets'
 import { AppToolGetters } from '@/store/modules/app/tools'
 import { Tool } from '@/tools/Tool'
 import { SocketTacticGetters, SocketTacticAction } from '@/store/modules/socket/tactic'
-import { Tactic, Collection } from '@/store/types'
+import { Tactic, Collection, RoleTypes } from '@/store/types'
 import uuid from 'uuid'
 import { AppAuthenticationGetters, ExtendedJWT } from '@/store/modules/app/authentication'
 import { SocketRoomAction } from '@/store/modules/socket/room'
-import { AppRoomAction, AppRoomGetters } from '@/store/modules/app/room'
 import { Namespaces } from '@/store'
+import { SocketUserGetters } from '@/store/modules/socket/user'
 
 const AppAuthentication = namespace(Namespaces.APP_AUTHENTICATION)
-const AppRoom = namespace(Namespaces.APP_ROOM)
 const AppTools = namespace(Namespaces.APP_TOOLS)
-const SocketCanvas = namespace(Namespaces.SOCKET_CANVAS)
 const SocketRoom = namespace(Namespaces.SOCKET_ROOM)
-const SocketStage = namespace(Namespaces.SOCKET_STAGE)
 const SocketTactic = namespace(Namespaces.SOCKET_TACTIC)
+const SocketUser = namespace(Namespaces.SOCKET_USER)
 
 @Component({
   name: 'TheRoom',
@@ -67,24 +62,18 @@ const SocketTactic = namespace(Namespaces.SOCKET_TACTIC)
 })
 export default class TheRoom extends mixins(RoomSocket) {
   @Prop() id!: string
-  @SocketStage.Getter(SocketStageGetters.STAGE_CONFIG) stageConfig!: CustomStageConfig
   @AppTools.Getter(AppToolGetters.TOOL) findTool!: (name: string) => Tool | void
   @SocketTactic.Getter(SocketTacticGetters.TACTICS) tactics!: () => Tactic[]
   @SocketTactic.Getter(SocketTacticGetters.COLLECTIONS) collections!: () => Collection[]
   @AppAuthentication.Getter(AppAuthenticationGetters.JWT) jwt!: ExtendedJWT
-  @AppRoom.Getter(AppRoomGetters.IS_CANVAS_LOADED) isCanvasLoaded!: boolean
-  @SocketCanvas.Action(SocketCanvasAction.SET_CANVAS_ELEMENT) setCanvasElements!: (canvasElements: CanvasElement[]) => void
-  @SocketCanvas.Action(SocketCanvasAction.SET_CANVAS_ELEMENT_HISTORY) setCanvasElementsHistory!: (canvasElements: CanvasElement[]) => void
-  @SocketStage.Action(SocketStageActions.SET_MAP_SRC) setMapSrc!: (mapSrc: string) => void
-  @SocketStage.Action(SocketStageActions.SET_CONFIG) setConfig!: (config: CustomStageConfig) => void
+  @SocketUser.Getter(SocketUserGetters.IS_AUTHORISED_CANVAS_LOADED) isAuthorisedCanvasLoaded!: boolean
   @SocketTactic.Action(SocketTacticAction.SET_COLLECTIONS) setCollections!: (collections: Collection[]) => void
-  @SocketTactic.Action(SocketTacticAction.SET_TACTICS) setTactics!: (tactics: Tactic[]) => void
-  @AppRoom.Action(AppRoomAction.SET_IS_CANVAS_LOADED) setIsCanvasLoaded!: (isCanvasLoaded: boolean) => void
   @SocketRoom.Action(SocketRoomAction.SET_ROOM_ID) setRoomId!: (roomId: string) => void
 
   created () {
     this.setRoomId(window.location.pathname.replace('/', ''))
   }
+
   $refs!: {
     app: HTMLDivElement;
     stage: VueKonvaStage;
@@ -96,6 +85,18 @@ export default class TheRoom extends mixins(RoomSocket) {
     const jti = this.jwt?.jti
     if (jti) {
       this.isRoomNew(jti)
+      this.setUser({
+        jti: jti,
+        name: this.jwt.username,
+        onTacticId: '1',
+        isOnline: true,
+        lastOnline: new Date(),
+        roles: [{
+          id: '1',
+          roleTypes: RoleTypes.USER,
+          assignedBy: jti
+        }]
+      })
     }
   }
 

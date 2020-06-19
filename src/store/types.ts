@@ -45,7 +45,7 @@ export interface Entity {
 }
 
 export enum RoleTypes {
-  ROON_OWNER = 'roomOwner',
+  ROOM_OWNER = 'roomOwner',
   ADMIN = 'admin',
   USER = 'user'
 }

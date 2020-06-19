@@ -1,5 +1,5 @@
 import { ActionContext, Module } from 'vuex'
-import { Collection, Tactic } from '../../types'
+import { Collection, Tactic, RootState } from '@/store/types'
 
 export enum SocketTacticAction {
   SET_COLLECTIONS = 'setCollections',
@@ -42,9 +42,9 @@ export interface SocketTacticState {
   currentTacticId: string | undefined;
 }
 
-type SocketTacticActionContext = ActionContext<SocketTacticState, {}>
+type SocketTacticActionContext = ActionContext<SocketTacticState, RootState>
 
-const SocketTacticModule: Module<SocketTacticState, {}> = {
+const SocketTacticModule: Module<SocketTacticState, RootState> = {
   namespaced: true,
   state () {
     return {
@@ -54,12 +54,12 @@ const SocketTacticModule: Module<SocketTacticState, {}> = {
     }
   },
   getters: {
-    [SocketTacticGetters.COLLECTIONS]: state => state.collections,
-    [SocketTacticGetters.COLLECTION]: (state) => (id: string) => state.collections.find((collection: Collection) => collection.id === id),
-    [SocketTacticGetters.TACTICS]: state => state.tactics,
-    [SocketTacticGetters.TACTIC]: (state) => (id: string) => state.tactics.find((tactic: Tactic) => tactic.id === id),
-    [SocketTacticGetters.PINNED_TACTICS]: state => state.tactics.filter((tactic: Tactic) => tactic.pinned),
-    [SocketTacticGetters.CURRENT_TACTIC_ID]: state => state.currentTacticId
+    [SocketTacticGetters.CURRENT_TACTIC_ID]: state => state.currentTacticId,
+    [SocketTacticGetters.COLLECTIONS]: (state): Collection[] => state.collections,
+    [SocketTacticGetters.COLLECTION]: (state) => (id: string): Collection | undefined => state.collections.find((collection: Collection) => collection.id === id),
+    [SocketTacticGetters.TACTICS]: (state): Tactic[] => state.tactics,
+    [SocketTacticGetters.TACTIC]: (state) => (id: string): Tactic | undefined => state.tactics.find((tactic: Tactic) => tactic.id === id),
+    [SocketTacticGetters.PINNED_TACTICS]: (state): Tactic[] => state.tactics.filter((tactic: Tactic) => tactic.pinned)
   },
   mutations: {
     [SocketTacticMutation.SET_COLLECTIONS] (state: SocketTacticState, payload: Collection[]) {

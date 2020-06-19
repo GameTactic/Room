@@ -1,5 +1,8 @@
 import { ActionContext, Module } from 'vuex'
-import { User } from '@/store/types'
+import { Role, RoleTypes, RootState, User } from '@/store/types'
+import { AppRoomGetters } from '@/store/modules/app/room'
+import { AppAuthenticationGetters } from '@/store/modules/app/authentication'
+import { Namespaces } from '@/store'
 
 export enum SocketUserAction {
   SET_USERS = 'setUsers',
@@ -19,16 +22,18 @@ export enum SocketUserGetters {
   USERS = 'users',
   USER = 'user',
   ONLINE_USERS = 'onlineUsers',
-  OFFLINE_USERS = 'offlineUsers'
+  OFFLINE_USERS = 'offlineUsers',
+  IS_AUTHORISED = 'isAuthorised',
+  IS_AUTHORISED_CANVAS_LOADED = 'isAuthorisedCanvasLoaded'
 }
 
 export interface SocketUserState {
   users: User[];
 }
 
-type SocketUserActionContext = ActionContext<SocketUserState, {}>
+type SocketUserActionContext = ActionContext<SocketUserState, RootState>
 
-const SocketUserModule: Module<SocketUserState, {}> = {
+const SocketUserModule: Module<SocketUserState, RootState> = {
   namespaced: true,
   state () {
     return {
@@ -36,10 +41,23 @@ const SocketUserModule: Module<SocketUserState, {}> = {
     }
   },
   getters: {
-    [SocketUserGetters.USERS]: state => state.users,
-    [SocketUserGetters.ONLINE_USERS]: state => state.users.filter((user: User) => user.isOnline),
-    [SocketUserGetters.OFFLINE_USERS]: state => state.users.filter((user: User) => !user.isOnline),
-    [SocketUserGetters.USER]: (state) => (jti: string) => state.users.find((user: User) => user.jti === jti)
+    [SocketUserGetters.USERS]: (state): User[] => state.users,
+    [SocketUserGetters.ONLINE_USERS]: (state): User[] => state.users.filter((user: User) => user.isOnline),
+    [SocketUserGetters.OFFLINE_USERS]: (state): User[] => state.users.filter((user: User) => !user.isOnline),
+    [SocketUserGetters.USER]: (state) => (jti: string): User | undefined => state.users.find((user: User) => user.jti === jti),
+    [SocketUserGetters.IS_AUTHORISED] (state, _commit, _rootState, rootGetters) {
+      const jti: string | undefined = rootGetters[`${Namespaces.APP_AUTHENTICATION}/${AppAuthenticationGetters.JWT}`]?.jti
+      if (jti) {
+        const user = state.users.find((user: User) => user.jti === jti)
+        if (user) {
+          return user.roles.find((role: Role) => role.roleTypes === RoleTypes.USER)
+        }
+      }
+      return false
+    },
+    [SocketUserGetters.IS_AUTHORISED_CANVAS_LOADED] (state, getters, _rootState, rootGetters) {
+      return getters[SocketUserGetters.IS_AUTHORISED] && rootGetters[`${Namespaces.APP_ROOM}/${AppRoomGetters.IS_CANVAS_LOADED}`]
+    }
   },
   mutations: {
     [SocketUserMutation.SET_USERS] (state: SocketUserState, payload: User[]) {

@@ -2,8 +2,9 @@ import { ActionContext, Module } from 'vuex'
 import axios from 'axios'
 import { verify } from 'jsonwebtoken'
 import i18n from '@/lib/I18n'
-import { mapProviders, Providers } from '@/util/ProvidersUtil'
+import { mapProviders, Providers, Provider } from '@/util/ProvidersUtil'
 import { socket } from '@/plugins/socket'
+import { RootState } from '@/store/types'
 
 export const JWT_KEY = 'jsonwebtoken'
 
@@ -95,9 +96,9 @@ export enum AppAuthenticationGetters {
   PROVIDERS = 'providers'
 }
 
-type AppAuthenticationActionContext = ActionContext<AppAuthenticationState, {}>
+type AppAuthenticationActionContext = ActionContext<AppAuthenticationState, RootState>
 
-const AppAuthenticationModule: Module<AppAuthenticationState, {}> = {
+const AppAuthenticationModule: Module<AppAuthenticationState, RootState> = {
   namespaced: true,
   state () {
     return {
@@ -106,11 +107,11 @@ const AppAuthenticationModule: Module<AppAuthenticationState, {}> = {
     }
   },
   getters: {
-    [AppAuthenticationGetters.JWT]: state => state.jwt,
-    [AppAuthenticationGetters.IS_AUTH]: state => state.jwt !== null,
-    [AppAuthenticationGetters.PROVIDER_NAMES]: state => Object.getOwnPropertyNames(state.providers),
-    [AppAuthenticationGetters.PROVIDERS]: state => state.providers,
-    [AppAuthenticationGetters.PROVIDER]: state => (name: string) => state.providers[name]
+    [AppAuthenticationGetters.JWT]: (state): ExtendedJWT | null => state.jwt,
+    [AppAuthenticationGetters.IS_AUTH]: (state): boolean => state.jwt !== null,
+    [AppAuthenticationGetters.PROVIDER_NAMES]: (state): string[] => Object.getOwnPropertyNames(state.providers),
+    [AppAuthenticationGetters.PROVIDERS]: (state): Providers => state.providers,
+    [AppAuthenticationGetters.PROVIDER]: state => (name: string): Provider => state.providers[name]
   },
   mutations: {
     [AppAuthenticationMutation.SET_AUTHENTICATION_JWT] (state: AppAuthenticationState, payload: ExtendedJWT) {
