@@ -13,11 +13,11 @@
       multiple
       class="custom-expansion-panels"
     >
-      <WowsEntitySection v-if="game === Game.WOWS && currentTacticId && isAuthorisedCanvasLoaded"></WowsEntitySection>
-      <WotEntitySection v-if="game === Game.WOT && currentTacticId && isAuthorisedCanvasLoaded"></WotEntitySection>
+      <WowsEntitySection v-if="game === Game.WOWS && currentTacticId"></WowsEntitySection>
+      <WotEntitySection v-if="game === Game.WOT && currentTacticId"></WotEntitySection>
       <!-- Team section -->
-      <WowsTeamSection v-if="game === Game.WOWS && currentTacticId && isAuthorisedCanvasLoaded"></WowsTeamSection>
-      <WotTeamSection v-if="game === Game.WOT && currentTacticId && isAuthorisedCanvasLoaded"></WotTeamSection>
+      <WowsTeamSection v-if="game === Game.WOWS && currentTacticId"></WowsTeamSection>
+      <WotTeamSection v-if="game === Game.WOT && currentTacticId"></WotTeamSection>
       <!-- End team section -->
       <TacticSelector></TacticSelector>
       <UserList></UserList>

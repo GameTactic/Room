@@ -1,5 +1,5 @@
 import { ActionContext, Module } from 'vuex'
-import { User } from '../../types'
+import { User } from '@/store/types'
 
 export enum SocketUserAction {
   SET_USERS = 'setUsers',

@@ -30,7 +30,7 @@ export enum SocketCanvasGetters {
   CANVAS_ELEMENT_HISTORY_BY_ID = 'canvasElementHistoryById'
 }
 
-interface SocketCanvasState {
+export interface SocketCanvasState {
   canvasElements: CanvasElement[];
   canvasElementsHistory: CanvasElementHistory[];
 }
