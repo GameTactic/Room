@@ -1,11 +1,5 @@
 import { ActionContext, Module } from 'vuex'
-import { PresentationPayload, Presentation } from '../../types'
-
-export enum Game {
-  NONE = '',
-  WOWS = 'wows',
-  WOT = 'wot'
-}
+import { PresentationPayload, Presentation, Game } from '@/store/types'
 
 export enum SocketRoomAction {
   SET_GAME = 'setGame',

@@ -28,7 +28,8 @@ export enum CanvasElementType {
   SHAPE = 'shape',
   ENTITY = 'entity',
   TRANSFORMER = 'transformer',
-  UNKNOWN = 'unknown'
+  UNKNOWN = 'unknown',
+  MASK = 'mask'
 }
 
 export interface CanvasElement {
@@ -70,6 +71,7 @@ export interface MoveData {
   from: Point;
   to: Point;
   groups: string[];
+  mask?: Konva.Rect;
 }
 
 // Array of canvas element IDs to remove

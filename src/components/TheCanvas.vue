@@ -118,7 +118,7 @@ export default class TheCanvas extends mixins(CanvasSockets, StageWatcher) {
     cursor: pointer;
   }
   &.move::v-deep canvas {
-    cursor: move;
+    cursor: default;
   }
   &.line::v-deep canvas {
     cursor: url('~@/assets/cursor/pen.png'), auto;

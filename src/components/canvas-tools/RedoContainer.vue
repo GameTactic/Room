@@ -30,7 +30,7 @@ import HandleRenderShapes from '@/util/HandleRenderShapes'
 import { AppRoomGetters } from '@/store/modules/app/room'
 import { Namespaces } from '@/store'
 
-const AppRoom = namespace(Namespaces.APP_TOOLS)
+const AppRoom = namespace(Namespaces.APP_ROOM)
 const SocketCanvas = namespace(Namespaces.SOCKET_CANVAS)
 
 @Component({

@@ -65,7 +65,7 @@ import Component, { mixins } from 'vue-class-component'
 import { EventBus } from '@/event-bus'
 import { AppRoomGetters } from '@/store/modules/app/room'
 import { namespace } from 'vuex-class'
-import { Api, Collection } from '@/store/types'
+import { Api, Collection, Team } from '@/store/types'
 import { SocketStageActions } from '@/store/modules/socket/stage'
 import { CustomStageConfig } from '@/util/PointerEventMapper'
 import { SocketCanvasAction } from '@/store/modules/socket/canvas'
@@ -73,8 +73,9 @@ import { CanvasElement, CanvasElementHistory } from '@/types/Canvas'
 import TacticWatcher from '@/mixins/TacticWatcher'
 import uuid from 'uuid'
 import { AppAuthenticationGetters } from '@/store/modules/app/authentication'
-import { SocketTacticGetters } from '../../store/modules/socket/tactic'
+import { SocketTacticGetters } from '@/store/modules/socket/tactic'
 import { Namespaces } from '@/store'
+import { WowsMapsDataApi } from '@/types/Games/Wows'
 
 const AppRoom = namespace(Namespaces.APP_ROOM)
 const SocketTactic = namespace(Namespaces.SOCKET_TACTIC)
@@ -102,7 +103,17 @@ export default class CreateNewTacticOverlay extends mixins(TacticWatcher) {
       ratio: 0,
       id: 0
     },
-    name: ''
+    name: '',
+    teams: [
+      {
+        name: 'Team 1',
+        color: '#00ff00'
+      },
+      {
+        name: 'Team 2',
+        color: '#ff0000'
+      }
+    ]
   }
   search = ''
   overlay = false
@@ -114,9 +125,9 @@ export default class CreateNewTacticOverlay extends mixins(TacticWatcher) {
   }
 
   get maps () {
-    const mapApi: Api[] = this.api.filter((api: Api) => api.name === 'wows.encyclopedia.maps')
-    if (mapApi.length === 1) {
-      return mapApi[0].data
+    const mapApi: Api | undefined = this.api.find((api: Api) => api.name === 'wows.encyclopedia.maps')
+    if (mapApi) {
+      return (mapApi.data as WowsMapsDataApi).maps
     } else {
       return false
     }
@@ -135,12 +146,23 @@ export default class CreateNewTacticOverlay extends mixins(TacticWatcher) {
   createTactic (): void {
     const foundCollection = this.collections.find((collection: Collection) => collection.name === 'root')
     if (!this.isDisabled() && foundCollection) {
+      const id = uuid()
+      const teams: Team[] = this.tactic.teams.map((v) => {
+        return {
+          id: uuid(),
+          name: v.name,
+          color: v.color,
+          entities: [],
+          tacticId: id
+        }
+      })
       this.newTactic({
-        id: uuid(),
+        id: id,
         name: this.tactic.name,
         collectionId: foundCollection.id,
         canvasElements: [],
         canvasElementsHistory: [],
+        teams: teams,
         lockedBy: undefined,
         isPinned: false,
         createdBy: this.$store.getters[`${Namespaces.APP_AUTHENTICATION}/${AppAuthenticationGetters.JWT}`].jti,
@@ -162,7 +184,17 @@ export default class CreateNewTacticOverlay extends mixins(TacticWatcher) {
         ratio: 0,
         id: 0
       },
-      name: ''
+      name: '',
+      teams: [
+        {
+          name: 'Team 1',
+          color: '#00ff00'
+        },
+        {
+          name: 'Team 2',
+          color: '#00ff00'
+        }
+      ]
     }
   }
 }

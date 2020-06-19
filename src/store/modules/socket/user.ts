@@ -5,7 +5,7 @@ export enum SocketUserAction {
   SET_USERS = 'setUsers',
   SET_USER = 'setUser',
   UPDATE_USER = 'updateUser',
-  DELETE_USER = 'deleteUser',
+  DELETE_USER = 'deleteUser'
 }
 
 export enum SocketUserMutation {

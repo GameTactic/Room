@@ -9,9 +9,9 @@ import Component from 'vue-class-component'
 import Vue from 'vue'
 import { namespace } from 'vuex-class'
 import { AppRoomAction, Locale } from '@/store/modules/app/room'
-import { SocketRoomAction, Game, SocketRoomGetters } from '@/store/modules/socket/room'
+import { SocketRoomAction, SocketRoomGetters } from '@/store/modules/socket/room'
 import { AppAuthenticationActions, AppAuthenticationGetters, ExtendedJWT, JWT_KEY, JWT, AuthenticationResponse } from '@/store/modules/app/authentication'
-import { Api } from './store/types'
+import { Api, Game } from './store/types'
 import { getWowsApiData } from '@/games/wows/api'
 import { Namespaces } from '@/store'
 import { Watch } from 'vue-property-decorator'
@@ -41,7 +41,7 @@ export default class TheApp extends Vue {
   localToken = localStorage.getItem(JWT_KEY)
 
   async created () {
-    this.setGame(Game['WOWS'])
+    this.setGame(Game.WOWS)
     this.setLocale(Locale['EN'])
     this.initAuthentication()
   }
@@ -50,7 +50,7 @@ export default class TheApp extends Vue {
   async onPropertyChanged () {
     if (this.isAuth && (!!this.localToken || this.jwt.encoded)) {
       switch (this.game) {
-        case Game['WOWS']:
+        case Game.WOWS:
           await getWowsApiData((this.localToken || this.jwt.encoded), this.addApi)
           break
         default: break

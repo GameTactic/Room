@@ -1,6 +1,7 @@
 import Konva from 'konva'
 import {
   AdditionData,
+  AdditionTools,
   CanvasElement,
   MoveData,
   Point,
@@ -13,13 +14,14 @@ import store from '@/main'
 import { SocketActions } from '@/store/modules/socket'
 import { SocketStageGetters } from '@/store/modules/socket/stage'
 import { AppStageGetters } from '@/store/modules/app/stage'
-import { AppCanvasEntityActions, AppCanvasEntityGetters, AppCanvasEntityState } from '@/store/modules/app/canvasEntity'
+import { AppCanvasEntityActions, AppCanvasEntityGetters, CanvasEntity } from '@/store/modules/app/canvasEntity'
 import { AppLayerGetters } from '@/store/modules/app/layer'
 import { AppToolGetters, AppToolsAction } from '@/store/modules/app/tools'
 import { SocketCanvasAction, SocketCanvasGetters } from '@/store/modules/socket/canvas'
 import { Dimensions } from '@/mixins/StageWatcher'
-import { Item } from '@/types/Games/Index'
 import { Namespaces } from '@/store'
+import { Team } from '@/store/types'
+import { SocketTeamAction } from '@/store/modules/socket/team'
 
 export type CanvasDownAction = (event: CustomEvent, stage: VueKonvaStage) => void;
 export type CanvasMoveAction = (event: CustomEvent, stage: VueKonvaStage) => void;
@@ -70,6 +72,17 @@ export class ToolClass {
           request.canvasElements.forEach((canvasElement: CanvasElement) => {
             store.dispatch(`${Namespaces.SOCKET_CANVAS}/${SocketCanvasAction.ADD_CANVAS_ELEMENT}`, { ...canvasElement })
           })
+          if (additionsData.tool === AdditionTools.ENTITY) {
+            request.canvasElements.forEach((canvasElement: CanvasElement) => {
+              if (canvasElement.tool.name === AdditionTools.ENTITY) {
+                const data = canvasElement.data as EntityData
+                const entity = '' // TODO: get entity from game api with id
+                if (data.team && data.id && entity) {
+                  store.dispatch(`${Namespaces.SOCKET_TEAM}/${SocketTeamAction.ADD_ENTITY_TO_TEAM}`, { teamId: data.team.id, entity: entity })
+                }
+              }
+            })
+          }
         }
         break
       case Tracker.REMOVAL:
@@ -133,7 +146,7 @@ export class ToolClass {
     }
   }
 
-  resetCanvasEntity = (): AppCanvasEntityState => {
+  resetCanvasEntity = (): CanvasEntity => {
     store.dispatch(`${Namespaces.APP_CANVAS_ENTITY}/${AppCanvasEntityActions.RESET_CANVAS_ENTITY}`)
     return store.getters[`${Namespaces.APP_CANVAS_ENTITY}/${AppCanvasEntityGetters.CANVAS_ENTITY}`]
   }
@@ -146,11 +159,11 @@ export class ToolClass {
     store.dispatch(`${Namespaces.APP_CANVAS_ENTITY}/${AppCanvasEntityActions.SET_CANVAS_ELEMENT}`, canvasElement)
   }
 
-  get canvasEntity (): AppCanvasEntityState {
+  get canvasEntity (): CanvasEntity {
     return store.getters[`${Namespaces.APP_CANVAS_ENTITY}/${AppCanvasEntityGetters.CANVAS_ENTITY}`]
   }
 
-  set canvasEntity (canvasEntity: AppCanvasEntityState) {
+  set canvasEntity (canvasEntity: CanvasEntity) {
     store.dispatch(`${Namespaces.APP_CANVAS_ENTITY}/${AppCanvasEntityActions.SET_CANVAS_ENTITY}`, canvasEntity)
   }
 
@@ -160,6 +173,30 @@ export class ToolClass {
 
   get canvasElements (): CanvasElement[] {
     return store.getters[`${Namespaces.SOCKET_CANVAS}/${SocketCanvasGetters.CANVAS_ELEMENTS}`]
+  }
+
+  formatX = (num: number): number => {
+    const stage = store.getters[`${Namespaces.APP_STAGE}/${AppStageGetters.STAGE}`]
+    const stageConfig = store.getters[`${Namespaces.SOCKET_STAGE}/${SocketStageGetters.STAGE_CONFIG}`]
+    return ((num / stageConfig.width) * stage.width())
+  }
+
+  formatY = (num: number): number => {
+    const stage = store.getters[`${Namespaces.APP_STAGE}/${AppStageGetters.STAGE}`]
+    const stageConfig = store.getters[`${Namespaces.SOCKET_STAGE}/${SocketStageGetters.STAGE_CONFIG}`]
+    return ((num / stageConfig.height) * stage.height())
+  }
+
+  formatXInverse = (num: number): number => {
+    const stage = store.getters[`${Namespaces.APP_STAGE}/${AppStageGetters.STAGE}`]
+    const stageConfig = store.getters[`${Namespaces.SOCKET_STAGE}/${SocketStageGetters.STAGE_CONFIG}`]
+    return ((num / stage.width()) * stageConfig.width)
+  }
+
+  formatYInverse = (num: number): number => {
+    const stage = store.getters[`${Namespaces.APP_STAGE}/${AppStageGetters.STAGE}`]
+    const stageConfig = store.getters[`${Namespaces.SOCKET_STAGE}/${SocketStageGetters.STAGE_CONFIG}`]
+    return ((num / stage.height()) * stageConfig.height)
   }
 }
 
@@ -248,7 +285,10 @@ export interface FreeDrawData {
 }
 
 export interface EntityData {
+  id: string;
   point: Point;
   dimensions: Dimensions;
-  entity: Item;
+  name: string;
+  image: string;
+  team: Team;
 }

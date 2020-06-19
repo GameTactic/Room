@@ -6,6 +6,10 @@ import { DashedLine, DashedLineActive, NormalLine, NormalLineActive, TBarHead, T
 
 import Vuetify, {
   VApp,
+  VExpansionPanels,
+  VExpansionPanel,
+  VExpansionPanelHeader,
+  VExpansionPanelContent,
   VAutocomplete,
   VAvatar,
   VBadge,
@@ -28,6 +32,7 @@ import Vuetify, {
   VImg,
   VInput,
   VItemGroup,
+  VBottomNavigation,
   VList,
   VListItem,
   VListItemAction,
@@ -56,12 +61,21 @@ import Vuetify, {
   VTextField,
   VToolbar,
   VTooltip,
-  VTreeview
+  VTreeview,
+  VListItemGroup,
+  VLazy
 } from 'vuetify/lib'
 
 Vue.use(Vuetify, {
   components: {
     VApp,
+    VBottomNavigation,
+    VLazy,
+    VExpansionPanels,
+    VExpansionPanel,
+    VExpansionPanelHeader,
+    VExpansionPanelContent,
+    VListItemGroup,
     VAvatar,
     VRadioGroup,
     VSwitch,

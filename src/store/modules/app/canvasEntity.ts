@@ -5,12 +5,12 @@ import { AppAuthenticationGetters } from '@/store/modules/app/authentication'
 import { Namespaces } from '@/store'
 import store from '@/main'
 
-export class CanvasEntity {
-  private readonly _canvasElement: CanvasElement
-  private readonly _hasMoved: boolean
-  private readonly _modifyData: {}
+export class CanvasEntityClass {
+  private readonly canvasElement: CanvasElement
+  private readonly hasMoved: boolean
+  private readonly modifyData: {}
   constructor () {
-    this._canvasElement = {
+    this.canvasElement = {
       jti: store?.getters[`${Namespaces.APP_AUTHENTICATION}/${AppAuthenticationGetters.JWT}`].jti || '',
       id: uuid(),
       type: CanvasElementType.UNKNOWN,
@@ -33,14 +33,14 @@ export class CanvasEntity {
         rotation: 0
       }
     }
-    this._hasMoved = false
-    this._modifyData = {}
+    this.hasMoved = false
+    this.modifyData = {}
   }
   getCanvasEntity () {
     return {
-      canvasElement: this._canvasElement,
-      hasMoved: this._hasMoved,
-      modifyData: this._modifyData
+      canvasElement: this.canvasElement,
+      hasMoved: this.hasMoved,
+      modifyData: this.modifyData
     }
   }
 }
@@ -64,10 +64,14 @@ export enum AppCanvasEntityMutations {
   RESET_CANVAS_ELEMENT = 'RESET_CANVAS_ELEMENT'
 }
 
-export interface AppCanvasEntityState {
+export interface CanvasEntity {
   canvasElement: CanvasElement;
   hasMoved: boolean;
   modifyData: {};
+}
+
+export interface AppCanvasEntityState {
+  canvasEntity: CanvasEntity;
 }
 
 type AppCanvasEntityActionContext = ActionContext<AppCanvasEntityState, {}>;
@@ -75,25 +79,27 @@ type AppCanvasEntityActionContext = ActionContext<AppCanvasEntityState, {}>;
 const AppCanvasEntityModule: Module<AppCanvasEntityState, {}> = {
   namespaced: true,
   state () {
-    return new CanvasEntity().getCanvasEntity()
+    return {
+      canvasEntity: new CanvasEntityClass().getCanvasEntity()
+    }
   },
   getters: {
-    [AppCanvasEntityGetters.CANVAS_ELEMENT]: state => state.canvasElement,
-    [AppCanvasEntityGetters.CANVAS_ENTITY]: state => state
+    [AppCanvasEntityGetters.CANVAS_ELEMENT]: state => state.canvasEntity.canvasElement,
+    [AppCanvasEntityGetters.CANVAS_ENTITY]: state => state.canvasEntity
   },
   mutations: {
-    [AppCanvasEntityMutations.SET_CANVAS_ENTITY] (state: AppCanvasEntityState, entity: AppCanvasEntityState) {
-      state = entity
+    [AppCanvasEntityMutations.SET_CANVAS_ENTITY] (state: AppCanvasEntityState, entity: CanvasEntity) {
+      state.canvasEntity = entity
     },
-    [AppCanvasEntityMutations.RESET_CANVAS_ENTITY] (state: AppCanvasEntityState, newState: AppCanvasEntityState) {
-      state = newState
+    [AppCanvasEntityMutations.RESET_CANVAS_ENTITY] (state: AppCanvasEntityState, newState: CanvasEntity) {
+      state.canvasEntity = newState
     },
     [AppCanvasEntityMutations.SET_CANVAS_ELEMENT] (state: AppCanvasEntityState, canvasElement: CanvasElement) {
-      state.canvasElement = canvasElement
+      state.canvasEntity.canvasElement = canvasElement
     },
     [AppCanvasEntityMutations.RESET_CANVAS_ELEMENT] (state: AppCanvasEntityState) {
-      const canvasEntityClass = new CanvasEntity()
-      state.canvasElement = canvasEntityClass.getCanvasEntity().canvasElement
+      const canvasEntityClass = new CanvasEntityClass()
+      state.canvasEntity.canvasElement = canvasEntityClass.getCanvasEntity().canvasElement
     }
   },
   actions: {
@@ -103,11 +109,11 @@ const AppCanvasEntityModule: Module<AppCanvasEntityState, {}> = {
     [AppCanvasEntityActions.RESET_CANVAS_ELEMENT] (context: AppCanvasEntityActionContext) {
       context.commit(AppCanvasEntityMutations.RESET_CANVAS_ELEMENT)
     },
-    [AppCanvasEntityActions.SET_CANVAS_ENTITY] (context: AppCanvasEntityActionContext, entity: AppCanvasEntityState) {
+    [AppCanvasEntityActions.SET_CANVAS_ENTITY] (context: AppCanvasEntityActionContext, entity: CanvasEntity) {
       context.commit(AppCanvasEntityMutations.SET_CANVAS_ENTITY, entity)
     },
     [AppCanvasEntityActions.RESET_CANVAS_ENTITY] (context: AppCanvasEntityActionContext) {
-      const canvasEntityClass = new CanvasEntity()
+      const canvasEntityClass = new CanvasEntityClass()
       const newState = canvasEntityClass.getCanvasEntity()
       context.commit(AppCanvasEntityMutations.RESET_CANVAS_ENTITY, newState)
       return newState

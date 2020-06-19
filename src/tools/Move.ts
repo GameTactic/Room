@@ -1,11 +1,10 @@
-import { ToolClass, ToolClassInterface, Tracker } from '@/tools/Tool'
+import { ToolClass, ToolClassInterface } from '@/tools/Tool'
 import Konva from 'konva'
 import { CustomEvent } from '@/util/PointerEventMapper'
-import { ISO } from '@/util/ISO'
 import { CanvasElementType, MoveData, RequestCanvasEntity } from '@/types/Canvas'
-import uuid from 'uuid'
-import { SocketCanvasToolsEmit } from '@/store/modules/socket'
 import Transformer from '@/tools/util/Transformer'
+import Mask from '@/tools/util/Mask'
+import Collection = Konva.Collection;
 export default class Move extends ToolClass implements ToolClassInterface {
   constructor (public readonly name: string,
                public temporary: boolean) {
@@ -28,13 +27,18 @@ export default class Move extends ToolClass implements ToolClassInterface {
       groups: []
     }
     const targetGroup = event.konvaPointerEvent.target.parent
-    if (targetGroup && targetGroup instanceof Konva.Group && targetGroup.attrs.type !== CanvasElementType.MAP && targetGroup.attrs.id) {
-      const data = this.canvasEntity.modifyData as MoveData
-      data.groups = [targetGroup.attrs.id]
+    const data = this.canvasEntity.modifyData as MoveData
+    if (targetGroup?.attrs.type !== CanvasElementType.TRANSFORMER && targetGroup?.attrs.transforming !== true) {
+      const mask = new Mask({
+        x: data.from.x,
+        y: data.from.y,
+        width: (data.to.x - data.from.x),
+        height: (data.to.y - data.from.y)
+      }).mask
+      data.mask = mask
+      this.layer.add(mask)
+      this.layer.batchDraw()
     }
-    // If we want to move multiple groups at once we will have to add that in here
-    // Requires code to create a mask when clicking and dragging instead of moving.
-    // Should be done if no targetGroup was found
   }
 
   // eslint-disable-next-line
@@ -42,21 +46,15 @@ export default class Move extends ToolClass implements ToolClassInterface {
     if (this.enabled) {
       if (!this.canvasEntity.hasMoved) { this.canvasEntity.hasMoved = true }
       const data = this.canvasEntity.modifyData as MoveData
-      if (data.from && data.to && data.groups.length > 0) {
-        const prevMove = { ...data.to }
+      if (data.from && data.to) {
         data.to = {
           x: event.globalOffset.x,
           y: event.globalOffset.y
         }
-        data.groups.forEach((groupId: string) => {
-          const foundGroup: Konva.Node = this.layer.findOne((node: Konva.Node) => node instanceof Konva.Group && node.attrs.id === groupId)
-          if (foundGroup) {
-            foundGroup.move({
-              x: ((data.to.x - prevMove.x) / event.stageConfig.width * event.stage.width()),
-              y: ((data.to.y - prevMove.y) / event.stageConfig.height * event.stage.height())
-            })
-          }
-        })
+        if (data.mask) {
+          data.mask.width(data.to.x - data.from.x)
+          data.mask.height(data.to.y - data.from.y)
+        }
         this.layer.batchDraw()
       }
     }
@@ -64,25 +62,14 @@ export default class Move extends ToolClass implements ToolClassInterface {
 
   // eslint-disable-next-line
   mouseUpAction = (event: CustomEvent): void => {
-    if (this.enabled && this.canvasEntity.hasMoved) {
+    const data = this.canvasEntity.modifyData as MoveData
+    if (this.enabled && data.mask) {
       this.disableTool()
-      const data = this.canvasEntity.modifyData as MoveData
-      this.sendAndAddToState({
-        id: uuid(),
-        jti: this.canvasEntity.canvasElement.jti,
-        modifyData: data,
-        modifyType: Tracker.MOVE,
-        timestampModified: ISO.timestamp(),
-        canvasElements: []
-      }, SocketCanvasToolsEmit.CANVAS_TOOLS_MOVE)
-    } else if (this.enabled && !this.canvasEntity.hasMoved) {
-      this.disableTool()
-      const targetGroup = event.konvaPointerEvent.target.parent
-      if (targetGroup && targetGroup instanceof Konva.Group && targetGroup.attrs.type !== CanvasElementType.MAP) {
-        const tr = new Transformer(this.layer)
-        tr.setNodes([targetGroup])
-      }
+      const tr = new Transformer(true)
+      tr.setNodes([ ...this.hitCheck(data.mask, this.layer).toArray() ])
+      data.mask.destroy()
     }
+    this.layer.batchDraw()
   }
 
   // eslint-disable-next-line
@@ -105,5 +92,23 @@ export default class Move extends ToolClass implements ToolClassInterface {
       })
       this.layer.batchDraw()
     }
+  }
+  // Use mask to check which shapes it covers in the layer.
+  // Return the IDs of the groups that are covered by the mask and dont exist in the groups array
+  hitCheck = (mask: Konva.Rect, layer: Konva.Layer): Collection<Konva.Node> => {
+    return layer.find((node: Konva.Node) => {
+      if (node instanceof Konva.Group &&
+        (node.attrs.type === CanvasElementType.ENTITY || node.attrs.type === CanvasElementType.SHAPE) &&
+        !node.attrs.temporary) {
+        const r1 = mask.getClientRect({})
+        const r2 = node.getClientRect({})
+        return !(
+          r2.x > r1.x + r1.width ||
+          r2.x + r2.width < r1.x ||
+          r2.y > r1.y + r1.height ||
+          r2.y + r2.height < r1.y
+        )
+      }
+    })
   }
 }
