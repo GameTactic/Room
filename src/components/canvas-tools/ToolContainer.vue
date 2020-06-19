@@ -19,7 +19,7 @@
               :class="[isEnabledClass, 'border-btn']"
               icon
               tile
-              :disabled="!isCanvasLoaded"
+              :disabled="!isAuthorisedCanvasLoaded"
               v-on="tooltip"
               elevation="0"
               @click="onButtonClickHandler"
@@ -33,7 +33,7 @@
           x-small
           :class="['tools-caret-down', isEnabledButtonClass]"
           icon
-          v-if="isCanvasLoaded"
+          v-if="isAuthorisedCanvasLoaded"
           elevation="0"
           tile
           absolute
@@ -58,7 +58,7 @@
       <v-btn
         :class="[isEnabledClass, 'border-btn']"
         icon
-        :disabled="!isCanvasLoaded"
+        :disabled="!isAuthorisedCanvasLoaded"
         tile
         elevation="0"
         v-on="tooltip1"
@@ -77,10 +77,10 @@ import { Tool } from '@/tools/Tool'
 import { namespace } from 'vuex-class'
 import { Namespaces } from '@/store'
 import { AppToolGetters, AppToolsAction } from '@/store/modules/app/tools'
-import { AppRoomGetters } from '@/store/modules/app/room'
+import { SocketUserGetters } from '../../store/modules/socket/user'
 
 const AppTools = namespace(Namespaces.APP_TOOLS)
-const AppRoom = namespace(Namespaces.APP_ROOM)
+const SocketUser = namespace(Namespaces.SOCKET_USER)
 
 interface MenuElement extends Vue {
   isActive: boolean;
@@ -93,8 +93,8 @@ export default class ToolContainer extends Vue {
   @Prop() private icon!: string
   @Prop() private popout!: boolean
   @Prop() private toolName!: string
-  @AppRoom.Getter(AppRoomGetters.IS_CANVAS_LOADED) isCanvasLoaded!: boolean
   @AppTools.Getter(AppToolGetters.ENABLED_TOOL) enabledTool?: Tool
+  @SocketUser.Getter(SocketUserGetters.IS_AUTHORISED_CANVAS_LOADED) isAuthorisedCanvasLoaded!: boolean;
   @AppTools.Action(AppToolsAction.ENABLE_TOOL) enableTool!: (toolName: string) => void
   @AppTools.Action(AppToolsAction.DISABLE_TOOL) disableTool!: () => void
 

@@ -1,5 +1,6 @@
 import { Module, ActionContext } from 'vuex'
 import { socket } from '@/plugins/socket'
+import { RootState } from '@/store/types'
 
 export enum SocketCanvasToolsEmit {
   CANVAS_TOOLS_CIRCLE = 'canvasToolsCircle',
@@ -33,9 +34,9 @@ export enum SocketActions {
   EMIT = 'emit'
 }
 
-type SocketActionContext = ActionContext<{}, {}>;
+type SocketActionContext = ActionContext<{}, RootState>;
 
-const SocketModule: Module<{}, {}> = {
+const SocketModule: Module<{}, RootState> = {
   namespaced: true,
   actions: {
     [SocketActions.EMIT] (_context: SocketActionContext, payload: { data: object; emit: string }) {

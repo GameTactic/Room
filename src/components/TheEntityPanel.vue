@@ -45,7 +45,7 @@
                       v-on="on"
                       light
                       active-class="custom-list-item-active-class"
-                      :disabled="!isItemEnabled"
+                      :disabled="!isAuthorisedCanvasLoaded"
                       :input-value="clickedItemKey === item.key"
                       class="custom-list-item-center"
                       @click="onItemClickHandler(item.key)"
@@ -55,11 +55,11 @@
                           v-if="index"
                           :content="item.noOfEntities"
                         >
-                          <v-icon :color="!isItemEnabled ? 'rgba(0, 0, 0, 0.26)' : item.color">{{ item.icon }}</v-icon>
+                          <v-icon :color="!isAuthorisedCanvasLoaded ? 'rgba(0, 0, 0, 0.26)' : item.color">{{ item.icon }}</v-icon>
                         </v-badge>
                         <v-icon
                           v-else
-                          :color="!isItemEnabled ? 'rgba(0, 0, 0, 0.26)' : item.color"
+                          :color="!isAuthorisedCanvasLoaded ? 'rgba(0, 0, 0, 0.26)' : item.color"
                         >
                           {{ item.icon }}
                         </v-icon>
@@ -83,16 +83,16 @@
 
 <script lang="ts">
 import { Component, Vue } from 'vue-property-decorator'
-import { AppRoomGetters } from '@/store/modules/app/room'
 import { SocketRoomGetters, Game } from '@/store/modules/socket/room'
 import { namespace } from 'vuex-class'
 import { WowsPanel, WotPanel } from './entity-panel'
 import { Namespaces } from '@/store'
 import { AppAuthenticationGetters } from '../store/modules/app/authentication'
+import { SocketUserGetters } from '../store/modules/socket/user'
 
 const AppAuthentication = namespace(Namespaces.APP_AUTHENTICATION)
-const AppRoom = namespace(Namespaces.APP_ROOM)
 const SocketRoom = namespace(Namespaces.SOCKET_ROOM)
+const SocketUser = namespace(Namespaces.SOCKET_USER)
 
 export interface MenuItem {
   key: number;
@@ -112,7 +112,7 @@ export interface MenuItem {
 export default class MapButtons extends Vue {
   @SocketRoom.Getter(SocketRoomGetters.GAME) private readonly game!: Game;
   @AppAuthentication.Getter(AppAuthenticationGetters.IS_AUTH) isAuth!: boolean
-  @AppRoom.Getter(AppRoomGetters.IS_CANVAS_LOADED) isCanvasLoaded!: boolean
+  @SocketUser.Getter(SocketUserGetters.IS_AUTHORISED_CANVAS_LOADED) isAuthorisedCanvasLoaded!: boolean
 
   show = false
 
@@ -131,10 +131,6 @@ export default class MapButtons extends Vue {
   images = {
     wows: require('@/assets/wows-icon2.png'),
     wot: require('@/assets/wot-icon.png')
-  }
-
-  get isItemEnabled () {
-    return this.isCanvasLoaded && this.isAuth
   }
 
   onItemClickHandler (key: number) {

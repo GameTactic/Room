@@ -1,5 +1,5 @@
 import { ActionContext, Module } from 'vuex'
-import { Api } from '../../types'
+import { Api, RootState } from '../../types'
 
 export enum Locale {
   CS = 'cs',
@@ -50,9 +50,9 @@ export interface AppRoomState {
   isCanvasLoaded: boolean;
 }
 
-type AppRoomActionContext = ActionContext<AppRoomState, {}>
+type AppRoomActionContext = ActionContext<AppRoomState, RootState>
 
-const AppRoomModule: Module<AppRoomState, {}> = {
+const AppRoomModule: Module<AppRoomState, RootState> = {
   namespaced: true,
   state () {
     return {
@@ -62,9 +62,9 @@ const AppRoomModule: Module<AppRoomState, {}> = {
     }
   },
   getters: {
-    [AppRoomGetters.LOCALE]: state => state.locale,
-    [AppRoomGetters.API]: state => state.api,
-    [AppRoomGetters.IS_CANVAS_LOADED]: state => state.isCanvasLoaded
+    [AppRoomGetters.LOCALE]: (state): Locale => state.locale,
+    [AppRoomGetters.API]: (state): Api[] => state.api,
+    [AppRoomGetters.IS_CANVAS_LOADED]: (state): boolean => state.isCanvasLoaded
   },
   mutations: {
     [AppRoomMutation.SET_LOCALE] (state: AppRoomState, payload: Locale) {

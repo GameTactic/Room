@@ -12,6 +12,7 @@ import SocketTacticModule from '@/store/modules/socket/tactic'
 import SocketUserModule from '@/store/modules/socket/user'
 import Vue from 'vue'
 import Vuex from 'vuex'
+import { RootState } from './types'
 
 Vue.use(Vuex)
 
@@ -30,8 +31,7 @@ export enum Namespaces {
   SOCKET_USER = 'socketUser'
 }
 
-// eslint-disable-next-line
-export default new Vuex.Store<any>({
+export default new Vuex.Store<RootState>({
   modules: {
     [Namespaces.APP_AUTHENTICATION]: AppAuthenticationModule,
     [Namespaces.APP_CANVAS_ENTITY]: AppCanvasEntityModule,

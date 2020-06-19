@@ -25,8 +25,8 @@
       :order-sm="1"
     >
       <v-toolbar class="custom-nav-center" dense flat>
-          <the-canvas-tools v-if="isCanvasLoaded" class="d-none d-md-flex" />
-          <the-canvas-tools v-if="isCanvasLoaded" class="d-flex d-md-none" :isSM="true"/>
+          <the-canvas-tools v-if="isAuthorisedCanvasLoaded" class="d-none d-md-flex" />
+          <the-canvas-tools v-if="isAuthorisedCanvasLoaded" class="d-flex d-md-none" :isSM="true"/>
       </v-toolbar>
     </v-col>
     <v-col
@@ -99,10 +99,10 @@ import TheManageRoom from './buttons/TheManageRoom.vue'
 import TheUserMenu from './TheUserMenu.vue'
 import TheCanvasTools from './TheCanvasTools.vue'
 import { namespace } from 'vuex-class'
-import { AppRoomGetters } from '../../store/modules/app/room'
 import { Namespaces } from '@/store'
+import { SocketUserGetters } from '../../store/modules/socket/user'
 
-const AppRoom = namespace(Namespaces.APP_ROOM)
+const SocketUser = namespace(Namespaces.SOCKET_USER)
 
 @Component({
   name: 'TheNav',
@@ -115,7 +115,7 @@ const AppRoom = namespace(Namespaces.APP_ROOM)
   }
 })
 export default class TheNav extends Vue {
-  @AppRoom.Getter(AppRoomGetters.IS_CANVAS_LOADED) isCanvasLoaded!: boolean
+  @SocketUser.Getter(SocketUserGetters.IS_AUTHORISED_CANVAS_LOADED) isAuthorisedCanvasLoaded!: boolean
   drawer = false
 }
 </script>

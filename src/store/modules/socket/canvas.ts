@@ -3,6 +3,7 @@ import { CanvasElement, CanvasElementHistory } from '@/types/Canvas'
 import { AppToolState } from '@/store/modules/app/tools'
 import { Tool } from '@/tools/Tool'
 import { Namespaces } from '@/store'
+import { RootState } from '@/store/types'
 
 export enum SocketCanvasMutation {
   SET_CANVAS_ELEMENT = 'SET_CANVAS_ELEMENT',
@@ -29,14 +30,13 @@ export enum SocketCanvasGetters {
   CANVAS_ELEMENT_HISTORY_BY_ID = 'canvasElementHistoryById'
 }
 
-interface SocketCanvasState {
+export interface SocketCanvasState {
   canvasElements: CanvasElement[];
   canvasElementsHistory: CanvasElementHistory[];
 }
 
-interface RootState extends CanvasElement {
+interface CanvasElementTools extends CanvasElement {
   tools: AppToolState;
-  [key: string]: AppToolState | string | {};
 }
 
 type SocketCanvasActionContext = ActionContext<SocketCanvasState, RootState>
@@ -50,10 +50,10 @@ const SocketCanvasModule: Module<SocketCanvasState, RootState> = {
     }
   },
   getters: {
-    [SocketCanvasGetters.CANVAS_ELEMENTS]: state => state.canvasElements,
-    [SocketCanvasGetters.CANVAS_ELEMENTS_HISTORY]: state => state.canvasElementsHistory,
-    [SocketCanvasGetters.CANVAS_ELEMENT_BY_ID]: state => (id: string) => state.canvasElements.find(canvasElement => canvasElement.id === id),
-    [SocketCanvasGetters.CANVAS_ELEMENT_HISTORY_BY_ID]: state => (id: string) => state.canvasElementsHistory.find(canvasElementHistory => canvasElementHistory.id === id)
+    [SocketCanvasGetters.CANVAS_ELEMENTS]: (state): CanvasElement[] => state.canvasElements,
+    [SocketCanvasGetters.CANVAS_ELEMENTS_HISTORY]: (state): CanvasElementHistory[] => state.canvasElementsHistory,
+    [SocketCanvasGetters.CANVAS_ELEMENT_BY_ID]: state => (id: string): CanvasElement | undefined => state.canvasElements.find(canvasElement => canvasElement.id === id),
+    [SocketCanvasGetters.CANVAS_ELEMENT_HISTORY_BY_ID]: state => (id: string): CanvasElementHistory | undefined => state.canvasElementsHistory.find(canvasElementHistory => canvasElementHistory.id === id)
   },
   mutations: {
     [SocketCanvasMutation.SET_CANVAS_ELEMENT] (state: SocketCanvasState, payload: CanvasElement[]) {
@@ -74,7 +74,7 @@ const SocketCanvasModule: Module<SocketCanvasState, RootState> = {
         foundElement.isVisible = true
       }
     },
-    [SocketCanvasMutation.ADD_CANVAS_ELEMENT] (state: SocketCanvasState, payload: RootState) {
+    [SocketCanvasMutation.ADD_CANVAS_ELEMENT] (state: SocketCanvasState, payload: CanvasElementTools) {
       const foundTool: Tool | undefined = payload.tools.tools.find((tool: Tool) => tool.name === payload.tool.name)
       state.canvasElements.push({ ...payload, tool: { ...payload.tool, renderCanvas: foundTool?.renderCanvas } })
     },
@@ -95,7 +95,7 @@ const SocketCanvasModule: Module<SocketCanvasState, RootState> = {
     [SocketCanvasAction.HIDE_CANVAS_ELEMENT] (context: SocketCanvasActionContext, payload: CanvasElement) {
       context.commit('HIDE_CANVAS_ELEMENT', payload)
     },
-    [SocketCanvasAction.SHOW_CANVAS_ELEMENT] (context: SocketCanvasActionContext, payload: RootState) {
+    [SocketCanvasAction.SHOW_CANVAS_ELEMENT] (context: SocketCanvasActionContext, payload: CanvasElement) {
       context.commit('SHOW_CANVAS_ELEMENT', payload)
     },
     [SocketCanvasAction.ADD_CANVAS_ELEMENT_HISTORY] (context: SocketCanvasActionContext, payload: CanvasElementHistory) {

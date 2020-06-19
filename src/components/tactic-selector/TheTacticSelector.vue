@@ -18,7 +18,7 @@
         >
           <template v-slot:activator="{ on: tooltip }">
             <v-btn
-              :disabled="!(jwt && jwt.jti)"
+              :disabled="!isAuthorised"
               class="custom-tactic-selector-menu"
               color="primary"
               width="48"
@@ -67,6 +67,7 @@
         >
           <v-treeview
             :items="tactics"
+            :value="selected"
             :search="search"
             :open.sync="open"
             item-key="id"
@@ -74,6 +75,7 @@
             hoverable
             activatable
             open-on-click
+            @update:active="treeviewSelected"
           >
             <template v-slot:prepend="{ item: tactic }">
               <v-icon
@@ -213,8 +215,10 @@ import { EventBus } from '../../event-bus'
 import { AppAuthenticationGetters, ExtendedJWT } from '../../store/modules/app/authentication'
 import { Namespaces } from '@/store'
 import { AppRoomGetters } from '../../store/modules/app/room'
+import { SocketUserGetters } from '../../store/modules/socket/user'
 
 const SocketTactic = namespace(Namespaces.SOCKET_TACTIC)
+const SocketUser = namespace(Namespaces.SOCKET_USER)
 const AppAuthentication = namespace(Namespaces.APP_AUTHENTICATION)
 const appRoom = namespace(Namespaces.APP_ROOM)
 
@@ -240,12 +244,14 @@ export default class TheTacticSelector extends Vue {
   @appRoom.Getter(AppRoomGetters.API) api!: Api[]
   @SocketTactic.Getter(SocketTacticGetters.TACTICS) tactics!: Tactic[]
   @SocketTactic.Getter(SocketTacticGetters.PINNED_TACTICS) pinnedTactics!: Tactic[]
+  @SocketUser.Getter(SocketUserGetters.IS_AUTHORISED) isAuthorised!: boolean;
   @SocketTactic.Action(SocketTacticAction.DELETE_TACTIC) deleteTactic!: (id: string) => void
   @SocketTactic.Action(SocketTacticAction.UPDATE_TACTIC) updateTactic!: (tactic: Tactic) => void
   @SocketTactic.Action(SocketTacticAction.TOGGLE_PIN_TACTIC) togglePinTactic!: (tactic: Tactic) => void
 
   open: string[] = []
   search: string | null = null
+  selected = []
   isEditTacticDialogVisible = false
   cardMenuItems: TacticMenuItem[] = [{
     action: TacticMenuOptions.EDIT,
@@ -261,6 +267,10 @@ export default class TheTacticSelector extends Vue {
     title: `Delete Tactic`,
     icon: 'fa-times'
   }]
+
+  treeviewSelected (_value: string) {
+    // TreeView Selected
+  }
 
   tacticMenuColour (tactic: Tactic, item: TacticMenuItem) {
     if (item.action === TacticMenuOptions.PIN && tactic.pinned) {

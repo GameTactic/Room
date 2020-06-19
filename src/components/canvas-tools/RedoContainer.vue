@@ -6,7 +6,7 @@
   >
     <template v-slot:activator="{ on }">
       <v-btn
-        :disabled="isDisabled || !isCanvasLoaded"
+        :disabled="isDisabled || !isAuthorisedCanvasLoaded"
         class="redoBtn"
         icon
         v-on="on"
@@ -27,10 +27,10 @@ import { SocketCanvasAction, SocketCanvasGetters } from '@/store/modules/socket/
 import { CanvasElement, CanvasElementHistory } from '@/types/Canvas'
 import HandleUndoRedo from '@/util/HandleUndoRedo'
 import HandleRenderShapes from '@/util/HandleRenderShapes'
-import { AppRoomGetters } from '@/store/modules/app/room'
 import { Namespaces } from '@/store'
+import { SocketUserGetters } from '../../store/modules/socket/user'
 
-const AppRoom = namespace(Namespaces.APP_TOOLS)
+const SocketUser = namespace(Namespaces.SOCKET_USER)
 const SocketCanvas = namespace(Namespaces.SOCKET_CANVAS)
 
 @Component({
@@ -39,7 +39,7 @@ const SocketCanvas = namespace(Namespaces.SOCKET_CANVAS)
 export default class RedoContainer extends Vue {
   @Prop() private icon!: string
   @Prop() private toolname!: string
-  @AppRoom.Getter(AppRoomGetters.IS_CANVAS_LOADED) isCanvasLoaded!: boolean
+  @SocketUser.Getter(SocketUserGetters.IS_AUTHORISED_CANVAS_LOADED) isAuthorisedCanvasLoaded!: boolean
   @SocketCanvas.Getter(SocketCanvasGetters.CANVAS_ELEMENTS_HISTORY) canvasElementsHistory!: CanvasElementHistory[]
   @SocketCanvas.Getter(SocketCanvasGetters.CANVAS_ELEMENTS) canvasElements!: CanvasElement[]
   @SocketCanvas.Action(SocketCanvasAction.ADD_CANVAS_ELEMENT_HISTORY) addCanvasElementHistory!: (canvasElement: CanvasElement) => void

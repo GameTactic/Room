@@ -15,6 +15,7 @@
         >
           <template v-slot:activator="{ on: tooltip }">
             <v-btn
+              :disabled="!isAuthorised"
               class="custom-user-selector-menu"
               color="primary"
               ripple
@@ -22,12 +23,13 @@
               icon
               width="48"
               large
-              v-on="{ ...menu, ...tooltip }"
               elevation="0"
+              v-on="{ ...menu, ...tooltip }"
             >
               <v-badge
                 color="primary"
                 left
+                :dot="!isAuthorised"
                 :value="onlineUsers.length"
                 :content="onlineUsers.length"
               >
@@ -87,8 +89,8 @@ import Vue from 'vue'
 import Component from 'vue-class-component'
 import UserList from './UserList.vue'
 import { namespace } from 'vuex-class'
-import { User } from '@/store/types'
-import { SocketUserGetters } from '@/store/modules/socket/user'
+import { User, RoleTypes } from '@/store/types'
+import { SocketUserGetters, SocketUserAction } from '@/store/modules/socket/user'
 import { Namespaces } from '@/store'
 
 interface UserTab {
@@ -96,15 +98,32 @@ interface UserTab {
   filter: 'online' | 'offline';
 }
 
-const socketUser = namespace(Namespaces.SOCKET_USER)
+const SocketUser = namespace(Namespaces.SOCKET_USER)
 
 @Component({
   name: 'TheUserPanel',
   components: { UserList }
 })
 export default class TheUserPanel extends Vue {
-  @socketUser.Getter(SocketUserGetters.ONLINE_USERS) onlineUsers!: User[]
-  @socketUser.Getter(SocketUserGetters.OFFLINE_USERS) offlineUsers!: User[]
+  @SocketUser.Getter(SocketUserGetters.ONLINE_USERS) onlineUsers!: User[]
+  @SocketUser.Getter(SocketUserGetters.OFFLINE_USERS) offlineUsers!: User[]
+  @SocketUser.Getter(SocketUserGetters.IS_AUTHORISED) isAuthorised!: boolean
+  @SocketUser.Action(SocketUserAction.SET_USER) setUser!: (user: User) => void
+
+  created () {
+    this.setUser({
+      jti: '8675fc95-879f-11ea-b26d-aad5b912f032',
+      name: 'BeardedGaming',
+      onTacticId: '1',
+      isOnline: true,
+      lastOnline: new Date(),
+      roles: [{
+        id: '1',
+        roleTypes: RoleTypes['USER'],
+        assignedBy: '8675fc95-879f-11ea-b26d-aad5b912f032'
+      }]
+    })
+  }
 
   tab = null
   userTabs: UserTab[] = [{

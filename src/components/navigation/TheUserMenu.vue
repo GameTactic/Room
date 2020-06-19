@@ -47,7 +47,7 @@
       max-width="500px"
       @click:outside="onClickCloseLoginDialog"
     >
-      <the-login-card />
+      <the-login-card @close-handler="onClickCloseLoginDialog"/>
     </v-dialog>
   </v-btn>
   <v-list v-else dense style="width: 100%;">
