@@ -1,5 +1,5 @@
 import { ActionContext, Module } from 'vuex'
-import { PresentationPayload, Presentation, RootState } from '../../types'
+import { PresentationPayload, Presentation, RootState } from '@/store/types'
 
 export enum Game {
   NONE = '',

@@ -172,9 +172,9 @@ export default class CanvasSocket extends Vue {
       moveData.groups.forEach((groupId: string) => {
         const foundElement: CanvasElement | void = this.canvasElementById(groupId)
         if (foundElement) {
-          foundElement.position = {
-            x: (moveData.to.x - moveData.from.x) + foundElement.position.x,
-            y: (moveData.to.y - moveData.from.y) + foundElement.position.y
+          foundElement.attrs.position = {
+            x: (moveData.to.x - moveData.from.x) + foundElement.attrs.position.x,
+            y: (moveData.to.y - moveData.from.y) + foundElement.attrs.position.y
           }
         }
       })

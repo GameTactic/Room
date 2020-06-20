@@ -1,8 +1,5 @@
 import { ActionContext, Module } from 'vuex'
-import { CanvasElement, CanvasElementHistory } from '@/types/Canvas'
-import { AppToolState } from '@/store/modules/app/tools'
-import { Tool } from '@/tools/Tool'
-import { Namespaces } from '@/store'
+import { CanvasElement, CanvasElementHistory, Point } from '@/types/Canvas'
 import { RootState } from '@/store/types'
 
 export enum SocketCanvasMutation {
@@ -12,6 +9,8 @@ export enum SocketCanvasMutation {
   HIDE_CANVAS_ELEMENT = 'HIDE_CANVAS_ELEMENT',
   SHOW_CANVAS_ELEMENT = 'SHOW_CANVAS_ELEMENT',
   ADD_CANVAS_ELEMENT_HISTORY = 'ADD_CANVAS_ELEMENT_HISTORY',
+  UPDATE_CANVAS_ELEMENT_ATTRS = 'UPDATE_CANVAS_ELEMENT_ATTRS',
+  MOVE_CANVAS_ELEMENT = 'MOVE_CANVAS_ELEMENT'
 }
 
 export enum SocketCanvasAction {
@@ -20,7 +19,9 @@ export enum SocketCanvasAction {
   ADD_CANVAS_ELEMENT = 'addCanvasElement',
   HIDE_CANVAS_ELEMENT = 'hideCanvasElement',
   SHOW_CANVAS_ELEMENT = 'showCanvasElement',
-  ADD_CANVAS_ELEMENT_HISTORY = 'addCanvasElementHistory'
+  ADD_CANVAS_ELEMENT_HISTORY = 'addCanvasElementHistory',
+  UPDATE_CANVAS_ELEMENT_ATTRS = 'updateCanvasElementAttrs',
+  MOVE_CANVAS_ELEMENT = 'moveCanvasElement'
 }
 
 export enum SocketCanvasGetters {
@@ -33,10 +34,6 @@ export enum SocketCanvasGetters {
 export interface SocketCanvasState {
   canvasElements: CanvasElement[];
   canvasElementsHistory: CanvasElementHistory[];
-}
-
-interface CanvasElementTools extends CanvasElement {
-  tools: AppToolState;
 }
 
 type SocketCanvasActionContext = ActionContext<SocketCanvasState, RootState>
@@ -74,12 +71,26 @@ const SocketCanvasModule: Module<SocketCanvasState, RootState> = {
         foundElement.isVisible = true
       }
     },
-    [SocketCanvasMutation.ADD_CANVAS_ELEMENT] (state: SocketCanvasState, payload: CanvasElementTools) {
-      const foundTool: Tool | undefined = payload.tools.tools.find((tool: Tool) => tool.name === payload.tool.name)
-      state.canvasElements.push({ ...payload, tool: { ...payload.tool, renderCanvas: foundTool?.renderCanvas } })
+    [SocketCanvasMutation.ADD_CANVAS_ELEMENT] (state: SocketCanvasState, payload: CanvasElement) {
+      state.canvasElements.push(payload)
     },
     [SocketCanvasMutation.ADD_CANVAS_ELEMENT_HISTORY] (state: SocketCanvasState, payload: CanvasElementHistory) {
       state.canvasElementsHistory.push({ ...payload })
+    },
+    [SocketCanvasMutation.UPDATE_CANVAS_ELEMENT_ATTRS] (state: SocketCanvasState, payload: { id: string; attrs: CanvasElement['attrs'] }) {
+      const foundElement = state.canvasElements.find((canvasElement: CanvasElement) => canvasElement.id === payload.id)
+      if (foundElement) {
+        foundElement.attrs = { ...payload.attrs }
+      }
+    },
+    [SocketCanvasMutation.MOVE_CANVAS_ELEMENT] (state: SocketCanvasState, payload: { id: string; from: Point; to: Point }) {
+      const foundElement = state.canvasElements.find((canvasElement: CanvasElement) => canvasElement.id === payload.id)
+      if (foundElement) {
+        foundElement.attrs.position = {
+          x: (payload.to.x - payload.from.x) + foundElement.attrs.position.x,
+          y: (payload.to.y - payload.from.y) + foundElement.attrs.position.y
+        }
+      }
     }
   },
   actions: {
@@ -90,7 +101,7 @@ const SocketCanvasModule: Module<SocketCanvasState, RootState> = {
       context.commit('SET_CANVAS_ELEMENT_HISTORY', payload)
     },
     [SocketCanvasAction.ADD_CANVAS_ELEMENT] (context: SocketCanvasActionContext, payload: CanvasElement) {
-      context.commit('ADD_CANVAS_ELEMENT', { ...payload, tools: context.rootState[Namespaces.APP_TOOLS] })
+      context.commit('ADD_CANVAS_ELEMENT', payload)
     },
     [SocketCanvasAction.HIDE_CANVAS_ELEMENT] (context: SocketCanvasActionContext, payload: CanvasElement) {
       context.commit('HIDE_CANVAS_ELEMENT', payload)
@@ -99,7 +110,13 @@ const SocketCanvasModule: Module<SocketCanvasState, RootState> = {
       context.commit('SHOW_CANVAS_ELEMENT', payload)
     },
     [SocketCanvasAction.ADD_CANVAS_ELEMENT_HISTORY] (context: SocketCanvasActionContext, payload: CanvasElementHistory) {
-      context.commit('ADD_CANVAS_ELEMENT_HISTORY', { ...payload })
+      context.commit('ADD_CANVAS_ELEMENT_HISTORY', payload)
+    },
+    [SocketCanvasAction.UPDATE_CANVAS_ELEMENT_ATTRS] (context: SocketCanvasActionContext, payload: { id: string; attrs: CanvasElement['attrs'] }) {
+      context.commit('UPDATE_CANVAS_ELEMENT_ATTRS', payload)
+    },
+    [SocketCanvasAction.MOVE_CANVAS_ELEMENT] (context: SocketCanvasActionContext, payload: { id: string; from: Point; to: Point }) {
+      context.commit('MOVE_CANVAS_ELEMENT', payload)
     }
   }
 }

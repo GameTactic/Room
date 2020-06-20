@@ -28,23 +28,24 @@ export interface RootState {
 
 export interface Api {
   name: string;
-  // eslint-disable-next-line
-  data: any;
+  data: ApiData;
+}
+
+export interface ApiData {
+  name: string;
 }
 
 export interface Entity {
-  id: number;
-  text: string;
-  shortText: string;
-  value: string;
-  image: string | undefined;
-  type: string;
-  // eslint-disable-next-line
-  data: any;
+  id: string;
+  name: string;
+  image: string;
+  team?: Team;
+  game: Game;
+  color?: string;
 }
 
 export enum RoleTypes {
-  ROON_OWNER = 'roomOwner',
+  ROOM_OWNER = 'roomOwner',
   ADMIN = 'admin',
   USER = 'user'
 }
@@ -83,7 +84,22 @@ export interface Tactic {
   createdBy: string;
   canvasElements: CanvasElement[];
   canvasElementsHistory: CanvasElementHistory[];
-  [key: string]: string | Map | CanvasElement[] | CanvasElementHistory[] | boolean | undefined;
+  teams: Team[];
+  [key: string]: string | Map | Team[] | CanvasElement[] | CanvasElementHistory[] | boolean | undefined;
+}
+
+export enum Game {
+  NONE = '',
+  WOWS = 'wows',
+  WOT = 'wot'
+}
+
+export interface Team {
+  id: string;
+  tacticId: string;
+  name: string;
+  color: string;
+  entities: Entity[];
 }
 
 export interface Collection {

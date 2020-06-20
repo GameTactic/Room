@@ -1,9 +1,15 @@
 import { ApiHeader } from '@/types/Games/Index'
-import { WowsShipsApiResponse, Ship, WowsShipInfoApiResponse } from '@/types/Games/Wows'
+import {
+  ApiShipResponse,
+  Ship, WowsMapsDataApi,
+  WowsShipDataApi,
+  WowsShipInfoApiResponse,
+  WowsShipsApiResponse,
+  WowsShipType
+} from '@/types/Games/Wows'
 import axios from 'axios'
-import { Api, Map } from '@/store/types'
+import { Api, Game, Map } from '@/store/types'
 import { JWTRegion } from '@/store/modules/app/authentication'
-import { Game } from '@/store/modules/socket/room'
 import WowsMaps from '@/types/Games/Wows/Maps'
 
 export const getWowsApiData = async (token: string, setGameApi: (api: Api) => void): Promise<void> => {
@@ -12,35 +18,122 @@ export const getWowsApiData = async (token: string, setGameApi: (api: Api) => vo
     'X-Region': JWTRegion['EU'],
     'X-Game': Game['WOWS']
   }
-
+  const gameInfo: WowsShipInfoApiResponse = await axios.get(`${process.env.VUE_APP_MS_WG_API}/wows/encyclopedia/info/`, { headers })
   const response: WowsShipsApiResponse = await axios.get(`${process.env.VUE_APP_MS_WG_API}/wows/encyclopedia/ships/`, { headers })
   const pageTotal = response.data.meta.page_total
-  let ships: Ship[] = []
-  ships = ships.concat(Object.values(response.data.data))
-
-  if (pageTotal > 1) {
-    for (let i = 2; i <= pageTotal; i++) {
-      const response: WowsShipsApiResponse = await axios.get(`${process.env.VUE_APP_MS_WG_API}/wows/encyclopedia/ships/?page_no=${i}`, { headers })
-      ships = ships.concat(Object.values(response.data.data))
-    }
+  let apiShips: ApiShipResponse[] = []
+  for (let i = 1; i <= pageTotal; i++) {
+    const response: WowsShipsApiResponse = await axios.get(`${process.env.VUE_APP_MS_WG_API}/wows/encyclopedia/ships/?page_no=${i}`, { headers })
+    apiShips = apiShips.concat(Object.values(response.data.data))
   }
+  let ships: Ship[] = apiShips.map((ship: ApiShipResponse) => {
+    return {
+      id: `${ship.ship_id}`,
+      name: ship.name,
+      tier: ship.tier,
+      type: ship.type as WowsShipType,
+      game: Game.WOWS,
+      image: gameInfo.data.data.ship_type_images[ship.type][ship.is_special ? 'image_elite' : ship.is_premium ? 'image_premium' : 'image'],
+      default: false,
+      data: {
+        artillery: ship.default_profile.artillery?.distance,
+        torpedo: ship.default_profile.torpedoes?.distance,
+        atbas: ship.default_profile.atbas?.distance,
+        concealmentPlane: ship.default_profile.concealment?.detect_distance_by_plane,
+        concealmentShip: ship.default_profile.concealment?.detect_distance_by_ship,
+        hydro: undefined,
+        radar: undefined
+      }
+    } as Ship
+  })
 
-  const gameInfo: WowsShipInfoApiResponse = await axios.get(`${process.env.VUE_APP_MS_WG_API}/wows/encyclopedia/info/`, { headers })
-  const wowsMaps = new WowsMaps()
-  const maps: Map[] = wowsMaps.getMaps()
+  const defaultShips: Ship[] = [
+    {
+      id: '1',
+      name: 'CV',
+      tier: 0,
+      type: WowsShipType.AIR_CARRIER,
+      game: Game.WOWS,
+      image: 'https://glossary-wows-global.gcdn.co/icons/vehicle/types/AirCarrier/standard_84f55678325d4b492215390a7f0b43008f3947ab201502cd979dcf4c37633cf3.png',
+      default: true,
+      data: {
+        artillery: 0,
+        torpedo: undefined,
+        atbas: undefined,
+        concealmentPlane: undefined,
+        concealmentShip: undefined,
+        hydro: undefined,
+        radar: undefined
+      }
+    }, {
+      id: '2',
+      name: 'BB',
+      tier: 0,
+      type: WowsShipType.BATTLESHIP,
+      game: Game.WOWS,
+      image: 'https://glossary-wows-global.gcdn.co/icons/vehicle/types/Battleship/standard_01624cacb82f39f77a4e677a7b9fdf4df20dafd61f971f4b2d3e54c3065e2892.png',
+      default: true,
+      data: {
+        artillery: 0,
+        torpedo: undefined,
+        atbas: undefined,
+        concealmentPlane: undefined,
+        concealmentShip: undefined,
+        hydro: undefined,
+        radar: undefined
+      }
+    }, {
+      id: '3',
+      name: 'CA',
+      tier: 0,
+      type: WowsShipType.CRUISER,
+      game: Game.WOWS,
+      image: 'https://glossary-wows-global.gcdn.co/icons/vehicle/types/Cruiser/standard_874a3bdc3134b8da4fd6f52186f1b2b682f13ef78688732d3016785c0649a424.png',
+      default: true,
+      data: {
+        artillery: 0,
+        torpedo: undefined,
+        atbas: undefined,
+        concealmentPlane: undefined,
+        concealmentShip: undefined,
+        hydro: undefined,
+        radar: undefined
+      }
+    }, {
+      id: '4',
+      name: 'DD',
+      tier: 0,
+      type: WowsShipType.DESTROYER,
+      game: Game.WOWS,
+      image: 'https://glossary-wows-global.gcdn.co/icons/vehicle/types/Destroyer/standard_357acc9fc0e2f7d98f047c99edffad359a8c45f2093024400fef2b9abbaf3a59.png',
+      default: true,
+      data: {
+        artillery: 0,
+        torpedo: undefined,
+        atbas: undefined,
+        concealmentPlane: undefined,
+        concealmentShip: undefined,
+        hydro: undefined,
+        radar: undefined
+      }
+    }]
+
+  ships = ships.concat(defaultShips)
+  const maps: Map[] = new WowsMaps().getMaps()
 
   setGameApi({
     name: 'wows.encyclopedia.ships',
-    data: ships
-  })
-
-  setGameApi({
-    name: 'wows.encyclopedia.info',
-    data: gameInfo.data.data
+    data: {
+      name: 'wows.encyclopedia.ships',
+      ships: ships
+    } as WowsShipDataApi
   })
 
   setGameApi({
     name: 'wows.encyclopedia.maps',
-    data: maps
+    data: {
+      name: 'wows.encyclopedia.maps',
+      maps: maps
+    } as WowsMapsDataApi
   })
 }

@@ -10,9 +10,10 @@ import SocketRoomModule from '@/store/modules/socket/room'
 import SocketStageModule from '@/store/modules/socket/stage'
 import SocketTacticModule from '@/store/modules/socket/tactic'
 import SocketUserModule from '@/store/modules/socket/user'
+import SocketTeamModule from '@/store/modules/socket/team'
 import Vue from 'vue'
 import Vuex from 'vuex'
-import { RootState } from './types'
+import { RootState } from '@/store/types'
 
 Vue.use(Vuex)
 
@@ -25,6 +26,7 @@ export enum Namespaces {
   APP_TOOLS = 'appTools',
   SOCKET_CANVAS = 'socketCanvas',
   SOCKET = 'socket',
+  SOCKET_TEAM = 'socketTeam',
   SOCKET_ROOM = 'socketRoom',
   SOCKET_STAGE = 'socketStage',
   SOCKET_TACTIC = 'socketTactic',
@@ -41,6 +43,7 @@ export default new Vuex.Store<RootState>({
     [Namespaces.APP_TOOLS]: AppToolModule,
     [Namespaces.SOCKET_CANVAS]: SocketCanvasModule,
     [Namespaces.SOCKET]: SocketModule,
+    [Namespaces.SOCKET_TEAM]: SocketTeamModule,
     [Namespaces.SOCKET_ROOM]: SocketRoomModule,
     [Namespaces.SOCKET_STAGE]: SocketStageModule,
     [Namespaces.SOCKET_TACTIC]: SocketTacticModule,

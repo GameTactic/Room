@@ -116,6 +116,7 @@ const SocketStageModule: Module<SocketStageState, RootState> = {
     },
     [SocketStageActions.SET_STAGE_TACTIC] (context: SocketStageActionContext, tactic: Tactic) {
       context.commit(SocketStageMutations.SET_MAP_SRC, tactic.map.icon)
+      context.commit(SocketStageMutations.SET_MAP_RATIO, tactic.map.ratio)
       context.commit(SocketStageMutations.SET_CONFIG_DIMENSIONS, { width: tactic.map.width, height: tactic.map.height })
       context.commit(SocketStageMutations.SET_CONFIG_DIMENSIONS_INITIAL, { width: 0, height: 0 })
     }

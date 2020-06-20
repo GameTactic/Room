@@ -20,7 +20,7 @@ export default class LineCreator extends Shape implements LineCreatorInterface {
     this.tBar = new Konva.Line()
     this.stroke = [
       [0, 0],
-      [30, 10]
+      [5, 2]
     ]
   }
 
@@ -140,15 +140,17 @@ export default class LineCreator extends Shape implements LineCreatorInterface {
 
   createLineElement = (canvasElement: CanvasElement, event: CustomEvent | CustomStageEvent, colour?: string, size?: number): Konva.Shape & Konva.Line => {
     const data = canvasElement.data as LineData
+    const stroke = this.stroke[canvasElement.tool.strokeStyle || this.strokeStyle || 0]
+    const size1 = size || canvasElement.tool.size || this.size || 5
     return new Konva.Line({
       globalCompositeOperation: 'source-over',
       points: [ data.from.x, data.from.y, data.to.x, data.to.y ],
       stroke: colour || canvasElement.tool.colour || this.colour,
-      strokeWidth: size || canvasElement.tool.size || this.size || 5,
+      strokeWidth: size1,
       lineCap: 'mitter',
       id: canvasElement.id,
       hitStrokeWidth: this.hitStroke,
-      dash: this.stroke[canvasElement.tool.strokeStyle || this.strokeStyle || 0]
+      dash: [stroke[0] * size1, stroke[1] * size1]
     })
   }
 
@@ -173,15 +175,17 @@ export default class LineCreator extends Shape implements LineCreatorInterface {
 
   createArrowElement = (canvasElement: CanvasElement, event: CustomEvent | CustomStageEvent, colour?: string, size?: number): Konva.Shape & Konva.Arrow => {
     const data = canvasElement.data as LineData
+    const stroke = this.stroke[canvasElement.tool.strokeStyle || this.strokeStyle || 0]
+    const size1 = size || canvasElement.tool.size || this.size || 5
     return new Konva.Arrow({
       globalCompositeOperation: 'source-over',
       points: [ data.from.x, data.from.y, data.to.x, data.to.y ],
       stroke: colour || canvasElement.tool.colour || this.colour,
-      strokeWidth: size || canvasElement.tool.size || this.size || 5,
+      strokeWidth: size1,
       lineCap: 'mitter',
       id: canvasElement.id,
       hitStrokeWidth: this.hitStroke,
-      dash: this.stroke[canvasElement.tool.strokeStyle || this.strokeStyle || 0],
+      dash: [stroke[0] * size1, stroke[1] * size1],
       fill: canvasElement.tool.colour || this.colour
     })
   }

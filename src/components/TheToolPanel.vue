@@ -1,7 +1,7 @@
 <template>
   <div class="custom-tool-panel-container btn-toggle-box pa-0 pt-1">
     <v-btn-toggle class="flex-column custom-tool-bar">
-      <tool-container icon="fa-arrows-alt" toolName="move" :popout="false" />
+      <tool-container icon="fa-mouse-pointer" toolName="move" :popout="false" />
       <tool-container icon="fa-map-pin" toolName="ping" :popout="false" />
       <tool-container icon="fa-pen" toolName="freeDraw" :popout="true"><free-draw-template /></tool-container>
       <tool-container icon="fa-slash" toolName="line" :popout="true"><line-template /></tool-container>

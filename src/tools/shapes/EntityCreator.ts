@@ -20,7 +20,7 @@ export default class EntityCreator extends Shape {
 
   createSpriteElement = (canvasElement: CanvasElement, event: CustomEvent | CustomStageEvent): void => {
     const data = canvasElement.data as EntityData
-    Konva.Image.fromURL(data.entity.image, (image: Konva.Image) => {
+    Konva.Image.fromURL(data.image, (image: Konva.Image) => {
       image.setAttrs({
         x: this.formatX(data.point.x, event),
         y: this.formatY(data.point.y, event),

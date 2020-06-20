@@ -82,7 +82,7 @@ export default class Text extends ToolClass implements TextInterface {
         this.canvasElement.tool.textString = textArea.value
         textArea.remove()
         this.textCreator.create(event)
-        this.canvasElement.position = this.textCreator.getGroup().getPosition()
+        this.canvasElement.attrs.position = this.textCreator.getGroup().getPosition()
         if (this.canvasElement.tool.textString && this.canvasElement.tool.textString?.length > 0) {
           this.sendAndAddToState({
             id: uuid(),

@@ -51,7 +51,7 @@ export default class Ruler extends ToolClass implements RulerInterface {
       this.showCircle
     )
     this.rulerCreator.create(event)
-    this.canvasElement.position = this.rulerCreator.getGroup().getPosition()
+    this.canvasElement.attrs.position = this.rulerCreator.getGroup().getPosition()
   }
 
   mouseMoveAction = (event: CustomEvent): void => {

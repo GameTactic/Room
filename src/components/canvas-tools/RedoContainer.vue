@@ -28,7 +28,7 @@ import { CanvasElement, CanvasElementHistory } from '@/types/Canvas'
 import HandleUndoRedo from '@/util/HandleUndoRedo'
 import HandleRenderShapes from '@/util/HandleRenderShapes'
 import { Namespaces } from '@/store'
-import { SocketUserGetters } from '../../store/modules/socket/user'
+import { SocketUserGetters } from '@/store/modules/socket/user'
 
 const SocketUser = namespace(Namespaces.SOCKET_USER)
 const SocketCanvas = namespace(Namespaces.SOCKET_CANVAS)

@@ -1,25 +1,5 @@
 import { JWTRegion } from '@/store/modules/app/authentication'
-import { Game } from '@/store/modules/socket/room'
-
-export interface Item {
-  text: string;
-  shortText: string;
-  type: 'AirCarrier' | 'Battleship' | 'Cruiser' | 'Destroyer';
-  value: number;
-  tier: number;
-  image: string | undefined;
-  data: any;
-}
-
-export interface Field {
-  id: string;
-  path: string;
-  value: string;
-  hide: boolean;
-  label: string;
-  placeholder: string;
-  suffix: string;
-}
+import { Game } from '@/store/types'
 
 export interface ApiHeader {
   Authorization: string;

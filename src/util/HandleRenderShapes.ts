@@ -1,5 +1,5 @@
 import Konva from 'konva'
-import { AdditionData, CanvasElement, CanvasElementHistory } from '@/types/Canvas'
+import { AdditionData, CanvasElement, CanvasElementHistory, CanvasElementType } from '@/types/Canvas'
 import { Tool, Tracker } from '@/tools/Tool'
 import { CustomStageConfig } from '@/util/PointerEventMapper'
 import { AppLayerGetters } from '@/store/modules/app/layer'
@@ -42,7 +42,7 @@ export default class HandleRenderShapes {
         } else {
           this.handleCanvasElementInvisible(canvasElement)
         }
-        this.checkGroupPosition(canvasElement)
+        this.checkGroupAttrs(canvasElement)
       }
     })
   }
@@ -67,29 +67,57 @@ export default class HandleRenderShapes {
   }
 
   handleCanvasElementInvisible = (canvasElement: CanvasElement): void => {
-    const foundGroup: Konva.Group = this.layer.findOne((group: Konva.Group) => group.attrs.id === canvasElement.id)
+    const foundGroup: Konva.Node = this.layer.findOne((node: Konva.Node) => node instanceof Konva.Group && node.attrs.id === canvasElement.id)
     if (foundGroup) {
       this.destroy(foundGroup)
     }
   }
 
-  checkGroupPosition = (canvasElement: CanvasElement): void => {
+  checkGroupAttrs = (canvasElement: CanvasElement): void => {
     const group = this.layer.findOne((group: Konva.Group) => group.attrs.id === canvasElement.id)
-    if (group && (group.getPosition().x !== canvasElement.position.x || group.getPosition().y !== canvasElement.position.y)) {
-      group.position(canvasElement.position)
+    if (group) {
+      // Check position
+      if (group.getPosition().x !== canvasElement.attrs.position.x || group.getPosition().y !== canvasElement.attrs.position.y) {
+        group.position(canvasElement.attrs.position)
+      }
+      // Check rotation
+      if (group.rotation() !== canvasElement.attrs.rotation) {
+        group.rotation(canvasElement.attrs.rotation)
+      }
+      // Check scale
+      if (group.scaleX() !== canvasElement.attrs.scaleX || group.scaleY() !== canvasElement.attrs.scaleY) {
+        group.scale({
+          x: canvasElement.attrs.scaleX,
+          y: canvasElement.attrs.scaleY
+        })
+      }
+      // Check skew
+      if (group.skewX() !== canvasElement.attrs.skewX || group.skewY() !== canvasElement.attrs.skewY) {
+        group.skew({
+          x: canvasElement.attrs.skewX,
+          y: canvasElement.attrs.skewY
+        })
+      }
     }
   }
 
   handleLayerNodes = (): void => {
     this.layer.getChildren().each((group) => {
-      if (!this.canvasElements.find((canvasElement: CanvasElement) => canvasElement.id === group.attrs.id) && !group.attrs.temporary && group.attrs.type !== 'map') {
+      if (
+        !this.canvasElements.find((canvasElement: CanvasElement) => canvasElement.id === group.attrs.id) &&
+        !group.attrs.temporary &&
+        group.attrs.type !== CanvasElementType.MAP &&
+        group.attrs.type !== CanvasElementType.TRANSFORMER
+      ) {
         this.destroy(group as Konva.Group)
       }
     })
   }
 
-  destroy = (group: Konva.Group): void => {
-    group.destroyChildren()
+  destroy = (group: Konva.Node): void => {
+    if (group instanceof Konva.Group) {
+      group.destroyChildren()
+    }
     group.destroy()
   }
 }

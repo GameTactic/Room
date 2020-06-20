@@ -5,7 +5,6 @@
     @mousedown="mouseDownAction"
     @mousemove="mouseMoveAction"
     @mouseup="mouseUpAction"
-    @drop="onDropHandler"
     @dragover="$event.preventDefault()"
   >
     <the-canvas
@@ -15,8 +14,6 @@
     <the-nav />
     <the-tool-panel class="d-none d-sm-flex" />
     <the-entity-panel class="d-none d-sm-flex" />
-    <the-tactic-selector />
-    <the-user-panel />
     <the-create-new-tactic-overlay />
     <the-update-tactic-overlay />
   </div>
@@ -27,27 +24,23 @@ import TheNav from '@/components/navigation/TheNav.vue'
 import TheToolPanel from '@/components/TheToolPanel.vue'
 import TheCanvas from '@/components/TheCanvas.vue'
 import TheEntityPanel from '@/components/TheEntityPanel.vue'
-import TheTacticSelector from '@/components/tactic-selector/TheTacticSelector.vue'
-import TheUserPanel from '@/components/user-panel/TheUserPanel.vue'
 import Component, { mixins } from 'vue-class-component'
 import { Prop, Watch } from 'vue-property-decorator'
 import { VueKonvaStage } from '@/types/Canvas'
 import TheCreateNewTacticOverlay from '@/components/overlays/TheCreateNewTacticOverlay.vue'
 import TheUpdateTacticOverlay from '@/components/overlays/TheUpdateTacticOverlay.vue'
-import PointerEventMapper from '@/util/PointerEventMapper'
 import { namespace } from 'vuex-class'
 import { EventBus } from '@/event-bus'
 import RoomSocket from '@/mixins/RoomSockets'
-import { Item } from '@/types/Games/Index'
 import { AppToolGetters } from '@/store/modules/app/tools'
 import { Tool } from '@/tools/Tool'
-import { SocketTacticGetters, SocketTacticAction } from '../store/modules/socket/tactic'
-import { Tactic, Collection } from '../store/types'
+import { SocketTacticGetters, SocketTacticAction } from '@/store/modules/socket/tactic'
+import { Tactic, Collection, RoleTypes } from '@/store/types'
 import uuid from 'uuid'
-import { AppAuthenticationGetters, ExtendedJWT } from '../store/modules/app/authentication'
-import { SocketRoomAction } from '../store/modules/socket/room'
+import { AppAuthenticationGetters, ExtendedJWT } from '@/store/modules/app/authentication'
+import { SocketRoomAction } from '@/store/modules/socket/room'
 import { Namespaces } from '@/store'
-import { SocketUserGetters } from '../store/modules/socket/user'
+import { SocketUserGetters } from '@/store/modules/socket/user'
 
 const AppAuthentication = namespace(Namespaces.APP_AUTHENTICATION)
 const AppTools = namespace(Namespaces.APP_TOOLS)
@@ -64,9 +57,7 @@ const SocketUser = namespace(Namespaces.SOCKET_USER)
     TheNav,
     TheToolPanel,
     TheCanvas,
-    TheEntityPanel,
-    TheTacticSelector,
-    TheUserPanel
+    TheEntityPanel
   }
 })
 export default class TheRoom extends mixins(RoomSocket) {
@@ -82,6 +73,7 @@ export default class TheRoom extends mixins(RoomSocket) {
   created () {
     this.setRoomId(window.location.pathname.replace('/', ''))
   }
+
   $refs!: {
     app: HTMLDivElement;
     stage: VueKonvaStage;
@@ -93,6 +85,18 @@ export default class TheRoom extends mixins(RoomSocket) {
     const jti = this.jwt?.jti
     if (jti) {
       this.isRoomNew(jti)
+      this.setUser({
+        jti: jti,
+        name: this.jwt.username,
+        onTacticId: '1',
+        isOnline: true,
+        lastOnline: new Date(),
+        roles: [{
+          id: '1',
+          roleTypes: RoleTypes.USER,
+          assignedBy: jti
+        }]
+      })
     }
   }
 
@@ -113,18 +117,6 @@ export default class TheRoom extends mixins(RoomSocket) {
     if (this.dragEnabled && e.target === this.$refs.app && !(e.target instanceof HTMLCanvasElement)) {
       this.dragEnabled = false
       EventBus.$emit('mouseAction', e)
-    }
-  }
-
-  onDropHandler (e: DragEvent) {
-    if (this.isAuthorisedCanvasLoaded && e.dataTransfer) {
-      const item: Item | void = JSON.parse(e.dataTransfer.getData('entity'))
-      if (item) {
-        const entityTool: Tool | void = this.findTool('entity')
-        if (entityTool && entityTool.entityToRequest && entityTool.renderCanvas) {
-          entityTool.renderCanvas(entityTool.entityToRequest(item, PointerEventMapper.globalEventMapper(e)))
-        }
-      }
     }
   }
 

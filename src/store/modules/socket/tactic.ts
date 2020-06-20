@@ -1,5 +1,5 @@
 import { ActionContext, Module } from 'vuex'
-import { Collection, Tactic, RootState } from '../../types'
+import { Collection, Tactic, RootState } from '@/store/types'
 
 export enum SocketTacticAction {
   SET_COLLECTIONS = 'setCollections',
@@ -7,10 +7,11 @@ export enum SocketTacticAction {
   UPDATE_COLLECTION = 'updateCollection',
   DELETE_COLLECTION = 'deleteCollection',
   SET_TACTICS = 'setSocketTactics',
-  SET_TACTIC = 'setSocketTactic',
+  ADD_TACTIC = 'addSocketTactic',
   TOGGLE_PIN_TACTIC = 'togglePinSocketTactic',
   UPDATE_TACTIC = 'updateSocketTactic',
-  DELETE_TACTIC = 'deleteSocketTactic'
+  DELETE_TACTIC = 'deleteSocketTactic',
+  SET_CURRENT_TACTIC_ID = 'setCurrentTacticID'
 }
 
 export enum SocketTacticMutation {
@@ -19,10 +20,11 @@ export enum SocketTacticMutation {
   UPDATE_COLLECTION = 'UPDATE_COLLECTION',
   DELETE_COLLECTION = 'DELETE_COLLECTION',
   SET_TACTICS = 'SET_TACTICS',
-  SET_TACTIC = 'SET_TACTIC',
+  ADD_TACTIC = 'ADD_TACTIC',
   TOGGLE_PIN_TACTIC = 'TOGGLE_PIN_TACTIC',
   UPDATE_TACTIC = 'UPDATE_TACTIC',
-  DELETE_TACTIC = 'DELETE_TACTIC'
+  DELETE_TACTIC = 'DELETE_TACTIC',
+  SET_CURRENT_TACTIC_ID = 'SET_CURRENT_TACTIC_ID'
 }
 
 export enum SocketTacticGetters {
@@ -30,12 +32,14 @@ export enum SocketTacticGetters {
   COLLECTION = 'collection',
   TACTICS = 'tactics',
   TACTIC = 'tactic',
+  CURRENT_TACTIC_ID = 'currentTacticId',
   PINNED_TACTICS = 'pinnedSocketTactics'
 }
 
 export interface SocketTacticState {
   collections: Collection[];
   tactics: Tactic[];
+  currentTacticId: string | undefined;
 }
 
 type SocketTacticActionContext = ActionContext<SocketTacticState, RootState>
@@ -45,10 +49,12 @@ const SocketTacticModule: Module<SocketTacticState, RootState> = {
   state () {
     return {
       collections: [],
-      tactics: []
+      tactics: [],
+      currentTacticId: undefined
     }
   },
   getters: {
+    [SocketTacticGetters.CURRENT_TACTIC_ID]: state => state.currentTacticId,
     [SocketTacticGetters.COLLECTIONS]: (state): Collection[] => state.collections,
     [SocketTacticGetters.COLLECTION]: (state) => (id: string): Collection | undefined => state.collections.find((collection: Collection) => collection.id === id),
     [SocketTacticGetters.TACTICS]: (state): Tactic[] => state.tactics,
@@ -74,7 +80,7 @@ const SocketTacticModule: Module<SocketTacticState, RootState> = {
     [SocketTacticMutation.TOGGLE_PIN_TACTIC] (state: SocketTacticState, payload: Tactic) {
       state.tactics.splice(state.tactics.findIndex((tactic: Tactic) => tactic.id === payload.id), 1, { ...payload, pinned: !payload.pinned })
     },
-    [SocketTacticMutation.SET_TACTIC] (state: SocketTacticState, payload: Tactic) {
+    [SocketTacticMutation.ADD_TACTIC] (state: SocketTacticState, payload: Tactic) {
       state.tactics.push(payload)
     },
     [SocketTacticMutation.UPDATE_TACTIC] (state: SocketTacticState, payload: Tactic) {
@@ -82,6 +88,9 @@ const SocketTacticModule: Module<SocketTacticState, RootState> = {
     },
     [SocketTacticMutation.DELETE_TACTIC] (state: SocketTacticState, id: string) {
       state.tactics.splice(state.tactics.findIndex((tactic: Tactic) => tactic.id === id), 1)
+    },
+    [SocketTacticMutation.SET_CURRENT_TACTIC_ID] (state: SocketTacticState, id: string) {
+      state.currentTacticId = id
     }
   },
   actions: {
@@ -100,8 +109,8 @@ const SocketTacticModule: Module<SocketTacticState, RootState> = {
     [SocketTacticAction.SET_TACTICS] (context: SocketTacticActionContext, payload: Tactic[]) {
       context.commit('SET_TACTICS', payload)
     },
-    [SocketTacticAction.SET_TACTIC] (context: SocketTacticActionContext, payload: Tactic) {
-      context.commit('SET_TACTIC', payload)
+    [SocketTacticAction.ADD_TACTIC] (context: SocketTacticActionContext, payload: Tactic) {
+      context.commit('ADD_TACTIC', payload)
     },
     [SocketTacticAction.TOGGLE_PIN_TACTIC] (context: SocketTacticActionContext, payload: Tactic) {
       context.commit('TOGGLE_PIN_TACTIC', payload)
@@ -111,6 +120,9 @@ const SocketTacticModule: Module<SocketTacticState, RootState> = {
     },
     [SocketTacticAction.DELETE_TACTIC] (context: SocketTacticActionContext, id: string) {
       context.commit('DELETE_TACTIC', id)
+    },
+    [SocketTacticAction.SET_CURRENT_TACTIC_ID] (context: SocketTacticActionContext, id: string) {
+      context.commit('SET_CURRENT_TACTIC_ID', id)
     }
   }
 }

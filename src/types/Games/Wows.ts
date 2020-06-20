@@ -1,3 +1,5 @@
+import { ApiData, Entity, Map } from '@/store/types'
+
 export interface WowsShipsApiResponse {
   data: {
     status: string;
@@ -9,9 +11,39 @@ export interface WowsShipsApiResponse {
       page: number;
     };
     data: {
-      [key: string]: Ship;
+      [key: string]: ApiShipResponse;
     };
   };
+}
+
+export interface Ship extends Entity {
+  tier: number;
+  type: WowsShipType;
+  default: boolean;
+  data: {
+    artillery: number | undefined;
+    hydro: number | undefined;
+    radar: number | undefined;
+    torpedo: number | undefined;
+    concealmentPlane: number | undefined;
+    concealmentShip: number | undefined;
+    atbas: number | undefined;
+  };
+}
+
+export enum WowsShipType {
+  DESTROYER = 'Destroyer',
+  AIR_CARRIER = 'AirCarrier',
+  CRUISER = 'Cruiser',
+  BATTLESHIP = 'Battleship'
+}
+
+export interface WowsShipDataApi extends ApiData {
+  ships: Ship[];
+}
+
+export interface WowsMapsDataApi extends ApiData {
+  maps: Map[];
 }
 
 export interface WowsShipInfoApiResponse {
@@ -25,134 +57,40 @@ export interface WowsShipInfoApiResponse {
 }
 
 export interface ShipData {
-  engine: {
-    engine_id_str: string;
-    max_speed: number;
-    engine_id: number;
-  };
-  anti_aircraft: {
-    slots: {
-      distance: number;
-      avg_damage: number;
-      caliber: number;
-      name: string;
-      guns: number;
-    }[];
-  };
-  mobility: {
-    rudder_time: number;
-    total: number;
-    turning_radius: number;
-    max_speed: number;
-  };
-  hull: {
-    hull_id: number;
-    hull_id_str: string;
-    torpedoes_barrels: number;
-    anti_aircraft_barrels: number;
-  };
   atbas: {
-    distance: number;
+    distance: number | undefined;
   };
   artillery: {
-    max_dispersion: number;
-    shot_delay: number;
-    rotation_time: number;
-    distance: number;
+    distance: number | undefined;
   };
   torpedoes: {
-    visibility_dist: number;
-    distance: number;
-    torpedoes_id: number;
-    torpedo_name: string;
-    reload_time: number;
-    torpedo_speed: number;
-    rotation_time: number;
-    torpedoes_id_str: string;
-    max_damage: number;
+    distance: number | undefined;
   };
-  ship_id: number;
-  fire_control: {
-    fire_control_id: number;
-    distance: number;
-    distance_increase: number;
-    fire_control_id_str: string;
-  };
-  weaponry: {
-    anti_aircraft: number;
-    aircraft: number;
-    artillery: number;
-    torpedoes: number;
-  };
-  battle_level_range_max: number;
-  battle_level_range_min: number;
-  flight_control: null;
   concealment: {
-    total: number;
-    detect_distance_by_plane: number;
-    detect_distance_by_ship: number;
-  };
-  armour: {
-    casemate: {
-      max: number;
-      min: number;
-    };
+    detect_distance_by_plane: number | undefined;
+    detect_distance_by_ship: number | undefined;
   };
 }
 
-export interface Ship {
-  description: string;
-  price_gold: number;
-  ship_id_str: string;
-  has_demo_profile: boolean;
-  images: {
-    small: string;
-    medium: string;
-    large: string;
-    contour: string;
-  };
-  modules: string;
-  modules_tree: string;
-  nation: string;
+export interface ApiShipResponse {
+  is_special: boolean;
   is_premium: boolean;
   ship_id: number;
-  price_credit: 0;
-  default_profile: string;
-  upgrades: number[];
+  default_profile: ShipData;
   tier: number;
-  next_ships: string;
-  mod_slots: number;
-  type: string;
-  is_special: boolean;
   name: string;
-}
-
-type ShipTypeImages = {
-  image_premium: string;
-  image: string;
-  image_elite: string;
+  type: string;
 }
 
 export interface GameInfo {
-  ships_updated_at: number;
   ship_types: {
     [key: string]: string;
   };
-  languages: {
-    [key: string]: string;
-  };
-  ship_modifications: {
-    [key: string]: string;
-  };
-  ship_modules: {
-    [key: string]: string;
-  };
   ship_type_images: {
-    [key: string]: ShipTypeImages;
+    [key: string]: {
+      image_premium: string;
+      image: string;
+      image_elite: string;
+    };
   };
-  ship_nations: {
-    [key: string]: string;
-  };
-  game_version: string;
-  [key: string]: string | number | { [key: string]: string } | { [key: string]: ShipTypeImages };
 }
