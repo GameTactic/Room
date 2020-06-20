@@ -1,10 +1,11 @@
 import Konva from 'konva'
-import { CanvasElement } from '@/types/Canvas'
-import { CustomEvent, CustomStageEvent } from '@/util/PointerEventMapper'
-import { AppCanvasEntityActions, AppCanvasEntityGetters } from '@/store/modules/app/canvasEntity'
+import { Point } from '@/types/Canvas'
+import { CustomStageConfig } from '@/util/PointerEventMapper'
 import store from '@/main'
 import { AppLayerActions, AppLayerGetters } from '@/store/modules/app/layer'
 import { Namespaces } from '@/store'
+import { LineType } from '@/tools/Line'
+import { SocketStageGetters } from '@/store/modules/socket/stage'
 
 export default class Shape {
   private readonly decayTime = 500
@@ -32,29 +33,18 @@ export default class Shape {
     store.dispatch(`${Namespaces.APP_LAYER}/${AppLayerActions.LAYER_DESTROY_GROUP}`, this.group)
   }
 
-  formatX = (num: number, event: CustomEvent | CustomStageEvent): number => {
-    return ((num / event.stageConfig.width) * event.stage.width())
-  }
-
-  formatY = (num: number, event: CustomEvent | CustomStageEvent): number => {
-    return ((num / event.stageConfig.height) * event.stage.height())
-  }
-
-  get canvasElement (): CanvasElement {
-    return store.getters[`${Namespaces.APP_CANVAS_ENTITY}/${AppCanvasEntityGetters.CANVAS_ELEMENT}`]
-  }
-
-  set canvasElement (canvasElement: CanvasElement) {
-    store.dispatch(`${Namespaces.APP_CANVAS_ENTITY}(${AppCanvasEntityActions.SET_CANVAS_ELEMENT}`, canvasElement)
-  }
-
   get layer (): Konva.Layer {
     return store.getters[`${Namespaces.APP_LAYER}/${AppLayerGetters.LAYER}`]
+  }
+
+  get stageConfig (): CustomStageConfig {
+    return store.getters[`${Namespaces.SOCKET_STAGE}/${SocketStageGetters.STAGE_CONFIG}`]
   }
 }
 
 export interface ShapeInterface {
   temporary: boolean;
+  groupId: string;
   // eslint-disable-next-line
   [key: string]: any;
 }
@@ -65,6 +55,8 @@ export interface CircleCreatorInterface extends ShapeInterface {
   outlineColour: string;
   strokeStyle: number;
   showRadius: boolean;
+  from: Point;
+  to: Point;
 }
 
 export interface FreeDrawCreatorInterface extends ShapeInterface {
@@ -76,11 +68,15 @@ export interface LineCreatorInterface extends ShapeInterface {
   size: number;
   colour: string;
   strokeStyle: number;
+  from: Point;
+  to: Point;
+  endStyle: LineType;
 }
 
 export interface PingCreatorInterface extends ShapeInterface {
   size: number;
   colour: string;
+  point: Point;
 }
 
 export interface RulerCreatorInterface extends ShapeInterface {
@@ -93,4 +89,5 @@ export interface TextCreatorInterface extends ShapeInterface {
   size: number;
   colour: string;
   textString: string;
+  point: Point;
 }

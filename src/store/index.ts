@@ -1,5 +1,4 @@
 import AppAuthenticationModule from '@/store/modules/app/authentication'
-import AppCanvasEntityModule from '@/store/modules/app/canvasEntity'
 import AppLayerModule from '@/store/modules/app/layer'
 import AppRoomModule from '@/store/modules/app/room'
 import AppStageModule from '@/store/modules/app/stage'
@@ -19,7 +18,6 @@ Vue.use(Vuex)
 
 export enum Namespaces {
   APP_AUTHENTICATION = 'appAuthentication',
-  APP_CANVAS_ENTITY = 'appCanvasEntity',
   APP_LAYER = 'appLayer',
   APP_ROOM = 'appRoom',
   APP_STAGE = 'appStage',
@@ -36,7 +34,6 @@ export enum Namespaces {
 export default new Vuex.Store<RootState>({
   modules: {
     [Namespaces.APP_AUTHENTICATION]: AppAuthenticationModule,
-    [Namespaces.APP_CANVAS_ENTITY]: AppCanvasEntityModule,
     [Namespaces.APP_LAYER]: AppLayerModule,
     [Namespaces.APP_ROOM]: AppRoomModule,
     [Namespaces.APP_STAGE]: AppStageModule,

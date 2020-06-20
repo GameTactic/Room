@@ -71,7 +71,6 @@ export interface MoveData {
   from: Point;
   to: Point;
   groups: string[];
-  mask?: Konva.Rect;
 }
 
 // Array of canvas element IDs to remove

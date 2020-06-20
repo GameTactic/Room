@@ -11,7 +11,7 @@
     @touchmove="onTouchHandler"
     @touchend="onTouchHandler"
   >
-    <v-layer ref="layer" :config="{ id: canvasEntity.canvasElement.layerId }"></v-layer>
+    <v-layer ref="layer" :config="{ id: Math.random().toString(36) }"></v-layer>
   </v-stage>
 </template>
 
@@ -30,12 +30,10 @@ import HandleRenderShapes from '@/util/HandleRenderShapes'
 import { AppStageActions, AppStageGetters } from '@/store/modules/app/stage'
 import { SocketStageGetters } from '@/store/modules/socket/stage'
 import { AppLayerActions, AppLayerGetters } from '@/store/modules/app/layer'
-import { AppCanvasEntityGetters, AppCanvasEntityState } from '@/store/modules/app/canvasEntity'
 import CanvasSockets from '@/mixins/CanvasSockets'
 import StageWatcher from '@/mixins/StageWatcher'
 import { Namespaces } from '@/store'
 
-const AppCanvasEntity = namespace(Namespaces.APP_CANVAS_ENTITY)
 const AppLayer = namespace(Namespaces.APP_LAYER)
 const AppStage = namespace(Namespaces.APP_STAGE)
 const AppTools = namespace(Namespaces.APP_TOOLS)
@@ -48,7 +46,6 @@ const SocketStage = namespace(Namespaces.SOCKET_STAGE)
 })
 
 export default class TheCanvas extends mixins(CanvasSockets, StageWatcher) {
-  @AppCanvasEntity.Getter(AppCanvasEntityGetters.CANVAS_ENTITY) canvasEntity!: AppCanvasEntityState
   @AppTools.Getter(AppToolGetters.ENABLED_TOOL) enabledTool!: Tool
   @AppTools.Getter(AppToolGetters.TOOLS) tools!: Tool[]
   @AppLayer.Getter(AppLayerGetters.LAYER) layerNode!: Konva.Layer

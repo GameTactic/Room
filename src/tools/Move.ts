@@ -6,6 +6,9 @@ import Transformer from '@/tools/util/Transformer'
 import Mask from '@/tools/util/Mask'
 import Collection = Konva.Collection;
 export default class Move extends ToolClass implements ToolClassInterface {
+  private data: MoveData = { from: { x: 0, y: 0 }, to: { x: 0, y: 0 }, groups: [] }
+  private mask: Konva.Rect | undefined
+  private hasMoved = false
   constructor (public readonly name: string,
                public temporary: boolean) {
     super()
@@ -14,8 +17,9 @@ export default class Move extends ToolClass implements ToolClassInterface {
   // eslint-disable-next-line
   mouseDownAction = (event: CustomEvent): void => {
     this.enableTool()
-    this.resetCanvasEntity()
-    this.canvasEntity.modifyData = {
+    this.hasMoved = false
+    this.mask = undefined
+    this.data = {
       from: {
         x: event.globalOffset.x,
         y: event.globalOffset.y
@@ -27,16 +31,14 @@ export default class Move extends ToolClass implements ToolClassInterface {
       groups: []
     }
     const targetGroup = event.konvaPointerEvent.target.parent
-    const data = this.canvasEntity.modifyData as MoveData
     if (targetGroup?.attrs.type !== CanvasElementType.TRANSFORMER && targetGroup?.attrs.transforming !== true) {
-      const mask = new Mask({
-        x: data.from.x,
-        y: data.from.y,
-        width: (data.to.x - data.from.x),
-        height: (data.to.y - data.from.y)
+      this.mask = new Mask({
+        x: this.data.from.x,
+        y: this.data.from.y,
+        width: (this.data.to.x - this.data.from.x),
+        height: (this.data.to.y - this.data.from.y)
       }).mask
-      data.mask = mask
-      this.layer.add(mask)
+      this.layer.add(this.mask)
       this.layer.batchDraw()
     }
   }
@@ -44,30 +46,26 @@ export default class Move extends ToolClass implements ToolClassInterface {
   // eslint-disable-next-line
   mouseMoveAction = (event: CustomEvent): void => {
     if (this.enabled) {
-      if (!this.canvasEntity.hasMoved) { this.canvasEntity.hasMoved = true }
-      const data = this.canvasEntity.modifyData as MoveData
-      if (data.from && data.to) {
-        data.to = {
-          x: event.globalOffset.x,
-          y: event.globalOffset.y
-        }
-        if (data.mask) {
-          data.mask.width(data.to.x - data.from.x)
-          data.mask.height(data.to.y - data.from.y)
-        }
-        this.layer.batchDraw()
+      if (!this.hasMoved) { this.hasMoved = true }
+      this.data.to = {
+        x: event.globalOffset.x,
+        y: event.globalOffset.y
       }
+      if (this.mask) {
+        this.mask.width(this.data.to.x - this.data.from.x)
+        this.mask.height(this.data.to.y - this.data.from.y)
+      }
+      this.layer.batchDraw()
     }
   }
 
   // eslint-disable-next-line
   mouseUpAction = (event: CustomEvent): void => {
-    const data = this.canvasEntity.modifyData as MoveData
-    if (this.enabled && data.mask) {
+    if (this.enabled && this.mask) {
       this.disableTool()
       const tr = new Transformer(true)
-      tr.setNodes([ ...this.hitCheck(data.mask, this.layer).toArray() ])
-      data.mask.destroy()
+      tr.setNodes([ ...this.hitCheck().toArray() ])
+      this.mask.destroy()
     }
     this.layer.batchDraw()
   }
@@ -95,12 +93,13 @@ export default class Move extends ToolClass implements ToolClassInterface {
   }
   // Use mask to check which shapes it covers in the layer.
   // Return the IDs of the groups that are covered by the mask and dont exist in the groups array
-  hitCheck = (mask: Konva.Rect, layer: Konva.Layer): Collection<Konva.Node> => {
-    return layer.find((node: Konva.Node) => {
+  hitCheck = (): Collection<Konva.Node> => {
+    return this.layer.find((node: Konva.Node) => {
       if (node instanceof Konva.Group &&
         (node.attrs.type === CanvasElementType.ENTITY || node.attrs.type === CanvasElementType.SHAPE) &&
-        !node.attrs.temporary) {
-        const r1 = mask.getClientRect({})
+        !node.attrs.temporary &&
+        this.mask) {
+        const r1 = this.mask.getClientRect({})
         const r2 = node.getClientRect({})
         return !(
           r2.x > r1.x + r1.width ||

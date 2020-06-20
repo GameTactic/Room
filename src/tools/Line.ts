@@ -6,12 +6,21 @@ import { ISO } from '@/util/ISO'
 import uuid from 'uuid'
 import { SocketCanvasToolsEmit } from '@/store/modules/socket'
 
+export enum LineType {
+  LINE = 'line',
+  ARROW = 'arrow',
+  T_BAR = 'tBar'
+}
+
 export default class Line extends ToolClass implements LineInterface {
   private lineCreator: LineCreator
+  private groupId = uuid()
+  private hasMoved = false
+  private data: LineData | undefined
   constructor (public readonly name: string,
                public size: number,
                public colour: string,
-               public endStyle: string,
+               public endStyle: LineType,
                public strokeStyle: number,
                public temporary: boolean) {
     super()
@@ -19,16 +28,19 @@ export default class Line extends ToolClass implements LineInterface {
       this.temporary,
       this.size,
       this.colour,
-      this.strokeStyle
+      this.strokeStyle,
+      this.groupId,
+      { x: 0, y: 0 },
+      { x: 0, y: 0 },
+      this.endStyle
     )
   }
 
   mouseDownAction = (event: CustomEvent): void => {
     this.enableTool()
-    this.resetCanvasEntity()
-    this.canvasElement.type = CanvasElementType.SHAPE
-    this.canvasElement.isVisible = true
-    this.canvasElement.data = {
+    this.groupId = uuid()
+    this.hasMoved = false
+    this.data = {
       from: {
         x: event.globalOffset.x,
         y: event.globalOffset.y
@@ -38,30 +50,39 @@ export default class Line extends ToolClass implements LineInterface {
         y: event.globalOffset.y
       }
     }
-    this.canvasElement.tool = {
-      name: this.name,
-      colour: this.colour,
-      size: this.size,
-      endStyle: this.endStyle,
-      strokeStyle: this.strokeStyle,
-      temporary: this.temporary
-    }
     this.lineCreator = new LineCreator(
       this.temporary,
       this.size,
       this.colour,
-      this.strokeStyle
+      this.strokeStyle,
+      this.groupId,
+      {
+        x: this.formatX(this.data.from.x),
+        y: this.formatX(this.data.from.y)
+      },
+      {
+        x: this.formatX(this.data.to.x),
+        y: this.formatX(this.data.to.y)
+      },
+      this.endStyle
     )
-    this.lineCreator[`create${this.endStyle.toUpperCase()}`](event)
-    this.canvasElement.attrs.position = this.lineCreator.getGroup().getPosition()
+    this.lineCreator.create()
   }
 
   mouseMoveAction = (event: CustomEvent): void => {
-    if (this.enabled) {
-      if (!this.canvasEntity.hasMoved) { this.canvasEntity.hasMoved = true }
-      const data = this.canvasElement.data as LineData
-      data.to = { x: event.globalOffset.x, y: event.globalOffset.y }
-      this.lineCreator['move' + this.endStyle.toUpperCase()](event)
+    if (this.enabled && this.data) {
+      if (!this.hasMoved) { this.hasMoved = true }
+      this.data.to = { x: event.globalOffset.x, y: event.globalOffset.y }
+      this.lineCreator.move(
+        {
+          x: this.formatX(this.data.from.x),
+          y: this.formatY(this.data.from.y)
+        },
+        {
+          x: this.formatX(this.data.to.x),
+          y: this.formatY(this.data.to.y)
+        }
+      )
       this.layer.batchDraw()
     }
   }
@@ -70,23 +91,51 @@ export default class Line extends ToolClass implements LineInterface {
   mouseUpAction = (event: CustomEvent): void => {
     if (this.enabled) {
       this.disableTool()
-      if (!this.canvasEntity.hasMoved) {
+      if (!this.hasMoved) {
         this.lineCreator.destroy()
       } else {
-        if (this.canvasElement.tool.temporary) {
+        if (this.temporary) {
           this.lineCreator.runTemporaryAnimation(this.lineCreator.getGroup())
         }
-        this.sendAndAddToState({
-          id: uuid(),
-          jti: this.canvasElement.jti,
-          modifyType: Tracker.ADDITION,
-          modifyData: {
-            additions: [this.canvasElement.id],
-            tool: AdditionTools.LINE
-          },
-          canvasElements: [this.canvasElement],
-          timestampModified: ISO.timestamp()
-        }, SocketCanvasToolsEmit.CANVAS_TOOLS_LINE)
+        if (this.jti && this.data) {
+          this.sendAndAddToState({
+            id: uuid(),
+            jti: this.jti,
+            modifyType: Tracker.ADDITION,
+            modifyData: {
+              additions: [this.groupId],
+              tool: AdditionTools.LINE
+            },
+            canvasElements: [{
+              id: this.groupId,
+              tool: {
+                name: this.name,
+                size: this.size,
+                colour: this.colour,
+                temporary: this.temporary,
+                strokeStyle: this.strokeStyle,
+                endStyle: this.endStyle
+              } as LineInterface,
+              type: CanvasElementType.SHAPE,
+              data: this.data,
+              jti: this.jti,
+              isVisible: true,
+              layerId: this.layer.id(),
+              attrs: {
+                position: {
+                  x: this.formatXInverse(this.lineCreator.getGroup().position().x),
+                  y: this.formatYInverse(this.lineCreator.getGroup().position().y)
+                },
+                rotation: this.lineCreator.getGroup().rotation(),
+                skewX: this.lineCreator.getGroup().skewX(),
+                skewY: this.lineCreator.getGroup().skewY(),
+                scaleX: this.lineCreator.getGroup().scaleX(),
+                scaleY: this.lineCreator.getGroup().scaleY()
+              }
+            }],
+            timestampModified: ISO.timestamp()
+          }, SocketCanvasToolsEmit.CANVAS_TOOLS_LINE)
+        }
       }
     }
   }
@@ -95,13 +144,18 @@ export default class Line extends ToolClass implements LineInterface {
     request.canvasElements.forEach((canvasElement: CanvasElement) => {
       const data = canvasElement.data as LineData
       if (data.from && data.to) {
+        const tool = canvasElement.tool as LineInterface
         this.lineCreator = new LineCreator(
-          canvasElement.tool.temporary || this.temporary,
-          canvasElement.tool.size || this.size,
-          canvasElement.tool.colour || this.colour,
-          canvasElement.tool.strokeStyle || this.strokeStyle
+          tool.temporary,
+          tool.size,
+          tool.colour,
+          tool.strokeStyle,
+          tool.id,
+          data.from,
+          data.to,
+          tool.endStyle
         )
-        this.lineCreator['create' + canvasElement.tool.endStyle?.toUpperCase()](this.stageEvent, canvasElement)
+        this.lineCreator.create()
         if (canvasElement.tool.temporary) {
           this.lineCreator.runTemporaryAnimation(this.lineCreator.getGroup())
         } else {

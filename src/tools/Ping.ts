@@ -8,6 +8,8 @@ import uuid from 'uuid'
 import { SocketCanvasToolsEmit } from '@/store/modules/socket'
 
 export default class Ping extends ToolClass implements PingInterface {
+  private data: PingData = { point: { x: 0, y: 0 } }
+  private groupId = uuid()
   private pingCreator: PingCreator
   constructor (public readonly name: string,
                public readonly size: number,
@@ -17,69 +19,100 @@ export default class Ping extends ToolClass implements PingInterface {
     this.pingCreator = new PingCreator(
       this.temporary,
       this.size,
-      this.colour
+      this.colour,
+      this.groupId,
+      this.data.point
     )
   }
 
   mouseDownAction = (event: CustomEvent): void => {
     this.enableTool()
-    this.resetCanvasEntity()
-    this.canvasElement.type = CanvasElementType.SHAPE
-    this.canvasElement.isVisible = true
-    this.canvasElement.data = {
+    this.data = {
       point: { x: event.globalOffset.x, y: event.globalOffset.y }
     }
-    this.canvasElement.tool = {
-      name: this.name,
-      colour: this.colour,
-      size: this.size,
-      temporary: this.temporary
-    }
-    this.triggerPing(event)
-    this.canvasElement.attrs.position = this.pingCreator.getGroup().getPosition()
+    this.triggerPing()
   }
 
   mouseMoveAction = throttle((event: CustomEvent): void => {
     if (this.enabled) {
-      this.canvasElement.data = {
+      this.data = {
         point: { x: event.globalOffset.x, y: event.globalOffset.y }
       }
-      this.triggerPing(event)
+      this.triggerPing()
     }
   }, 75)
 
+  // eslint-disable-next-line
   mouseUpAction = (event: CustomEvent): void => {
     if (this.enabled) {
       this.disableTool()
-      this.triggerPing(event)
     }
   }
 
-  triggerPing = (event: CustomEvent): void => {
-    this.pingCreator.create(event)
-    this.send({
-      id: uuid(),
-      jti: this.canvasElement.jti,
-      modifyType: Tracker.ADDITION,
-      modifyData: {
-        additions: [this.canvasElement.id],
-        tool: AdditionTools.PING
-      },
-      canvasElements: [this.canvasElement],
-      timestampModified: ISO.timestamp()
-    }, SocketCanvasToolsEmit.CANVAS_TOOLS_PING)
+  triggerPing = (): void => {
+    if (this.jti) {
+      this.pingCreator = new PingCreator(
+        this.temporary,
+        this.size,
+        this.colour,
+        this.groupId,
+        this.data.point
+      )
+      this.pingCreator.create()
+      this.send({
+        id: uuid(),
+        jti: this.jti,
+        modifyType: Tracker.ADDITION,
+        modifyData: {
+          additions: [this.groupId],
+          tool: AdditionTools.PING
+        },
+        canvasElements: [{
+          id: this.groupId,
+          tool: {
+            name: this.name,
+            size: this.size,
+            colour: this.colour,
+            temporary: this.temporary
+          } as PingInterface,
+          type: CanvasElementType.SHAPE,
+          data: this.data,
+          jti: this.jti,
+          isVisible: true,
+          layerId: this.layer.id(),
+          attrs: {
+            position: {
+              x: this.formatXInverse(this.pingCreator.getGroup().position().x),
+              y: this.formatYInverse(this.pingCreator.getGroup().position().y)
+            },
+            rotation: this.pingCreator.getGroup().rotation(),
+            skewX: this.pingCreator.getGroup().skewX(),
+            skewY: this.pingCreator.getGroup().skewY(),
+            scaleX: this.pingCreator.getGroup().scaleX(),
+            scaleY: this.pingCreator.getGroup().scaleY()
+          }
+        }],
+        timestampModified: ISO.timestamp()
+      }, SocketCanvasToolsEmit.CANVAS_TOOLS_PING)
+    }
   }
 
   renderCanvas = (request: RequestCanvasEntity): void => {
     request.canvasElements.forEach((canvasElement: CanvasElement) => {
       const data = canvasElement.data as PingData
       if (data.point) {
+        const tool = canvasElement.tool as PingInterface
         this.pingCreator = new PingCreator(
-          canvasElement.tool.temporary || this.temporary,
-          canvasElement.tool.size || this.size,
-          canvasElement.tool.colour || this.colour
+          tool.temporary,
+          tool.size,
+          tool.colour,
+          canvasElement.id,
+          {
+            x: this.formatX(data.point.x),
+            y: this.formatY(data.point.y)
+          }
         )
-        this.pingCreator.create(this.stageEvent, canvasElement)
+        this.pingCreator.create()
       }
     })
   }

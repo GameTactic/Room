@@ -9,6 +9,8 @@ import { SocketCanvasToolsEmit } from '@/store/modules/socket'
 
 export default class Text extends ToolClass implements TextInterface {
   private textCreator: TextCreator
+  private data: TextData = { point: { x: 0, y: 0 } }
+  private groupId = uuid()
   constructor (public readonly name: string,
                public size: number,
                public colour: string,
@@ -19,7 +21,9 @@ export default class Text extends ToolClass implements TextInterface {
       this.temporary,
       this.size,
       this.colour,
-      this.textString
+      this.textString,
+      this.groupId,
+      this.data.point
     )
   }
 
@@ -36,24 +40,20 @@ export default class Text extends ToolClass implements TextInterface {
     const target = event.konvaPointerEvent.target
     if (target instanceof Konva.Stage || target instanceof Konva.Node) {
       this.enableTool()
-      this.resetCanvasEntity()
-      this.canvasElement.type = CanvasElementType.SHAPE
-      this.canvasElement.isVisible = true
-      this.canvasElement.data = {
+      this.groupId = uuid()
+      this.data = {
         point: { x: event.globalOffset.x, y: event.globalOffset.y }
-      }
-      this.canvasElement.tool = {
-        name: this.name,
-        size: this.size,
-        colour: this.colour,
-        temporary: this.temporary,
-        textString: this.textString
       }
       this.textCreator = new TextCreator(
         this.temporary,
         this.size,
         this.colour,
-        this.textString
+        this.textString,
+        this.groupId,
+        {
+          x: this.formatX(this.data.point.x),
+          y: this.formatY(this.data.point.y)
+        }
       )
       const textArea = this.textCreator.createTextArea(event)
       const inputEvent = () => {
@@ -79,20 +79,45 @@ export default class Text extends ToolClass implements TextInterface {
       }
       const focusOutEvent = () => {
         this.disableTool()
-        this.canvasElement.tool.textString = textArea.value
+        this.textString = textArea.value
         textArea.remove()
-        this.textCreator.create(event)
-        this.canvasElement.attrs.position = this.textCreator.getGroup().getPosition()
-        if (this.canvasElement.tool.textString && this.canvasElement.tool.textString?.length > 0) {
+        if (this.textString && this.textString.length > 0 && this.jti) {
+          this.textCreator.textString = this.textString
+          this.textCreator.create()
           this.sendAndAddToState({
             id: uuid(),
-            jti: this.canvasElement.jti,
+            jti: this.jti,
             modifyType: Tracker.ADDITION,
             modifyData: {
-              additions: [this.canvasElement.id],
+              additions: [this.groupId],
               tool: AdditionTools.TEXT
             },
-            canvasElements: [this.canvasElement],
+            canvasElements: [{
+              id: this.groupId,
+              tool: {
+                name: this.name,
+                size: this.size,
+                colour: this.colour,
+                temporary: this.temporary,
+                textString: this.textString
+              } as TextInterface,
+              type: CanvasElementType.SHAPE,
+              data: this.data,
+              jti: this.jti,
+              isVisible: true,
+              layerId: this.layer.id(),
+              attrs: {
+                position: {
+                  x: this.formatXInverse(this.textCreator.getGroup().position().x),
+                  y: this.formatYInverse(this.textCreator.getGroup().position().y)
+                },
+                rotation: this.textCreator.getGroup().rotation(),
+                skewX: this.textCreator.getGroup().skewX(),
+                skewY: this.textCreator.getGroup().skewY(),
+                scaleX: this.textCreator.getGroup().scaleX(),
+                scaleY: this.textCreator.getGroup().scaleY()
+              }
+            }],
             timestampModified: ISO.timestamp()
           }, SocketCanvasToolsEmit.CANVAS_TOOLS_TEXT)
         }
@@ -115,13 +140,19 @@ export default class Text extends ToolClass implements TextInterface {
     request.canvasElements.forEach((canvasElement: CanvasElement) => {
       const data = canvasElement.data as TextData
       if (data.point) {
+        const tool = canvasElement.tool as TextInterface
         this.textCreator = new TextCreator(
-          canvasElement.tool.temporary || this.temporary,
-          canvasElement.tool.size || this.size,
-          canvasElement.tool.colour || this.colour,
-          canvasElement.tool.textString || this.textString
+          tool.temporary,
+          tool.size,
+          tool.colour,
+          tool.textString,
+          canvasElement.id,
+          {
+            x: this.formatX(data.point.x),
+            y: this.formatY(data.point.y)
+          }
         )
-        this.textCreator.create(this.stageEvent, canvasElement)
+        this.textCreator.create()
         if (canvasElement.tool.temporary) {
           this.textCreator.runTemporaryAnimation(this.textCreator.getGroup())
         } else {

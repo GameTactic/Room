@@ -7,6 +7,7 @@ import uuid from 'uuid'
 import { SocketCanvasToolsEmit } from '@/store/modules/socket'
 
 export default class Erase extends ToolClass {
+  private data: RemovalData | undefined
   constructor (public readonly name: string,
                public readonly temporary: boolean) {
     super()
@@ -14,13 +15,8 @@ export default class Erase extends ToolClass {
 
   mouseDownAction = (event: CustomEvent): void => {
     this.enableTool()
-    this.resetCanvasEntity()
-    this.canvasEntity.modifyData = {
+    this.data = {
       removals: []
-    }
-    this.canvasElement.tool = {
-      name: this.name,
-      temporary: false
     }
     this.findAndHide(event)
   }
@@ -33,14 +29,13 @@ export default class Erase extends ToolClass {
 
   // eslint-disable-next-line
   mouseUpAction = (event: CustomEvent): void => {
-    const data = this.canvasEntity.modifyData as RemovalData
-    if (this.enabled && data.removals) {
+    if (this.enabled && this.data?.removals && this.jti) {
       this.disableTool()
       this.sendAndAddToState({
         id: uuid(),
-        jti: this.canvasElement.jti,
+        jti: this.jti,
         modifyType: Tracker.REMOVAL,
-        modifyData: data,
+        modifyData: this.data,
         canvasElements: [],
         timestampModified: ISO.timestamp()
       }, SocketCanvasToolsEmit.CANVAS_TOOLS_ERASE)
@@ -55,9 +50,8 @@ export default class Erase extends ToolClass {
 
   findAndHide = (event: CustomEvent): void => {
     const group = event.konvaPointerEvent.target.parent
-    const data = this.canvasEntity.modifyData as RemovalData
-    if (group && group instanceof Konva.Group && group.attrs.id && data.removals && !(data.removals.includes(group.attrs.id)) && group.attrs.type !== 'map') {
-      data.removals = [ ...data.removals, group.attrs.id ]
+    if (group && group instanceof Konva.Group && group.attrs.id && this.data?.removals && !(this.data?.removals.includes(group.attrs.id)) && group.attrs.type !== 'map') {
+      this.data.removals = [ ...this.data.removals, group.attrs.id ]
       this.hideGroup(group.attrs.id)
     }
   }

@@ -20,21 +20,21 @@
         <v-spacer></v-spacer>
         <v-tooltip top :open-delay="500">
           <template v-slot:activator="{ on }">
-            <v-radio v-on="on" class="mr-0" name="endStyle" on-icon="fa-arrow-right" off-icon="fa-arrow-right" :value="'arrow'"></v-radio>
+            <v-radio v-on="on" class="mr-0" name="endStyle" on-icon="fa-arrow-right" off-icon="fa-arrow-right" :value="LineType.ARROW"></v-radio>
           </template>
           <span>{{ $t('tool.template.arrow') }}</span>
         </v-tooltip>
         <v-spacer></v-spacer>
         <v-tooltip top :open-delay="500">
           <template v-slot:activator="{ on }">
-            <v-radio v-on="on" class="mr-0" name="endStyle" on-icon="$vuetify.icons.normalLineActive" off-icon="$vuetify.icons.normalLine" :value="'line'"></v-radio>
+            <v-radio v-on="on" class="mr-0" name="endStyle" on-icon="$vuetify.icons.normalLineActive" off-icon="$vuetify.icons.normalLine" :value="LineType.LINE"></v-radio>
           </template>
           <span>{{ $t('tool.template.solidLine') }}</span>
         </v-tooltip>
         <v-spacer></v-spacer>
         <v-tooltip top :open-delay="500">
           <template v-slot:activator="{ on }">
-            <v-radio v-on="on" class="mr-0" name="endStyle" on-icon="$vuetify.icons.tBarHeadActive" off-icon="$vuetify.icons.tBarHead" :value="'tBar'"></v-radio>
+            <v-radio v-on="on" class="mr-0" name="endStyle" on-icon="$vuetify.icons.tBarHeadActive" off-icon="$vuetify.icons.tBarHead" :value="LineType.T_BAR"></v-radio>
           </template>
           <span>{{ $t('tool.template.tBar') }}</span>
         </v-tooltip>
@@ -85,6 +85,7 @@ import { Namespaces } from '@/store'
 import { AppToolGetters, AppToolsAction } from '@/store/modules/app/tools'
 import ColourPicker from '@/components/canvas-tools/templates/template-tools/ColourPicker.vue'
 import SizePicker from '@/components/canvas-tools/templates/template-tools/SizePicker.vue'
+import { LineType } from '@/tools/Line'
 
 const AppTools = namespace(Namespaces.APP_TOOLS)
 
@@ -99,6 +100,7 @@ export default class PopoutButton extends Vue {
   @AppTools.Action(AppToolsAction.SET_END_STYLE) setEndStyle!: (endStyle: string) => void
   @AppTools.Action(AppToolsAction.SET_STROKE_STYLE) setStrokeStyle!: (strokeStyle: number) => void
   @AppTools.Action(AppToolsAction.SET_TEMPORARY) setTemporary!: (temporary: boolean) => void
+  LineType = LineType
 
   get lineSize () {
     return this.findTool('line').size || 5
@@ -117,7 +119,7 @@ export default class PopoutButton extends Vue {
   }
 
   get lineEndStyle (): string {
-    return this.findTool('line').endStyle || 'line'
+    return this.findTool('line').endStyle || LineType.LINE
   }
 
   set lineEndStyle (newValue: string) {
