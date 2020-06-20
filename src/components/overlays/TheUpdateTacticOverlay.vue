@@ -76,6 +76,7 @@ import { SocketCanvasAction } from '@/store/modules/socket/canvas'
 import { CanvasElement, CanvasElementHistory } from '@/types/Canvas'
 import TacticWatcher from '@/mixins/TacticWatcher'
 import { Namespaces } from '@/store'
+import { WowsMapsDataApi } from '@/types/Games/Wows'
 
 const AppRoom = namespace(Namespaces.APP_ROOM)
 const SocketStage = namespace(Namespaces.SOCKET_STAGE)
@@ -103,9 +104,9 @@ export default class TheUpdateTacticOverlay extends mixins(TacticWatcher) {
   }
 
   get maps () {
-    const mapApi: Api[] = this.api.filter((api: Api) => api.name === 'wows.encyclopedia.maps')
-    if (mapApi.length === 1) {
-      return mapApi[0].data
+    const mapApi: Api | undefined = this.api.find((api: Api) => api.name === 'wows.encyclopedia.maps')
+    if (mapApi) {
+      return (mapApi.data as WowsMapsDataApi).maps
     } else {
       return false
     }

@@ -1,5 +1,5 @@
 <template>
-  <v-list-item-group>
+  <v-list>
     <span class="mx-2 caption" v-if="owner">Owner [1]</span>
     <v-divider class="mx-2" v-if="owner"></v-divider>
     <UserListItem :user="owner" v-if="owner"></UserListItem>
@@ -24,7 +24,7 @@
       :key="user.id"
       :user="user"
     ></UserListItem>
-  </v-list-item-group>
+  </v-list>
 </template>
 
 <script lang="ts">

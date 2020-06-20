@@ -13,11 +13,11 @@
       multiple
       class="custom-expansion-panels"
     >
-      <WowsEntitySection v-if="game === Game.WOWS && currentTacticId"></WowsEntitySection>
-      <WotEntitySection v-if="game === Game.WOT && currentTacticId"></WotEntitySection>
+      <WowsEntitySection v-if="game === Game.WOWS && currentTacticId && isAuthorisedAndCanvasLoaded"></WowsEntitySection>
+      <WotEntitySection v-if="game === Game.WOT && currentTacticId && isAuthorisedAndCanvasLoaded"></WotEntitySection>
       <!-- Team section -->
-      <WowsTeamSection v-if="game === Game.WOWS && currentTacticId"></WowsTeamSection>
-      <WotTeamSection v-if="game === Game.WOT && currentTacticId"></WotTeamSection>
+      <WowsTeamSection v-if="game === Game.WOWS && currentTacticId && isAuthorisedAndCanvasLoaded"></WowsTeamSection>
+      <WotTeamSection v-if="game === Game.WOT && currentTacticId && isAuthorisedAndCanvasLoaded"></WotTeamSection>
       <!-- End team section -->
       <TacticSelector></TacticSelector>
       <UserList></UserList>
@@ -39,9 +39,12 @@ import { Team, Game } from '@/store/types'
 import { SocketTacticGetters } from '@/store/modules/socket/tactic'
 import WowsEntitySection from '@/components/entity-panel/games/wows/WowsEntitySelector.vue'
 import WotEntitySection from '@/components/entity-panel/games/wot/WotEntitySelector.vue'
+import { SocketUserGetters } from '@/store/modules/socket/user'
+
 const SocketTeam = namespace(Namespaces.SOCKET_TEAM)
 const SocketTactic = namespace(Namespaces.SOCKET_TACTIC)
 const SocketRoom = namespace(Namespaces.SOCKET_ROOM)
+const SocketUser = namespace(Namespaces.SOCKET_USER)
 
 @Component({
   name: 'TheEntityPanel',
@@ -58,6 +61,7 @@ export default class EntityPanel extends Vue {
   @SocketRoom.Getter(SocketRoomGetters.GAME) private readonly game!: Game;
   @SocketTactic.Getter(SocketTacticGetters.CURRENT_TACTIC_ID) private readonly currentTacticId!: string | undefined
   @SocketTeam.Getter(SocketTeamGetters.TEAMS) private readonly teams!: Team[];
+  @SocketUser.Getter(SocketUserGetters.IS_AUTHORISED_CANVAS_LOADED) isAuthorisedAndCanvasLoaded!: boolean
   // Enum
   Game = Game
 }

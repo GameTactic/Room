@@ -92,6 +92,7 @@ export default class CreateNewTacticOverlay extends mixins(TacticWatcher) {
   @SocketStage.Action(SocketStageActions.SET_CONFIG) setConfig!: (config: CustomStageConfig) => void
   @SocketCanvas.Action(SocketCanvasAction.SET_CANVAS_ELEMENT) setCanvasElements!: (canvasElements: CanvasElement[]) => void
   @SocketCanvas.Action(SocketCanvasAction.SET_CANVAS_ELEMENT_HISTORY) setCanvasElementsHistory!: (canvasElements: CanvasElementHistory[]) => void
+  @AppRoom.Getter(AppRoomGetters.IS_CANVAS_LOADED) isCanvasLoaded!: boolean
 
   tactic = {
     map: {
@@ -146,6 +147,7 @@ export default class CreateNewTacticOverlay extends mixins(TacticWatcher) {
   createTactic (): void {
     const foundCollection = this.collections.find((collection: Collection) => collection.name === 'root')
     if (!this.isDisabled() && foundCollection) {
+      if (!this.isCanvasLoaded) { this.setIsCanvasLoaded(true) }
       const id = uuid()
       const teams: Team[] = this.tactic.teams.map((v) => {
         return {

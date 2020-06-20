@@ -1,7 +1,7 @@
 <template>
   <v-treeview
     v-model="active"
-    :items="this.items"
+    :items="items"
     open-on-click
     :open="open"
     activatable
@@ -10,9 +10,13 @@
       <v-icon v-if="item.children">
         {{ open ? 'fa-folder-open' : 'fa-folder' }}
       </v-icon>
-      <v-icon v-else>
-        {{ item.icon }}
-      </v-icon>
+      <v-avatar
+        v-else
+        size="30"
+        class="ml-0"
+      >
+        <img :src="item.tactic.map.icon">
+      </v-avatar>
     </template>
     <template v-slot:label="{ item }">
       <span
@@ -22,7 +26,7 @@
       >
           <span class="d-flex flex-column">
             <span class="body-2" v-text="item.name" />
-            <span class="caption" v-text="item.map.name" />
+            <span class="caption" v-text="item.tactic.map.name" />
           </span>
           <v-btn
             elevation="0"
@@ -52,23 +56,40 @@
         nudge-left="100"
         nudge-width="80"
         content-class="elevation-2"
+        v-if="!item.children"
       >
         <template v-slot:activator="{ on: menuItem }">
           <v-btn
             elevation="0"
+            color="transparent"
             height="30"
-            tile
+            fab
             x-small
             ripple
-            color="transparent"
-            v-on="menuItem">
-            <v-icon
-              small
-              color="grey darken-1"
-            >fa-ellipsis-v</v-icon>
+            v-on="menuItem"
+          >
+            <v-icon small color="grey darken-1">fa-ellipsis-v</v-icon>
           </v-btn>
         </template>
-        <p>{{ item.name }}</p>
+        <v-card tile>
+          <v-list dense>
+            <v-list-item
+              v-for="(cardItem, index) in cardMenuItems"
+              :key="index"
+              @click="tacticMenuOnClickHandler(cardItem, item.tactic)"
+            >
+              <v-list-item-icon class="custom-autocomplete-tactic-menu-icon">
+                <v-icon
+                  small
+                  :color="tacticMenuColour(item.tactic, cardItem)"
+                  v-text="tacticMenuIcon(item.tactic, cardItem)" />
+              </v-list-item-icon>
+              <v-list-item-content>
+                <v-list-item-title v-text="tacticMenuPinText(item.tactic, cardItem)" />
+              </v-list-item-content>
+            </v-list-item>
+          </v-list>
+        </v-card>
       </v-menu>
     </template>
   </v-treeview>
@@ -78,20 +99,16 @@
 
 import Component from 'vue-class-component'
 import Vue from 'vue'
-import { Getter } from 'vuex-class'
+import { Getter, namespace } from 'vuex-class'
 import { Namespaces } from '@/store'
-import { SocketTacticGetters } from '@/store/modules/socket/tactic'
-import { Collection, Tactic, Map } from '@/store/types'
+import { SocketTacticAction, SocketTacticGetters } from '@/store/modules/socket/tactic'
+import { Collection, Tactic } from '@/store/types'
+import { TacticMenuItem, TacticMenuOptions, TreeViewItem } from '@/components/entity-panel/sections/components/tacticSelector/types'
 import { EventBus } from '@/event-bus'
+import { SocketUserGetters } from '@/store/modules/socket/user'
 
-export interface TreeViewItem {
-  id: string;
-  name: string;
-  icon?: string;
-  parent?: string;
-  children?: TreeViewItem[];
-  map?: Map;
-}
+const SocketTactic = namespace(Namespaces.SOCKET_TACTIC)
+const SocketUser = namespace(Namespaces.SOCKET_USER)
 
 @Component({
   name: 'TacticSelectorContent'
@@ -99,8 +116,15 @@ export interface TreeViewItem {
 export default class TacticSelectorContent extends Vue {
   @Getter(`${Namespaces.SOCKET_TACTIC}/${SocketTacticGetters.COLLECTIONS}`) collections!: Collection[]
   @Getter(`${Namespaces.SOCKET_TACTIC}/${SocketTacticGetters.TACTICS}`) tactics!: Tactic[]
+  @SocketTactic.Getter(SocketTacticGetters.PINNED_TACTICS) pinnedTactics!: Tactic[]
+  @SocketUser.Getter(SocketUserGetters.IS_AUTHORISED) isAuthorised!: boolean;
+  @SocketTactic.Action(SocketTacticAction.DELETE_TACTIC) deleteTactic!: (id: string) => void
+  @SocketTactic.Action(SocketTacticAction.UPDATE_TACTIC) updateTactic!: (tactic: Tactic) => void
+  @SocketTactic.Action(SocketTacticAction.TOGGLE_PIN_TACTIC) togglePinTactic!: (tactic: Tactic) => void
   active = []
-  open = []
+  open: string[] = []
+  search: string | null = null
+  selected = []
 
   get items (): TreeViewItem[] {
     const collections: TreeViewItem[] = this.collections.map((collection: Collection) => {
@@ -114,8 +138,8 @@ export default class TacticSelectorContent extends Vue {
             parent: tactic.collectionId,
             id: tactic.id,
             name: tactic.name,
-            map: tactic.map,
-            icon: 'fa-map'
+            tactic: tactic,
+            icon: tactic.map.icon || 'fa-map'
           }
         })
       }
@@ -141,10 +165,60 @@ export default class TacticSelectorContent extends Vue {
   numberUsersOnTactic (id: string) {
     return 1
   }
+
+  tacticMenuOnClickHandler (menuItem: TacticMenuItem, tactic: Tactic) {
+    switch (menuItem.action) {
+      case TacticMenuOptions.EDIT:
+        EventBus.$emit('openManageTacticsOverlay', tactic)
+        break
+      case TacticMenuOptions.DELETE:
+        this.deleteTactic(tactic.id)
+        break
+      case TacticMenuOptions.PIN:
+        this.togglePinTactic(tactic)
+        break
+      default:
+        break
+    }
+  }
+  tacticMenuColour (tactic: Tactic, item: TacticMenuItem) {
+    if (item.action === TacticMenuOptions.PIN && tactic.pinned) {
+      return 'primary'
+    } else if (item.action === TacticMenuOptions.DELETE) {
+      return 'error'
+    }
+    return ''
+  }
+  tacticMenuIcon (tactic: Tactic, item: TacticMenuItem) {
+    return item.icon
+  }
+  tacticMenuPinText (tactic: Tactic, item: TacticMenuItem) {
+    if (item.action === TacticMenuOptions.PIN && tactic.pinned && item.titleTwo) {
+      return item.titleTwo
+    }
+    return item.title
+  }
+  cardMenuItems: TacticMenuItem[] = [{
+    action: TacticMenuOptions.EDIT,
+    title: `Edit Tactic`,
+    icon: 'fa-edit'
+  }, {
+    action: TacticMenuOptions.PIN,
+    title: `Pin Tactic`,
+    titleTwo: `Unpin Tactic`,
+    icon: 'fa-bookmark'
+  }, {
+    action: TacticMenuOptions.DELETE,
+    title: `Delete Tactic`,
+    icon: 'fa-times'
+  }]
 }
 </script>
 <style lang="scss">
 .v-treeview-node__level{
   width: 12px !important;
+}
+.custom-autocomplete-tactic-menu-icon {
+  margin-right: 6px !important;
 }
 </style>
