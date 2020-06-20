@@ -6,14 +6,14 @@ import { Namespaces } from '@/store'
 
 export enum SocketUserAction {
   SET_USERS = 'setUsers',
-  SET_USER = 'setUser',
+  ADD_USER = 'addUser',
   UPDATE_USER = 'updateUser',
   DELETE_USER = 'deleteUser'
 }
 
 export enum SocketUserMutation {
   SET_USERS = 'SET_USERS',
-  SET_USER = 'SET_USER',
+  ADD_USER = 'ADD_USER',
   UPDATE_USER = 'UPDATE_USER',
   DELETE_USER = 'DELETE_USER',
 }
@@ -63,7 +63,7 @@ const SocketUserModule: Module<SocketUserState, RootState> = {
     [SocketUserMutation.SET_USERS] (state: SocketUserState, payload: User[]) {
       state.users = payload
     },
-    [SocketUserMutation.SET_USER] (state: SocketUserState, payload: User) {
+    [SocketUserMutation.ADD_USER] (state: SocketUserState, payload: User) {
       state.users.push(payload)
     },
     [SocketUserMutation.UPDATE_USER] (state: SocketUserState, payload: User) {
@@ -77,7 +77,7 @@ const SocketUserModule: Module<SocketUserState, RootState> = {
     [SocketUserAction.SET_USERS] (context: SocketUserActionContext, payload: User[]) {
       context.commit('SET_USERS', payload)
     },
-    [SocketUserAction.SET_USER] (context: SocketUserActionContext, payload: User) {
+    [SocketUserAction.ADD_USER] (context: SocketUserActionContext, payload: User) {
       context.commit('SET_USER', payload)
     },
     [SocketUserAction.UPDATE_USER] (context: SocketUserActionContext, payload: User) {
