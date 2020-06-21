@@ -26,9 +26,9 @@
         <div class="d-flex flex-column align-center">
           <v-img
             :src="pinnedTactic.map.icon"
+            :alt="'Image of ' + pinnedTactic.map.name"
             width="80"
             eager
-            :alt="'Image of ' + pinnedTactic.map.name"
             class="custom-pinned-tactic-popup"
           />
           <div class="caption" v-text="pinnedTactic.name" />

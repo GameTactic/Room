@@ -13,22 +13,22 @@
             </v-card-title>
             <v-card-actions>
               <v-text-field
-                prepend-icon="fa-file"
-                :label="$t('tactic.overlay.name')"
                 v-model="selectedTactic.name"
+                :label="$t('tactic.overlay.name')"
+                prepend-icon="fa-file"
               />
             </v-card-actions>
             <v-card-actions v-if="maps !== false">
               <v-autocomplete
-                :items="maps"
-                item-text="name"
-                :search-input.sync="search"
                 v-model="selectedTactic.map"
+                :items="maps"
+                :label="$t('tactic.overlay.maps')"
+                :placeholder="$t('tactic.overlay.search')"
+                :search-input.sync="search"
+                item-text="name"
                 color="primary"
                 hide-no-data
                 hide-selected
-                :label="$t('tactic.overlay.maps')"
-                :placeholder="$t('tactic.overlay.search')"
                 prepend-icon="fa-search"
                 autocomplete="new-password"
                 return-object

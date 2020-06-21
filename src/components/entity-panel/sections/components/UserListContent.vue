@@ -35,7 +35,7 @@ import { Role, RoleTypes, User } from '@/store/types'
 import { SocketUserGetters } from '@/store/modules/socket/user'
 import { Namespaces } from '@/store'
 import { namespace } from 'vuex-class'
-import UserListItem from '@/components/entity-panel/sections/components/user-list/UserListItem.vue'
+import UserListItem from '@/components/entity-panel/sections/components/UserListItem.vue'
 
 const SocketUser = namespace(Namespaces.SOCKET_USER)
 

@@ -5,15 +5,15 @@
   >No tactics found</span>
   <v-treeview
     v-else
-    v-model="active"
+    v-model="activeElements"
     :items="items"
-    open-on-click
     :open="open"
+    open-on-click
     activatable
   >
-    <template v-slot:prepend="{ item, open }">
+    <template v-slot:prepend="{ item, isOpen }">
       <v-icon v-if="item.children">
-        {{ open ? 'fa-folder-open' : 'fa-folder' }}
+        {{ isOpen ? 'fa-folder-open' : 'fa-folder' }}
       </v-icon>
       <v-avatar
         v-else
@@ -26,8 +26,8 @@
     <template v-slot:label="{ item }">
       <span
         v-if="!item.children"
-        @click="switchTactic(item.id)"
         class="d-flex justify-space-between align-center"
+        @click="switchTactic(item.id)"
       >
           <span class="d-flex flex-column">
             <span class="body-2" v-text="item.name" />
@@ -44,10 +44,10 @@
           >
             <v-badge
               :v-if="numberUsersOnTactic(item.id) > 0"
+              :content="numberUsersOnTactic(item.id)"
               right
               overlap
               color="primary"
-              :content="numberUsersOnTactic(item.id)"
             >
               <v-icon color="grey darken-1">fa-user-circle</v-icon>
             </v-badge>
@@ -57,11 +57,11 @@
     </template>
     <template v-slot:append="{ item: item }">
       <v-menu
+        v-if="!item.children"
         offset-y
         nudge-left="100"
         nudge-width="80"
         content-class="elevation-2"
-        v-if="!item.children"
       >
         <template v-slot:activator="{ on: menuItem }">
           <v-btn
@@ -85,8 +85,8 @@
             >
               <v-list-item-icon class="custom-autocomplete-tactic-menu-icon">
                 <v-icon
-                  small
                   :color="tacticMenuColour(item.tactic, cardItem)"
+                  small
                   v-text="tacticMenuIcon(item.tactic, cardItem)" />
               </v-list-item-icon>
               <v-list-item-content>
@@ -108,7 +108,7 @@ import { Getter, namespace } from 'vuex-class'
 import { Namespaces } from '@/store'
 import { SocketTacticAction, SocketTacticGetters } from '@/store/modules/socket/tactic'
 import { Collection, Tactic } from '@/store/types'
-import { TacticMenuItem, TacticMenuOptions, TreeViewItem } from '@/components/entity-panel/sections/components/tactic-selector/types'
+import { TacticMenuItem, TacticMenuOptions, TreeViewItem } from '@/components/entity-panel/sections/types'
 import { EventBus } from '@/event-bus'
 import { SocketUserGetters } from '@/store/modules/socket/user'
 import HandleTactic from '@/util/HandleTactic'
@@ -127,10 +127,9 @@ export default class TacticSelectorContent extends Vue {
   @SocketTactic.Action(SocketTacticAction.DELETE_TACTIC) deleteTactic!: (id: string) => void
   @SocketTactic.Action(SocketTacticAction.UPDATE_TACTIC) updateTactic!: (tactic: Tactic) => void
   @SocketTactic.Action(SocketTacticAction.TOGGLE_PIN_TACTIC) togglePinTactic!: (tactic: Tactic) => void
-  active = []
+  activeElements: TreeViewItem[] = []
   open: string[] = []
   search: string | null = null
-  selected = []
 
   get items (): TreeViewItem[] {
     const collections: TreeViewItem[] = this.collections.map((collection: Collection) => {
@@ -139,21 +138,19 @@ export default class TacticSelectorContent extends Vue {
         id: collection.id,
         name: collection.name,
         parent: collection.parentCollectionId,
-        children: tactics.map((tactic: Tactic) => {
-          return {
-            parent: tactic.collectionId,
-            id: tactic.id,
-            name: tactic.name,
-            tactic: tactic,
-            icon: tactic.map.icon || 'fa-map'
-          }
-        })
+        children: tactics.map((tactic: Tactic) => ({
+          parent: tactic.collectionId,
+          id: tactic.id,
+          name: tactic.name,
+          tactic: tactic,
+          icon: tactic.map.icon || 'fa-map'
+        }))
       }
     })
     collections.forEach((collection: TreeViewItem) => {
       if (collection.parent) {
         const parent = collections.find((parent: TreeViewItem) => parent.id === collection.parent)
-        if (parent && parent.children) {
+        if (parent?.children) {
           parent.children.push(collection)
         }
       }

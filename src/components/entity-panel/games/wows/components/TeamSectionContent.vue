@@ -12,10 +12,10 @@
       placeholder="Start typing to search"
     ></v-text-field>
     <v-list-item-group
-      v-for="(entity, i) in getEntities"
+      v-for="(entity, i) in entities"
       v-bind:key="i"
     >
-      <WowsTeamSectionItem :entity="entity"></WowsTeamSectionItem>
+      <TeamSectionItem :entity="entity"></TeamSectionItem>
     </v-list-item-group>
   </v-list>
   <v-list v-else>
@@ -30,7 +30,7 @@
 <script lang="ts">
 import Component from 'vue-class-component'
 import Vue from 'vue'
-import WowsTeamSectionItem from '@/components/entity-panel/games/wows/components/WowsTeamSectionItem.vue'
+import TeamSectionItem from '@/components/entity-panel/games/wows/components/TeamSectionItem.vue'
 import { Ship } from '@/types/Games/Wows'
 import { SocketTeamGetters } from '@/store/modules/socket/team'
 import { Getter } from 'vuex-class'
@@ -38,16 +38,16 @@ import { Namespaces } from '@/store'
 import { Team } from '@/store/types'
 
 @Component({
-  name: 'WowsTeamSectionContent',
+  name: 'TeamSectionContent',
   components: {
-    WowsTeamSectionItem
+    TeamSectionItem
   }
 })
-export default class WowsTeamSectionContent extends Vue {
+export default class TeamSectionContent extends Vue {
   @Getter(`${Namespaces.SOCKET_TEAM}/${SocketTeamGetters.SELECTED_TEAM}`) selectedTeam!: Team | undefined
   search = ''
 
-  get getEntities (): Ship[] {
+  get entities (): Ship[] {
     if (!this.selectedTeam) {
       return []
     } else {

@@ -131,7 +131,7 @@ export default class Entity extends ToolClass {
     this.entity = entity
   }
 
-  getEntity = (): EntityInterface | void => {
+  getEntity = (): EntityInterface | undefined => {
     return this.entity
   }
 }

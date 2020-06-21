@@ -64,13 +64,11 @@ export default class Move extends ToolClass implements ToolClassInterface {
     if (this.enabled && this.mask) {
       this.disableTool()
       if (this.hasMoved) {
-        const tr = new Transformer(true)
-        tr.setNodes([ ...this.hitCheck().toArray() ])
+        new Transformer(true).setNodes([ ...this.hitCheck().toArray() ])
       } else {
         const target = event.konvaPointerEvent.target.parent
         if (target && (target.attrs.type === CanvasElementType.ENTITY || target.attrs.type === CanvasElementType.SHAPE)) {
-          const tr = new Transformer(true)
-          tr.setNodes([ target ])
+          new Transformer(true).setNodes([ target ])
         }
       }
       this.mask.destroy()

@@ -1,5 +1,9 @@
 <template>
-    <v-dialog v-model="overlay" width="700" class="custom-overlay">
+    <v-dialog
+      v-model="overlay"
+      width="700"
+      class="custom-overlay"
+    >
       <v-card class="pa-12">
         <v-row>
           <v-col>
@@ -8,22 +12,22 @@
             </v-card-title>
             <v-card-actions>
               <v-text-field
-                prepend-icon="fa-file"
-                :label="$t('tactic.overlay.name')"
                 v-model="tactic.name"
+                :label="$t('tactic.overlay.name')"
+                prepend-icon="fa-file"
               />
             </v-card-actions>
             <v-card-actions v-if="maps !== false">
               <v-autocomplete
-                :items="maps"
-                item-text="name"
-                :search-input.sync="search"
                 v-model="tactic.map"
+                :items="maps"
+                :search-input.sync="search"
+                :label="$t('tactic.overlay.maps')"
+                :placeholder="$t('tactic.overlay.search')"
+                item-text="name"
                 color="primary"
                 hide-no-data
                 hide-selected
-                :label="$t('tactic.overlay.maps')"
-                :placeholder="$t('tactic.overlay.search')"
                 prepend-icon="fa-search"
                 autocomplete="new-password"
                 return-object
@@ -41,8 +45,8 @@
             <v-spacer></v-spacer>
             <v-card-subtitle>
               <v-btn
-                color="primary"
                 :disabled="isDisabled()"
+                color="primary"
                 @click="createTactic()"
               >
                 {{ $t('tactic.createTacticOverlay.create') }}

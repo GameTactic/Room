@@ -23,14 +23,11 @@ export default class MapCanvas {
     const imgObj = new Image()
     imgObj.onload = () => {
       EventBus.$emit('MapChanging', false)
-      const foundGroup: Konva.Node = layer.findOne(
-        (group: Konva.Node) => group instanceof Konva.Group &&
-        group.attrs.type && group.attrs.type === CanvasElementType.MAP
-      )
+      const foundGroup: Konva.Node = layer.findOne((group: Konva.Node) => group instanceof Konva.Group && group.attrs.type === CanvasElementType.MAP)
       if (foundGroup && foundGroup instanceof Konva.Group) {
         foundGroup.destroy()
       }
-      const group = new Konva.Group()
+      const group: Konva.Group = new Konva.Group()
       group.attrs.type = CanvasElementType.MAP
       layer.add(group.add(this.createKonvaMapElement(imgObj, stageConfig)))
       layer.findOne((node: Konva.Node) => node.attrs.type === CanvasElementType.MAP).moveToBottom()
@@ -40,13 +37,13 @@ export default class MapCanvas {
   }
 
   createKonvaMapElement = (imgObj: HTMLImageElement, stageConfig: CustomStageConfig): Konva.Image => {
-    const mapDimentionRatio = 0.75
+    const mapDimensionRatio = 0.75
     return new Konva.Image({
       image: imgObj,
-      x: (stageConfig.initialWidth * ((1 - mapDimentionRatio) / 2)),
-      y: (stageConfig.initialHeight * ((1 - mapDimentionRatio) / 2)),
-      width: (stageConfig.initialWidth * mapDimentionRatio),
-      height: (stageConfig.initialHeight * mapDimentionRatio)
+      x: (stageConfig.initialWidth * ((1 - mapDimensionRatio) / 2)),
+      y: (stageConfig.initialHeight * ((1 - mapDimensionRatio) / 2)),
+      width: (stageConfig.initialWidth * mapDimensionRatio),
+      height: (stageConfig.initialHeight * mapDimensionRatio)
     })
   }
 }

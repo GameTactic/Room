@@ -110,20 +110,4 @@ export default class TheApp extends Vue {
 html, .v-application--wrap {
   overflow: hidden;
 }
-.custom-scroll-bar {
-  ::-webkit-scrollbar {
-    width: 8px;
-    background-color: #e7e7e7;
-    border-radius: 10px;
-  }
-  ::-webkit-scrollbar-track {
-    -webkit-box-shadow: inset 0 0 6px rgba(111, 90, 90, 0.2);
-    background-color: #dcdcdc;
-  }
-  ::-webkit-scrollbar-thumb {
-    -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,.2);
-    background-color: #bbbbbb;
-    cursor: pointer;
-  }
-}
 </style>

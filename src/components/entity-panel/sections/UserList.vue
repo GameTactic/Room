@@ -30,7 +30,7 @@
 import Component from 'vue-class-component'
 import Vue from 'vue'
 import AccordionItem from '@/components/entity-panel/templates/AccordionItem.vue'
-import UserListContent from '@/components/entity-panel/sections/components/user-list/UserListContent.vue'
+import UserListContent from '@/components/entity-panel/sections/components/UserListContent.vue'
 import { SocketUserGetters } from '@/store/modules/socket/user'
 import { User } from '@/store/types'
 import { namespace } from 'vuex-class'

@@ -1,6 +1,6 @@
 <template>
   <div
-    :class="`full-width-height ${dragEnabled ? 'dragEnabled' : ''}`"
+    :class="`full-width-height ${isDragEnabled ? 'drag-enabled' : ''}`"
     ref="app"
     @mousedown="mouseDownAction"
     @mousemove="mouseMoveAction"
@@ -8,19 +8,19 @@
     @dragover="$event.preventDefault()"
   >
     <the-canvas
-      class="zIndexUnderOverlay"
+      class="z-index-under-overlay"
       v-show="isCanvasLoaded"
       ref="stage"
     />
-    <v-overlay opacity="0.2" :value="mapChanging" class="zIndexSameAsOverlay">
+    <v-overlay opacity="0.2" :value="isMapChanging" class="z-index-same-as-overlay">
       <v-icon class="custom-spinner">fa-spinner</v-icon>
     </v-overlay>
-    <the-nav class="zIndexOverOverlay"/>
-    <the-tool-panel class="d-none d-sm-flex zIndexOverOverlay" />
-    <the-entity-panel v-if="isAuthorised" class="d-none d-sm-flex zIndexOverOverlay" />
+    <the-nav class="z-index-above-overlay"/>
+    <the-tool-panel class="d-none d-sm-flex z-index-above-overlay" />
+    <the-entity-panel v-if="isAuthorised" class="d-none d-sm-flex z-index-above-overlay" />
     <the-create-new-tactic-overlay />
     <the-update-tactic-overlay />
-    <pinned-tactics class="zIndexOverOverlay" v-if="isAuthorisedCanvasLoaded"></pinned-tactics>
+    <pinned-tactics class="z-index-above-overlay" v-if="isAuthorisedCanvasLoaded"></pinned-tactics>
   </div>
 </template>
 
@@ -82,7 +82,7 @@ export default class TheRoom extends mixins(RoomSocket) {
   @SocketRoom.Action(SocketRoomAction.SET_ROOM_ID) setRoomId!: (roomId: string) => void
 
   created () {
-    EventBus.$on('MapChanging', (v: boolean) => { this.mapChanging = v })
+    EventBus.$on('MapChanging', (v: boolean) => { this.isMapChanging = v })
     this.setRoomId(window.location.pathname.replace('/', ''))
   }
 
@@ -90,8 +90,8 @@ export default class TheRoom extends mixins(RoomSocket) {
     app: HTMLDivElement;
     stage: VueKonvaStage;
   }
-  dragEnabled = false
-  mapChanging = false
+  isDragEnabled = false
+  isMapChanging = false
 
   @Watch('jwt')
   onPropertyChanged () {
@@ -123,20 +123,20 @@ export default class TheRoom extends mixins(RoomSocket) {
 
   mouseDownAction (e: MouseEvent) {
     if (e.target === this.$refs.app && !(e.target instanceof HTMLCanvasElement)) {
-      this.dragEnabled = true
+      this.isDragEnabled = true
       EventBus.$emit('mouseAction', e)
     }
   }
 
   mouseMoveAction (e: MouseEvent) {
-    if (this.dragEnabled && e.target === this.$refs.app && !(e.target instanceof HTMLCanvasElement)) {
+    if (this.isDragEnabled && e.target === this.$refs.app && !(e.target instanceof HTMLCanvasElement)) {
       EventBus.$emit('mouseAction', e)
     }
   }
 
   mouseUpAction (e: MouseEvent) {
-    if (this.dragEnabled && e.target === this.$refs.app && !(e.target instanceof HTMLCanvasElement)) {
-      this.dragEnabled = false
+    if (this.isDragEnabled && e.target === this.$refs.app && !(e.target instanceof HTMLCanvasElement)) {
+      this.isDragEnabled = false
       EventBus.$emit('mouseAction', e)
     }
   }
@@ -157,13 +157,13 @@ export default class TheRoom extends mixins(RoomSocket) {
 }
 </script>
 <style scoped lang="scss">
-  .zIndexOverOverlay {
+  .z-index-above-overlay {
     z-index: 5;
   }
-  .zIndexUnderOverlay {
+  .z-index-under-overlay {
     z-index: 0;
   }
-  .zIndexSameAsOverlay {
+  .z-index-same-as-overlay {
     z-index: 1
   }
   .full-width-height {
@@ -171,7 +171,7 @@ export default class TheRoom extends mixins(RoomSocket) {
     height: 100%;
     overflow-x: hidden;
 
-    &.dragEnabled::v-deep {
+    &.drag-enabled::v-deep {
       cursor: move !important;
     }
   }

@@ -3,9 +3,7 @@
     class="px-0"
   >
     <v-list-item-avatar class="mr-0">
-      <v-icon>
-        fa-user
-      </v-icon>
+      <img :src="entity.image">
     </v-list-item-avatar>
     <v-list-item-content>
       <v-list-item-title>
@@ -31,9 +29,9 @@ import { Prop } from 'vue-property-decorator'
 import { Ship } from '@/types/Games/Wows'
 
 @Component({
-  name: 'WowsTeamSectionItem'
+  name: 'TeamSectionItem'
 })
-export default class WowsTeamItem extends Vue {
+export default class TeamSectionItem extends Vue {
   @Prop() private entity!: Ship
 }
 </script>

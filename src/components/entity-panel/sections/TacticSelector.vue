@@ -30,7 +30,7 @@
 import Component from 'vue-class-component'
 import Vue from 'vue'
 import AccordionItem from '@/components/entity-panel/templates/AccordionItem.vue'
-import TacticSelectorContent from '@/components/entity-panel/sections/components/tactic-selector/TacticSelectorContent.vue'
+import TacticSelectorContent from '@/components/entity-panel/sections/components/TacticSelectorContent.vue'
 import { EventBus } from '@/event-bus'
 
 @Component({

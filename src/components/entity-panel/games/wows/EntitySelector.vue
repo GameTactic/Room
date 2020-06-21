@@ -14,16 +14,16 @@
 import Component from 'vue-class-component'
 import Vue from 'vue'
 import AccordionItem from '@/components/entity-panel/templates/AccordionItem.vue'
-import EntitySelectorContent from '@/components/entity-panel/games/wows/components/WowsEntitySelectorContent.vue'
+import EntitySelectorContent from '@/components/entity-panel/games/wows/components/EntitySelectorContent.vue'
 
 @Component({
-  name: 'WowsEntitySelector',
+  name: 'EntitySelector',
   components: {
     EntitySelectorContent,
     AccordionItem
   }
 })
-export default class WowsEntitySelector extends Vue {
+export default class EntitySelector extends Vue {
 }
 </script>
 

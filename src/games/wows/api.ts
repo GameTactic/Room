@@ -137,7 +137,7 @@ export const getWowsApiData = async (token: string, setGameApi: (api: Api) => vo
         image: canvasIcons.Cruiser.image,
         dimensions: {
           width: canvasIcons.Cruiser.width,
-          height: canvasIcons.Battleship.height
+          height: canvasIcons.Cruiser.height
         }
       },
       default: true,
