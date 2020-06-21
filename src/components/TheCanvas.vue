@@ -60,6 +60,7 @@ export default class TheCanvas extends mixins(CanvasSockets, StageWatcher) {
   getUuid () {
     return uuid()
   }
+
   $refs!: {
     layer: VueKonvaLayer;
     stage: VueKonvaStage;
