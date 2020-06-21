@@ -4,7 +4,7 @@
       Ships
     </template>
     <template v-slot:content>
-      <entity-selector-content></entity-selector-content>
+      <entity-selector-content />
     </template>
   </accordion-item>
 </template>

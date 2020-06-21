@@ -11,7 +11,7 @@
   >
     <v-btn
       x-small
-      :class="['tools-caret-down']"
+      class="tools-caret-down"
       icon
       elevation="0"
       tile
@@ -28,14 +28,14 @@
       multiple
       class="custom-expansion-panels"
     >
-      <WowsEntitySection v-if="game === Game.WOWS && currentTacticId && isAuthorisedAndCanvasLoaded"></WowsEntitySection>
-      <WotEntitySection v-if="game === Game.WOT && currentTacticId && isAuthorisedAndCanvasLoaded"></WotEntitySection>
+      <WowsEntitySection v-if="game === Game.WOWS && currentTacticId && isAuthorisedAndCanvasLoaded" />
+      <WotEntitySection v-if="game === Game.WOT && currentTacticId && isAuthorisedAndCanvasLoaded" />
       <!-- Team section -->
-      <WowsTeamSection v-if="game === Game.WOWS && currentTacticId && isAuthorisedAndCanvasLoaded"></WowsTeamSection>
-      <WotTeamSection v-if="game === Game.WOT && currentTacticId && isAuthorisedAndCanvasLoaded"></WotTeamSection>
+      <WowsTeamSection v-if="game === Game.WOWS && currentTacticId && isAuthorisedAndCanvasLoaded" />
+      <WotTeamSection v-if="game === Game.WOT && currentTacticId && isAuthorisedAndCanvasLoaded" />
       <!-- End team section -->
-      <TacticSelector></TacticSelector>
-      <UserList></UserList>
+      <TacticSelector />
+      <UserList />
     </v-expansion-panels>
   </v-navigation-drawer>
 </template>

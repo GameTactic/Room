@@ -45,7 +45,7 @@
       </v-btn>
     </template>
     <template v-slot:content>
-      <entity-section-content></entity-section-content>
+      <entity-section-content />
     </template>
   </accordion-item>
 </template>

@@ -20,7 +20,7 @@
       </v-btn>
     </template>
     <template v-slot:content>
-      <UserListContent></UserListContent>
+      <UserListContent />
     </template>
   </accordion-item>
 </template>

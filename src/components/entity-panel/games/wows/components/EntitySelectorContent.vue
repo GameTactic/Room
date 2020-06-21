@@ -1,5 +1,5 @@
 <template>
-  <EntitySelector :defaultEntities="defaultsEntities" :entities="entities" label="Search for ships"></EntitySelector>
+  <EntitySelector :defaultEntities="defaultsEntities" :entities="entities" label="Search for ships" />
 </template>
 
 <script lang="ts">

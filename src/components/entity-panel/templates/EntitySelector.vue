@@ -8,7 +8,7 @@
         v-for="(entity, i) in defaultEntities"
         :key="i"
         :entity="entity"
-      ></EntitySelectorItem>
+      />
     </v-chip-group>
     <v-divider class="px-2"></v-divider>
     <v-text-field
@@ -33,7 +33,7 @@
           v-for="(entity, i) in getEntities"
           :key="i"
           :entity="entity"
-        ></EntitySelectorItem>
+        />
       </v-chip-group>
     </v-lazy>
     <span v-else class="caption px-2">No entities found</span>

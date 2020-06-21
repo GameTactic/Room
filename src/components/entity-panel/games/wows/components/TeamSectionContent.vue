@@ -1,7 +1,7 @@
 <template>
   <v-list v-if="selectedTeam.entities.length > 0">
     <span class="px-2">{{ selectedTeam.name }}</span>
-    <v-divider></v-divider>
+    <v-divider />
     <v-text-field
       v-model="search"
       label="Search your ships"
@@ -10,17 +10,17 @@
       clear-icon="mdi-close"
       clearable
       placeholder="Start typing to search"
-    ></v-text-field>
+    />
     <v-list-item-group
       v-for="(entity, i) in entities"
       v-bind:key="i"
     >
-      <TeamSectionItem :entity="entity"></TeamSectionItem>
+      <TeamSectionItem :entity="entity" />
     </v-list-item-group>
   </v-list>
   <v-list v-else>
     <span class="px-2">{{ selectedTeam.name }}</span>
-    <v-divider></v-divider>
+    <v-divider />
     <v-list-item>
       <span class="caption">No entities found</span>
     </v-list-item>

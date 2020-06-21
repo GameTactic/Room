@@ -7,7 +7,7 @@
     @click.stop="onClickHandler"
   >
     <v-avatar>
-      <img :src="entity.image">
+      <img :src="entity.image" />
     </v-avatar>
     <span class="white--text">{{ entity.name }}</span>
   </v-chip>

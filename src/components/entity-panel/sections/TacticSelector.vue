@@ -20,7 +20,7 @@
       </v-btn>
     </template>
     <template v-slot:content>
-      <tactic-selector-content></tactic-selector-content>
+      <tactic-selector-content />
     </template>
   </accordion-item>
 </template>

@@ -15,12 +15,12 @@
         </v-icon>
         <span class="pl-3"><slot name="header">Header</slot></span>
         <slot name="middleSpace"></slot>
-        <v-divider vertical v-if="$slots.rightBtn"></v-divider>
-        <slot name="rightBtn" class="custom-add-button ml-3"></slot>
+        <v-divider vertical v-if="$slots.rightBtn" />
+        <slot name="rightBtn" class="custom-add-button ml-3" />
       </template>
     </v-expansion-panel-header>
     <v-expansion-panel-content class="custom-expansion-panel-content">
-      <slot name="content"></slot>
+      <slot name="content" />
     </v-expansion-panel-content>
   </v-expansion-panel>
 </template>

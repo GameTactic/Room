@@ -3,7 +3,7 @@
     class="px-0"
   >
     <v-list-item-avatar class="mr-0">
-      <img :src="entity.image">
+      <img :src="entity.image" />
     </v-list-item-avatar>
     <v-list-item-content>
       <v-list-item-title>
