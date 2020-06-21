@@ -1,7 +1,6 @@
 import { CanvasElement, CanvasElementHistory } from '@/types/Canvas'
 import { Namespaces } from '.'
 import { AppAuthenticationState } from './modules/app/authentication'
-import { AppCanvasEntityState } from './modules/app/canvasEntity'
 import { AppLayerState } from './modules/app/layer'
 import { AppRoomState } from './modules/app/room'
 import { AppStageState } from './modules/app/stage'
@@ -14,7 +13,6 @@ import { SocketUserState } from './modules/socket/user'
 
 export interface RootState {
   [Namespaces.APP_AUTHENTICATION]: AppAuthenticationState;
-  [Namespaces.APP_CANVAS_ENTITY]: AppCanvasEntityState;
   [Namespaces.APP_LAYER]: AppLayerState;
   [Namespaces.APP_ROOM]: AppRoomState;
   [Namespaces.APP_STAGE]: AppStageState;

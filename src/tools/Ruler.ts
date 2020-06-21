@@ -1,4 +1,4 @@
-import { LineData, RulerInterface, ToolClass, Tracker } from '@/tools/Tool'
+import { LineData, RulerData, RulerInterface, ToolClass, Tracker } from '@/tools/Tool'
 import { AdditionTools, CanvasElement, CanvasElementType, RequestCanvasEntity } from '@/types/Canvas'
 import RulerCreator from '@/tools/shapes/RulerCreator'
 import { CustomEvent } from '@/util/PointerEventMapper'
@@ -8,6 +8,9 @@ import { SocketCanvasToolsEmit } from '@/store/modules/socket'
 
 export default class Ruler extends ToolClass implements RulerInterface {
   private rulerCreator: RulerCreator
+  private hasMoved = false
+  private data: RulerData = { from: { x: 0, y: 0 }, to: { x: 0, y: 0 } }
+  private groupId = uuid()
   constructor (public readonly name: string,
                public size: number,
                public colour: string,
@@ -18,16 +21,18 @@ export default class Ruler extends ToolClass implements RulerInterface {
       this.temporary,
       this.size,
       this.colour,
-      this.showCircle
+      this.showCircle,
+      this.groupId,
+      this.data.from,
+      this.data.to
     )
   }
 
   mouseDownAction = (event: CustomEvent): void => {
     this.enableTool()
-    this.resetCanvasEntity()
-    this.canvasElement.isVisible = true
-    this.canvasElement.type = CanvasElementType.SHAPE
-    this.canvasElement.data = {
+    this.hasMoved = false
+    this.groupId = uuid()
+    this.data = {
       from: {
         x: event.globalOffset.x,
         y: event.globalOffset.y
@@ -37,29 +42,29 @@ export default class Ruler extends ToolClass implements RulerInterface {
         y: event.globalOffset.y
       }
     }
-    this.canvasElement.tool = {
-      name: this.name,
-      size: this.size,
-      colour: this.colour,
-      temporary: this.temporary,
-      showCircle: this.showCircle
-    }
     this.rulerCreator = new RulerCreator(
       this.temporary,
       this.size,
       this.colour,
-      this.showCircle
+      this.showCircle,
+      this.groupId,
+      {
+        x: this.formatX(this.data.from.x),
+        y: this.formatY(this.data.from.y)
+      },
+      {
+        x: this.formatX(this.data.to.x),
+        y: this.formatY(this.data.to.y)
+      }
     )
-    this.rulerCreator.create(event)
-    this.canvasElement.attrs.position = this.rulerCreator.getGroup().getPosition()
+    this.rulerCreator.create()
   }
 
   mouseMoveAction = (event: CustomEvent): void => {
     if (this.enabled) {
-      if (!this.canvasEntity.hasMoved) { this.canvasEntity.hasMoved = true }
-      const data = this.canvasElement.data as LineData
-      data.to = { x: event.globalOffset.x, y: event.globalOffset.y }
-      this.rulerCreator.move(event)
+      if (!this.hasMoved) { this.hasMoved = true }
+      this.data.to = { x: event.globalOffset.x, y: event.globalOffset.y }
+      this.rulerCreator.move(this.data.from, this.data.to)
       this.layer.batchDraw()
     }
   }
@@ -67,23 +72,50 @@ export default class Ruler extends ToolClass implements RulerInterface {
   mouseUpAction = (): void => {
     if (this.enabled) {
       this.disableTool()
-      if (!this.canvasEntity.hasMoved) {
+      if (!this.hasMoved) {
         this.rulerCreator.destroy()
       } else {
-        if (this.canvasElement.tool.temporary) {
+        if (this.temporary) {
           this.rulerCreator.runTemporaryAnimation(this.rulerCreator.getGroup())
         }
-        this.sendAndAddToState({
-          id: uuid(),
-          jti: this.canvasElement.jti,
-          modifyData: {
-            additions: [this.canvasElement.id],
-            tool: AdditionTools.RULER
-          },
-          modifyType: Tracker.ADDITION,
-          canvasElements: [this.canvasElement],
-          timestampModified: ISO.timestamp()
-        }, SocketCanvasToolsEmit.CANVAS_TOOLS_RULER)
+        if (this.jti) {
+          this.sendAndAddToState({
+            id: uuid(),
+            jti: this.jti,
+            modifyData: {
+              additions: [this.groupId],
+              tool: AdditionTools.RULER
+            },
+            modifyType: Tracker.ADDITION,
+            canvasElements: [{
+              id: this.groupId,
+              tool: {
+                name: this.name,
+                size: this.size,
+                colour: this.colour,
+                temporary: this.temporary,
+                showCircle: this.showCircle
+              } as RulerInterface,
+              type: CanvasElementType.SHAPE,
+              data: this.data,
+              jti: this.jti,
+              isVisible: true,
+              layerId: this.layer.id(),
+              attrs: {
+                position: {
+                  x: this.formatXInverse(this.rulerCreator.getGroup().position().x),
+                  y: this.formatYInverse(this.rulerCreator.getGroup().position().y)
+                },
+                rotation: this.rulerCreator.getGroup().rotation(),
+                skewX: this.rulerCreator.getGroup().skewX(),
+                skewY: this.rulerCreator.getGroup().skewY(),
+                scaleX: this.rulerCreator.getGroup().scaleX(),
+                scaleY: this.rulerCreator.getGroup().scaleY()
+              }
+            }],
+            timestampModified: ISO.timestamp()
+          }, SocketCanvasToolsEmit.CANVAS_TOOLS_RULER)
+        }
       }
     }
   }
@@ -92,14 +124,23 @@ export default class Ruler extends ToolClass implements RulerInterface {
     request.canvasElements.forEach((canvasElement: CanvasElement) => {
       const data = canvasElement.data as LineData
       if (data.from && data.to) {
+        const tool = canvasElement.tool as RulerInterface
         this.rulerCreator = new RulerCreator(
-          canvasElement.tool.temporary || this.temporary,
-          canvasElement.tool.size || this.size,
-          canvasElement.tool.colour || this.colour,
-          canvasElement.tool.showCircle || this.showCircle
+          tool.temporary,
+          tool.size,
+          tool.colour,
+          tool.showCircle,
+          canvasElement.id,
+          {
+            x: this.formatX(data.from.x),
+            y: this.formatX(data.from.y)
+          },
+          {
+            x: this.formatX(data.to.x),
+            y: this.formatX(data.to.y)
+          }
         )
-        this.rulerCreator.create(this.stageEvent, canvasElement)
-        this.rulerCreator.move(this.stageEvent, canvasElement)
+        this.rulerCreator.create()
         if (canvasElement.tool.temporary) {
           this.rulerCreator.runTemporaryAnimation(this.rulerCreator.getGroup())
         } else {

@@ -5,7 +5,7 @@ import Ping from '@/tools/Ping'
 import FreeDraw from '@/tools/FreeDraw'
 import Erase from '@/tools/Erase'
 import Circle from '@/tools/Circle'
-import Line from '@/tools/Line'
+import Line, { LineType } from '@/tools/Line'
 import Ruler from '@/tools/Ruler'
 import Text from '@/tools/Text'
 import Move from '@/tools/Move'
@@ -69,7 +69,7 @@ const AppToolModule: Module<AppToolState, RootState> = {
         new Ping('ping', 5, '#005555FF', true),
         new FreeDraw('freeDraw', 5, '#CE0000FF', false),
         new Erase('erase', false),
-        new Line('line', 5, '#CE0000FF', 'line', 0, false),
+        new Line('line', 5, '#CE0000FF', LineType.LINE, 0, false),
         new Circle('circle', 5, '#CE000080', false, true, '#CE0000FF', 0),
         new Ruler('ruler', 3, '#C2C4BD80', false, true),
         new Text('text', 5, '#CE0000FF', false, ''),

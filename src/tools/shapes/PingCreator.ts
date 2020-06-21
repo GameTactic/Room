@@ -1,8 +1,6 @@
 import Konva from 'konva'
-import { CanvasElement, CanvasElementType } from '@/types/Canvas'
+import { CanvasElementType, Point } from '@/types/Canvas'
 import Shape, { PingCreatorInterface } from '@/tools/shapes/Shape'
-import { CustomEvent, CustomStageEvent } from '@/util/PointerEventMapper'
-import { PingData } from '@/tools/Tool'
 
 export default class PingCreator extends Shape implements PingCreatorInterface {
   private readonly amplitude = 25
@@ -10,15 +8,16 @@ export default class PingCreator extends Shape implements PingCreatorInterface {
   private ping: Konva.Circle
   constructor (public temporary: boolean,
                public size: number,
-               public colour: string) {
+               public colour: string,
+               public groupId: string,
+               public point: Point) {
     super()
     this.ping = new Konva.Circle()
   }
 
-  create = (event: CustomEvent | CustomStageEvent, canvasElement?: CanvasElement): void => {
-    if (!canvasElement) { canvasElement = this.canvasElement }
-    this.group.id(canvasElement.id).add(
-      this.ping = this.createPingElement(canvasElement, event)
+  create = (): void => {
+    this.group.id(this.groupId).add(
+      this.ping = this.createElement()
     )
     this.group.attrs.type = CanvasElementType.SHAPE
     this.group.attrs.temporary = this.temporary
@@ -26,14 +25,13 @@ export default class PingCreator extends Shape implements PingCreatorInterface {
     this.runAnimation(this.ping)
   }
 
-  createPingElement = (canvasElement: CanvasElement, event: CustomEvent | CustomStageEvent, colour?: string, size?: number): Konva.Shape & Konva.Circle => {
-    const data = canvasElement.data as PingData
+  createElement = (): Konva.Shape & Konva.Circle => {
     return new Konva.Circle({
-      x: this.formatX(data.point.x, event),
-      y: this.formatY(data.point.y, event),
+      x: this.point.x,
+      y: this.point.y,
       radius: 0,
-      stroke: colour || this.colour,
-      strokeWidth: size || this.size
+      stroke: this.colour,
+      strokeWidth: this.size
     })
   }
 

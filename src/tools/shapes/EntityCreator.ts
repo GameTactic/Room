@@ -1,31 +1,35 @@
 import Konva from 'konva'
-import { CanvasElement, CanvasElementType } from '@/types/Canvas'
+import { CanvasElementType, Point } from '@/types/Canvas'
 import Shape from '@/tools/shapes/Shape'
-import { CustomEvent, CustomStageEvent } from '@/util/PointerEventMapper'
-import { EntityData } from '@/tools/Tool'
+import { Dimensions } from '@/mixins/StageWatcher'
 
 export default class EntityCreator extends Shape {
   private sprite: Konva.Sprite
   private readonly hitStroke: number = 10
-  constructor (public temporary: boolean) {
+  constructor (public temporary: boolean,
+               public image: string,
+               public point: Point,
+               public dimensions: Dimensions,
+               public name: string,
+               public groupId: string
+  ) {
     super()
     this.sprite = new Konva.Sprite({})
   }
 
-  create = (event: CustomEvent | CustomStageEvent, canvasElement: CanvasElement): void => {
+  create = (): void => {
     this.group = new Konva.Group()
-    this.group.id(canvasElement.id)
-    this.createSpriteElement(canvasElement, event)
+    this.group.id(this.groupId)
+    this.createSpriteElement()
   }
 
-  createSpriteElement = (canvasElement: CanvasElement, event: CustomEvent | CustomStageEvent): void => {
-    const data = canvasElement.data as EntityData
-    Konva.Image.fromURL(data.image, (image: Konva.Image) => {
+  createSpriteElement = (): void => {
+    Konva.Image.fromURL(this.image, (image: Konva.Image) => {
       image.setAttrs({
-        x: this.formatX(data.point.x, event),
-        y: this.formatY(data.point.y, event),
-        width: data.dimensions.width,
-        height: data.dimensions.height,
+        x: this.point.x,
+        y: this.point.y,
+        width: this.dimensions.width,
+        height: this.dimensions.height,
         hitStroke: this.hitStroke
       })
       this.group.add(image)

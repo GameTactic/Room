@@ -14,14 +14,15 @@ import store from '@/main'
 import { SocketActions } from '@/store/modules/socket'
 import { SocketStageGetters } from '@/store/modules/socket/stage'
 import { AppStageGetters } from '@/store/modules/app/stage'
-import { AppCanvasEntityActions, AppCanvasEntityGetters, CanvasEntity } from '@/store/modules/app/canvasEntity'
 import { AppLayerGetters } from '@/store/modules/app/layer'
 import { AppToolGetters, AppToolsAction } from '@/store/modules/app/tools'
 import { SocketCanvasAction, SocketCanvasGetters } from '@/store/modules/socket/canvas'
 import { Dimensions } from '@/mixins/StageWatcher'
 import { Namespaces } from '@/store'
 import { Team } from '@/store/types'
-import { SocketTeamAction } from '@/store/modules/socket/team'
+import { SocketTeamAction, SocketTeamGetters } from '@/store/modules/socket/team'
+import { AppAuthenticationGetters } from '@/store/modules/app/authentication'
+import { LineType } from '@/tools/Line'
 
 export type CanvasDownAction = (event: CustomEvent, stage: VueKonvaStage) => void;
 export type CanvasMoveAction = (event: CustomEvent, stage: VueKonvaStage) => void;
@@ -146,53 +147,36 @@ export class ToolClass {
     }
   }
 
-  resetCanvasEntity = (): CanvasEntity => {
-    store.dispatch(`${Namespaces.APP_CANVAS_ENTITY}/${AppCanvasEntityActions.RESET_CANVAS_ENTITY}`)
-    return store.getters[`${Namespaces.APP_CANVAS_ENTITY}/${AppCanvasEntityGetters.CANVAS_ENTITY}`]
+  get jti (): string | undefined {
+    return (store.getters[`${Namespaces.APP_AUTHENTICATION}/${AppAuthenticationGetters.JWT}`]).jti || undefined
   }
 
-  get canvasElement (): CanvasElement {
-    return store.getters[`${Namespaces.APP_CANVAS_ENTITY}/${AppCanvasEntityGetters.CANVAS_ELEMENT}`]
-  }
-
-  set canvasElement (canvasElement: CanvasElement) {
-    store.dispatch(`${Namespaces.APP_CANVAS_ENTITY}/${AppCanvasEntityActions.SET_CANVAS_ELEMENT}`, canvasElement)
-  }
-
-  get canvasEntity (): CanvasEntity {
-    return store.getters[`${Namespaces.APP_CANVAS_ENTITY}/${AppCanvasEntityGetters.CANVAS_ENTITY}`]
-  }
-
-  set canvasEntity (canvasEntity: CanvasEntity) {
-    store.dispatch(`${Namespaces.APP_CANVAS_ENTITY}/${AppCanvasEntityActions.SET_CANVAS_ENTITY}`, canvasEntity)
+  get currentTeam (): Team | undefined {
+    return store.getters[`${Namespaces.SOCKET_TEAM}/${SocketTeamGetters.SELECTED_TEAM}`]
   }
 
   get layer (): Konva.Layer {
     return store.getters[`${Namespaces.APP_LAYER}/${AppLayerGetters.LAYER}`]
   }
-
-  get canvasElements (): CanvasElement[] {
-    return store.getters[`${Namespaces.SOCKET_CANVAS}/${SocketCanvasGetters.CANVAS_ELEMENTS}`]
-  }
-
+  // Transform a global x position to local x position
   formatX = (num: number): number => {
     const stage = store.getters[`${Namespaces.APP_STAGE}/${AppStageGetters.STAGE}`]
     const stageConfig = store.getters[`${Namespaces.SOCKET_STAGE}/${SocketStageGetters.STAGE_CONFIG}`]
     return ((num / stageConfig.width) * stage.width())
   }
-
+  // Transform a global y position to local y position
   formatY = (num: number): number => {
     const stage = store.getters[`${Namespaces.APP_STAGE}/${AppStageGetters.STAGE}`]
     const stageConfig = store.getters[`${Namespaces.SOCKET_STAGE}/${SocketStageGetters.STAGE_CONFIG}`]
     return ((num / stageConfig.height) * stage.height())
   }
-
+  // Transform a local x position to global x position
   formatXInverse = (num: number): number => {
     const stage = store.getters[`${Namespaces.APP_STAGE}/${AppStageGetters.STAGE}`]
     const stageConfig = store.getters[`${Namespaces.SOCKET_STAGE}/${SocketStageGetters.STAGE_CONFIG}`]
     return ((num / stage.width()) * stageConfig.width)
   }
-
+  // Transform a local x position to global x position
   formatYInverse = (num: number): number => {
     const stage = store.getters[`${Namespaces.APP_STAGE}/${AppStageGetters.STAGE}`]
     const stageConfig = store.getters[`${Namespaces.SOCKET_STAGE}/${SocketStageGetters.STAGE_CONFIG}`]
@@ -231,7 +215,7 @@ export interface CircleInterface extends ToolClassInterface {
 export interface LineInterface extends ToolClassInterface {
   colour: string;
   size: number;
-  endStyle: string;
+  endStyle: LineType;
   strokeStyle: number;
 }
 

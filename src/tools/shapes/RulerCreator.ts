@@ -1,11 +1,11 @@
 import Konva from 'konva'
-import { CanvasElement, CanvasElementType } from '@/types/Canvas'
+import { CanvasElementType, Point } from '@/types/Canvas'
 import Shape, { RulerCreatorInterface } from '@/tools/shapes/Shape'
-import { CustomEvent, CustomStageConfig, CustomStageEvent } from '@/util/PointerEventMapper'
+import { CustomStageConfig } from '@/util/PointerEventMapper'
 import store from '@/main'
 import { SocketStageGetters } from '@/store/modules/socket/stage'
-import { RulerData } from '@/tools/Tool'
 import { Namespaces } from '@/store'
+import uuid from 'uuid'
 
 export default class RulerCreator extends Shape implements RulerCreatorInterface {
   private line: Konva.Line
@@ -15,26 +15,25 @@ export default class RulerCreator extends Shape implements RulerCreatorInterface
   constructor (public temporary: boolean,
                public size: number,
                public colour: string,
-               public showCircle: boolean) {
+               public showCircle: boolean,
+               public groupId: string,
+               public from: Point,
+               public to: Point) {
     super()
     this.line = new Konva.Line()
     this.text = new Konva.Text()
     this.circle = new Konva.Circle()
   }
 
-  create = (event: CustomEvent | CustomStageEvent, canvasElement?: CanvasElement): void => {
-    if (!canvasElement) { canvasElement = this.canvasElement }
+  create = (): void => {
     this.group = new Konva.Group()
-    if (this.showCircle && canvasElement.tool.showCircle) {
-      this.group.id(canvasElement.id).add(
-        this.line = this.createLineElement(canvasElement, event),
-        this.text = this.createTextElement(canvasElement, event),
-        this.circle = this.createCircleElement(canvasElement, event)
-      )
-    } else {
-      this.group.id(canvasElement.id).add(
-        this.line = this.createLineElement(canvasElement, event),
-        this.text = this.createTextElement(canvasElement, event)
+    this.group.id(this.groupId).add(
+      this.line = this.createLineElement(),
+      this.text = this.createTextElement()
+    )
+    if (this.showCircle) {
+      this.group.add(
+        this.circle = this.createCircleElement()
       )
     }
     this.group.attrs.type = CanvasElementType.SHAPE
@@ -42,78 +41,55 @@ export default class RulerCreator extends Shape implements RulerCreatorInterface
     this.layer.add(this.group)
   }
 
-  move = (event: CustomEvent | CustomStageEvent, canvasElement?: CanvasElement): void => {
-    if (!canvasElement) { canvasElement = this.canvasElement }
-    const data = canvasElement.data as RulerData
-    if (canvasElement.tool.showCircle && this.circle !== undefined) {
-      this.circle.radius(this.calcRadius(
-        this.formatX(data.from.x, event),
-        this.formatY(data.from.y, event),
-        this.formatX(data.to.x, event),
-        this.formatY(data.to.y, event)
-      ))
+  move = (from: Point, to: Point): void => {
+    this.from = from
+    this.to = to
+    if (this.showCircle && this.circle) {
+      this.circle.radius(this.calcRadius(this.from.x, this.from.y, this.to.x, this.to.y))
     }
-    this.text.text(this.getText(this.calcRadius(
-      this.formatX(data.from.x, event),
-      this.formatY(data.from.y, event),
-      this.formatX(data.to.x, event),
-      this.formatY(data.to.y, event)
-    ), event))
-    const textPos = this.calcTextPosition(
-      this.formatX(data.from.x, event),
-      this.formatY(data.from.y, event),
-      this.formatX(data.to.x, event),
-      this.formatY(data.to.y, event)
-    )
+    this.text.text(this.getText(this.calcRadius(this.from.x, this.from.y, this.to.x, this.to.y)))
+    const textPos = this.calcTextPosition(this.from.x, this.from.y, this.to.x, this.to.y)
     this.text.x(textPos.x).y(textPos.y)
-    this.line.points([
-      this.formatX(data.from.x, event),
-      this.formatY(data.from.y, event),
-      this.formatX(data.to.x, event),
-      this.formatY(data.to.y, event)
-    ]
+    this.line.points([this.from.x, this.from.y, this.to.x, this.to.y]
     )
   }
 
-  createLineElement = (canvasElement: CanvasElement, event: CustomEvent | CustomStageEvent, colour?: string, size?: number): Konva.Shape & Konva.Line => {
-    const data = canvasElement.data as RulerData
+  createLineElement = (): Konva.Shape & Konva.Line => {
     return new Konva.Line({
       globalCompositeOperation: 'source-over',
-      points: [ data.from.x, data.from.y, data.to.x, data.to.y ],
-      stroke: colour || this.colour,
-      strokeWidth: size || this.size,
+      points: [ this.from.x, this.from.y, this.to.x, this.to.y ],
+      stroke: this.colour,
+      strokeWidth: this.size,
       lineCap: 'mitter',
-      id: canvasElement.id,
+      id: uuid(),
       hitStrokeWidth: this.hitStroke,
       dash: [15, 5]
     })
   }
 
-  createTextElement = (canvasElement: CanvasElement, event: CustomEvent | CustomStageEvent, text?: string, colour?: string): Konva.Shape & Konva.Text => {
-    const data = canvasElement.data as RulerData
+  createTextElement = (): Konva.Shape & Konva.Text => {
     return new Konva.Text({
-      id: canvasElement.id,
-      x: this.formatX(data.from.x, event),
-      y: this.formatY(data.from.y, event),
-      text: text || '0 km',
+      id: uuid(),
+      x: this.from.x,
+      y: this.from.y,
+      text: this.getText(this.calcRadius(this.from.x, this.from.y, this.to.x, this.to.y)) || '0 km',
       fontSize: 20,
       fontFamily: 'Calibri',
       hitStrokeWidth: this.hitStroke,
-      fill: colour || this.colour
+      fill: this.colour
     })
   }
 
-  createCircleElement = (canvasElement: CanvasElement, event: CustomEvent | CustomStageEvent, colour?: string, stroke?: number, radius?: number): Konva.Shape & Konva.Circle => {
-    const data = canvasElement.data as RulerData
+  createCircleElement = (): Konva.Shape & Konva.Circle => {
     return new Konva.Circle({
-      id: canvasElement.id,
+      id: uuid(),
       globalCompositeOperation: 'source-over',
-      stroke: colour || this.colour,
-      strokeWidth: stroke || this.size,
-      radius: radius || 0,
+      stroke: this.colour,
+      strokeWidth: this.size,
+      radius: this.calcRadius(this.from.x, this.from.y, this.to.x, this.to.y),
       hitStrokeWidth: this.hitStroke,
-      x: this.formatX(data.from.x, event),
-      y: this.formatY(data.from.y, event)
+      x: this.from.x,
+      y: this.from.y
     })
   }
 
@@ -140,9 +116,9 @@ export default class RulerCreator extends Shape implements RulerCreatorInterface
     return Math.sqrt(a + b)
   }
 
-  getText = (radius: number, event: CustomEvent | CustomStageEvent): string => {
+  getText = (radius: number): string => {
     const stageConfig: CustomStageConfig = store.getters[`${Namespaces.SOCKET_STAGE}/${SocketStageGetters.STAGE_CONFIG}`]
-    const range = Math.floor(this.formatX(radius, event) / (event.stageConfig.initialWidth * 0.75) * stageConfig.mapRatio * 10) / 10
+    const range = Math.floor(radius / (stageConfig.initialWidth * 0.75) * stageConfig.mapRatio * 10) / 10
     return (range !== 0) ? `${range} km` : '? km'
   }
 
