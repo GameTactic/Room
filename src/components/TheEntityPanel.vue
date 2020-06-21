@@ -2,11 +2,26 @@
   <v-navigation-drawer
     class="custom-navigation-drawer"
     width="300"
-    permanent
+    temporary
+    stateless
+    hide-overlay
     right
     absolute
+    v-model="panelOpen"
   >
+    <v-btn
+      x-small
+      :class="['tools-caret-down']"
+      icon
+      elevation="0"
+      tile
+      absolute
+      @click="panelOpen = !panelOpen"
+    >
+      <v-icon color="white" x-small>{{ !panelOpen ? 'fa-chevron-left' : 'fa-chevron-right'}}</v-icon>
+    </v-btn>
     <v-expansion-panels
+      v-model="panels"
       accordion
       flat
       tile
@@ -62,18 +77,52 @@ export default class EntityPanel extends Vue {
   @SocketTactic.Getter(SocketTacticGetters.CURRENT_TACTIC_ID) private readonly currentTacticId!: string | undefined
   @SocketTeam.Getter(SocketTeamGetters.TEAMS) private readonly teams!: Team[];
   @SocketUser.Getter(SocketUserGetters.IS_AUTHORISED_CANVAS_LOADED) isAuthorisedAndCanvasLoaded!: boolean
-  // Enum
   Game = Game
+  panelOpen = true
+  panels = [0, 1, 2, 3]
 }
 </script>
 <style scoped lang="scss">
 .custom-navigation-drawer {
+  box-shadow: none;
   background-color: #FFFFFFFF;
   height: calc(100vh - 52px) !important;
   top: 52px !important;
+  overflow: visible !important;
+  visibility: visible !important;
+}
+.tools-caret-down {
+  margin-top:3px;
+  position: absolute;
+  border-radius: 8px 0 0 8px;
+  left: -14px;
+  top: calc(-56px + (100vh / 2));
+  width:14px;
+  height: 60px;
+  background-color: $room-primary;
+  color: white;
+  transition:0.2s ease-in-out;
 }
 </style>
 <style lang="scss">
+.custom-expansion-panel {
+  border-left: 0.85px solid rgba(0, 0, 0, 0.12)
+}
+.custom-navigation-drawer .v-navigation-drawer__content::-webkit-scrollbar {
+  width: 8px;
+  background-color: #e7e7e7;
+  border-radius: 10px;
+}
+
+.custom-navigation-drawer .v-navigation-drawer__content::-webkit-scrollbar-track {
+  -webkit-box-shadow: inset 0 0 6px rgba(111, 90, 90, 0.2);
+  background-color: #dcdcdc;
+}
+.custom-navigation-drawer .v-navigation-drawer__content::-webkit-scrollbar-thumb {
+  -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,.2);
+  background-color: #bbbbbb;
+  cursor: pointer;
+}
 .custom-expansion-panel-header {
   border: 1px solid rgba(0, 0, 0, 0.12);
   background: $room-primary;

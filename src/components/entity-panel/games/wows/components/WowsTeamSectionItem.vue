@@ -31,7 +31,7 @@ import { Prop } from 'vue-property-decorator'
 import { Ship } from '@/types/Games/Wows'
 
 @Component({
-  name: 'WowsTeamItem'
+  name: 'WowsTeamSectionItem'
 })
 export default class WowsTeamItem extends Vue {
   @Prop() private entity!: Ship

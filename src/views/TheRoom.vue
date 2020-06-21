@@ -8,15 +8,19 @@
     @dragover="$event.preventDefault()"
   >
     <the-canvas
+      class="zIndexUnderOverlay"
       v-show="isCanvasLoaded"
       ref="stage"
     />
-    <the-nav />
-    <the-tool-panel class="d-none d-sm-flex" />
-    <the-entity-panel v-if="isAuthorised" class="d-none d-sm-flex" />
+    <v-overlay opacity="0.2" :value="mapChanging" class="zIndexSameAsOverlay">
+      <v-icon class="custom-spinner">fa-spinner</v-icon>
+    </v-overlay>
+    <the-nav class="zIndexOverOverlay"/>
+    <the-tool-panel class="d-none d-sm-flex zIndexOverOverlay" />
+    <the-entity-panel v-if="isAuthorised" class="d-none d-sm-flex zIndexOverOverlay" />
     <the-create-new-tactic-overlay />
     <the-update-tactic-overlay />
-    <pinned-tactics v-if="isAuthorisedCanvasLoaded"></pinned-tactics>
+    <pinned-tactics class="zIndexOverOverlay" v-if="isAuthorisedCanvasLoaded"></pinned-tactics>
   </div>
 </template>
 
@@ -78,6 +82,7 @@ export default class TheRoom extends mixins(RoomSocket) {
   @SocketRoom.Action(SocketRoomAction.SET_ROOM_ID) setRoomId!: (roomId: string) => void
 
   created () {
+    EventBus.$on('MapChanging', (v: boolean) => { this.mapChanging = v })
     this.setRoomId(window.location.pathname.replace('/', ''))
   }
 
@@ -86,6 +91,7 @@ export default class TheRoom extends mixins(RoomSocket) {
     stage: VueKonvaStage;
   }
   dragEnabled = false
+  mapChanging = false
 
   @Watch('jwt')
   onPropertyChanged () {
@@ -151,6 +157,15 @@ export default class TheRoom extends mixins(RoomSocket) {
 }
 </script>
 <style scoped lang="scss">
+  .zIndexOverOverlay {
+    z-index: 5;
+  }
+  .zIndexUnderOverlay {
+    z-index: 0;
+  }
+  .zIndexSameAsOverlay {
+    z-index: 1
+  }
   .full-width-height {
     width: 100%;
     height: 100%;
@@ -158,6 +173,19 @@ export default class TheRoom extends mixins(RoomSocket) {
 
     &.dragEnabled::v-deep {
       cursor: move !important;
+    }
+  }
+  .custom-spinner {
+    animation: spin;
+    animation-iteration-count: infinite;
+    animation-duration: 2s;
+  }
+  @keyframes spin {
+    0% {
+      transform: rotate(0);
+    }
+    100% {
+      transform: rotate(360deg);
     }
   }
 </style>

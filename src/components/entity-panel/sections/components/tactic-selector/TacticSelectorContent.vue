@@ -1,5 +1,10 @@
 <template>
+  <span
+    v-if="!items.length"
+    class="caption px-2"
+  >No tactics found</span>
   <v-treeview
+    v-else
     v-model="active"
     :items="items"
     open-on-click
@@ -50,7 +55,7 @@
         </span>
       <a v-else>{{ item.name }}</a>
     </template>
-    <template v-slot:append="{ item }">
+    <template v-slot:append="{ item: item }">
       <v-menu
         offset-y
         nudge-left="100"
@@ -103,9 +108,10 @@ import { Getter, namespace } from 'vuex-class'
 import { Namespaces } from '@/store'
 import { SocketTacticAction, SocketTacticGetters } from '@/store/modules/socket/tactic'
 import { Collection, Tactic } from '@/store/types'
-import { TacticMenuItem, TacticMenuOptions, TreeViewItem } from '@/components/entity-panel/sections/components/tacticSelector/types'
+import { TacticMenuItem, TacticMenuOptions, TreeViewItem } from '@/components/entity-panel/sections/components/tactic-selector/types'
 import { EventBus } from '@/event-bus'
 import { SocketUserGetters } from '@/store/modules/socket/user'
+import HandleTactic from '@/util/HandleTactic'
 
 const SocketTactic = namespace(Namespaces.SOCKET_TACTIC)
 const SocketUser = namespace(Namespaces.SOCKET_USER)
@@ -158,7 +164,7 @@ export default class TacticSelectorContent extends Vue {
   switchTactic (id: string) {
     const tactic: Tactic | undefined = this.tactics.find((tactic: Tactic) => tactic.id === id)
     if (tactic) {
-      EventBus.$emit('setTactic', tactic)
+      new HandleTactic(tactic).setLocal()
     }
   }
   // eslint-disable-next-line

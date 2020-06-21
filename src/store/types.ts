@@ -10,6 +10,7 @@ import { SocketRoomState } from './modules/socket/room'
 import { SocketStageState } from './modules/socket/stage'
 import { SocketTacticState } from './modules/socket/tactic'
 import { SocketUserState } from './modules/socket/user'
+import { Dimensions } from '@/mixins/StageWatcher'
 
 export interface RootState {
   [Namespaces.APP_AUTHENTICATION]: AppAuthenticationState;
@@ -37,6 +38,10 @@ export interface Entity {
   id: string;
   name: string;
   image: string;
+  canvasImage: {
+    image: string;
+    dimensions: Dimensions;
+  };
   team?: Team;
   game: Game;
   color?: string;

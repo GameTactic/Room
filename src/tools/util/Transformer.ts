@@ -5,7 +5,8 @@ import { SocketCanvasAction } from '@/store/modules/socket/canvas'
 import { Namespaces } from '@/store'
 import { AppStageGetters } from '@/store/modules/app/stage'
 import { ToolClass } from '@/tools/Tool'
-import KonvaEventObject = Konva.KonvaEventObject;
+import { KonvaPointerEvent } from 'konva/types/PointerEvents'
+import { KonvaEventObject } from 'konva/types/Node'
 
 export default class Transformer extends ToolClass {
   private tr: Konva.Transformer
@@ -66,10 +67,10 @@ export default class Transformer extends ToolClass {
     })
     if (this.allowMove) {
       stage.on('mousemove.transform', (e: KonvaEventObject<MouseEvent>) => {
-        this.onMouseMove(e)
+        this.onMouseMove(e as KonvaPointerEvent)
       })
       stage.on('mouseup.transform', (e: KonvaEventObject<MouseEvent>) => {
-        this.onMouseUp(e)
+        this.onMouseUp(e as KonvaPointerEvent)
       })
     }
   }
@@ -112,12 +113,12 @@ export default class Transformer extends ToolClass {
     const nodes = this.tr.getNodes()
     nodes.forEach((node: Konva.Node) => {
       node.on('mousedown', (e: KonvaEventObject<MouseEvent>) => {
-        this.onMouseDown(e)
+        this.onMouseDown(e as KonvaPointerEvent)
       })
     })
   }
   // eslint-disable-next-line
-  onMouseDown = (e: KonvaEventObject<MouseEvent>): void => {
+  onMouseDown = (e: KonvaPointerEvent): void => {
     this.moveEnabled = true
     this.tr.visible(false)
     this.moveData = {
@@ -127,23 +128,24 @@ export default class Transformer extends ToolClass {
     }
   }
   // eslint-disable-next-line
-  onMouseMove = (e: KonvaEventObject<MouseEvent>): void => {
+  onMouseMove = (e: KonvaPointerEvent): void => {
     if (this.moveEnabled) {
-      this.moveData.prev = this.moveData.to
+      const stageZoom: number = store.getters[`${Namespaces.APP_STAGE}/${AppStageGetters.STAGE_ZOOM}`]
       this.moveData.to = {
         x: e.evt.x,
         y: e.evt.y
       }
       this.tr.getNodes().forEach((node: Konva.Node) => {
         node.move({
-          x: (this.moveData.to.x - this.moveData.prev.x),
-          y: (this.moveData.to.y - this.moveData.prev.y)
+          x: (this.moveData.to.x - this.moveData.prev.x) / (stageZoom / 100),
+          y: (this.moveData.to.y - this.moveData.prev.y) / (stageZoom / 100)
         })
       })
+      this.moveData.prev = this.moveData.to
     }
   }
   // eslint-disable-next-line
-  onMouseUp = (e: KonvaEventObject<MouseEvent>): void => {
+  onMouseUp = (e: KonvaPointerEvent): void => {
     if (this.moveEnabled) {
       this.moveEnabled = false
       this.tr.visible(true)
@@ -159,10 +161,10 @@ export default class Transformer extends ToolClass {
           y: this.formatYInverse(node.position().y)
         },
         rotation: node.rotation(),
-        skewX: this.formatXInverse(node.skewX()),
-        skewY: this.formatYInverse(node.skewY()),
-        scaleX: this.formatXInverse(node.scaleX()),
-        scaleY: this.formatYInverse(node.scaleY())
+        skewX: node.skewX(),
+        skewY: node.skewY(),
+        scaleX: node.scaleX(),
+        scaleY: node.scaleY()
       }
       store.dispatch(`${Namespaces.SOCKET_CANVAS}/${SocketCanvasAction.UPDATE_CANVAS_ELEMENT_ATTRS}`, { id: node.attrs.id, attrs: attrs })
     })

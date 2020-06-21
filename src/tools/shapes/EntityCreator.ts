@@ -26,8 +26,8 @@ export default class EntityCreator extends Shape {
   createSpriteElement = (): void => {
     Konva.Image.fromURL(this.image, (image: Konva.Image) => {
       image.setAttrs({
-        x: this.point.x,
-        y: this.point.y,
+        x: this.point.x - (this.dimensions.width / 2),
+        y: this.point.y - (this.dimensions.height / 2),
         width: this.dimensions.width,
         height: this.dimensions.height,
         hitStroke: this.hitStroke

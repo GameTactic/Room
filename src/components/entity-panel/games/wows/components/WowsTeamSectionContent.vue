@@ -15,7 +15,7 @@
       v-for="(entity, i) in getEntities"
       v-bind:key="i"
     >
-      <WowsTeamItem :entity="entity"></WowsTeamItem>
+      <WowsTeamSectionItem :entity="entity"></WowsTeamSectionItem>
     </v-list-item-group>
   </v-list>
   <v-list v-else>
@@ -30,7 +30,7 @@
 <script lang="ts">
 import Component from 'vue-class-component'
 import Vue from 'vue'
-import WowsTeamItem from '@/components/entity-panel/games/wows/components/WowsTeamItem.vue'
+import WowsTeamSectionItem from '@/components/entity-panel/games/wows/components/WowsTeamSectionItem.vue'
 import { Ship } from '@/types/Games/Wows'
 import { SocketTeamGetters } from '@/store/modules/socket/team'
 import { Getter } from 'vuex-class'
@@ -40,7 +40,7 @@ import { Team } from '@/store/types'
 @Component({
   name: 'WowsTeamSectionContent',
   components: {
-    WowsTeamItem
+    WowsTeamSectionItem
   }
 })
 export default class WowsTeamSectionContent extends Vue {

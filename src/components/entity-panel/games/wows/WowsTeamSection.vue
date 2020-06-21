@@ -33,7 +33,7 @@
         text
         light
         icon
-        class="custom-add-button ml-3"
+        class="custom-add-button ml-0"
         @click.stop=""
       >
         <v-icon

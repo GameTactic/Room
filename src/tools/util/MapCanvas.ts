@@ -6,6 +6,7 @@ import { SocketStageGetters } from '@/store/modules/socket/stage'
 import { AppLayerGetters } from '@/store/modules/app/layer'
 import { CanvasElementType } from '@/types/Canvas'
 import { Namespaces } from '@/store'
+import { EventBus } from '@/event-bus'
 
 export default class MapCanvas {
   async setMap () {
@@ -19,28 +20,33 @@ export default class MapCanvas {
   }
 
   createMapElement = (stageConfig: CustomStageConfig, layer: Konva.Layer): void => {
-    const mapDimentionRatio = 0.75
     const imgObj = new Image()
     imgObj.onload = () => {
-      const el = new Konva.Image({
-        image: imgObj,
-        x: (stageConfig.initialWidth * ((1 - mapDimentionRatio) / 2)),
-        y: (stageConfig.initialHeight * ((1 - mapDimentionRatio) / 2)),
-        width: (stageConfig.initialWidth * mapDimentionRatio),
-        height: (stageConfig.initialHeight * mapDimentionRatio)
-      })
-      const foundGroup: Konva.Node = layer.findOne((group: Konva.Node) => group instanceof Konva.Group && group.attrs.type && group.attrs.type === CanvasElementType.MAP)
+      EventBus.$emit('MapChanging', false)
+      const foundGroup: Konva.Node = layer.findOne(
+        (group: Konva.Node) => group instanceof Konva.Group &&
+        group.attrs.type && group.attrs.type === CanvasElementType.MAP
+      )
       if (foundGroup && foundGroup instanceof Konva.Group) {
-        foundGroup.getChildren().each(child => child.destroy())
-        layer.add(foundGroup.add(el))
-      } else {
-        const group = new Konva.Group()
-        group.attrs.type = CanvasElementType.MAP
-        group.add(el)
-        layer.add(group)
+        foundGroup.destroy()
       }
+      const group = new Konva.Group()
+      group.attrs.type = CanvasElementType.MAP
+      layer.add(group.add(this.createKonvaMapElement(imgObj, stageConfig)))
+      layer.findOne((node: Konva.Node) => node.attrs.type === CanvasElementType.MAP).moveToBottom()
       layer.batchDraw()
     }
     imgObj.src = stageConfig.mapSrc
+  }
+
+  createKonvaMapElement = (imgObj: HTMLImageElement, stageConfig: CustomStageConfig): Konva.Image => {
+    const mapDimentionRatio = 0.75
+    return new Konva.Image({
+      image: imgObj,
+      x: (stageConfig.initialWidth * ((1 - mapDimentionRatio) / 2)),
+      y: (stageConfig.initialHeight * ((1 - mapDimentionRatio) / 2)),
+      width: (stageConfig.initialWidth * mapDimentionRatio),
+      height: (stageConfig.initialHeight * mapDimentionRatio)
+    })
   }
 }

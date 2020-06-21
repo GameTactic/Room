@@ -17,7 +17,7 @@
       </v-toolbar>
     </v-col>
     <v-col
-      class="py-0 my-0"
+      class="py-0 my-0 custom-middle-col"
       :cols="12"
       :sm="6"
       :lg="8"
@@ -30,7 +30,7 @@
       </v-toolbar>
     </v-col>
     <v-col
-      class="py-0 my-0"
+      class="py-0 my-0 custom-right-col"
       :cols="6"
       :sm="3"
       :lg="2"
@@ -130,11 +130,11 @@ export default class TheNav extends Vue {
   -webkit-transform-origin: 100% 0;
   -ms-transform-origin: 100% 0;
   transform-origin: 100% 0;
-  z-index: -1;
+  z-index: 2;
 }
 
-.custom-left-col {
-  z-index: 1;
+.custom-left-col, .custom-middle-col, .custom-right-col {
+  z-index: 5;
 }
 
 .custom-isSM-navigation-drawer-close {
@@ -161,6 +161,7 @@ export default class TheNav extends Vue {
 <style lang="scss">
 .custom-nav-left>div {
   padding-left: 0.5rem;
+  z-index: 10;
 }
 
 .custom-nav-center {
@@ -173,6 +174,7 @@ export default class TheNav extends Vue {
 }
 
 .custom-nav-right>div {
+  z-index: 10;
   padding-left: 0px;
   padding-right: 0px;
   justify-content: flex-end;

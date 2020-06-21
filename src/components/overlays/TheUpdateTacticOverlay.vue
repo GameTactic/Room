@@ -77,10 +77,12 @@ import { CanvasElement, CanvasElementHistory } from '@/types/Canvas'
 import TacticWatcher from '@/mixins/TacticWatcher'
 import { Namespaces } from '@/store'
 import { WowsMapsDataApi } from '@/types/Games/Wows'
+import { SocketTacticAction } from '@/store/modules/socket/tactic'
 
 const AppRoom = namespace(Namespaces.APP_ROOM)
 const SocketStage = namespace(Namespaces.SOCKET_STAGE)
 const SocketCanvas = namespace(Namespaces.SOCKET_CANVAS)
+const SocketTactic = namespace(Namespaces.SOCKET_TACTIC)
 
 @Component({
   name: 'TheUpdateTacticOverlay',
@@ -91,6 +93,7 @@ export default class TheUpdateTacticOverlay extends mixins(TacticWatcher) {
   @SocketStage.Action(SocketStageActions.SET_CONFIG) setConfig!: (config: CustomStageConfig) => void
   @SocketCanvas.Action(SocketCanvasAction.SET_CANVAS_ELEMENT) setCanvasElements!: (canvasElements: CanvasElement[]) => void
   @SocketCanvas.Action(SocketCanvasAction.SET_CANVAS_ELEMENT_HISTORY) setCanvasElementsHistory!: (canvasElements: CanvasElementHistory[]) => void
+  @SocketTactic.Action(SocketTacticAction.UPDATE_TACTIC) updateTactic!: (tactic: Tactic) => void
 
   search = ''
   selectedTactic: Tactic | {} = {}

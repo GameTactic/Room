@@ -10,7 +10,7 @@ import { AppRoomGetters } from '@/store/modules/app/room'
 import { namespace } from 'vuex-class'
 import { Namespaces } from '@/store'
 import EntitySelectorListItem from '@/components/entity-panel/games/wows/components/WowsEntitySelectorListItem.vue'
-import EntitySection from '@/components/entity-panel/templates/EntitySection.vue'
+import EntitySection from '@/components/entity-panel/templates/EntitySelector.vue'
 import { Ship, WowsShipDataApi } from '@/types/Games/Wows'
 
 const AppRoom = namespace(Namespaces.APP_ROOM)
@@ -40,6 +40,7 @@ export default class WowsEntitySelectorContent extends Vue {
           name: ship.name,
           game: Game.WOWS,
           image: ship.image,
+          canvasImage: ship.canvasImage,
           color: this.colors[ship.type]
         }
       })
@@ -57,6 +58,7 @@ export default class WowsEntitySelectorContent extends Vue {
           name: ship.name,
           game: Game.WOWS,
           image: ship.image,
+          canvasImage: ship.canvasImage,
           color: this.colors[ship.type]
         }
       })

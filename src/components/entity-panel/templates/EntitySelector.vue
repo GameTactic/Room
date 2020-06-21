@@ -1,7 +1,5 @@
 <template>
   <div>
-    <!-- Defaults -->
-    <span class="px-2 caption">Default icons</span>
     <v-chip-group
       class="px-2"
       column
@@ -28,7 +26,7 @@
       v-if="getEntities.length > 0"
     >
       <v-chip-group
-        class="px-2 custom-chip-group-wows-search"
+        class="px-2 custom-chip-group-wows-search custom-scroll-bar"
         column
       >
         <EntitySelectorListItem
@@ -51,17 +49,21 @@ import { namespace } from 'vuex-class'
 import { Namespaces } from '@/store'
 import EntitySelectorListItem from '@/components/entity-panel/games/wows/components/WowsEntitySelectorListItem.vue'
 import { Prop } from 'vue-property-decorator'
+import { AppToolGetters } from '@/store/modules/app/tools'
+import { Tool } from '@/tools/Tool'
 
+const AppTools = namespace(Namespaces.APP_TOOLS)
 const AppRoom = namespace(Namespaces.APP_ROOM)
 
 @Component({
-  name: 'EntitySection',
+  name: 'EntitySelector',
   components: {
     EntitySelectorListItem
   }
 })
-export default class EntitySection extends Vue {
+export default class EntitySelector extends Vue {
   @AppRoom.Getter(AppRoomGetters.API) api!: Api[];
+  @AppTools.Getter(AppToolGetters.ENABLED_TOOL) enabledTool!: Tool | undefined
   @Prop() private entities!: Entity[]
   @Prop() private defaultEntities!: Entity[]
   @Prop() private label!: string

@@ -23,6 +23,7 @@ import { AppToolGetters, AppToolsAction } from '@/store/modules/app/tools'
 import { Tool } from '@/tools/Tool'
 import { Entity as EntityInterface } from '@/store/types'
 import Entity from '@/tools/Entity'
+import { AdditionTools } from '@/types/Canvas'
 
 const AppTools = namespace(Namespaces.APP_TOOLS)
 
@@ -33,17 +34,29 @@ export default class EntitySelectorItem extends Vue {
   @Prop() private entity!: EntityInterface
   @AppTools.Getter(AppToolGetters.ENABLED_TOOL) enabledTool!: Tool
   @AppTools.Action(AppToolsAction.ENABLE_TOOL) enableTool!: (tool: string) => void
+  @AppTools.Action(AppToolsAction.DISABLE_TOOL) disableTool!: () => void
 
   onClickHandler () {
-    this.enableTool('entity')
-    const enabledTool = this.enabledTool
-    if (enabledTool && enabledTool instanceof Entity) {
-      enabledTool.setEntity(this.entity)
+    if (this.enabledTool && this.enabledTool.name === AdditionTools.ENTITY) {
+      const entity = (this.enabledTool as Entity).getEntity()
+      if (entity && entity.id === this.entity.id) {
+        this.enabledTool.setEntity(undefined)
+        this.disableTool()
+      } else {
+        (this.enabledTool as Entity).setEntity(this.entity)
+      }
+    } else {
+      this.enableTool(AdditionTools.ENTITY)
+      if (this.enabledTool && this.enabledTool instanceof Entity) {
+        this.enabledTool.setEntity(this.entity)
+      }
     }
   }
 }
 </script>
 
-<style scoped>
-
+<style scoped lang="scss">
+.custom-entity-chip-active {
+  font-weight: bold;
+}
 </style>
