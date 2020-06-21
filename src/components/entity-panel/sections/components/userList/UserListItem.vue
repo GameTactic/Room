@@ -1,19 +1,23 @@
 <template>
   <v-list-item>
     <v-list-item-avatar>
-      <v-badge
-        v-if="isOnline"
-        bordered
-        bottom
-        color="green"
-        dot
-        offset-x="20"
-        offset-y="20"
-      >
-        <v-avatar>
-          <v-icon>fa-user-circle</v-icon>
-        </v-avatar>
-      </v-badge>
+      <v-tooltip nudge-bottom="20" top v-if="isOnline">
+        <template v-slot:activator="{ on }">
+          <v-badge
+            bordered
+            bottom
+            color="green"
+            dot
+            offset-x="20"
+            offset-y="20"
+          >
+            <v-avatar v-on="on">
+              <v-icon>fa-user-circle</v-icon>
+            </v-avatar>
+          </v-badge>
+        </template>
+        <span>Online</span>
+      </v-tooltip>
       <v-avatar v-else>
         <v-icon>fa-user-circle</v-icon>
       </v-avatar>

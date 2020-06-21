@@ -23,7 +23,8 @@ export default class RoomSocket extends Vue {
   @AppAuthentication.Getter(AppAuthenticationGetters.IS_AUTH) isAuth!: boolean
   @AppAuthentication.Getter(AppAuthenticationGetters.JWT) jwt!: ExtendedJWT
   @SocketNamespace.Action(SocketActions.EMIT) emit!: (payload: { data: object; emit: string }) => void
-  @SocketUser.Action(SocketUserAction.SET_USER) setUser!: (user: User) => void
+  @SocketUser.Action(SocketUserAction.SET_USERS) setUsers!: (user: User[]) => void
+  @SocketUser.Action(SocketUserAction.ADD_USER) addUser!: (user: User) => void
   @SocketUser.Action(SocketUserAction.DELETE_USER) deleteUser!: (jti: string) => void
 
   @Socket()
@@ -35,7 +36,7 @@ export default class RoomSocket extends Vue {
   onUserConnected (user: User) {
     // another user has joined
     if (user.jti !== this.jwt.jti) {
-      this.setUser(user)
+      this.addUser(user)
     }
   }
 

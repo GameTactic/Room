@@ -8,14 +8,15 @@
     @dragover="$event.preventDefault()"
   >
     <the-canvas
-      v-show="isAuthorisedCanvasLoaded"
+      v-show="isCanvasLoaded"
       ref="stage"
     />
     <the-nav />
     <the-tool-panel class="d-none d-sm-flex" />
-    <the-entity-panel class="d-none d-sm-flex" />
+    <the-entity-panel v-if="isAuthorised" class="d-none d-sm-flex" />
     <the-create-new-tactic-overlay />
     <the-update-tactic-overlay />
+    <pinned-tactics v-if="isAuthorisedCanvasLoaded"></pinned-tactics>
   </div>
 </template>
 
@@ -41,17 +42,21 @@ import { AppAuthenticationGetters, ExtendedJWT } from '@/store/modules/app/authe
 import { SocketRoomAction } from '@/store/modules/socket/room'
 import { Namespaces } from '@/store'
 import { SocketUserGetters } from '@/store/modules/socket/user'
+import PinnedTactics from '@/components/pinned-tactics/PinnedTactics.vue'
+import { AppRoomGetters } from '@/store/modules/app/room'
 
 const AppAuthentication = namespace(Namespaces.APP_AUTHENTICATION)
 const AppTools = namespace(Namespaces.APP_TOOLS)
 const SocketRoom = namespace(Namespaces.SOCKET_ROOM)
 const SocketTactic = namespace(Namespaces.SOCKET_TACTIC)
 const SocketUser = namespace(Namespaces.SOCKET_USER)
+const AppRoom = namespace(Namespaces.APP_ROOM)
 
 @Component({
   name: 'TheRoom',
   mixins: [RoomSocket],
   components: {
+    PinnedTactics,
     TheCreateNewTacticOverlay,
     TheUpdateTacticOverlay,
     TheNav,
@@ -66,6 +71,8 @@ export default class TheRoom extends mixins(RoomSocket) {
   @SocketTactic.Getter(SocketTacticGetters.TACTICS) tactics!: () => Tactic[]
   @SocketTactic.Getter(SocketTacticGetters.COLLECTIONS) collections!: () => Collection[]
   @AppAuthentication.Getter(AppAuthenticationGetters.JWT) jwt!: ExtendedJWT
+  @SocketUser.Getter(SocketUserGetters.IS_AUTHORISED) isAuthorised!: boolean;
+  @AppRoom.Getter(AppRoomGetters.IS_CANVAS_LOADED) isCanvasLoaded!: boolean;
   @SocketUser.Getter(SocketUserGetters.IS_AUTHORISED_CANVAS_LOADED) isAuthorisedCanvasLoaded!: boolean
   @SocketTactic.Action(SocketTacticAction.SET_COLLECTIONS) setCollections!: (collections: Collection[]) => void
   @SocketRoom.Action(SocketRoomAction.SET_ROOM_ID) setRoomId!: (roomId: string) => void
@@ -85,18 +92,26 @@ export default class TheRoom extends mixins(RoomSocket) {
     const jti = this.jwt?.jti
     if (jti) {
       this.isRoomNew(jti)
-      this.setUser({
+      // For development purposes
+      this.setUsers([{
         jti: jti,
         name: this.jwt.username,
         onTacticId: '1',
         isOnline: true,
         lastOnline: new Date(),
-        roles: [{
-          id: '1',
-          roleTypes: RoleTypes.USER,
-          assignedBy: jti
-        }]
-      })
+        roles: [
+          {
+            id: '1',
+            roleTypes: RoleTypes.USER,
+            assignedBy: jti
+          },
+          {
+            id: '2',
+            roleTypes: RoleTypes.ADMIN,
+            assignedBy: jti
+          }
+        ]
+      }])
     }
   }
 

@@ -78,7 +78,7 @@ const SocketTacticModule: Module<SocketTacticState, RootState> = {
       state.tactics = payload
     },
     [SocketTacticMutation.TOGGLE_PIN_TACTIC] (state: SocketTacticState, payload: Tactic) {
-      state.tactics.splice(state.tactics.findIndex((tactic: Tactic) => tactic.id === payload.id), 1, { ...payload, pinned: !payload.pinned })
+      payload.isPinned = !payload.isPinned
     },
     [SocketTacticMutation.ADD_TACTIC] (state: SocketTacticState, payload: Tactic) {
       state.tactics.push(payload)
