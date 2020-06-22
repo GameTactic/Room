@@ -39,11 +39,8 @@ export default class Entity extends ToolClass {
           x: event.globalOffset.x,
           y: event.globalOffset.y
         },
-        dimensions: {
-          width: 35,
-          height: 35
-        },
-        image: this.entity.image,
+        dimensions: this.entity.canvasImage.dimensions,
+        image: this.entity.canvasImage.image,
         name: this.entity.name,
         id: this.entity.id,
         team: this.currentTeam
@@ -132,5 +129,9 @@ export default class Entity extends ToolClass {
 
   setEntity = (entity: EntityInterface): void => {
     this.entity = entity
+  }
+
+  getEntity = (): EntityInterface | undefined => {
+    return this.entity
   }
 }

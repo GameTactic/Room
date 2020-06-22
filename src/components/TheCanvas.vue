@@ -11,7 +11,7 @@
     @touchmove="onTouchHandler"
     @touchend="onTouchHandler"
   >
-    <v-layer ref="layer" :config="{ id: Math.random().toString(36) }"></v-layer>
+    <v-layer ref="layer" :config="{ id: getUuid() }"></v-layer>
   </v-stage>
 </template>
 
@@ -33,6 +33,7 @@ import { AppLayerActions, AppLayerGetters } from '@/store/modules/app/layer'
 import CanvasSockets from '@/mixins/CanvasSockets'
 import StageWatcher from '@/mixins/StageWatcher'
 import { Namespaces } from '@/store'
+import uuid from 'uuid'
 
 const AppLayer = namespace(Namespaces.APP_LAYER)
 const AppStage = namespace(Namespaces.APP_STAGE)
@@ -56,6 +57,9 @@ export default class TheCanvas extends mixins(CanvasSockets, StageWatcher) {
   @AppLayer.Action(AppLayerActions.LAYER_SET) setLayer!: (layer: Konva.Layer) => void
   @AppStage.Action(AppStageActions.SET_STAGE) setStage!: (stage: Konva.Stage) => void
   @SocketCanvas.Action(SocketCanvasAction.ADD_CANVAS_ELEMENT) addCanvasElement!: (canvasElement: CanvasElement) => void
+  getUuid () {
+    return uuid()
+  }
 
   $refs!: {
     layer: VueKonvaLayer;

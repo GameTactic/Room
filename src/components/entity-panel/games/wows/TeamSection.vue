@@ -10,8 +10,8 @@
         class="custom-chip-group"
       >
         <v-tooltip
-          top
           v-for="team in teams"
+          top
           :key="team.id"
         >
           <template v-slot:activator="{ on }">
@@ -33,7 +33,7 @@
         text
         light
         icon
-        class="custom-add-button ml-3"
+        class="custom-add-button ml-0"
         @click.stop=""
       >
         <v-icon
@@ -45,7 +45,7 @@
       </v-btn>
     </template>
     <template v-slot:content>
-      <wows-entity-section-content></wows-entity-section-content>
+      <entity-section-content />
     </template>
   </accordion-item>
 </template>
@@ -55,20 +55,20 @@
 import Component from 'vue-class-component'
 import Vue from 'vue'
 import AccordionItem from '@/components/entity-panel/templates/AccordionItem.vue'
-import WowsEntitySectionContent from '@/components/entity-panel/games/wows/components/WowsTeamSectionContent.vue'
+import EntitySectionContent from '@/components/entity-panel/games/wows/components/TeamSectionContent.vue'
 import { Namespaces } from '@/store'
 import { SocketTeamAction, SocketTeamGetters } from '@/store/modules/socket/team'
 import { Team } from '@/store/types'
 import { Action, Getter } from 'vuex-class'
 
 @Component({
-  name: 'WowsTeamSection',
+  name: 'TeamSection.vue',
   components: {
-    WowsEntitySectionContent,
+    EntitySectionContent,
     AccordionItem
   }
 })
-export default class WowsTeamSection extends Vue {
+export default class TeamSection extends Vue {
   @Getter(`${Namespaces.SOCKET_TEAM}/${SocketTeamGetters.TEAMS}`) teams!: Team[]
   @Getter(`${Namespaces.SOCKET_TEAM}/${SocketTeamGetters.SELECTED_TEAM}`) selectedTeam!: Team
   @Action(`${Namespaces.SOCKET_TEAM}/${SocketTeamAction.SET_SELECTED_TEAM}`) setSelectedTeam!: (team: Team) => void

@@ -1,5 +1,9 @@
 <template>
-    <v-dialog v-model="overlay" width="700" class="custom-overlay">
+    <v-dialog
+      v-model="overlay"
+      width="700"
+      class="custom-overlay"
+    >
       <v-card class="pa-12">
         <v-row>
           <v-col>
@@ -8,22 +12,22 @@
             </v-card-title>
             <v-card-actions>
               <v-text-field
-                prepend-icon="fa-file"
-                :label="$t('tactic.overlay.name')"
                 v-model="tactic.name"
+                :label="$t('tactic.overlay.name')"
+                prepend-icon="fa-file"
               />
             </v-card-actions>
             <v-card-actions v-if="maps !== false">
               <v-autocomplete
-                :items="maps"
-                item-text="name"
-                :search-input.sync="search"
                 v-model="tactic.map"
+                :items="maps"
+                :search-input.sync="search"
+                :label="$t('tactic.overlay.maps')"
+                :placeholder="$t('tactic.overlay.search')"
+                item-text="name"
                 color="primary"
                 hide-no-data
                 hide-selected
-                :label="$t('tactic.overlay.maps')"
-                :placeholder="$t('tactic.overlay.search')"
                 prepend-icon="fa-search"
                 autocomplete="new-password"
                 return-object
@@ -41,8 +45,8 @@
             <v-spacer></v-spacer>
             <v-card-subtitle>
               <v-btn
-                color="primary"
                 :disabled="isDisabled()"
+                color="primary"
                 @click="createTactic()"
               >
                 {{ $t('tactic.createTacticOverlay.create') }}
@@ -63,7 +67,7 @@
 <script lang="ts">
 import Component, { mixins } from 'vue-class-component'
 import { EventBus } from '@/event-bus'
-import { AppRoomGetters } from '@/store/modules/app/room'
+import { AppRoomAction, AppRoomGetters } from '@/store/modules/app/room'
 import { namespace } from 'vuex-class'
 import { Api, Collection, Team } from '@/store/types'
 import { SocketStageActions } from '@/store/modules/socket/stage'
@@ -76,6 +80,7 @@ import { AppAuthenticationGetters } from '@/store/modules/app/authentication'
 import { SocketTacticGetters } from '@/store/modules/socket/tactic'
 import { Namespaces } from '@/store'
 import { WowsMapsDataApi } from '@/types/Games/Wows'
+import HandleTactic from '@/util/HandleTactic'
 
 const AppRoom = namespace(Namespaces.APP_ROOM)
 const SocketTactic = namespace(Namespaces.SOCKET_TACTIC)
@@ -93,6 +98,7 @@ export default class CreateNewTacticOverlay extends mixins(TacticWatcher) {
   @SocketCanvas.Action(SocketCanvasAction.SET_CANVAS_ELEMENT) setCanvasElements!: (canvasElements: CanvasElement[]) => void
   @SocketCanvas.Action(SocketCanvasAction.SET_CANVAS_ELEMENT_HISTORY) setCanvasElementsHistory!: (canvasElements: CanvasElementHistory[]) => void
   @AppRoom.Getter(AppRoomGetters.IS_CANVAS_LOADED) isCanvasLoaded!: boolean
+  @AppRoom.Action(AppRoomAction.SET_IS_CANVAS_LOADED) setIsCanvasLoaded!: (isCanvasLoaded: boolean) => void
 
   tactic = {
     map: {
@@ -158,7 +164,7 @@ export default class CreateNewTacticOverlay extends mixins(TacticWatcher) {
           tacticId: id
         }
       })
-      this.newTactic({
+      new HandleTactic({
         id: id,
         name: this.tactic.name,
         collectionId: foundCollection.id,
@@ -169,7 +175,7 @@ export default class CreateNewTacticOverlay extends mixins(TacticWatcher) {
         isPinned: false,
         createdBy: this.$store.getters[`${Namespaces.APP_AUTHENTICATION}/${AppAuthenticationGetters.JWT}`].jti,
         map: this.tactic.map
-      })
+      }).createNewTactic()
       this.resetTacticForm()
       this.overlay = false
     }
@@ -194,7 +200,7 @@ export default class CreateNewTacticOverlay extends mixins(TacticWatcher) {
         },
         {
           name: 'Team 2',
-          color: '#00ff00'
+          color: '#ff0000'
         }
       ]
     }

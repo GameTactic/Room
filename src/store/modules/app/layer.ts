@@ -1,7 +1,7 @@
 import { ActionContext, Module } from 'vuex'
 import Konva from 'konva'
 import { RootState } from '@/store/types'
-import { NodeConfig, Node } from 'konva/types/Node'
+import { Node } from 'konva/types/Node'
 
 export enum AppLayerGetters {
   LAYER = 'layer',
@@ -26,6 +26,7 @@ export enum AppLayerMutations {
 
 export interface AppLayerState {
   layer: Konva.Layer;
+  layerMap: Konva.Layer;
 }
 
 type AppLayerActionContext = ActionContext<AppLayerState, RootState>;
@@ -34,12 +35,13 @@ const AppLayerModule: Module<AppLayerState, RootState> = {
   namespaced: true,
   state () {
     return {
-      layer: new Konva.Layer()
+      layer: new Konva.Layer(),
+      layerMap: new Konva.Layer()
     }
   },
   getters: {
     [AppLayerGetters.LAYER]: (state): Konva.Layer => state.layer,
-    [AppLayerGetters.LAYER_FIND_GROUP]: state => (groupId: string): Node<NodeConfig> => state.layer.findOne((child: Konva.Group) => child.attrs.id === groupId)
+    [AppLayerGetters.LAYER_FIND_GROUP]: state => (groupId: string): Node => state.layer.findOne((child: Konva.Group) => child.attrs.id === groupId)
   },
   mutations: {
     [AppLayerMutations.LAYER_DESTROY_GROUP] (state: AppLayerState, groupId: number) {

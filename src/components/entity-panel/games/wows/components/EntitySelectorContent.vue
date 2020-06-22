@@ -1,5 +1,5 @@
 <template>
-  <EntitySection :defaultEntities="defaults" :entities="entities" label="Search for ships"></EntitySection>
+  <EntitySelector :defaultEntities="defaultsEntities" :entities="entities" label="Search for ships" />
 </template>
 
 <script lang="ts">
@@ -9,20 +9,18 @@ import { Api, Entity, Game } from '@/store/types'
 import { AppRoomGetters } from '@/store/modules/app/room'
 import { namespace } from 'vuex-class'
 import { Namespaces } from '@/store'
-import EntitySelectorListItem from '@/components/entity-panel/games/wows/components/WowsEntitySelectorListItem.vue'
-import EntitySection from '@/components/entity-panel/templates/EntitySection.vue'
+import EntitySelector from '@/components/entity-panel/templates/EntitySelector.vue'
 import { Ship, WowsShipDataApi } from '@/types/Games/Wows'
 
 const AppRoom = namespace(Namespaces.APP_ROOM)
 
 @Component({
-  name: 'WowsEntitySelectorContent',
+  name: 'EntitySelectorContent',
   components: {
-    EntitySection,
-    EntitySelectorListItem
+    EntitySelector
   }
 })
-export default class WowsEntitySelectorContent extends Vue {
+export default class EntitySelectorContent extends Vue {
   @AppRoom.Getter(AppRoomGetters.API) api!: Api[];
   colors = {
     AirCarrier: 'red',
@@ -34,35 +32,31 @@ export default class WowsEntitySelectorContent extends Vue {
   get entities (): Entity[] {
     const gameShips: Api | undefined = this.api.find((api: Api) => api.name === 'wows.encyclopedia.ships')
     if (gameShips && gameShips.data) {
-      return (gameShips.data as WowsShipDataApi).ships.filter((ship: Ship) => !ship.default).map((ship: Ship) => {
-        return {
-          id: ship.id,
-          name: ship.name,
-          game: Game.WOWS,
-          image: ship.image,
-          color: this.colors[ship.type]
-        }
-      })
-    } else {
-      return []
+      return (gameShips.data as WowsShipDataApi).ships.filter((ship: Ship) => !ship.default).map((ship: Ship) => ({
+        id: ship.id,
+        name: ship.name,
+        game: Game.WOWS,
+        image: ship.image,
+        canvasImage: ship.canvasImage,
+        color: this.colors[ship.type]
+      }))
     }
+    return []
   }
 
-  get defaults (): Entity[] {
+  get defaultsEntities (): Entity[] {
     const gameShips: Api | undefined = this.api.find((api: Api) => api.name === 'wows.encyclopedia.ships')
     if (gameShips && gameShips.data) {
-      return (gameShips.data as WowsShipDataApi).ships.filter((ship: Ship) => ship.default).map((ship: Ship) => {
-        return {
-          id: ship.id,
-          name: ship.name,
-          game: Game.WOWS,
-          image: ship.image,
-          color: this.colors[ship.type]
-        }
-      })
-    } else {
-      return []
+      return (gameShips.data as WowsShipDataApi).ships.filter((ship: Ship) => ship.default).map((ship: Ship) => ({
+        id: ship.id,
+        name: ship.name,
+        game: Game.WOWS,
+        image: ship.image,
+        canvasImage: ship.canvasImage,
+        color: this.colors[ship.type]
+      }))
     }
+    return []
   }
 }
 </script>

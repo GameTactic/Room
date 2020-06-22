@@ -1,22 +1,20 @@
 <template>
   <div>
-    <!-- Defaults -->
-    <span class="px-2 caption">Default icons</span>
     <v-chip-group
       class="px-2"
       column
     >
-      <EntitySelectorListItem
+      <EntitySelectorItem
         v-for="(entity, i) in defaultEntities"
         :key="i"
         :entity="entity"
-      ></EntitySelectorListItem>
+      />
     </v-chip-group>
     <v-divider class="px-2"></v-divider>
     <v-text-field
-      class="custom-wows-entity-ship-search px-2"
       v-model="search"
       :label="label"
+      class="custom-wows-entity-ship-search px-2"
       placeholder="Start typing to search"
       prepend-icon="mdi-magnify"
       clear-icon="mdi-close"
@@ -31,11 +29,11 @@
         class="px-2 custom-chip-group-wows-search"
         column
       >
-        <EntitySelectorListItem
+        <EntitySelectorItem
           v-for="(entity, i) in getEntities"
           :key="i"
           :entity="entity"
-        ></EntitySelectorListItem>
+        />
       </v-chip-group>
     </v-lazy>
     <span v-else class="caption px-2">No entities found</span>
@@ -49,19 +47,23 @@ import { Api, Entity } from '@/store/types'
 import { AppRoomGetters } from '@/store/modules/app/room'
 import { namespace } from 'vuex-class'
 import { Namespaces } from '@/store'
-import EntitySelectorListItem from '@/components/entity-panel/games/wows/components/WowsEntitySelectorListItem.vue'
+import EntitySelectorItem from '@/components/entity-panel/templates/components/EntitySelectorItem.vue'
 import { Prop } from 'vue-property-decorator'
+import { AppToolGetters } from '@/store/modules/app/tools'
+import { Tool } from '@/tools/Tool'
 
+const AppTools = namespace(Namespaces.APP_TOOLS)
 const AppRoom = namespace(Namespaces.APP_ROOM)
 
 @Component({
-  name: 'EntitySection',
+  name: 'EntitySelector',
   components: {
-    EntitySelectorListItem
+    EntitySelectorItem
   }
 })
-export default class EntitySection extends Vue {
+export default class EntitySelector extends Vue {
   @AppRoom.Getter(AppRoomGetters.API) api!: Api[];
+  @AppTools.Getter(AppToolGetters.ENABLED_TOOL) enabledTool!: Tool | undefined
   @Prop() private entities!: Entity[]
   @Prop() private defaultEntities!: Entity[]
   @Prop() private label!: string
@@ -76,12 +78,13 @@ export default class EntitySection extends Vue {
 }
 </script>
 
-<style>
-  .custom-chip-group-wows-search .v-slide-group__wrapper .v-slide-group__content {
-    overflow: auto;
-    max-height: 200px;
-  }
-  .custom-wows-entity-ship-search .v-text-field__details {
-    display: none;
-  }
+<style lang="scss">
+.custom-chip-group-wows-search .v-slide-group__wrapper .v-slide-group__content {
+  overflow: auto;
+  max-height: 200px;
+  @include custom-scroll-bar;
+}
+.custom-wows-entity-ship-search .v-text-field__details {
+  display: none;
+}
 </style>

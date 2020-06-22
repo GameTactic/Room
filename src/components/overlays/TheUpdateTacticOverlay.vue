@@ -13,22 +13,22 @@
             </v-card-title>
             <v-card-actions>
               <v-text-field
-                prepend-icon="fa-file"
-                :label="$t('tactic.overlay.name')"
                 v-model="selectedTactic.name"
+                :label="$t('tactic.overlay.name')"
+                prepend-icon="fa-file"
               />
             </v-card-actions>
             <v-card-actions v-if="maps !== false">
               <v-autocomplete
-                :items="maps"
-                item-text="name"
-                :search-input.sync="search"
                 v-model="selectedTactic.map"
+                :items="maps"
+                :label="$t('tactic.overlay.maps')"
+                :placeholder="$t('tactic.overlay.search')"
+                :search-input.sync="search"
+                item-text="name"
                 color="primary"
                 hide-no-data
                 hide-selected
-                :label="$t('tactic.overlay.maps')"
-                :placeholder="$t('tactic.overlay.search')"
                 prepend-icon="fa-search"
                 autocomplete="new-password"
                 return-object
@@ -77,10 +77,12 @@ import { CanvasElement, CanvasElementHistory } from '@/types/Canvas'
 import TacticWatcher from '@/mixins/TacticWatcher'
 import { Namespaces } from '@/store'
 import { WowsMapsDataApi } from '@/types/Games/Wows'
+import { SocketTacticAction } from '@/store/modules/socket/tactic'
 
 const AppRoom = namespace(Namespaces.APP_ROOM)
 const SocketStage = namespace(Namespaces.SOCKET_STAGE)
 const SocketCanvas = namespace(Namespaces.SOCKET_CANVAS)
+const SocketTactic = namespace(Namespaces.SOCKET_TACTIC)
 
 @Component({
   name: 'TheUpdateTacticOverlay',
@@ -91,6 +93,7 @@ export default class TheUpdateTacticOverlay extends mixins(TacticWatcher) {
   @SocketStage.Action(SocketStageActions.SET_CONFIG) setConfig!: (config: CustomStageConfig) => void
   @SocketCanvas.Action(SocketCanvasAction.SET_CANVAS_ELEMENT) setCanvasElements!: (canvasElements: CanvasElement[]) => void
   @SocketCanvas.Action(SocketCanvasAction.SET_CANVAS_ELEMENT_HISTORY) setCanvasElementsHistory!: (canvasElements: CanvasElementHistory[]) => void
+  @SocketTactic.Action(SocketTacticAction.UPDATE_TACTIC) updateTactic!: (tactic: Tactic) => void
 
   search = ''
   selectedTactic: Tactic | {} = {}

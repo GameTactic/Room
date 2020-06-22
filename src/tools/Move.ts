@@ -63,8 +63,14 @@ export default class Move extends ToolClass implements ToolClassInterface {
   mouseUpAction = (event: CustomEvent): void => {
     if (this.enabled && this.mask) {
       this.disableTool()
-      const tr = new Transformer(true)
-      tr.setNodes([ ...this.hitCheck().toArray() ])
+      if (this.hasMoved) {
+        new Transformer(true).setNodes([ ...this.hitCheck().toArray() ])
+      } else {
+        const target = event.konvaPointerEvent.target.parent
+        if (target && (target.attrs.type === CanvasElementType.ENTITY || target.attrs.type === CanvasElementType.SHAPE)) {
+          new Transformer(true).setNodes([ target ])
+        }
+      }
       this.mask.destroy()
     }
     this.layer.batchDraw()

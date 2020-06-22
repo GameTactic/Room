@@ -8,7 +8,7 @@
         text
         light
         icon
-        class="custom-add-button ml-3"
+        class="custom-add-button ml-0"
         @click.stop=""
       >
         <v-icon
@@ -20,7 +20,7 @@
       </v-btn>
     </template>
     <template v-slot:content>
-      <UserListContent></UserListContent>
+      <UserListContent />
     </template>
   </accordion-item>
 </template>
@@ -30,7 +30,7 @@
 import Component from 'vue-class-component'
 import Vue from 'vue'
 import AccordionItem from '@/components/entity-panel/templates/AccordionItem.vue'
-import UserListContent from '@/components/entity-panel/sections/components/userList/UserListContent.vue'
+import UserListContent from '@/components/entity-panel/sections/components/UserListContent.vue'
 import { SocketUserGetters } from '@/store/modules/socket/user'
 import { User } from '@/store/types'
 import { namespace } from 'vuex-class'

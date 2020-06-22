@@ -2,7 +2,7 @@
   <v-list-item>
     <v-list-item-avatar>
       <v-tooltip nudge-bottom="20" top v-if="isOnline">
-        <template v-slot:activator="{ on }">
+        <template v-slot:activator="{ on: tooltip }">
           <v-badge
             bordered
             bottom
@@ -11,7 +11,7 @@
             offset-x="20"
             offset-y="20"
           >
-            <v-avatar v-on="on">
+            <v-avatar v-on="{ ...tooltip }">
               <v-icon>fa-user-circle</v-icon>
             </v-avatar>
           </v-badge>

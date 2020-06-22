@@ -11,7 +11,7 @@
 
 <script>
 export default {
-  name: 'WotEntitySelector'
+  name: 'EntitySelector'
 }
 </script>
 

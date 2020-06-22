@@ -8,7 +8,7 @@
         text
         light
         icon
-        class="custom-add-button ml-3"
+        class="custom-add-button ml-0"
         @click.stop="newTacticOnClickHandler"
       >
         <v-icon
@@ -20,7 +20,7 @@
       </v-btn>
     </template>
     <template v-slot:content>
-      <tactic-selector-content></tactic-selector-content>
+      <tactic-selector-content />
     </template>
   </accordion-item>
 </template>
@@ -30,7 +30,7 @@
 import Component from 'vue-class-component'
 import Vue from 'vue'
 import AccordionItem from '@/components/entity-panel/templates/AccordionItem.vue'
-import TacticSelectorContent from '@/components/entity-panel/sections/components/tacticSelector/TacticSelectorContent.vue'
+import TacticSelectorContent from '@/components/entity-panel/sections/components/TacticSelectorContent.vue'
 import { EventBus } from '@/event-bus'
 
 @Component({

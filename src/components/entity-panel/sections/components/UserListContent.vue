@@ -1,29 +1,32 @@
 <template>
   <v-list>
     <span class="mx-2 caption" v-if="owner">Owner [1]</span>
-    <v-divider class="mx-2" v-if="owner"></v-divider>
-    <UserListItem :user="owner" v-if="owner"></UserListItem>
+    <v-divider class="mx-2" v-if="owner" />
+    <UserListItem
+      :user="owner"
+      v-if="owner"
+    />
     <span class="mx-2 caption" v-if="admins.length > 0">Admin [{{ admins.length }}]</span>
-    <v-divider class="mx-2" v-if="admins.length > 0"></v-divider>
+    <v-divider class="mx-2" v-if="admins.length > 0" />
     <UserListItem
       v-for="user in admins"
       :key="user.id"
       :user="user"
-    ></UserListItem>
+    />
     <span class="mx-2 caption" v-if="users.length > 0">Member [{{ users.length }}]</span>
-    <v-divider class="mx-2" v-if="users.length > 0"></v-divider>
+    <v-divider class="mx-2" v-if="users.length > 0" />
     <UserListItem
       v-for="user in users"
       :key="user.id"
       :user="user"
-    ></UserListItem>
+    />
     <span class="mx-2 caption" v-if="offlineUsers.length > 0">Offline [{{ offlineUsers.length }}]</span>
-    <v-divider class="mx-2" v-if="offlineUsers.length > 0"></v-divider>
+    <v-divider class="mx-2" v-if="offlineUsers.length > 0" />
     <UserListItem
       v-for="user in offlineUsers"
       :key="user.id"
       :user="user"
-    ></UserListItem>
+    />
   </v-list>
 </template>
 
@@ -35,7 +38,7 @@ import { Role, RoleTypes, User } from '@/store/types'
 import { SocketUserGetters } from '@/store/modules/socket/user'
 import { Namespaces } from '@/store'
 import { namespace } from 'vuex-class'
-import UserListItem from '@/components/entity-panel/sections/components/userList/UserListItem.vue'
+import UserListItem from '@/components/entity-panel/sections/components/UserListItem.vue'
 
 const SocketUser = namespace(Namespaces.SOCKET_USER)
 

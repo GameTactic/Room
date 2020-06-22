@@ -1,7 +1,7 @@
 <template>
-  <v-expansion-panel>
+  <v-expansion-panel class="custom-expansion-panel">
     <v-expansion-panel-header
-      class="custom-expansion-panel-header px-3 py-0"
+      class="custom-expansion-panel-header pl-3 pr-0 py-0"
       color="white--text"
       hide-actions
     >
@@ -15,12 +15,12 @@
         </v-icon>
         <span class="pl-3"><slot name="header">Header</slot></span>
         <slot name="middleSpace"></slot>
-        <v-divider vertical v-if="$slots.rightBtn"></v-divider>
-        <slot name="rightBtn" class="custom-add-button ml-3"></slot>
+        <v-divider vertical v-if="$slots.rightBtn" />
+        <slot name="rightBtn" class="custom-add-button ml-3" />
       </template>
     </v-expansion-panel-header>
     <v-expansion-panel-content class="custom-expansion-panel-content">
-      <slot name="content"></slot>
+      <slot name="content" />
     </v-expansion-panel-content>
   </v-expansion-panel>
 </template>
@@ -38,6 +38,10 @@ export default class AccordionItem extends Vue {
 </script>
 
 <style lang="scss">
+.custom-expansion-panel-header {
+  height: 35px !important;
+  min-height: 35px !important;
+}
 .custom-expansion-panel-active {
   background: $room-primary;
   .v-expansion-panel-header__icon .v-icon {
@@ -55,12 +59,17 @@ export default class AccordionItem extends Vue {
 <style lang="scss" scoped>
 .custom-caret {
   flex: unset;
+  transform: rotate(-90deg);
 }
 .custom-caret-on {
-  transform: rotate(180deg);
+  transform: rotate(0deg);
 }
 .custom-rotate {
   transform: rotate(90deg);
+}
+.custom-expansion-panel .v-expansion-panel-header--active {
+  height: 35px !important;
+  min-height: 35px !important;
 }
 </style>
 <style lang="scss">
