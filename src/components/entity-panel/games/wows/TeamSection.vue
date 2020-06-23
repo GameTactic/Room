@@ -1,7 +1,7 @@
 <template>
   <accordion-item>
     <template v-slot:header>
-      Teams
+      {{ `${selectedTeam.name} (${selectedTeam.entities.length})` }}
     </template>
     <template v-slot:middleSpace>
       <v-chip-group
@@ -28,22 +28,6 @@
         </v-tooltip>
       </v-chip-group>
     </template>
-    <template v-slot:rightBtn>
-      <v-btn
-        text
-        light
-        icon
-        class="custom-add-button ml-0"
-        @click.stop=""
-      >
-        <v-icon
-          color="white"
-          size="20px"
-        >
-          fa-ellipsis-v
-        </v-icon>
-      </v-btn>
-    </template>
     <template v-slot:content>
       <entity-section-content />
     </template>
@@ -62,7 +46,7 @@ import { Team } from '@/store/types'
 import { Action, Getter } from 'vuex-class'
 
 @Component({
-  name: 'TeamSection.vue',
+  name: 'TeamSection',
   components: {
     EntitySectionContent,
     AccordionItem

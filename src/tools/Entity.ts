@@ -57,7 +57,8 @@ export default class Entity extends ToolClass {
           height: this.formatY(this.data.dimensions.height)
         },
         this.data.name,
-        this.groupId
+        this.groupId,
+        this.data.team.color
       )
       this.entityCreator.create()
       if (this.temporary) {
@@ -115,7 +116,8 @@ export default class Entity extends ToolClass {
             height: this.formatY(data.dimensions.height)
           },
           data.name,
-          canvasElement.id
+          canvasElement.id,
+          data.team.color
         )
         this.entityCreator.create()
         if (canvasElement.tool.temporary) {

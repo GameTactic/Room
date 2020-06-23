@@ -11,7 +11,8 @@ export default class EntityCreator extends Shape {
                public point: Point,
                public dimensions: Dimensions,
                public name: string,
-               public groupId: string
+               public groupId: string,
+               public color?: string
   ) {
     super()
     this.sprite = new Konva.Sprite({})

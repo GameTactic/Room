@@ -10,7 +10,8 @@ import { AppRoomGetters } from '@/store/modules/app/room'
 import { namespace } from 'vuex-class'
 import { Namespaces } from '@/store'
 import EntitySelector from '@/components/entity-panel/templates/EntitySelector.vue'
-import { Ship, WowsShipDataApi } from '@/types/Games/Wows'
+import { EntitiesDataApi, Ship } from '@/types/Games/Wows'
+import { GameApiRoutes } from '@/games/types'
 
 const AppRoom = namespace(Namespaces.APP_ROOM)
 
@@ -30,9 +31,10 @@ export default class EntitySelectorContent extends Vue {
   }
 
   get entities (): Entity[] {
-    const gameShips: Api | undefined = this.api.find((api: Api) => api.name === 'wows.encyclopedia.ships')
-    if (gameShips && gameShips.data) {
-      return (gameShips.data as WowsShipDataApi).ships.filter((ship: Ship) => !ship.default).map((ship: Ship) => ({
+    const apiData: Api | undefined = this.api.find((api: Api) => api.name === GameApiRoutes[Game.WOWS].entities)
+    if (apiData && apiData.data) {
+      const entities = (apiData.data as EntitiesDataApi).entities as Ship[]
+      return entities.filter((ship: Ship) => !ship.default).map((ship: Ship) => ({
         id: ship.id,
         name: ship.name,
         game: Game.WOWS,
@@ -45,9 +47,10 @@ export default class EntitySelectorContent extends Vue {
   }
 
   get defaultsEntities (): Entity[] {
-    const gameShips: Api | undefined = this.api.find((api: Api) => api.name === 'wows.encyclopedia.ships')
-    if (gameShips && gameShips.data) {
-      return (gameShips.data as WowsShipDataApi).ships.filter((ship: Ship) => ship.default).map((ship: Ship) => ({
+    const apiData: Api | undefined = this.api.find((api: Api) => api.name === GameApiRoutes[Game.WOWS].entities)
+    if (apiData && apiData.data) {
+      const entities = (apiData.data as EntitiesDataApi).entities as Ship[]
+      return entities.filter((ship: Ship) => ship.default).map((ship: Ship) => ({
         id: ship.id,
         name: ship.name,
         game: Game.WOWS,

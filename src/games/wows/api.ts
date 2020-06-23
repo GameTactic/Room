@@ -1,12 +1,5 @@
 import { ApiHeader } from '@/types/Games/Index'
-import {
-  ApiShipResponse,
-  Ship, WowsMapsDataApi,
-  WowsShipDataApi,
-  WowsShipInfoApiResponse,
-  WowsShipsApiResponse,
-  WowsShipType
-} from '@/types/Games/Wows'
+import { ApiShipResponse, EntitiesDataApi, MapsDataApi, Ship, WowsShipInfoApiResponse, WowsShipsApiResponse, WowsShipType } from '@/types/Games/Wows'
 import axios from 'axios'
 import { Api, Game, Map } from '@/store/types'
 import { JWTRegion } from '@/store/modules/app/authentication'
@@ -183,8 +176,8 @@ export const getWowsApiData = async (token: string, setGameApi: (api: Api) => vo
     name: 'wows.encyclopedia.ships',
     data: {
       name: 'wows.encyclopedia.ships',
-      ships: ships
-    } as WowsShipDataApi
+      entities: ships
+    } as EntitiesDataApi
   })
 
   setGameApi({
@@ -192,6 +185,6 @@ export const getWowsApiData = async (token: string, setGameApi: (api: Api) => vo
     data: {
       name: 'wows.encyclopedia.maps',
       maps: maps
-    } as WowsMapsDataApi
+    } as MapsDataApi
   })
 }

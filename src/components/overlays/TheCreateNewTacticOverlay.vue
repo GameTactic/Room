@@ -69,7 +69,7 @@ import Component, { mixins } from 'vue-class-component'
 import { EventBus } from '@/event-bus'
 import { AppRoomAction, AppRoomGetters } from '@/store/modules/app/room'
 import { namespace } from 'vuex-class'
-import { Api, Collection, Team } from '@/store/types'
+import { Api, Collection, Game, Team } from '@/store/types'
 import { SocketStageActions } from '@/store/modules/socket/stage'
 import { CustomStageConfig } from '@/util/PointerEventMapper'
 import { SocketCanvasAction } from '@/store/modules/socket/canvas'
@@ -79,9 +79,12 @@ import uuid from 'uuid'
 import { AppAuthenticationGetters } from '@/store/modules/app/authentication'
 import { SocketTacticGetters } from '@/store/modules/socket/tactic'
 import { Namespaces } from '@/store'
-import { WowsMapsDataApi } from '@/types/Games/Wows'
+import { MapsDataApi } from '@/types/Games/Wows'
 import HandleTactic from '@/util/HandleTactic'
+import { GameApiRoutes } from '@/games/types'
+import { SocketRoomGetters } from '@/store/modules/socket/room'
 
+const SocketRoom = namespace(Namespaces.SOCKET_ROOM)
 const AppRoom = namespace(Namespaces.APP_ROOM)
 const SocketTactic = namespace(Namespaces.SOCKET_TACTIC)
 const SocketStage = namespace(Namespaces.SOCKET_STAGE)
@@ -99,6 +102,7 @@ export default class CreateNewTacticOverlay extends mixins(TacticWatcher) {
   @SocketCanvas.Action(SocketCanvasAction.SET_CANVAS_ELEMENT_HISTORY) setCanvasElementsHistory!: (canvasElements: CanvasElementHistory[]) => void
   @AppRoom.Getter(AppRoomGetters.IS_CANVAS_LOADED) isCanvasLoaded!: boolean
   @AppRoom.Action(AppRoomAction.SET_IS_CANVAS_LOADED) setIsCanvasLoaded!: (isCanvasLoaded: boolean) => void
+  @SocketRoom.Getter(SocketRoomGetters.GAME) currentGame!: Game
 
   tactic = {
     map: {
@@ -132,9 +136,9 @@ export default class CreateNewTacticOverlay extends mixins(TacticWatcher) {
   }
 
   get maps () {
-    const mapApi: Api | undefined = this.api.find((api: Api) => api.name === 'wows.encyclopedia.maps')
+    const mapApi: Api | undefined = this.api.find((api: Api) => (this.currentGame !== Game.NONE) && api.name === GameApiRoutes[this.currentGame].maps)
     if (mapApi) {
-      return (mapApi.data as WowsMapsDataApi).maps
+      return (mapApi.data as MapsDataApi).maps
     } else {
       return false
     }

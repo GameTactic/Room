@@ -1,7 +1,5 @@
 <template>
   <v-list v-if="selectedTeam.entities.length > 0">
-    <span class="px-2">{{ selectedTeam.name }}</span>
-    <v-divider />
     <v-text-field
       v-model="search"
       label="Search your ships"

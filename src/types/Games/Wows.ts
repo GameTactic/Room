@@ -38,11 +38,11 @@ export enum WowsShipType {
   BATTLESHIP = 'Battleship'
 }
 
-export interface WowsShipDataApi extends ApiData {
-  ships: Ship[];
+export interface EntitiesDataApi extends ApiData {
+  entities: Entity[];
 }
 
-export interface WowsMapsDataApi extends ApiData {
+export interface MapsDataApi extends ApiData {
   maps: Map[];
 }
 

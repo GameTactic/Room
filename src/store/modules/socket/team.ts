@@ -51,10 +51,9 @@ const SocketTeamModule: Module<SocketTeamState, {}> = {
     [SocketTeamMutation.SET_SELECTED_TEAM] (state: SocketTeamState, payload: Team) {
       state.selectedTeam = payload
     },
-    [SocketTeamMutation.ADD_ENTITY_TO_TEAM] (state: SocketTeamState, entity: Entity) {
-      if (entity.team) {
-        entity.team.entities.push({ ...entity })
-      }
+    [SocketTeamMutation.ADD_ENTITY_TO_TEAM] (state: SocketTeamState, payload: { teamId: string; entity: Entity }) {
+      const team: Team | undefined = state.teams.find((team: Team) => team.id === payload.teamId)
+      if (team) { team.entities.push(payload.entity) }
     },
     [SocketTeamMutation.DELETE_ENTITY_FROM_TEAM] (state: SocketTeamState, entity: Entity) {
       if (entity.team) {

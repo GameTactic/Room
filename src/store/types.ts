@@ -92,7 +92,7 @@ export interface Tactic {
 }
 
 export enum Game {
-  NONE = '',
+  NONE = 'none',
   WOWS = 'wows',
   WOT = 'wot'
 }
