@@ -108,14 +108,7 @@ export default class Line extends ToolClass implements LineInterface {
             },
             canvasElements: [{
               id: this.groupId,
-              tool: {
-                name: this.name,
-                size: this.size,
-                colour: this.colour,
-                temporary: this.temporary,
-                strokeStyle: this.strokeStyle,
-                endStyle: this.endStyle
-              } as LineInterface,
+              tool: this,
               type: CanvasElementType.SHAPE,
               data: this.data,
               jti: this.jti,

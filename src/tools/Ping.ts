@@ -69,12 +69,7 @@ export default class Ping extends ToolClass implements PingInterface {
         },
         canvasElements: [{
           id: this.groupId,
-          tool: {
-            name: this.name,
-            size: this.size,
-            colour: this.colour,
-            temporary: this.temporary
-          } as PingInterface,
+          tool: this,
           type: CanvasElementType.SHAPE,
           data: this.data,
           jti: this.jti,

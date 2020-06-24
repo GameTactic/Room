@@ -1,16 +1,25 @@
 import Konva from 'konva'
-import { CanvasElement, CanvasElementType, Point } from '@/types/Canvas'
+import { CanvasElement, CanvasElementType, TransformData, Point, CanvasElementHistory } from '@/types/Canvas'
 import store from '@/main'
-import { SocketCanvasAction } from '@/store/modules/socket/canvas'
 import { Namespaces } from '@/store'
 import { AppStageGetters } from '@/store/modules/app/stage'
-import { ToolClass } from '@/tools/Tool'
+import { ToolClass, Tracker } from '@/tools/Tool'
 import { KonvaPointerEvent } from 'konva/types/PointerEvents'
 import { KonvaEventObject } from 'konva/types/Node'
+import { SocketCanvasAction } from '@/store/modules/socket/canvas'
+import uuid from 'uuid'
+import { AppAuthenticationGetters } from '@/store/modules/app/authentication'
+import { ISO } from '@/util/ISO'
+
+interface CustomDocumentEventTarget extends EventTarget {
+  tagName: string;
+}
 
 export default class Transformer extends ToolClass {
   private tr: Konva.Transformer
+  private prevAttrs: CanvasElement['attrs'] | undefined
   private isMouseDownEnabled = false
+  private documentListener: (e: MouseEvent) => void
   private readonly isAllowMove: boolean
   private moveData: { from: Point; to: Point; prev: Point }
 
@@ -19,6 +28,12 @@ export default class Transformer extends ToolClass {
     this.tr = new Konva.Transformer({
       padding: 10
     })
+    this.documentListener = (e: MouseEvent) => {
+      const event = e.target as CustomDocumentEventTarget
+      if (event && event.tagName !== 'CANVAS') {
+        this.disableTransform()
+      }
+    }
     this.tr.attrs.type = CanvasElementType.TRANSFORMER
     this.layer.add(this.tr).batchDraw()
     this.tr.keepRatio(false)
@@ -31,12 +46,26 @@ export default class Transformer extends ToolClass {
   }
 
   setNodes = (nodes: Konva.Node[]): void => {
-    nodes.forEach((node: Konva.Node) => {
-      node.attrs.transforming = true
-    })
-    this.tr.nodes(nodes)
-    this.createListeners()
-    this.layer.batchDraw()
+    if (nodes.length > 0) {
+      this.tr.nodes(nodes)
+      const node = nodes[0]
+      this.prevAttrs = {
+        position: {
+          x: this.formatXInverse(node.position().x),
+          y: this.formatYInverse(node.position().y)
+        },
+        rotation: node.rotation(),
+        skewX: node.skewX(),
+        skewY: node.skewY(),
+        scaleX: node.scaleX(),
+        scaleY: node.scaleY()
+      }
+      nodes.forEach((node: Konva.Node) => {
+        node.attrs.isTransformEnabled = true
+      })
+      this.createListeners()
+      this.layer.batchDraw()
+    }
   }
 
   createListeners = (): void => {
@@ -56,6 +85,7 @@ export default class Transformer extends ToolClass {
 
   checkDisableTransform = (): void => {
     const stage: Konva.Stage = store.getters[`${Namespaces.APP_STAGE}/${AppStageGetters.STAGE}`]
+    document.addEventListener('click', this.documentListener)
     stage.on('mousedown.transform', (e) => {
       const target = e.target.parent
       if (target) {
@@ -93,10 +123,11 @@ export default class Transformer extends ToolClass {
   }
 
   disableTransform = (): void => {
+    document.removeEventListener('click', this.documentListener)
     this.removeEventListeners()
     const nodes: Konva.Node[] = this.tr.getNodes()
     nodes.forEach((node: Konva.Node) => {
-      node.attrs.transforming = false
+      node.attrs.isTransformEnabled = false
     })
     this.tr.destroy()
     this.layer.batchDraw()
@@ -123,6 +154,9 @@ export default class Transformer extends ToolClass {
   onMouseDown = (e: KonvaPointerEvent): void => {
     this.isMouseDownEnabled = true
     this.tr.visible(false)
+    this.tr.getNodes().forEach((node: Konva.Node) => {
+      node.attrs.isTransforming = true
+    })
     this.moveData = {
       from: { x: e.evt.x, y: e.evt.y },
       to: { x: e.evt.x, y: e.evt.y },
@@ -152,23 +186,43 @@ export default class Transformer extends ToolClass {
       this.isMouseDownEnabled = false
       this.tr.visible(true)
       this.updateNodes()
+      this.tr.getNodes().forEach((node: Konva.Node) => {
+        node.attrs.isTransforming = false
+      })
     }
   }
 
   updateNodes = (): void => {
-    this.tr.getNodes().forEach((node: Konva.Node) => {
-      const attrs: CanvasElement['attrs'] = {
-        position: {
-          x: this.formatXInverse(node.position().x),
-          y: this.formatYInverse(node.position().y)
-        },
-        rotation: node.rotation(),
-        skewX: node.skewX(),
-        skewY: node.skewY(),
-        scaleX: node.scaleX(),
-        scaleY: node.scaleY()
-      }
-      store.dispatch(`${Namespaces.SOCKET_CANVAS}/${SocketCanvasAction.UPDATE_CANVAS_ELEMENT_ATTRS}`, { id: node.attrs.id, attrs: attrs })
-    })
+    const node: Konva.Node = this.tr.getNodes()[0]
+    const attrs: CanvasElement['attrs'] = {
+      position: {
+        x: this.formatXInverse(node.position().x),
+        y: this.formatYInverse(node.position().y)
+      },
+      rotation: node.rotation(),
+      skewX: node.skewX(),
+      skewY: node.skewY(),
+      scaleX: node.scaleX(),
+      scaleY: node.scaleY()
+    }
+    const transformData = {
+      from: this.prevAttrs,
+      to: attrs,
+      groups: this.tr.getNodes().map((node: Konva.Node) => node.attrs.id)
+    }
+    const jti = store.getters[`${Namespaces.APP_AUTHENTICATION}/${AppAuthenticationGetters.JWT}`].jti
+    if (jti) {
+      this.tr.getNodes().forEach((node: Konva.Node) => {
+        store.dispatch(`${Namespaces.SOCKET_CANVAS}/${SocketCanvasAction.UPDATE_CANVAS_ELEMENT_ATTRS}`, { id: node.attrs.id, attrs: attrs })
+      })
+      store.dispatch(`${Namespaces.SOCKET_CANVAS}/${SocketCanvasAction.ADD_CANVAS_ELEMENT_HISTORY}`, {
+        id: uuid(),
+        jti: jti,
+        modifyType: Tracker.TRANSFORM,
+        modifyData: transformData as TransformData,
+        timestampModified: ISO.timestamp()
+      } as CanvasElementHistory)
+      this.prevAttrs = attrs
+    }
   }
 }

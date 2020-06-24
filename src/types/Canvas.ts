@@ -28,7 +28,6 @@ export enum CanvasElementType {
   SHAPE = 'shape',
   ENTITY = 'entity',
   TRANSFORMER = 'transformer',
-  UNKNOWN = 'unknown',
   MASK = 'mask'
 }
 
@@ -54,22 +53,22 @@ export interface CanvasElementHistory {
   id: string;
   jti: string;
   modifyType: Tracker;
-  modifyData: AdditionData | RedoData | UndoData | MoveData | RemovalData;
+  modifyData: AdditionData | RedoData | UndoData | TransformData | RemovalData;
   timestampModified: number;
 }
 
 export interface RequestCanvasEntity {
   id: string;
   jti: string;
-  modifyData: AdditionData | RedoData | UndoData | MoveData | RemovalData;
+  modifyData: AdditionData | RedoData | UndoData | TransformData | RemovalData;
   modifyType: Tracker;
   timestampModified: number;
   canvasElements: CanvasElement[];
 }
 
-export interface MoveData {
-  from: Point;
-  to: Point;
+export interface TransformData {
+  from: CanvasElement['attrs'];
+  to: CanvasElement['attrs'];
   groups: string[];
 }
 

@@ -2,7 +2,7 @@ import Vue from 'vue'
 import Component from 'vue-class-component'
 import { Socket } from 'vue-socket.io-extended'
 import { namespace } from 'vuex-class'
-import { AdditionData, CanvasElement, CanvasElementHistory, MoveData, RedoData, RemovalData, RemovalTools, RequestCanvasEntity, UndoData } from '@/types/Canvas'
+import { AdditionData, CanvasElement, CanvasElementHistory, TransformData, RedoData, RemovalData, RemovalTools, RequestCanvasEntity, UndoData } from '@/types/Canvas'
 import { Tool, Tracker } from '@/tools/Tool'
 import { AppToolGetters } from '@/store/modules/app/tools'
 import { SocketCanvasAction, SocketCanvasGetters } from '@/store/modules/socket/canvas'
@@ -73,7 +73,7 @@ export default class CanvasSocket extends Vue {
   @Socket(SocketCanvasToolsEmit.CANVAS_TOOLS_MOVE)
   onCanvasToolsMove (requests: RequestCanvasEntity[]) {
     requests.forEach((request: RequestCanvasEntity) => {
-      this.moveToState(request)
+      this.transformToState(request)
     })
   }
 
@@ -166,15 +166,22 @@ export default class CanvasSocket extends Vue {
     new HandleRenderShapes(this.$store).handle()
   }
 
-  moveToState (request: RequestCanvasEntity) {
-    const moveData = request.modifyData as MoveData
+  transformToState (request: RequestCanvasEntity) {
+    const moveData = request.modifyData as TransformData
     if (moveData.to && moveData.from && moveData.groups) {
       moveData.groups.forEach((groupId: string) => {
         const foundElement: CanvasElement | void = this.canvasElementById(groupId)
         if (foundElement) {
-          foundElement.attrs.position = {
-            x: (moveData.to.x - moveData.from.x) + foundElement.attrs.position.x,
-            y: (moveData.to.y - moveData.from.y) + foundElement.attrs.position.y
+          foundElement.attrs = {
+            position: {
+              x: (moveData.to.position.x - moveData.from.position.x) + foundElement.attrs.position.x,
+              y: (moveData.to.position.y - moveData.from.position.y) + foundElement.attrs.position.y
+            },
+            rotation: (moveData.to.rotation - moveData.from.rotation) + foundElement.attrs.rotation,
+            skewX: (moveData.to.skewX - moveData.from.skewX) + foundElement.attrs.skewX,
+            skewY: (moveData.to.skewY - moveData.from.skewY) + foundElement.attrs.skewY,
+            scaleX: (moveData.to.scaleX - moveData.from.scaleX) + foundElement.attrs.scaleX,
+            scaleY: (moveData.to.scaleY - moveData.from.scaleY) + foundElement.attrs.scaleY
           }
         }
       })
@@ -197,8 +204,8 @@ export default class CanvasSocket extends Vue {
           case Tracker.REMOVAL:
             handleUndoRedo.undoRemovals(undo, this.canvasElements)
             break
-          case Tracker.MOVE:
-            handleUndoRedo.undoMove(undo, this.canvasElements)
+          case Tracker.TRANSFORM:
+            handleUndoRedo.undoTransform(undo, this.canvasElements)
             break
         }
         delete request.canvasElements
@@ -225,8 +232,8 @@ export default class CanvasSocket extends Vue {
               case Tracker.REMOVAL:
                 handleUndoRedo.redoRemovals(redo, this.canvasElements)
                 break
-              case Tracker.MOVE:
-                handleUndoRedo.redoMove(redo, this.canvasElements)
+              case Tracker.TRANSFORM:
+                handleUndoRedo.redoTransform(redo, this.canvasElements)
                 break
             }
             delete request.canvasElements

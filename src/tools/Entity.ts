@@ -1,4 +1,4 @@
-import { EntityData, ToolClass, ToolClassInterface, Tracker } from '@/tools/Tool'
+import { EntityData, ToolClass, Tracker } from '@/tools/Tool'
 import { AdditionTools, CanvasElement, CanvasElementType, RequestCanvasEntity } from '@/types/Canvas'
 import { CustomEvent } from '@/util/PointerEventMapper'
 import EntityCreator from '@/tools/shapes/EntityCreator'
@@ -74,10 +74,7 @@ export default class Entity extends ToolClass {
         modifyType: Tracker.ADDITION,
         canvasElements: [{
           id: this.groupId,
-          tool: {
-            name: this.name,
-            temporary: this.temporary
-          } as ToolClassInterface,
+          tool: this,
           type: CanvasElementType.ENTITY,
           data: this.data,
           jti: this.jti,

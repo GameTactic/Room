@@ -3,7 +3,6 @@ import {
   AdditionData,
   AdditionTools,
   CanvasElement,
-  MoveData,
   Point,
   RemovalData,
   RequestCanvasEntity,
@@ -41,7 +40,7 @@ export enum Tracker {
   REMOVAL = 'removal',
   REDO = 'redo',
   UNDO = 'undo',
-  MOVE = 'move'
+  TRANSFORM = 'transform'
 }
 
 export class ToolClass {
@@ -107,31 +106,6 @@ export class ToolClass {
               const foundElement: CanvasElement = canvasElements.find((canvasElement: CanvasElement) => canvasElement.id === groupId)
               if (foundElement) {
                 store.dispatch(`${Namespaces.SOCKET_CANVAS}/${SocketCanvasAction.HIDE_CANVAS_ELEMENT}`, foundElement)
-              }
-            })
-            store.dispatch(`${Namespaces.SOCKET_CANVAS}/${SocketCanvasAction.ADD_CANVAS_ELEMENT_HISTORY}`, {
-              jti: request.jti,
-              id: request.id,
-              modifyType: request.modifyType,
-              modifyData: request.modifyData,
-              timestampModified: request.timestampModified
-            })
-          }
-        }
-        break
-      case Tracker.MOVE:
-        const moveData = request.modifyData as MoveData
-        if (moveData.to && moveData.from && moveData.groups.length > 0) {
-          const canvasElements = store.getters[`${Namespaces.SOCKET_CANVAS}/${SocketCanvasGetters.CANVAS_ELEMENTS}`]
-          if (canvasElements) {
-            moveData.groups.forEach((groupId: string) => {
-              const foundElement: CanvasElement = canvasElements.find((canvasElement: CanvasElement) => canvasElement.id === groupId)
-              if (foundElement) {
-                store.dispatch(`${Namespaces.SOCKET_CANVAS}/${SocketCanvasAction.MOVE_CANVAS_ELEMENT}`, {
-                  id: groupId,
-                  from: moveData.from,
-                  to: moveData.to
-                })
               }
             })
             store.dispatch(`${Namespaces.SOCKET_CANVAS}/${SocketCanvasAction.ADD_CANVAS_ELEMENT_HISTORY}`, {
@@ -213,7 +187,7 @@ export interface ToolClassInterface extends Tool {
   mouseDownAction: MouseDownAction;
   mouseMoveAction: MouseMoveAction;
   mouseUpAction: MouseUpAction;
-  renderCanvas: RenderCanvas;
+  renderCanvas?: RenderCanvas;
 }
 
 export interface CircleInterface extends ToolClassInterface {

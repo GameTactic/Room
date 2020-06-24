@@ -48,7 +48,7 @@ export default class HandleRenderShapes {
   }
 
   handleCanvasElementVisible = (canvasElement: CanvasElement): void => {
-    if (!this.layer.find((shape: Konva.Shape) => shape.attrs.id === canvasElement.id).length) {
+    if (!this.layer.find((group: Konva.Group) => group.attrs.id === canvasElement.id).length) {
       const memory: CanvasElementHistory | undefined = this.canvasElementsHistory.find((canvasElementsHistory: CanvasElementHistory) => {
         const data = canvasElementsHistory.modifyData as AdditionData
         return (canvasElementsHistory.modifyType === Tracker.ADDITION && data.additions.includes(canvasElement.id))
@@ -69,12 +69,12 @@ export default class HandleRenderShapes {
   handleCanvasElementInvisible = (canvasElement: CanvasElement): void => {
     const foundGroup: Konva.Node = this.layer.findOne((node: Konva.Node) => node instanceof Konva.Group && node.attrs.id === canvasElement.id)
     if (foundGroup) {
-      this.destroy(foundGroup)
+      foundGroup.destroy()
     }
   }
 
   checkGroupAttrs = (canvasElement: CanvasElement): void => {
-    const group = this.layer.findOne((group: Konva.Group) => group.attrs.id === canvasElement.id)
+    const group = this.layer.findOne((group: Konva.Group) => group.attrs.id === canvasElement.id && !group.attrs.isTransforming)
     if (group) {
       // Check position
       if (group.getPosition().x !== canvasElement.attrs.position.x || group.getPosition().y !== canvasElement.attrs.position.y) {

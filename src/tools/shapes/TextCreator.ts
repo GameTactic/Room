@@ -8,7 +8,7 @@ export default class TextCreator extends Shape implements TextCreatorInterface {
   private fontFamily = 'arial'
   private lineHeight = 1
   private text: Konva.Text
-  private textArea: HTMLTextAreaElement
+  private textArea: HTMLTextAreaElement | undefined
   private readonly hitStroke: number = 10
   constructor (public temporary: boolean,
                public size: number,
@@ -18,10 +18,6 @@ export default class TextCreator extends Shape implements TextCreatorInterface {
                public point: Point) {
     super()
     this.text = new Konva.Text()
-    this.textArea = this.initTextArea()
-    document.body.append(
-      this.textArea
-    )
   }
 
   // eslint-disable-next-line
@@ -76,6 +72,7 @@ export default class TextCreator extends Shape implements TextCreatorInterface {
   }
 
   createTextArea = (event: CustomEvent): HTMLTextAreaElement => {
+    this.textArea = this.initTextArea()
     this.textArea = this.styleTextArea(this.textArea, event)
     this.textArea.focus()
     return this.textArea
@@ -83,9 +80,7 @@ export default class TextCreator extends Shape implements TextCreatorInterface {
 
   initTextArea = (): HTMLTextAreaElement => {
     const textArea = document.createElement('textarea')
-    textArea.style.position = 'absolute'
-    textArea.style.resize = 'none'
-    textArea.tabIndex = -1
+    document.body.append(textArea)
     return textArea
   }
 }

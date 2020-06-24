@@ -89,13 +89,7 @@ export default class Ruler extends ToolClass implements RulerInterface {
             modifyType: Tracker.ADDITION,
             canvasElements: [{
               id: this.groupId,
-              tool: {
-                name: this.name,
-                size: this.size,
-                colour: this.colour,
-                temporary: this.temporary,
-                showCircle: this.showCircle
-              } as RulerInterface,
+              tool: this,
               type: CanvasElementType.SHAPE,
               data: this.data,
               jti: this.jti,

@@ -94,13 +94,7 @@ export default class Text extends ToolClass implements TextInterface {
             },
             canvasElements: [{
               id: this.groupId,
-              tool: {
-                name: this.name,
-                size: this.size,
-                colour: this.colour,
-                temporary: this.temporary,
-                textString: this.textString
-              } as TextInterface,
+              tool: this,
               type: CanvasElementType.SHAPE,
               data: this.data,
               jti: this.jti,

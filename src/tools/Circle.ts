@@ -108,15 +108,7 @@ export default class Circle extends ToolClass implements CircleInterface {
             modifyType: Tracker.ADDITION,
             canvasElements: [{
               id: this.groupId,
-              tool: {
-                name: this.name,
-                size: this.size,
-                colour: this.colour,
-                showRadius: this.showRadius,
-                outlineColour: this.outlineColour,
-                strokeStyle: this.strokeStyle,
-                temporary: this.temporary
-              } as CircleInterface,
+              tool: this,
               type: CanvasElementType.SHAPE,
               data: this.data,
               jti: this.jti,

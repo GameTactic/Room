@@ -1,16 +1,22 @@
 <template>
-  <v-chip
-    :color="entity.color || 'blue'"
+  <v-list-item
     small
     label
     class="px-2"
+    dense
     @click.stop="onClickHandler"
   >
-    <v-avatar>
-      <img :src="entity.image" />
-    </v-avatar>
-    <span class="white--text">{{ entity.name }}</span>
-  </v-chip>
+    <v-list-item-avatar
+      :color="entity.color || 'blue'"
+      size="30"
+      class="my-0 rounded-circle"
+    >
+        <img :src="entity.image" />
+    </v-list-item-avatar>
+    <v-list-item-content>
+      <span>{{ entity.name }}</span>
+    </v-list-item-content>
+  </v-list-item>
 </template>
 
 <script lang="ts">

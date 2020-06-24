@@ -2,7 +2,7 @@ import { ToolClass, Tracker } from '@/tools/Tool'
 import Konva from 'konva'
 import { CustomEvent } from '@/util/PointerEventMapper'
 import { ISO } from '@/util/ISO'
-import { RemovalData, RequestCanvasEntity } from '@/types/Canvas'
+import { RemovalData } from '@/types/Canvas'
 import uuid from 'uuid'
 import { SocketCanvasToolsEmit } from '@/store/modules/socket'
 
@@ -53,13 +53,6 @@ export default class Erase extends ToolClass {
     if (group && group instanceof Konva.Group && group.attrs.id && this.data?.removals && !(this.data?.removals.includes(group.attrs.id)) && group.attrs.type !== 'map') {
       this.data.removals = [ ...this.data.removals, group.attrs.id ]
       this.hideGroup(group.attrs.id)
-    }
-  }
-
-  renderCanvas = (request: RequestCanvasEntity): void => {
-    const data = request.modifyData as RemovalData
-    if (data.removals && data.removals.length > 0) {
-      data.removals.forEach((groupId: string) => this.hideGroup(groupId))
     }
   }
 }

@@ -1,42 +1,37 @@
 <template>
   <div>
-    <v-chip-group
-      class="px-2"
-      column
-    >
-      <EntitySelectorItem
-        v-for="(entity, i) in defaultEntities"
-        :key="i"
-        :entity="entity"
-      />
-    </v-chip-group>
-    <v-divider class="px-2"></v-divider>
     <v-text-field
       v-model="search"
-      :label="label"
-      class="custom-wows-entity-ship-search px-2"
-      placeholder="Start typing to search"
+      class="custom-wows-entity-ship-search px-2 py-0"
+      :placeholder="label"
       prepend-icon="mdi-magnify"
       clear-icon="mdi-close"
       clearable
     >
     </v-text-field>
-    <v-lazy
-      max-height="200"
-      v-if="getEntities.length > 0"
+    <v-list
+      class="py-0"
     >
-      <v-chip-group
-        class="px-2 custom-chip-group-wows-search"
-        column
+      <v-virtual-scroll
+        v-if="filteredEntities.length > 0"
+        :items="filteredEntities"
+        class="custom-virtual-scroller"
+        item-height="40"
+        bench="1"
+        height="220"
       >
-        <EntitySelectorItem
-          v-for="(entity, i) in getEntities"
-          :key="i"
-          :entity="entity"
-        />
-      </v-chip-group>
-    </v-lazy>
-    <span v-else class="caption px-2">No entities found</span>
+        <template
+          v-slot:default="{ item: entity }"
+        >
+          <EntitySelectorItem
+            :entity="entity"
+          />
+        </template>
+      </v-virtual-scroll>
+      <div v-else class="caption custom-no-entities-found">
+        <div>No entities found</div>
+      </div>
+    </v-list>
   </div>
 </template>
 
@@ -68,23 +63,34 @@ export default class EntitySelector extends Vue {
   @Prop() private defaultEntities!: Entity[]
   @Prop() private label!: string
   search = ''
-  get getEntities (): Entity[] {
+
+  get filteredEntities (): Entity[] {
     if (!this.search) {
-      return this.entities.sort((a: Entity, b: Entity) => a.name > b.name ? 1 : -1)
+      return [ ...this.defaultEntities, ...this.entities.sort((a: Entity, b: Entity) => a.name > b.name ? 1 : -1) ]
     } else {
-      return this.entities.filter((entity: Entity) => entity.name.includes(this.search)).sort((a: Entity, b: Entity) => a.name > b.name ? 1 : -1)
+      const allEntities = [ ...this.defaultEntities, ...this.entities ]
+      const searchResult = allEntities.filter((entity: Entity) => entity.name.toLowerCase().search(this.search.toLowerCase()) !== -1)
+      return searchResult.sort((a: Entity, b: Entity) => a.name.toLowerCase().search(this.search.toLowerCase()) > b.name.toLowerCase().search(this.search.toLowerCase()) ? 1 : -1)
     }
   }
 }
 </script>
 
 <style lang="scss">
-.custom-chip-group-wows-search .v-slide-group__wrapper .v-slide-group__content {
-  overflow: auto;
-  max-height: 200px;
+.custom-virtual-scroller {
   @include custom-scroll-bar;
 }
 .custom-wows-entity-ship-search .v-text-field__details {
   display: none;
+}
+.custom-no-entities-found {
+  height: 220px;
+  position: relative;
+  div {
+    position: absolute;
+    top: 43%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+  }
 }
 </style>

@@ -9,7 +9,7 @@ import {
   AdditionData,
   CanvasElement,
   CanvasElementHistory,
-  MoveData,
+  TransformData,
   RedoData,
   RemovalData,
   UndoData
@@ -98,8 +98,8 @@ export default class HandleUndoRedo {
         case Tracker.REMOVAL:
           this.undoRemovals(undo, canvasElements)
           break
-        case Tracker.MOVE:
-          this.undoMove(undo, canvasElements)
+        case Tracker.TRANSFORM:
+          this.undoTransform(undo, canvasElements)
           break
       }
       store.dispatch(`${Namespaces.SOCKET_CANVAS}/${SocketCanvasAction.ADD_CANVAS_ELEMENT_HISTORY}`, data)
@@ -127,8 +127,8 @@ export default class HandleUndoRedo {
         case Tracker.REMOVAL:
           this.redoRemovals(redo, canvasElements)
           break
-        case Tracker.MOVE:
-          this.redoMove(redo, canvasElements)
+        case Tracker.TRANSFORM:
+          this.redoTransform(redo, canvasElements)
           break
       }
       store.dispatch(`${Namespaces.SOCKET_CANVAS}/${SocketCanvasAction.ADD_CANVAS_ELEMENT_HISTORY}`, data)
@@ -160,17 +160,24 @@ export default class HandleUndoRedo {
     }
   }
 
-  undoMove (history: CanvasElementHistory, canvasElements: CanvasElement[]) {
-    const groups = (history.modifyData as MoveData).groups
+  undoTransform (history: CanvasElementHistory, canvasElements: CanvasElement[]) {
+    const groups = (history.modifyData as TransformData).groups
     if (groups) {
       groups.forEach((groupId: string) => {
         const foundElement: CanvasElement | undefined = canvasElements.find((canvasElement: CanvasElement) => canvasElement.id === groupId)
         if (foundElement) {
-          const data = history.modifyData as MoveData
-          const prevPos = foundElement.attrs.position
-          foundElement.attrs.position = {
-            x: -1 * ((data.to.x - data.from.x) - prevPos.x),
-            y: -1 * ((data.to.y - data.from.y) - prevPos.y)
+          const data = history.modifyData as TransformData
+          const prev = foundElement.attrs
+          foundElement.attrs = {
+            position: {
+              x: -1 * ((data.to.position.x - data.from.position.x) - prev.position.x),
+              y: -1 * ((data.to.position.y - data.from.position.y) - prev.position.y)
+            },
+            rotation: -1 * ((data.to.rotation - data.from.rotation) - prev.rotation),
+            skewX: -1 * ((data.to.skewX - data.from.skewX) - prev.skewX),
+            skewY: -1 * ((data.to.skewY - data.from.skewY) - prev.skewY),
+            scaleX: -1 * ((data.to.scaleX - data.from.scaleX) - prev.scaleX),
+            scaleY: -1 * ((data.to.scaleY - data.from.scaleY) - prev.scaleY)
           }
         }
       })
@@ -201,17 +208,24 @@ export default class HandleUndoRedo {
     }
   }
 
-  redoMove (history: CanvasElementHistory, canvasElements: CanvasElement[]) {
-    const groups = (history.modifyData as MoveData).groups
+  redoTransform (history: CanvasElementHistory, canvasElements: CanvasElement[]) {
+    const groups = (history.modifyData as TransformData).groups
     if (groups) {
       groups.forEach((groupId: string) => {
         const foundElement: CanvasElement | undefined = canvasElements.find((canvasElement: CanvasElement) => canvasElement.id === groupId)
         if (foundElement) {
-          const data = history.modifyData as MoveData
-          const prevPos = foundElement.attrs.position
-          foundElement.attrs.position = {
-            x: (data.to.x - data.from.x) + prevPos.x,
-            y: (data.to.y - data.from.y) + prevPos.y
+          const data = history.modifyData as TransformData
+          const prev = foundElement.attrs
+          foundElement.attrs = {
+            position: {
+              x: (data.to.position.x - data.from.position.x) + prev.position.x,
+              y: (data.to.position.y - data.from.position.y) + prev.position.y
+            },
+            rotation: (data.to.rotation - data.from.rotation) + prev.rotation,
+            skewX: (data.to.skewX - data.from.skewX) + prev.skewX,
+            skewY: (data.to.skewY - data.from.skewY) + prev.skewY,
+            scaleX: (data.to.scaleX - data.from.scaleX) + prev.scaleX,
+            scaleY: (data.to.scaleY - data.from.scaleY) + prev.scaleY
           }
         }
       })

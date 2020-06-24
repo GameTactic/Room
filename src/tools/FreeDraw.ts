@@ -76,12 +76,7 @@ export default class FreeDraw extends ToolClass implements FreeDrawInterface {
             modifyType: Tracker.ADDITION,
             canvasElements: [{
               id: this.groupId,
-              tool: {
-                name: this.name,
-                size: this.size,
-                colour: this.colour,
-                temporary: this.temporary
-              } as FreeDrawInterface,
+              tool: this,
               type: CanvasElementType.SHAPE,
               data: this.data,
               jti: this.jti,
