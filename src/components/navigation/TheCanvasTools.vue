@@ -213,6 +213,7 @@ export default class TheCanvasTools extends Vue {
   .custom-canvas-tools-container {
     display: flex;
     color: $room-primary;
+    justify-content: center;
   }
   .custom-btn-disabled {
     &:before {

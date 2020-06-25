@@ -162,12 +162,15 @@ export default class ToolContainer extends Vue {
   background-color: $room-primary;
 }
 
-.custom-btn-disabled::before {
-  opacity: 0;
-}
-
 .custom-btn-disabled {
   background-color: rgba(0, 0, 0, 0);
+  .v-icon {
+    color: var(--v-primary-base) !important; // override
+  }
+
+  &::before {
+    opacity: 0;
+  }
 }
 
 .custom-btn-disabled .v-icon {

@@ -1,5 +1,6 @@
 <template>
-  <div class="custom-tool-panel-container btn-toggle-box pa-0 pt-1">
+<div>
+  <div class="custom-tool-panel-container pa-0 pt-1">
     <v-btn-toggle class="flex-column custom-tool-bar">
       <tool-container icon="fa-mouse-pointer" toolName="move" :popout="false" />
       <tool-container icon="fa-map-pin" toolName="ping" :popout="false" />
@@ -13,6 +14,7 @@
       <redo-container icon="fa-redo" toolName="redo"></redo-container>
     </v-btn-toggle>
   </div>
+</div>
 </template>
 
 <script lang="ts">
@@ -60,7 +62,7 @@ export default class TheToolPanel extends Vue {
 }
 </script>
 <style scoped lang="scss">
-.btn-toggle-box {
+.custom-tool-panel-container {
   top: 48px;
   position: fixed;
   max-height: calc(100% - 48px);

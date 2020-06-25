@@ -16,7 +16,9 @@
         <v-icon
           color="grey"
           size="15px"
-        >fa-ellipsis-v</v-icon>
+        >
+          fa-ellipsis-v
+        </v-icon>
       </v-btn>
     </v-list-item-action>
   </v-list-item>
@@ -29,13 +31,13 @@ import { Prop } from 'vue-property-decorator'
 import { Ship } from '@/types/Games/Wows'
 
 @Component({
-  name: 'TeamSectionItem'
+  name: 'TeamListItem'
 })
-export default class TeamSectionItem extends Vue {
+export default class TeamListItem extends Vue {
   @Prop() private entity!: Ship
 }
 </script>
 
-<style scoped>
+<style lang="scss" scoped>
 
 </style>

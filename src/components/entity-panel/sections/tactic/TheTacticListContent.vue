@@ -1,13 +1,12 @@
 <template>
-  <span
-    v-if="!items.length"
-    class="caption px-2"
-  >No tactics found</span>
+  <span v-if="!items.length" class="caption px-2">No Tactics found</span>
   <v-treeview
     v-else
     v-model="activeElements"
     :items="items"
     :open="open"
+    class="pa-0"
+    dense
     open-on-click
     activatable
   >
@@ -18,7 +17,7 @@
       <v-avatar
         v-else
         size="30"
-        class="ml-0"
+        class="ml-0 pl-0"
       >
         <img :src="item.tactic.map.icon">
       </v-avatar>
@@ -36,11 +35,11 @@
           <v-btn
             elevation="0"
             tile
-            class="pr-2"
+            class="mr-1 px-0"
+            :width="30"
             color="transparent"
-            height="30"
-            x-small
             ripple
+            small
           >
             <v-badge
               :v-if="numberUsersOnTactic(item.id) > 0"
@@ -67,9 +66,8 @@
           <v-btn
             elevation="0"
             color="transparent"
-            height="30"
             fab
-            x-small
+            small
             ripple
             v-on="menuItem"
           >
@@ -108,7 +106,7 @@ import { Getter, namespace } from 'vuex-class'
 import { Namespaces } from '@/store'
 import { SocketTacticAction, SocketTacticGetters } from '@/store/modules/socket/tactic'
 import { Collection, Tactic } from '@/store/types'
-import { TacticMenuItem, TacticMenuOptions, TreeViewItem } from '@/components/entity-panel/sections/types'
+import { TacticMenuItem, TacticMenuOptions, TreeViewItem } from '../../types'
 import { EventBus } from '@/event-bus'
 import { SocketUserGetters } from '@/store/modules/socket/user'
 import HandleTactic from '@/util/HandleTactic'
@@ -117,9 +115,9 @@ const SocketTactic = namespace(Namespaces.SOCKET_TACTIC)
 const SocketUser = namespace(Namespaces.SOCKET_USER)
 
 @Component({
-  name: 'TacticSelectorContent'
+  name: 'TheTacticListContent'
 })
-export default class TacticSelectorContent extends Vue {
+export default class TheTacticListContent extends Vue {
   @Getter(`${Namespaces.SOCKET_TACTIC}/${SocketTacticGetters.COLLECTIONS}`) collections!: Collection[]
   @Getter(`${Namespaces.SOCKET_TACTIC}/${SocketTacticGetters.TACTICS}`) tactics!: Tactic[]
   @SocketTactic.Getter(SocketTacticGetters.PINNED_TACTICS) pinnedTactics!: Tactic[]
@@ -196,7 +194,7 @@ export default class TacticSelectorContent extends Vue {
     return item.icon
   }
   tacticMenuPinText (tactic: Tactic, item: TacticMenuItem) {
-    if (item.action === TacticMenuOptions.PIN && tactic.pinned && item.titleTwo) {
+    if (item.action === TacticMenuOptions.PIN && tactic.isPinned && item.titleTwo) {
       return item.titleTwo
     }
     return item.title
@@ -223,5 +221,10 @@ export default class TacticSelectorContent extends Vue {
 }
 .custom-autocomplete-tactic-menu-icon {
   margin-right: 6px !important;
+}
+
+.custom-expansion-panel-content .v-treeview-node__root {
+  padding-left: 0px;
+  padding-right: 4px;
 }
 </style>

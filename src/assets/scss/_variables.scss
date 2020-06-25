@@ -8,7 +8,7 @@ $room-text: white;
 
 @mixin custom-scroll-bar {
  &::-webkit-scrollbar {
-  width: 8px;
+  width: 10px;
   background-color: #e7e7e7;
   border-radius: 10px;
  }

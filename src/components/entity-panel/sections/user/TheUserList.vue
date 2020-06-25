@@ -1,26 +1,10 @@
 <template>
-  <accordion-item>
+  <accordion-item icon="fa-user-plus">
     <template v-slot:header>
       Users [{{ onlineUsers.length }}]
     </template>
-    <template v-slot:rightBtn>
-      <v-btn
-        text
-        light
-        icon
-        class="custom-add-button ml-0"
-        @click.stop=""
-      >
-        <v-icon
-          color="white"
-          size="20px"
-        >
-          fa-user-plus
-        </v-icon>
-      </v-btn>
-    </template>
     <template v-slot:content>
-      <UserListContent />
+      <the-user-list-content />
     </template>
   </accordion-item>
 </template>
@@ -29,23 +13,23 @@
 
 import Component from 'vue-class-component'
 import Vue from 'vue'
-import AccordionItem from '@/components/entity-panel/templates/AccordionItem.vue'
-import UserListContent from '@/components/entity-panel/sections/components/UserListContent.vue'
+import AccordionItem from '../AccordionItem.vue'
 import { SocketUserGetters } from '@/store/modules/socket/user'
 import { User } from '@/store/types'
 import { namespace } from 'vuex-class'
 import { Namespaces } from '@/store'
+import TheUserListContent from './TheUserListContent.vue'
 
 const SocketUser = namespace(Namespaces.SOCKET_USER)
 
 @Component({
-  name: 'UserList',
+  name: 'TheUserList',
   components: {
     AccordionItem,
-    UserListContent
+    TheUserListContent
   }
 })
-export default class UserList extends Vue {
+export default class TheUserList extends Vue {
   @SocketUser.Getter(SocketUserGetters.ONLINE_USERS) onlineUsers!: User[]
 }
 </script>

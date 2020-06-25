@@ -15,9 +15,9 @@
     <v-overlay opacity="0.2" :value="isMapChanging" class="z-index-same-as-overlay">
       <v-icon class="custom-spinner">fa-spinner</v-icon>
     </v-overlay>
-    <the-nav class="z-index-above-overlay"/>
+    <the-nav class="z-index-above-overlay" @entityPanelOpen="entityPanelOpenHandler"/>
     <the-tool-panel class="d-none d-sm-flex z-index-above-overlay" />
-    <the-entity-panel v-if="isAuthorised" class="d-none d-sm-flex z-index-above-overlay" />
+    <the-entity-panel v-if="isAuthorised" class="d-none d-sm-flex z-index-above-overlay" :panelOpen="entityPanelOpen" />
     <the-create-new-tactic-overlay />
     <the-update-tactic-overlay />
     <pinned-tactics class="z-index-above-overlay" v-if="isAuthorisedCanvasLoaded"></pinned-tactics>
@@ -92,6 +92,7 @@ export default class TheRoom extends mixins(RoomSocket) {
   }
   isDragEnabled = false
   isMapChanging = false
+  entityPanelOpen = true
 
   @Watch('jwt')
   onPropertyChanged () {
@@ -105,20 +106,17 @@ export default class TheRoom extends mixins(RoomSocket) {
         onTacticId: '1',
         isOnline: true,
         lastOnline: new Date(),
-        roles: [
-          {
-            id: '1',
-            roleTypes: RoleTypes.USER,
-            assignedBy: jti
-          },
-          {
-            id: '2',
-            roleTypes: RoleTypes.ADMIN,
-            assignedBy: jti
-          }
-        ]
+        roles: [{
+          id: '1',
+          roleTypes: RoleTypes.ADMIN,
+          assignedBy: jti
+        }]
       }])
     }
+  }
+
+  entityPanelOpenHandler () {
+    this.entityPanelOpen = !this.entityPanelOpen
   }
 
   mouseDownAction (e: MouseEvent) {

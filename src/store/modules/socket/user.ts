@@ -1,5 +1,5 @@
 import { ActionContext, Module } from 'vuex'
-import { Role, RoleTypes, RootState, User } from '@/store/types'
+import { RootState, User } from '@/store/types'
 import { AppRoomGetters } from '@/store/modules/app/room'
 import { AppAuthenticationGetters } from '@/store/modules/app/authentication'
 import { Namespaces } from '@/store'
@@ -50,7 +50,7 @@ const SocketUserModule: Module<SocketUserState, RootState> = {
       if (jti) {
         const user = state.users.find((user: User) => user.jti === jti)
         if (user) {
-          return user.roles.find((role: Role) => role.roleTypes === RoleTypes.USER)
+          return user.roles.length
         }
       }
       return false

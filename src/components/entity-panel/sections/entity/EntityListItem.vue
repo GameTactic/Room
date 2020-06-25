@@ -2,7 +2,7 @@
   <v-list-item
     small
     label
-    class="px-2"
+    class="px-2 custom-entity-chip"
     dense
     @click.stop="onClickHandler"
   >
@@ -34,9 +34,9 @@ import { AdditionTools } from '@/types/Canvas'
 const AppTools = namespace(Namespaces.APP_TOOLS)
 
 @Component({
-  name: 'EntitySelectorItem'
+  name: 'EntityItem'
 })
-export default class EntitySelectorItem extends Vue {
+export default class EntityItem extends Vue {
   @Prop() private entity!: Entity
   @AppTools.Getter(AppToolGetters.ENABLED_TOOL) enabledTool!: Tool
   @AppTools.Action(AppToolsAction.ENABLE_TOOL) enableTool!: (tool: string) => void
@@ -64,5 +64,11 @@ export default class EntitySelectorItem extends Vue {
 <style scoped lang="scss">
 .custom-entity-chip-active {
   font-weight: bold;
+}
+</style>
+
+<style lang="scss">
+.custom-chip-group-wows-search .custom-entity-chip {
+  width: 45%;
 }
 </style>

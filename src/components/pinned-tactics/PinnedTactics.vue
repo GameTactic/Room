@@ -1,9 +1,9 @@
 <template>
   <v-tabs
     :class="['custom-tactic-tabs', 'd-none d-sm-flex', pinnedTactics.length ? 'custom-tactic-pinned-tabs' : '']"
-    next-icon="fa-arrow-right"
-    prev-icon="fa-arrow-left"
-    height="42"
+    prev-icon="fa-chevron-left"
+    next-icon="fa-chevron-right"
+    height="40"
     show-arrows
     icons-and-text
   >
@@ -67,9 +67,8 @@ export default class PinnedTactics extends Vue {
   .custom-tactic-tabs {
     position: fixed;
     bottom: 0;
-    left: 50%;
-    width: auto;
-    max-width: 80%;
+    left: 0;
+    width: 100%;
     border-top-left-radius: 4px;
     border-top-right-radius: 4px;
   }
@@ -79,34 +78,8 @@ export default class PinnedTactics extends Vue {
   }
 </style>
 <style lang="scss">
-  @mixin pinnedTabSlants {
-    content: "";
-    position: absolute;
-    height: 100%;
-    -webkit-transform-origin: 100% 0;
-    transform-origin: 100% 0;
-    z-index: -1;
-    border-top: 1px solid rgba(0, 0, 0, 0.05);
-    background: white;
-    width: 60px;
-  }
   .custom-tactic-pinned-tabs > div {
     position: relative;
-    left: -50%;
-    border-top: 1px solid rgba(0, 0, 0, 0.05);
-    &::after {
-      @include pinnedTabSlants;
-      right: 0px;
-      -webkit-transform: skew(45deg);
-      transform: skew(45deg);
-      border-right: 1.5px solid rgba(0, 0, 0, 0.05);
-    }
-    &::before {
-      @include pinnedTabSlants;
-      left: 0px;
-      -webkit-transform: skew(-45deg);
-      transform: skew(-45deg);
-      border-left: 1.5px solid rgba(0, 0, 0, 0.05);
-    }
+    border-top: 1.5px solid rgba(0, 0, 0, 0.1);
   }
 </style>

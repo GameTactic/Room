@@ -1,14 +1,10 @@
 <template>
   <accordion-item>
     <template v-slot:header>
-      {{ `${selectedTeam.name} (${selectedTeam.entities.length})` }}
+      Teams
     </template>
     <template v-slot:middleSpace>
-      <v-chip-group
-        mandatory
-        light
-        class="custom-chip-group"
-      >
+      <v-chip-group mandatory light>
         <v-tooltip
           v-for="team in teams"
           top
@@ -29,30 +25,29 @@
       </v-chip-group>
     </template>
     <template v-slot:content>
-      <entity-section-content />
+      <the-entity-list-content />
     </template>
   </accordion-item>
 </template>
 
 <script lang="ts">
-
 import Component from 'vue-class-component'
 import Vue from 'vue'
-import AccordionItem from '@/components/entity-panel/templates/AccordionItem.vue'
-import EntitySectionContent from '@/components/entity-panel/games/wows/components/TeamSectionContent.vue'
 import { Namespaces } from '@/store'
 import { SocketTeamAction, SocketTeamGetters } from '@/store/modules/socket/team'
 import { Team } from '@/store/types'
 import { Action, Getter } from 'vuex-class'
+import AccordionItem from '../AccordionItem.vue'
+import TheEntityListContent from '../entity/TheEntityListContent.vue'
 
 @Component({
-  name: 'TeamSection',
+  name: 'TheTeamList',
   components: {
-    EntitySectionContent,
+    TheEntityListContent,
     AccordionItem
   }
 })
-export default class TeamSection extends Vue {
+export default class TheTeamList extends Vue {
   @Getter(`${Namespaces.SOCKET_TEAM}/${SocketTeamGetters.TEAMS}`) teams!: Team[]
   @Getter(`${Namespaces.SOCKET_TEAM}/${SocketTeamGetters.SELECTED_TEAM}`) selectedTeam!: Team
   @Action(`${Namespaces.SOCKET_TEAM}/${SocketTeamAction.SET_SELECTED_TEAM}`) setSelectedTeam!: (team: Team) => void
