@@ -99,10 +99,10 @@ import TheRoomSave from './buttons/TheRoomSave.vue'
 import ThePresentationMode from './buttons/ThePresentationMode.vue'
 import TheManageRoom from './buttons/TheManageRoom.vue'
 import TheUserMenu from './TheUserMenu.vue'
-import TheCanvasTools from './TheCanvasTools.vue'
+import TheCanvasTools from '@/components/canvas-tools/TheCanvasTools.vue'
 import { namespace } from 'vuex-class'
 import { Namespaces } from '@/store'
-import { SocketUserGetters } from '../../store/modules/socket/user'
+import { SocketUserGetters } from '@/store/modules/socket/user'
 
 const SocketUser = namespace(Namespaces.SOCKET_USER)
 

@@ -4,7 +4,8 @@
       {{ getGameName(game) }}
     </template>
     <template v-slot:content>
-      <the-entity-list-content />
+      <the-wows-entity-list-content v-if="game === Game.WOWS" :game="game" />
+      <the-wot-entity-list-content v-if="game == Game.WOT" :game="game" />
     </template>
   </accordion-item>
 </template>
@@ -14,7 +15,8 @@
 import Component from 'vue-class-component'
 import Vue from 'vue'
 import AccordionItem from '../AccordionItem.vue'
-import TheEntityListContent from './TheEntityListContent.vue'
+import TheWowsEntityListContent from './wows/TheEntityListContent.vue'
+import TheWotEntityListContent from './wot/TheEntityListContent.vue'
 import { namespace } from 'vuex-class'
 import { Namespaces } from '@/store'
 import { getGameName } from '@/games/utils'
@@ -26,14 +28,16 @@ const SocketRoom = namespace(Namespaces.SOCKET_ROOM)
 @Component({
   name: 'TheEntityList',
   components: {
-    TheEntityListContent,
+    TheWowsEntityListContent,
+    TheWotEntityListContent,
     AccordionItem
   }
 })
 export default class TheEntityList extends Vue {
- @SocketRoom.Getter(SocketRoomGetters.GAME) game!: Game
+  @SocketRoom.Getter(SocketRoomGetters.GAME) game!: Game
 
- getGameName = getGameName
+  getGameName = getGameName
+  Game = Game
 }
 </script>
 

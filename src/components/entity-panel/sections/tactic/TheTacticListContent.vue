@@ -1,5 +1,5 @@
 <template>
-  <span v-if="!items.length" class="caption px-2">No Tactics found</span>
+  <span v-if="!items.length" class="caption px-2" v-text="$t('tactic.noTacticsFound')"/>
   <v-treeview
     v-else
     v-model="activeElements"
@@ -102,7 +102,7 @@
 
 import Component from 'vue-class-component'
 import Vue from 'vue'
-import { Getter, namespace } from 'vuex-class'
+import { namespace } from 'vuex-class'
 import { Namespaces } from '@/store'
 import { SocketTacticAction, SocketTacticGetters } from '@/store/modules/socket/tactic'
 import { Collection, Tactic } from '@/store/types'
@@ -118,8 +118,8 @@ const SocketUser = namespace(Namespaces.SOCKET_USER)
   name: 'TheTacticListContent'
 })
 export default class TheTacticListContent extends Vue {
-  @Getter(`${Namespaces.SOCKET_TACTIC}/${SocketTacticGetters.COLLECTIONS}`) collections!: Collection[]
-  @Getter(`${Namespaces.SOCKET_TACTIC}/${SocketTacticGetters.TACTICS}`) tactics!: Tactic[]
+  @SocketTactic.Getter(SocketTacticGetters.COLLECTIONS) collections!: Collection[]
+  @SocketTactic.Getter(SocketTacticGetters.TACTICS) tactics!: Tactic[]
   @SocketTactic.Getter(SocketTacticGetters.PINNED_TACTICS) pinnedTactics!: Tactic[]
   @SocketUser.Getter(SocketUserGetters.IS_AUTHORISED) isAuthorised!: boolean;
   @SocketTactic.Action(SocketTacticAction.DELETE_TACTIC) deleteTactic!: (id: string) => void

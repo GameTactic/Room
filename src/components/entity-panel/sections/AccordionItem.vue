@@ -1,15 +1,8 @@
 <template>
   <v-expansion-panel class="custom-expansion-panel">
-    <v-expansion-panel-header
-      class="custom-expansion-panel-header pl-3 pr-0 py-0"
-      hide-actions
-    >
+    <v-expansion-panel-header class="custom-expansion-panel-header pl-3 pr-0 py-0" hide-actions>
       <template v-slot:default="{ open: boolean }">
-        <v-icon
-          :class="['custom-caret', (boolean) ? 'custom-caret-on' : '']"
-          color="white"
-          small
-        >
+        <v-icon :class="['custom-caret', (boolean) ? 'custom-caret-on' : '']" color="white" small>
           fa-chevron-down
         </v-icon>
         <span class="pl-3">
@@ -20,6 +13,7 @@
           <v-btn
             icon
             class="custom-button"
+            :disabled="rightButtonDisabled"
             @click.stop="$emit('rightButtonClicked')"
           >
             <v-icon color="white" small>
@@ -45,6 +39,7 @@ import { Prop } from 'vue-property-decorator'
 })
 export default class AccordionItem extends Vue {
   @Prop() private readonly icon!: string
+  @Prop() private readonly rightButtonDisabled!: boolean
 }
 </script>
 <style lang="scss" scoped>

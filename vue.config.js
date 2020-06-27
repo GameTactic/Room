@@ -13,7 +13,9 @@ module.exports = {
       }
     }
   },
-
+  devServer: {
+    host: 'localhost'
+  },
   transpileDependencies: ['vuetify'],
   productionSourceMap: false
 }

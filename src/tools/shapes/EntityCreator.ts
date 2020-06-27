@@ -11,6 +11,7 @@ export default class EntityCreator extends Shape {
                public point: Point,
                public dimensions: Dimensions,
                public name: string,
+               public title: string,
                public groupId: string,
                public color?: string
   ) {

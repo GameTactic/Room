@@ -1,22 +1,25 @@
 <template>
-  <v-list-item
-    small
+  <v-chip
+    :color="entity.color || 'blue'"
     label
-    class="px-2 custom-entity-chip"
-    dense
+    filter
+    filter-icon="fa fa-check"
+    light
+    class="pa-2 custom-entity-chip"
     @click.stop="onClickHandler"
   >
-    <v-list-item-avatar
-      :color="entity.color || 'blue'"
-      size="30"
-      class="my-0 rounded-circle"
-    >
-        <img :src="entity.image" />
-    </v-list-item-avatar>
-    <v-list-item-content>
-      <span>{{ entity.name }}</span>
-    </v-list-item-content>
-  </v-list-item>
+    <div class="custom-entity-chip-content">
+      <span>
+        <span :title="entity.name" class="white--text custom-entity-chip-text">{{ entity.name }}</span>
+      </span>
+      <span>
+        <v-avatar>
+          <img :src="entity.image" />
+        </v-avatar>
+        <v-chip v-if="entity.tier" x-small dark pill>T-{{entity.tier}}</v-chip>
+      </span>
+    </div>
+  </v-chip>
 </template>
 
 <script lang="ts">
@@ -65,10 +68,36 @@ export default class EntityItem extends Vue {
 .custom-entity-chip-active {
   font-weight: bold;
 }
+
+.custom-entity-chip-text {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.custom-entities-container .custom-entity-chip {
+  width: 45%;
+}
+
+.custom-entity-chip-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+}
 </style>
 
 <style lang="scss">
-.custom-chip-group-wows-search .custom-entity-chip {
-  width: 45%;
+.custom-entity-chip {
+  height: 45px !important;
+  >span {
+    width: 100%;
+  }
+  .v-icon {
+    font-size: 14px;
+    color: white !important;
+    padding-left: 3px;
+  }
 }
+
 </style>

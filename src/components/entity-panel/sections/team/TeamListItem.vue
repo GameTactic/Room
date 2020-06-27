@@ -1,7 +1,5 @@
 <template>
-  <v-list-item
-    class="px-0"
-  >
+  <v-list-item class="px-0">
     <v-list-item-avatar class="mr-0">
       <img :src="entity.image" />
     </v-list-item-avatar>
@@ -13,12 +11,7 @@
     </v-list-item-content>
     <v-list-item-action>
       <v-btn icon>
-        <v-icon
-          color="grey"
-          size="15px"
-        >
-          fa-ellipsis-v
-        </v-icon>
+        <v-icon color="grey" size="15px">fa-ellipsis-v</v-icon>
       </v-btn>
     </v-list-item-action>
   </v-list-item>

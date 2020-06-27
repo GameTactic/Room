@@ -37,6 +37,7 @@ export interface ApiData {
 export interface Entity {
   id: string;
   name: string;
+  title: string;
   image: string;
   canvasImage: {
     image: string;

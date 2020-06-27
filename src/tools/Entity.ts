@@ -21,6 +21,7 @@ export default class Entity extends ToolClass {
       { x: 0, y: 0 },
       { width: 0, height: 0 },
       '',
+      '',
       this.groupId
     )
   }
@@ -112,6 +113,7 @@ export default class Entity extends ToolClass {
             width: this.formatX(data.dimensions.width),
             height: this.formatY(data.dimensions.height)
           },
+          data.name,
           data.name,
           canvasElement.id,
           data.team.color

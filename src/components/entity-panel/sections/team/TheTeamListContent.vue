@@ -4,8 +4,8 @@
       v-model="search"
       label="Search your ships"
       class="px-4 custom-text-field-wows"
-      prepend-icon="mdi-magnify"
-      clear-icon="mdi-close"
+      prepend-icon="fa-search"
+      clear-icon="fa-times"
       clearable
       placeholder="Start typing to search"
     />

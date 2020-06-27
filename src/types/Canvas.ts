@@ -35,7 +35,7 @@ export interface CanvasElement {
   id: string;
   tool: Tool;
   type: CanvasElementType;
-  data: {};
+  data: Record<string, any>;
   layerId: string;
   jti: string;
   isVisible: boolean;

@@ -17,7 +17,7 @@
         <v-icon dense color="primary">{{icon}}</v-icon>
       </v-btn>
     </template>
-    <span>{{ $t('undo.container.undo') }}</span>
+    <span>{{ $t('tool.container.undo') }}</span>
   </v-tooltip>
 </template>
 

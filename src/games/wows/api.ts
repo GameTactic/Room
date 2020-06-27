@@ -46,10 +46,11 @@ export const getWowsApiData = async (token: string, setGameApi: (api: Api) => vo
     return {
       id: `${ship.ship_id}`,
       name: ship.name,
+      title: ship.name,
       tier: ship.tier,
       type: ship.type as WowsShipType,
       game: Game.WOWS,
-      image: gameInfo.data.data.ship_type_images[ship.type][ship.is_special ? 'image_elite' : ship.is_premium ? 'image_premium' : 'image'],
+      image: gameInfo.data.data.ship_type_images[ship.type].image,
       canvasImage: {
         image: canvasIcons[ship.type as WowsShipType].image,
         dimensions: {
@@ -74,6 +75,7 @@ export const getWowsApiData = async (token: string, setGameApi: (api: Api) => vo
     {
       id: '1',
       name: 'CV',
+      title: 'Aircraft Carrier',
       tier: 0,
       type: WowsShipType.AIR_CARRIER,
       game: Game.WOWS,
@@ -98,6 +100,7 @@ export const getWowsApiData = async (token: string, setGameApi: (api: Api) => vo
     }, {
       id: '2',
       name: 'BB',
+      title: 'Battleship',
       tier: 0,
       type: WowsShipType.BATTLESHIP,
       game: Game.WOWS,
@@ -122,6 +125,7 @@ export const getWowsApiData = async (token: string, setGameApi: (api: Api) => vo
     }, {
       id: '3',
       name: 'CA',
+      title: 'Cruiser',
       tier: 0,
       type: WowsShipType.CRUISER,
       game: Game.WOWS,
@@ -146,6 +150,7 @@ export const getWowsApiData = async (token: string, setGameApi: (api: Api) => vo
     }, {
       id: '4',
       name: 'DD',
+      title: 'Destroyer',
       tier: 0,
       type: WowsShipType.DESTROYER,
       game: Game.WOWS,

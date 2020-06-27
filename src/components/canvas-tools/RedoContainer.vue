@@ -16,7 +16,7 @@
         <v-icon dense color="primary">{{icon}}</v-icon>
       </v-btn>
     </template>
-    <span>{{ $t('redo.container.redo') }}</span>
+    <span>{{ $t('tool.container.redo') }}</span>
   </v-tooltip>
 </template>
 

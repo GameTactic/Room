@@ -23,7 +23,7 @@
               </v-avatar>
             </v-badge>
           </template>
-          <span>Online</span>
+          <span v-text="$t('user.online')"/>
         </v-tooltip>
         <v-avatar v-else>
           <v-icon small>fa-user-circle</v-icon>

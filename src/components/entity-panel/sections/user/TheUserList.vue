@@ -1,7 +1,7 @@
 <template>
   <accordion-item icon="fa-user-plus">
     <template v-slot:header>
-      Users [{{ onlineUsers.length }}]
+      {{ `${$t('user.title')} [${onlineUsers.length}]` }}
     </template>
     <template v-slot:content>
       <the-user-list-content />
