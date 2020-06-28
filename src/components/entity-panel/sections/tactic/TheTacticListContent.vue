@@ -106,7 +106,7 @@ import { namespace } from 'vuex-class'
 import { Namespaces } from '@/store'
 import { SocketTacticAction, SocketTacticGetters } from '@/store/modules/socket/tactic'
 import { Collection, Tactic } from '@/store/types'
-import { TacticMenuItem, TacticMenuOptions, TreeViewItem } from '../../types'
+import { MenuItem, TacticMenuOptions, TreeViewItem } from '../../types'
 import { EventBus } from '@/event-bus'
 import { SocketUserGetters } from '@/store/modules/socket/user'
 import HandleTactic from '@/util/HandleTactic'
@@ -162,12 +162,12 @@ export default class TheTacticListContent extends Vue {
       new HandleTactic(tactic).setLocal()
     }
   }
-  // eslint-disable-next-line
-  numberUsersOnTactic (id: string) {
+
+  numberUsersOnTactic () {
     return 1
   }
 
-  tacticMenuOnClickHandler (menuItem: TacticMenuItem, tactic: Tactic) {
+  tacticMenuOnClickHandler (menuItem: MenuItem, tactic: Tactic) {
     switch (menuItem.action) {
       case TacticMenuOptions.EDIT:
         EventBus.$emit('openManageTacticsOverlay', tactic)
@@ -182,7 +182,7 @@ export default class TheTacticListContent extends Vue {
         break
     }
   }
-  tacticMenuColour (tactic: Tactic, item: TacticMenuItem) {
+  tacticMenuColour (tactic: Tactic, item: MenuItem) {
     if (item.action === TacticMenuOptions.PIN && tactic.pinned) {
       return 'primary'
     } else if (item.action === TacticMenuOptions.DELETE) {
@@ -190,27 +190,27 @@ export default class TheTacticListContent extends Vue {
     }
     return ''
   }
-  tacticMenuIcon (tactic: Tactic, item: TacticMenuItem) {
+  tacticMenuIcon (tactic: Tactic, item: MenuItem) {
     return item.icon
   }
-  tacticMenuPinText (tactic: Tactic, item: TacticMenuItem) {
+  tacticMenuPinText (tactic: Tactic, item: MenuItem) {
     if (item.action === TacticMenuOptions.PIN && tactic.isPinned && item.titleTwo) {
-      return item.titleTwo
+      return this.$t(item.titleTwo)
     }
-    return item.title
+    return this.$t(item.title)
   }
-  cardMenuItems: TacticMenuItem[] = [{
+  cardMenuItems: MenuItem[] = [{
     action: TacticMenuOptions.EDIT,
-    title: `Edit Tactic`,
+    title: 'tactic.edit',
     icon: 'fa-edit'
   }, {
     action: TacticMenuOptions.PIN,
-    title: `Pin Tactic`,
-    titleTwo: `Unpin Tactic`,
+    title: 'tactic.pin',
+    titleTwo: 'tactic.unpin',
     icon: 'fa-bookmark'
   }, {
     action: TacticMenuOptions.DELETE,
-    title: `Delete Tactic`,
+    title: 'tactic.delete',
     icon: 'fa-times'
   }]
 }

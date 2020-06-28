@@ -1,7 +1,7 @@
 <template>
   <accordion-item>
     <template v-slot:header>
-      {{ getGameName(game) }}
+      {{ getGameName(game) + 's' }}
     </template>
     <template v-slot:content>
       <the-wows-entity-list-content v-if="game === Game.WOWS" :game="game" />

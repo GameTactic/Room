@@ -3,6 +3,8 @@
     color="primaryShade"
     :content="noOfEntitiesOnCanvas"
     overlap
+    offset-x="20"
+    offset-y="20"
     class="custom-entity-card-badge"
     :value="noOfEntitiesOnCanvas > 0"
   >

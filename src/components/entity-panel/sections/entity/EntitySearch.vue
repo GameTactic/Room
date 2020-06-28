@@ -2,7 +2,7 @@
   <v-text-field
     :value="value"
     class="custom-entity-search px-2 py-0"
-    :placeholder="$t(placeholder)"
+    :placeholder="$t(placeholder, { entity: this.entityName })"
     dense
     prepend-icon="fa-search"
     clear-icon="fa-times"
@@ -16,6 +16,8 @@
 import Vue from 'vue'
 import Component from 'vue-class-component'
 import { Prop } from 'vue-property-decorator'
+import { getGameName } from '@/games/utils'
+import { Game } from '../../../../store/types'
 
 @Component({
   name: 'EntitySearch'
@@ -23,6 +25,10 @@ import { Prop } from 'vue-property-decorator'
 export default class EntitySearch extends Vue {
   @Prop() placeholder!: string
   @Prop() value!: string
+  @Prop() game!: Game
+
+  getGameName = getGameName
+  entityName: string = this.getGameName(this.game)
 }
 </script>
 <style lang="scss">

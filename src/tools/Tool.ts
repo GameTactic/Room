@@ -26,6 +26,7 @@ import { AppRoomGetters } from '@/store/modules/app/room'
 import { GameApiRoutes } from '@/games/types'
 import { SocketRoomGetters } from '@/store/modules/socket/room'
 import { EntitiesDataApi } from '@/types/Games/Wows'
+import uuid from 'uuid'
 
 export type CanvasDownAction = (event: CustomEvent, stage: VueKonvaStage) => void;
 export type CanvasMoveAction = (event: CustomEvent, stage: VueKonvaStage) => void;
@@ -88,7 +89,7 @@ export class ToolClass {
                   if (entities) {
                     const entity = entities.find((entity: Entity) => entity.id === data.id)
                     if (data.team && data.id && entity) {
-                      store.dispatch(`${Namespaces.SOCKET_TEAM}/${SocketTeamAction.ADD_ENTITY_TO_TEAM}`, { teamId: data.team.id, entity: entity })
+                      store.dispatch(`${Namespaces.SOCKET_TEAM}/${SocketTeamAction.ADD_ENTITY_TO_TEAM}`, { teamId: data.team.id, entity: { ...entity, uuid: uuid() } })
                     }
                   }
                 }

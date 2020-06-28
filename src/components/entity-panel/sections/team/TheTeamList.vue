@@ -30,8 +30,8 @@
       </v-chip-group>
     </template>
     <template v-slot:content>
-      <the-wows-entity-list-content v-if="game.WOWS" :game="game" />
-      <the-wot-entity-list-content v-if="game.WOT" :game="game" />
+      <the-wows-team-list-content v-if="game == Game.WOWS" :game="game" :selectedTeam="selectedTeam" />
+      <the-wot-team-list-content v-if="game == Game.WOT" :game="game" :selectedTeam="selectedTeam" />
     </template>
   </accordion-item>
 </template>
@@ -42,26 +42,30 @@ import Vue from 'vue'
 import { Namespaces } from '@/store'
 import { SocketTeamAction, SocketTeamGetters } from '@/store/modules/socket/team'
 import { Team, Game } from '@/store/types'
-import { Action, Getter, namespace } from 'vuex-class'
+import { namespace } from 'vuex-class'
 import { SocketRoomGetters } from '@/store/modules/socket/room'
-import TheWowsEntityListContent from '../entity/wows/TheEntityListContent.vue'
-import TheWotEntityListContent from '../entity/wot/TheEntityListContent.vue'
+import TheWowsTeamListContent from './wows/TheTeamListContent.vue'
+import TheWotTeamListContent from './wot/TheTeamListContent.vue'
 import AccordionItem from '../AccordionItem.vue'
 
 const SocketRoom = namespace(Namespaces.SOCKET_ROOM)
+const SocketTeam = namespace(Namespaces.SOCKET_TEAM)
+
 @Component({
   name: 'TheTeamList',
   components: {
-    TheWowsEntityListContent,
-    TheWotEntityListContent,
+    TheWowsTeamListContent,
+    TheWotTeamListContent,
     AccordionItem
   }
 })
 export default class TheTeamList extends Vue {
-  @Getter(`${Namespaces.SOCKET_TEAM}/${SocketTeamGetters.TEAMS}`) teams!: Team[]
-  @Getter(`${Namespaces.SOCKET_TEAM}/${SocketTeamGetters.SELECTED_TEAM}`) selectedTeam!: Team
-  @Action(`${Namespaces.SOCKET_TEAM}/${SocketTeamAction.SET_SELECTED_TEAM}`) setSelectedTeam!: (team: Team) => void
   @SocketRoom.Getter(SocketRoomGetters.GAME) game!: Game
+  @SocketTeam.Getter(SocketTeamGetters.TEAMS) teams!: Team[]
+  @SocketTeam.Getter(SocketTeamGetters.SELECTED_TEAM) selectedTeam!: Team | undefined
+  @SocketTeam.Action(SocketTeamAction.SET_SELECTED_TEAM) setSelectedTeam!: (team: Team) => void
+
+  Game = Game
 }
 </script>
 <style lang="scss">

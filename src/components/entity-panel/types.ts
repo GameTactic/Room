@@ -9,14 +9,22 @@ export interface TreeViewItem {
   tactic?: Tactic;
 }
 
-export interface TacticMenuItem {
+export interface MenuItem {
   action: string;
   title: string;
   titleTwo?: string;
   icon: string;
 }
+
 export enum TacticMenuOptions {
   EDIT = 'edit',
   PIN = 'pin',
+  DELETE = 'delete',
+}
+
+export enum TeamMenuOptions {
+  STATS = 'stats',
+  CLONE_ENTITY_TEAM = 'cloneEntityTeam',
+  CLONE_ENTITY_DIFFERENT_TEAM = 'cloneEntityDifferentTeam',
   DELETE = 'delete',
 }

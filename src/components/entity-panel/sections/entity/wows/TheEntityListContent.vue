@@ -1,7 +1,7 @@
 <template>
   <div class="custom-the-entity-list-content">
     <v-divider class="px-2"></v-divider>
-    <entity-search v-model="search" placeholder="entity.textField.wows.placeholder" />
+    <entity-search v-model="search" placeholder="entity.textField.placeholder" :game="game" />
     <v-item-group
       :value="selectedDefaultEntityId"
       class="custom-default-entities-container mb-2"
@@ -88,26 +88,23 @@ export default class TheEntityListContent extends Vue {
   selectedDefaultEntityId = -1
   selectedEntityId = -1
 
-  colors = {
-    AirCarrier: '#E53935',
-    Battleship: '#FFB300',
-    Cruiser: '#00897B',
-    Destroyer: '#1E88E5'
-  }
-
   get entities (): Entity[] {
     const apiData: Api | undefined = this.api.find((api: Api) => api.name === GameApiRoutes[Game.WOWS].entities)
     if (apiData && apiData.data) {
       const entities = (apiData.data as EntitiesDataApi).entities as Ship[]
-      return entities.filter((ship: Ship) => !ship.default).map((ship: Ship) => ({
+      return entities.filter((ship: Ship) => !ship.default).map((ship: Ship): Ship => ({
         id: ship.id,
+        uuid: ship.uuid,
         name: ship.name,
         title: ship.title,
         game: Game.WOWS,
         image: ship.image,
+        tier: ship.tier,
+        type: ship.type,
+        default: ship.default,
+        data: ship.data,
         canvasImage: ship.canvasImage,
-        color: this.colors[ship.type],
-        tier: ship.tier
+        color: ship.color
       }))
     }
     return []
@@ -125,21 +122,26 @@ export default class TheEntityListContent extends Vue {
     const apiData: Api | undefined = this.api.find((api: Api) => api.name === GameApiRoutes[Game.WOWS].entities)
     if (apiData && apiData.data) {
       const entities = (apiData.data as EntitiesDataApi).entities as Ship[]
-      return entities.filter((ship: Ship) => ship.default).map((ship: Ship) => ({
+      return entities.filter((ship: Ship) => ship.default).map((ship: Ship): Ship => ({
         id: ship.id,
+        uuid: ship.uuid,
         name: ship.name,
         title: ship.title,
         game: Game.WOWS,
+        tier: ship.tier,
+        type: ship.type,
+        default: ship.default,
+        data: ship.data,
         image: ship.image,
         canvasImage: ship.canvasImage,
-        color: this.colors[ship.type]
+        color: ship.color
       }))
     }
     return []
   }
 
   get entitiesOnCanvas () {
-    return this.canvasElements.filter((canvasElement: CanvasElement) => canvasElement.type === CanvasElementType.ENTITY)
+    return this.canvasElements.filter((canvasElement: CanvasElement) => canvasElement.type === CanvasElementType.ENTITY && canvasElement.isVisible)
   }
 
   getNumberOfEntitiesOnCanvas (entity: Ship) {

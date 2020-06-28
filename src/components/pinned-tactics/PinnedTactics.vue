@@ -82,4 +82,7 @@ export default class PinnedTactics extends Vue {
     position: relative;
     border-top: 1.5px solid rgba(0, 0, 0, 0.1);
   }
+  .custom-tactic-tabs > div {
+    border-right: 1.5px solid rgba(0, 0, 0, 0.1);
+  }
 </style>

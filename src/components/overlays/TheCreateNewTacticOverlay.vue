@@ -118,11 +118,11 @@ export default class CreateNewTacticOverlay extends mixins(TacticWatcher) {
     teams: [
       {
         name: 'teams.one',
-        color: '#66BB6A'
+        color: '#43A047'
       },
       {
         name: 'teams.two',
-        color: '#ff0000'
+        color: '#E53935'
       }
     ]
   }

@@ -2,7 +2,7 @@ import { Game } from '@/store/types'
 
 export const getGameName = (game: Game): string => {
   switch (game) {
-    case Game.WOWS: return 'Ships'
+    case Game.WOWS: return 'Ship'
     case Game.WOT: return 'Tank'
     default: return ''
   }
