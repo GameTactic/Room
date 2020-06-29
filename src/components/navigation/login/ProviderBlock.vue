@@ -22,7 +22,7 @@ import { AppAuthenticationActions } from '@/store/modules/app/authentication'
 import { namespace } from 'vuex-class'
 import { Namespaces } from '@/store'
 import { Provider } from '@/util/ProvidersUtil'
-import { camelCaseToPascalCaseWithSpaces } from '@/util/StringFormatting'
+import { camelCaseToPascalCaseWithSpaces } from '../../../util/StringFormatting'
 
 const appAuthentication = namespace(Namespaces.APP_AUTHENTICATION)
 
