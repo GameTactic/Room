@@ -20,7 +20,6 @@ export default class TextCreator extends Shape implements TextCreatorInterface {
     this.text = new Konva.Text()
   }
 
-  // eslint-disable-next-line
   create = (): void => {
     this.group.id(this.groupId).add(
       this.text = this.createTextElement()
