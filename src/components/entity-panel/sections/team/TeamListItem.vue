@@ -4,7 +4,7 @@
     @click="$emit('click', entity)"
   >
     <v-list-item-avatar class="mx-2 my-0" size="30">
-      <img class="custom-team-image" :style="{ backgroundColor: entity.color }" :src="entity.image" />
+      <img :style="{ backgroundColor: entity.color }" :src="entity.image" class="custom-team-image" />
     </v-list-item-avatar>
     <v-list-item-content>
       <v-list-item-title class="custom-team-title">
@@ -24,10 +24,10 @@
       >
         <template v-slot:activator="{ on: menuItem }">
           <v-btn
+            v-on="menuItem"
             small
             icon
             class="mr-1"
-            v-on="menuItem"
           >
             <v-icon small color="grey">fa-ellipsis-v</v-icon>
           </v-btn>
@@ -64,6 +64,7 @@ import { Ship } from '@/types/Games/Wows'
 import { TeamMenuOptions, MenuItem } from '../../types'
 import { Game } from '@/store/types'
 import { getGameName } from '@/games/utils'
+import { EventBus } from '@/event-bus'
 
 @Component({
   name: 'TeamListItem'
@@ -78,7 +79,9 @@ export default class TeamListItem extends Vue {
 
   teamMenuOnClickHandler (menuItem: MenuItem) {
     switch (menuItem.action) {
-      case TeamMenuOptions.STATS: break
+      case TeamMenuOptions.STATS:
+        EventBus.$emit('openTheEntityPropertiesModal', this.entity)
+        break
       case TeamMenuOptions.CLONE_ENTITY_TEAM: break
       case TeamMenuOptions.CLONE_ENTITY_DIFFERENT_TEAM: break
       case TeamMenuOptions.DELETE: break

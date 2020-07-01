@@ -2,14 +2,14 @@
 <div>
   <div class="custom-tool-panel-container pa-0 pt-1">
     <v-btn-toggle class="flex-column custom-tool-bar">
-      <tool-container icon="fa-mouse-pointer" toolName="move" :popout="false" />
-      <tool-container icon="fa-map-pin" toolName="ping" :popout="false" />
-      <tool-container icon="fa-pen" toolName="freeDraw" :popout="true"><free-draw-template /></tool-container>
-      <tool-container icon="fa-slash" toolName="line" :popout="true"><line-template /></tool-container>
-      <tool-container icon="far fa-circle" toolName="circle" :popout="true"><circle-template /></tool-container>
-      <tool-container icon="fa-ruler" toolName="ruler" :popout="true"><ruler-template /></tool-container>
-      <tool-container icon="fa-font" toolName="text" :popout="true"><text-template /></tool-container>
-      <tool-container icon="fa-eraser" toolName="erase" :popout="false"></tool-container>
+      <tool-container icon="fa-mouse-pointer" toolName="move" />
+      <tool-container icon="fa-map-pin" toolName="ping" />
+      <tool-container :popout="true" icon="fa-pen" toolName="freeDraw"><free-draw-template /></tool-container>
+      <tool-container :popout="true" icon="fa-slash" toolName="line"><line-template /></tool-container>
+      <tool-container :popout="true" icon="far fa-circle" toolName="circle"><circle-template /></tool-container>
+      <tool-container :popout="true" icon="fa-ruler" toolName="ruler"><ruler-template /></tool-container>
+      <tool-container :popout="true" icon="fa-font" toolName="text"><text-template /></tool-container>
+      <tool-container icon="fa-eraser" toolName="erase"></tool-container>
       <undo-container icon="fa-undo" toolName="undo"></undo-container>
       <redo-container icon="fa-redo" toolName="redo"></redo-container>
     </v-btn-toggle>

@@ -1,68 +1,68 @@
 <template>
-    <v-dialog
-      v-model="overlay"
-      width="700"
-      class="custom-overlay"
-    >
-      <v-card class="pa-12">
-        <v-row>
-          <v-col>
-            <v-card-title>
-              {{ $t('tactic.createTacticOverlay.title') }}
-            </v-card-title>
-            <v-card-actions>
-              <v-text-field
-                v-model="tactic.name"
-                :label="$t('tactic.overlay.name')"
-                prepend-icon="fa-file"
-              />
-            </v-card-actions>
-            <v-card-actions v-if="maps !== false">
-              <v-autocomplete
-                v-model="tactic.map"
-                :items="maps"
-                :search-input.sync="search"
-                :label="$t('tactic.overlay.maps')"
-                :placeholder="$t('tactic.overlay.search')"
-                item-text="name"
-                color="primary"
-                hide-no-data
-                hide-selected
-                prepend-icon="fa-search"
-                autocomplete="new-password"
-                return-object
-              >
-                <template v-slot:item="data">
-                  <v-list-item-avatar size="29" class="custom-list-item-avatar">
-                    <img :src="data.item.icon" :alt="data.item.name">
-                  </v-list-item-avatar>
-                  <v-list-item-content class="custom-list-item-content">
-                    <v-list-item-title v-text="data.item.name"></v-list-item-title>
-                  </v-list-item-content>
-                </template>
-              </v-autocomplete>
-            </v-card-actions>
-            <v-spacer></v-spacer>
-            <v-card-subtitle>
-              <v-btn
-                :disabled="isDisabled()"
-                color="primary"
-                @click="createTactic()"
-              >
-                {{ $t('tactic.createTacticOverlay.create') }}
-              </v-btn>
-            </v-card-subtitle>
-          </v-col>
-          <v-divider class="d-none" vertical />
-          <v-col>
-            <v-card-subtitle>
-              <v-img v-if="tactic.map.icon" :src="tactic.map.icon" max-width="200px"/>
-            </v-card-subtitle>
-            <v-card-subtitle>{{ tactic.map.name }}</v-card-subtitle>
-          </v-col>
-        </v-row>
-      </v-card>
-    </v-dialog>
+  <v-dialog
+    v-model="overlay"
+    width="700"
+    class="custom-overlay"
+  >
+    <v-card class="pa-12">
+      <v-row>
+        <v-col>
+          <v-card-title>
+            {{ $t('tactic.createTacticOverlay.title') }}
+          </v-card-title>
+          <v-card-actions>
+            <v-text-field
+              v-model="tactic.name"
+              :label="$t('tactic.overlay.name')"
+              prepend-icon="fa-file"
+            />
+          </v-card-actions>
+          <v-card-actions v-if="maps !== false">
+            <v-autocomplete
+              v-model="tactic.map"
+              :items="maps"
+              :search-input.sync="search"
+              :label="$t('tactic.overlay.maps')"
+              :placeholder="$t('tactic.overlay.search')"
+              item-text="name"
+              color="primary"
+              hide-no-data
+              hide-selected
+              prepend-icon="fa-search"
+              autocomplete="new-password"
+              return-object
+            >
+              <template v-slot:item="data">
+                <v-list-item-avatar size="29" class="custom-list-item-avatar">
+                  <img :src="data.item.icon" :alt="data.item.name">
+                </v-list-item-avatar>
+                <v-list-item-content class="custom-list-item-content">
+                  <v-list-item-title v-text="data.item.name"></v-list-item-title>
+                </v-list-item-content>
+              </template>
+            </v-autocomplete>
+          </v-card-actions>
+          <v-spacer></v-spacer>
+          <v-card-subtitle>
+            <v-btn
+              :disabled="isDisabled()"
+              color="primary"
+              @click="createTactic()"
+            >
+              {{ $t('tactic.createTacticOverlay.create') }}
+            </v-btn>
+          </v-card-subtitle>
+        </v-col>
+        <v-divider class="d-none" vertical />
+        <v-col>
+          <v-card-subtitle>
+            <v-img v-if="tactic.map.icon" :src="tactic.map.icon" max-width="200px"/>
+          </v-card-subtitle>
+          <v-card-subtitle>{{ tactic.map.name }}</v-card-subtitle>
+        </v-col>
+      </v-row>
+    </v-card>
+  </v-dialog>
 </template>
 <script lang="ts">
 import Component, { mixins } from 'vue-class-component'

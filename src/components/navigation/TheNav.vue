@@ -1,9 +1,7 @@
 <template>
   <span>
     <v-row>
-      <v-col
-        class="py-0 my-0 pr-0 custom-left-col"
-      >
+      <v-col class="py-0 my-0 pr-0 custom-left-col">
         <v-toolbar
           class="custom-nav-left"
           dense
@@ -13,16 +11,12 @@
           <v-img max-width="160" max-height="45" :src="require('@/assets/logo.png')" />
         </v-toolbar>
       </v-col>
-      <v-col
-        class="py-0 my-0 custom-center-col d-none d-md-flex"
-      >
+      <v-col class="py-0 my-0 custom-center-col d-none d-md-flex">
         <v-toolbar class="custom-nav-center" dense flat>
             <the-canvas-tools v-if="isAuthorisedCanvasLoaded" />
         </v-toolbar>
       </v-col>
-      <v-col
-        class="py-0 my-0 pl-0 custom-right-col"
-      >
+      <v-col class="py-0 my-0 pl-0 custom-right-col">
         <v-toolbar
           class="custom-nav-right"
           dense
@@ -35,28 +29,27 @@
             <the-manage-room />
             <the-user-menu />
             <v-btn
-              class="mr-2"
               :disabled="!isAuthorised"
+              class="mr-2"
               icon
               small
-              @click.stop="$emit('entityPanelOpen')"
+              @click.stop="$emit('isEntityPanelOpen')"
             >
               <v-icon size="20" color="white">fa-bars</v-icon>
             </v-btn>
-
           </span>
           <span class="d-flex d-sm-none">
             <v-btn
               class="mr-2"
               icon
-              @click.stop="drawer = !drawer"
+              @click.stop="isDrawer = !isDrawer"
             >
               <v-icon color="white">fa-bars</v-icon>
             </v-btn>
           </span>
         </v-toolbar>
         <v-navigation-drawer
-          v-model="drawer"
+          v-model="isDrawer"
           absolute
           right
           temporary
@@ -64,10 +57,7 @@
         >
           <v-list>
             <v-list-item class="custom-isSM-navigation-drawer-close">
-            <v-btn
-              icon
-              @click="drawer = false"
-            >
+            <v-btn icon @click="isDrawer = false">
               <v-icon color="primary">fa-times</v-icon>
             </v-btn>
             </v-list-item>
@@ -119,7 +109,7 @@ const SocketUser = namespace(Namespaces.SOCKET_USER)
 export default class TheNav extends Vue {
   @SocketUser.Getter(SocketUserGetters.IS_AUTHORISED_CANVAS_LOADED) isAuthorisedCanvasLoaded!: boolean
   @SocketUser.Getter(SocketUserGetters.IS_AUTHORISED) isAuthorised!: boolean
-  drawer = false
+  isDrawer = false
 }
 </script>
 <style scoped lang="scss">

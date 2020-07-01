@@ -50,7 +50,7 @@ const SocketUserModule: Module<SocketUserState, RootState> = {
       if (jti) {
         const user = state.users.find((user: User) => user.jti === jti)
         if (user) {
-          return user.roles.length
+          return !!user.roles.length
         }
       }
       return false

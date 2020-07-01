@@ -12,8 +12,8 @@ export interface TreeViewItem {
 export interface MenuItem {
   action: string;
   title: string;
-  titleTwo?: string;
   icon: string;
+  titleTwo?: string;
 }
 
 export enum TacticMenuOptions {

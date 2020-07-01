@@ -1,7 +1,7 @@
 <template>
   <div class="custom-the-entity-list-content">
     <v-divider class="px-2"></v-divider>
-    <entity-search v-model="search" placeholder="entity.textField.placeholder" :game="game" />
+    <entity-search v-model="search" :game="game" placeholder="entity.textField.placeholder" />
     <v-item-group
       :value="selectedDefaultEntityId"
       class="custom-default-entities-container mb-2"
@@ -19,8 +19,8 @@
       </v-item>
     </v-item-group>
     <v-lazy
-      max-height="200"
       v-if="entitySearch.length > 0"
+      max-height="200"
     >
       <v-item-group
         :value="selectedEntityId"
@@ -90,7 +90,7 @@ export default class TheEntityListContent extends Vue {
 
   get entities (): Entity[] {
     const apiData: Api | undefined = this.api.find((api: Api) => api.name === GameApiRoutes[Game.WOWS].entities)
-    if (apiData && apiData.data) {
+    if (apiData?.data) {
       const entities = (apiData.data as EntitiesDataApi).entities as Ship[]
       return entities.filter((ship: Ship) => !ship.default).map((ship: Ship): Ship => ({
         id: ship.id,

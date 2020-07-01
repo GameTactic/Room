@@ -7,14 +7,14 @@
       <v-chip-group mandatory light>
         <v-tooltip
           v-for="team in teams"
-          top
           :key="team.id"
+          top
         >
           <template v-slot:activator="{ on }">
             <v-chip
               v-on="on"
-              label
               :color="team.color"
+              label
               light
               outlined
               filter

@@ -1,12 +1,12 @@
 <template>
   <v-badge
-    color="primaryShade"
     :content="noOfEntitiesOnCanvas"
+    :value="noOfEntitiesOnCanvas > 0"
+    color="primaryShade"
     overlap
     offset-x="20"
     offset-y="20"
     class="custom-entity-card-badge"
-    :value="noOfEntitiesOnCanvas > 0"
   >
     <v-card
       :class="['custom-entity-card my-1', active ? 'custom-entity-card-active' : '']"
@@ -20,7 +20,7 @@
       <v-container class="pa-1">
         <v-row class="text-center mx-0">
           <v-col cols="12" class="pa-0 custom-entity-card-column">
-            <img class="custom-entity-card-image" :style="{backgroundColor: entity.color}" :src="entity.image">
+            <img :style="{backgroundColor: entity.color}" :src="entity.image" class="custom-entity-card-image">
           </v-col>
           <v-col cols="12" class="pa-0">
             <div class="caption custom-entity-card-text">{{entity.name}}</div>
@@ -58,14 +58,14 @@ export default class EntityCard extends Vue {
   @Prop() private entity!: Ship;
   @Prop() private active!: boolean;
   @Prop() private noOfEntitiesOnCanvas!: number;
-  @AppTools.Getter(AppToolGetters.ENABLED_TOOL) enabledTool!: Tool
+  @AppTools.Getter(AppToolGetters.ENABLED_TOOL) enabledTool!: Tool | undefined
   @AppTools.Action(AppToolsAction.ENABLE_TOOL) enableTool!: (tool: string) => void
   @AppTools.Action(AppToolsAction.DISABLE_TOOL) disableTool!: () => void
 
   onClickHandler () {
-    if (this.enabledTool && this.enabledTool.name === AdditionTools.ENTITY) {
+    if (this.enabledTool?.name === AdditionTools.ENTITY) {
       const entity: Entity | undefined = (this.enabledTool as EntityClass).getEntity()
-      if (entity && entity.id === this.entity.id) {
+      if (entity?.id === this.entity.id) {
         this.enabledTool.setEntity(undefined)
         this.disableTool()
       } else {
@@ -73,7 +73,7 @@ export default class EntityCard extends Vue {
       }
     } else {
       this.enableTool(AdditionTools.ENTITY)
-      if (this.enabledTool && this.enabledTool instanceof EntityClass) {
+      if (this.enabledTool instanceof EntityClass) {
         this.enabledTool.setEntity(this.entity)
       }
     }

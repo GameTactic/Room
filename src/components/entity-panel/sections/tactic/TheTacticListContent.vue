@@ -224,7 +224,7 @@ export default class TheTacticListContent extends Vue {
 }
 
 .custom-expansion-panel-content .v-treeview-node__root {
-  padding-left: 0px;
+  padding-left: 0;
   padding-right: 4px;
 }
 </style>

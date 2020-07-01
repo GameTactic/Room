@@ -12,6 +12,18 @@ import { SocketTacticState } from './modules/socket/tactic'
 import { SocketUserState } from './modules/socket/user'
 import { Dimensions } from '@/mixins/StageWatcher'
 
+export enum RoleTypes {
+  ROOM_OWNER = 'roomOwner',
+  ADMIN = 'admin',
+  USER = 'user'
+}
+
+export enum Game {
+  NONE = 'none',
+  WOWS = 'wows',
+  WOT = 'wot'
+}
+
 export interface RootState {
   [Namespaces.APP_AUTHENTICATION]: AppAuthenticationState;
   [Namespaces.APP_LAYER]: AppLayerState;
@@ -37,8 +49,8 @@ export interface ApiData {
 export interface Entity {
   id: string;
   uuid: string;
+  game: Game;
   name: string;
-  alias?: string;
   title: string;
   image: string;
   canvasImage: {
@@ -46,14 +58,8 @@ export interface Entity {
     dimensions: Dimensions;
   };
   team?: Team;
-  game: Game;
+  alias?: string;
   color?: string;
-}
-
-export enum RoleTypes {
-  ROOM_OWNER = 'roomOwner',
-  ADMIN = 'admin',
-  USER = 'user'
 }
 
 export interface Role {
@@ -92,12 +98,6 @@ export interface Tactic {
   canvasElementsHistory: CanvasElementHistory[];
   teams: Team[];
   [key: string]: string | Map | Team[] | CanvasElement[] | CanvasElementHistory[] | boolean | undefined;
-}
-
-export enum Game {
-  NONE = 'none',
-  WOWS = 'wows',
-  WOT = 'wot'
 }
 
 export interface Team {

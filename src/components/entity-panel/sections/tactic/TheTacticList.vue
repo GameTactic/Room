@@ -1,7 +1,7 @@
 <template>
   <accordion-item
-    icon="fa-plus"
     :rightButtonDisabled="ApiMaps"
+    icon="fa-plus"
     @rightButtonClicked="newTacticOnClickHandler"
   >
     <template v-slot:header>

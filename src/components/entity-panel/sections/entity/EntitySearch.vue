@@ -1,8 +1,8 @@
 <template>
   <v-text-field
     :value="value"
-    class="custom-entity-search px-2 py-0"
     :placeholder="$t(placeholder, { entity: this.entityName })"
+    class="custom-entity-search px-2 py-0"
     dense
     prepend-icon="fa-search"
     clear-icon="fa-times"
