@@ -171,7 +171,7 @@ export default class TheTacticListContent extends Vue {
   tacticMenuOnClickHandler (menuItem: MenuItem, tactic: Tactic) {
     switch (menuItem.action) {
       case TacticMenuOptions.EDIT:
-        EventBus.$emit(OpenOverlayList.OPEN_THE_ENTITY_PROPERTIES_MODAL, tactic)
+        EventBus.$emit(OpenOverlayList.OPEN_THE_UPDATE_TACTIC_OVERLAY, tactic)
         break
       case TacticMenuOptions.DELETE:
         this.deleteTactic(tactic.id)

@@ -105,7 +105,7 @@ export default class TheUpdateTacticOverlay extends mixins(TacticWatcher) {
   overlay = false
 
   created () {
-    EventBus.$on(OpenOverlayList.OPEN_THE_CREATE_TACTIC_OVERLAY, (tactic: Tactic) => {
+    EventBus.$on(OpenOverlayList.OPEN_THE_UPDATE_TACTIC_OVERLAY, (tactic: Tactic) => {
       this.overlay = true
       this.selectedTactic = { ...tactic }
     })
