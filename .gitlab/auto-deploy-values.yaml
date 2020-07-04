@@ -1,0 +1,15 @@
+deploymentApiVersion: apps/v1
+replicaCount: 3
+strategyType: RollingUpdate
+service:
+  externalPort: 80
+  internalPort: 80
+prometheus:
+  metrics: true
+postgresql:
+  enabled: false
+ingress:
+  modSecurity:
+    enabled: true
+    secRuleEngine: "DetectionOnly"
+

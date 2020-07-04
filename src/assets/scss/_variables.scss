@@ -1,0 +1,32 @@
+// App
+$app-fontsize: 16px;
+
+// Room colours
+$room-secondary: #F1F2F2;
+$room-primary: unquote($VUE_APP_ROOM_PRIMARY_COLOUR);
+$room-primary-shade: #386b94;
+$room-text: white;
+
+@mixin custom-scroll-bar {
+ &::-webkit-scrollbar {
+  width: 10px;
+  background-color: #e7e7e7;
+  border-radius: 10px;
+ }
+ &::-webkit-scrollbar-track {
+  -webkit-box-shadow: inset 0 0 6px rgba(111, 90, 90, 0.2);
+  background-color: #dcdcdc;
+ }
+ &::-webkit-scrollbar-thumb {
+  -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,.2);
+  background-color: #BDBDBD;
+  cursor: pointer;
+ }
+}
+
+:export {
+ customScrollBar: custom-scroll-bar;
+ roomPrimary: $room-primary;
+ roomPrimaryShade: $room-primary-shade;
+ roomSecondary: $room-secondary;
+}
