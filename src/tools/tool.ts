@@ -23,7 +23,7 @@ import { SocketTeamAction, SocketTeamGetters } from '@/store/modules/socket/team
 import { AppAuthenticationGetters } from '@/store/modules/app/authentication'
 import { LineType } from '@/tools/line'
 import { AppRoomGetters } from '@/store/modules/app/room'
-import { GameApiRoutes } from '@/games/types'
+import { GameApiRoutes } from '@/games/utils'
 import { SocketRoomGetters } from '@/store/modules/socket/room'
 import { EntitiesDataApi } from '@/types/games/wows'
 import uuid from 'uuid'
@@ -80,16 +80,16 @@ export class ToolClass {
           if (additionsData.tool === AdditionTools.ENTITY) {
             request.canvasElements.forEach((canvasElement: CanvasElement) => {
               if (canvasElement.tool.name === AdditionTools.ENTITY) {
-                const data = canvasElement.data as EntityData
                 const api: Api[] = store.getters[`${Namespaces.APP_ROOM}/${AppRoomGetters.API}`]
                 const currentGame: Game = store.getters[`${Namespaces.SOCKET_ROOM}/${SocketRoomGetters.GAME}`]
                 const apiData: Api | undefined = api.find((api: Api) => currentGame !== Game.NONE && api.name === GameApiRoutes[currentGame].entities)
                 if (apiData) {
+                  const data = canvasElement.data as EntityData
                   const entities: Entity[] = (apiData.data as EntitiesDataApi).entities
                   if (entities) {
                     const entity = entities.find((entity: Entity) => entity.id === data.id)
                     if (data.team && data.id && entity) {
-                      store.dispatch(`${Namespaces.SOCKET_TEAM}/${SocketTeamAction.ADD_ENTITY_TO_TEAM}`, { teamId: data.team.id, entity: { ...entity, id: uuid() } })
+                      store.dispatch(`${Namespaces.SOCKET_TEAM}/${SocketTeamAction.ADD_ENTITY_TO_TEAM}`, { teamId: data.team.id, entity: { ...entity, id: uuid(), teamId: data.team.id } })
                     }
                   }
                 }

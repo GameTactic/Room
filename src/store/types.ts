@@ -11,6 +11,7 @@ import { SocketStageState } from './modules/socket/stage'
 import { SocketTacticState } from './modules/socket/tactic'
 import { SocketUserState } from './modules/socket/user'
 import { Dimensions } from '@/mixins/stageWatcher'
+import { GameEntity } from '@/types/games'
 
 export enum RoleTypes {
   ROOM_OWNER = 'roomOwner',
@@ -48,7 +49,6 @@ export interface ApiData {
 
 export interface Entity {
   id: string;
-  apiId: string | undefined;
   game: Game;
   name: string;
   title: string;
@@ -57,7 +57,7 @@ export interface Entity {
     image: string;
     dimensions: Dimensions;
   };
-  team?: Team;
+  teamId?: string;
   alias?: string;
   color?: string;
 }
@@ -105,7 +105,7 @@ export interface Team {
   tacticId: string;
   name: string;
   color: string;
-  entities: Entity[];
+  entities: GameEntity[];
 }
 
 export interface Collection {
@@ -125,4 +125,9 @@ export interface PresentationPayload {
 export interface Presentation {
   enabledBy: string | undefined;
   tacticId: string | undefined;
+}
+
+export interface AddTeamToEntity {
+  teamId: string;
+  entity: GameEntity;
 }

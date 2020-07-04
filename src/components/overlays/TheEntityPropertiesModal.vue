@@ -1,61 +1,97 @@
 <template>
-  <v-dialog
-    v-model="overlay"
-    width="400"
-  >
-    <v-card class="pa-12">
-      <v-text-field
-          v-if="!field.hide"
-          outlined
-          dense
-          @change="onTextFieldChangeHandler(entities, selectedEntityId, field, $event)"
-        />
-      <!-- <div
-        v-for="(field, index) in fields"
-        :key="field.id"
+  <v-dialog v-model="overlay" width="350">
+    <v-card class="pa-12 custom-entity-properties-card">
+      <v-btn
+        icon
+        small
+        :title="$t('button.cancel')"
+        @click="overlay = false"
       >
-        <v-text-field
-          v-if="!field.hide"
-          :id="field.id"
-          :value="field.value"
-          :label="$t(field.label)"
-          :placeholder="$t(field.placeholder)"
-          :suffix="$t(field.suffix)"
-          class="custom-text-field"
-          outlined
-          dense
-          @change="onTextFieldChangeHandler(entities, selectedEntityId, field, $event)"
-        />
-        <div v-if="index === fields.length -1" class="caption"><b>Note</b> Changes are saved automatically</div>
-      </div> -->
+        <v-icon color="secondary">fa-times</v-icon>
+      </v-btn>
+      <v-text-field
+        id="selectedEntity-alias"
+        :value="selectedEntity ? selectedEntity.alias : ''"
+        :label="$t('entity.alias.textField')"
+        :placeholder="$t('entity.alias.placeholder', { entity: getEntityName(this.game) })"
+        outlined
+        dense
+        @change="aliasOnChangeHandler"
+      />
+      <the-entity-properties-content v-if="game === Game.WOWS" :fields="fields" :selectedEntity="selectedEntity" />
+      <div class="d-flex justify-end">
+        <v-btn
+          color="primary"
+          :title="$t('button.save')"
+          @click="saveEntityOnClickHandler"
+        >
+        <v-icon>fa-save</v-icon>
+        </v-btn>
+      </div>
     </v-card>
   </v-dialog>
 </template>
 <script lang="ts">
 import Vue from 'vue'
-import Component, { mixins } from 'vue-class-component'
+import Component from 'vue-class-component'
 import { EventBus } from '@/event-bus'
 import { namespace } from 'vuex-class'
 import { Namespaces } from '@/store'
-import { Ship } from '@/types/games/wows'
+import { OpenOverlayList } from './types'
+import { GameEntity } from '@/types/games'
+import { SocketRoomGetters } from '@/store/modules/socket/room'
+import { Game } from '@/store/types'
+import { fields as wowsFields } from '@/games/wows/fields'
+import TheEntityPropertiesContent from './wows/TheEntityPropertiesContent.vue'
+import { getEntityName } from '@/games/utils'
+import { SocketTeamAction } from '@/store/modules/socket/team'
 
-// const SocketRoom = namespace(Namespaces.SOCKET_ROOM)
+const SocketRoom = namespace(Namespaces.SOCKET_ROOM)
+const SocketTeam = namespace(Namespaces.SOCKET_TEAM)
 
 @Component({
-  name: 'TheEntityPropertiesModal'
+  name: 'TheEntityPropertiesModal',
+  components: { TheEntityPropertiesContent }
 })
 export default class TheEntityPropertiesModal extends Vue {
+  @SocketRoom.Getter(SocketRoomGetters.GAME) game!: Game
+  @SocketTeam.Action(SocketTeamAction.UPDATE_ENTITY_IN_TEAM) updateEntityInTeam!: (payload: GameEntity) => void
+
   overlay = false
-  selectedEntity: Ship | {} = {}
+  selectedEntity: GameEntity | null = null
+  fields = wowsFields
+  // enum
+  Game = Game
+  getEntityName = getEntityName
 
   created () {
-    EventBus.$on('openTheEntityPropertiesModal', (entity: Ship) => {
+    EventBus.$on(OpenOverlayList.OPEN_THE_ENTITY_PROPERTIES_MODAL, (entity: GameEntity) => {
       this.overlay = true
-      this.selectedEntity = { ...entity }
+      this.selectedEntity = { ...entity, data: { ...entity.data } }
     })
+  }
+
+  aliasOnChangeHandler (value: string) {
+    if (this.selectedEntity) {
+      this.selectedEntity = { ...this.selectedEntity, alias: value }
+    }
+  }
+
+  saveEntityOnClickHandler () {
+    if (this.selectedEntity) {
+      this.updateEntityInTeam(this.selectedEntity)
+      this.overlay = false
+    }
   }
 }
 </script>
 <style lang="scss" scoped>
-
+.custom-entity-properties-card {
+  display: flex;
+  flex-direction: column;
+  >button {
+    align-self: flex-end;
+    margin-bottom: 0.5rem;
+  }
+}
 </style>

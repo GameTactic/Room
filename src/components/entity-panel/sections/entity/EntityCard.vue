@@ -141,7 +141,7 @@ export default class EntityCard extends Vue {
   border: 1px solid lightgrey;
 }
 
-.custom-entities-container .custom-entity-card-active, .custom-default-entities-container .custom-entity-card-active{
+.custom-entities-container .custom-entity-card-badge  .custom-entity-card-active, .custom-default-entities-container .custom-entity-card-badge  .custom-entity-card-active{
   border: 1px solid $room-primary;
   &::before {
     opacity: 0.09;

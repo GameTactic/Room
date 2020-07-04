@@ -110,6 +110,7 @@ import { MenuItem, TacticMenuOptions, TreeViewItem } from '../../types'
 import { EventBus } from '@/event-bus'
 import { SocketUserGetters } from '@/store/modules/socket/user'
 import HandleTactic from '@/util/handleTactic'
+import { OpenOverlayList } from '@/components/overlays/types'
 
 const SocketTactic = namespace(Namespaces.SOCKET_TACTIC)
 const SocketUser = namespace(Namespaces.SOCKET_USER)
@@ -162,7 +163,7 @@ export default class TheTacticListContent extends Vue {
       new HandleTactic(tactic).setLocal()
     }
   }
-
+  // To Do: We do not have the logic to determine which users are viewing which Tactic yet
   numberUsersOnTactic () {
     return 1
   }
@@ -170,7 +171,7 @@ export default class TheTacticListContent extends Vue {
   tacticMenuOnClickHandler (menuItem: MenuItem, tactic: Tactic) {
     switch (menuItem.action) {
       case TacticMenuOptions.EDIT:
-        EventBus.$emit('openManageTacticsOverlay', tactic)
+        EventBus.$emit(OpenOverlayList.OPEN_THE_ENTITY_PROPERTIES_MODAL, tactic)
         break
       case TacticMenuOptions.DELETE:
         this.deleteTactic(tactic.id)
@@ -194,10 +195,7 @@ export default class TheTacticListContent extends Vue {
     return item.icon
   }
   tacticMenuPinText (tactic: Tactic, item: MenuItem) {
-    if (item.action === TacticMenuOptions.PIN && tactic.isPinned && item.titleTwo) {
-      return this.$t(item.titleTwo)
-    }
-    return this.$t(item.title)
+    return item.action === TacticMenuOptions.PIN && tactic.isPinned && item.titleTwo ? this.$t(item.titleTwo) : this.$t(item.title)
   }
   cardMenuItems: MenuItem[] = [{
     action: TacticMenuOptions.EDIT,

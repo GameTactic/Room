@@ -4,6 +4,7 @@ import axios from 'axios'
 import { Api, Game, Map } from '@/store/types'
 import { JWTRegion } from '@/store/modules/app/authentication'
 import WowsMaps from '@/types/games/wows/maps'
+import uuid from 'uuid'
 
 export const getWowsApiData = async (token: string, setGameApi: (api: Api) => void): Promise<void> => {
   const scaleIcon = 0.8 // Sets default scale for all entities
@@ -49,7 +50,7 @@ export const getWowsApiData = async (token: string, setGameApi: (api: Api) => vo
     apiShips = apiShips.concat(Object.values(response.data.data))
   }
   let ships: Ship[] = apiShips.map((ship: ApiShipResponse): Ship => ({
-    id: ship.ship_id.toString(),
+    id: uuid(),
     apiId: ship.ship_id.toString(),
     name: ship.name,
     title: ship.name,
@@ -97,7 +98,7 @@ export const getWowsApiData = async (token: string, setGameApi: (api: Api) => vo
       },
       default: true,
       data: {
-        artillery: 0,
+        artillery: undefined,
         torpedo: undefined,
         atbas: undefined,
         concealmentPlane: undefined,
@@ -124,7 +125,7 @@ export const getWowsApiData = async (token: string, setGameApi: (api: Api) => vo
       },
       default: true,
       data: {
-        artillery: 0,
+        artillery: undefined,
         torpedo: undefined,
         atbas: undefined,
         concealmentPlane: undefined,
@@ -151,7 +152,7 @@ export const getWowsApiData = async (token: string, setGameApi: (api: Api) => vo
       },
       default: true,
       data: {
-        artillery: 0,
+        artillery: undefined,
         torpedo: undefined,
         atbas: undefined,
         concealmentPlane: undefined,
@@ -178,7 +179,7 @@ export const getWowsApiData = async (token: string, setGameApi: (api: Api) => vo
       },
       default: true,
       data: {
-        artillery: 0,
+        artillery: undefined,
         torpedo: undefined,
         atbas: undefined,
         concealmentPlane: undefined,

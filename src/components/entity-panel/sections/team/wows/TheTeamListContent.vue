@@ -2,13 +2,12 @@
   <span>
     <span class="custom-team-title-container">
       <span class="ml-2 caption" v-text="$t(selectedTeam.name)" />
-      <v-icon small>far fa-eye</v-icon>
     </span>
     <v-divider class="mx-2" />
     <v-list dense>
       <v-list-item-group>
         <team-list-item
-          v-for="entity in selectedTeam.entities"
+          v-for="entity in sortedEntities"
           :key="entity.id"
           :active="entity.id === selectedEntityId"
           :entity="entity"
@@ -27,6 +26,14 @@ import { Ship } from '@/types/games/wows'
 import { Team, Game } from '@/store/types'
 import TeamListItem from '../TeamListItem.vue'
 import { Prop } from 'vue-property-decorator'
+import { GameEntity } from '@/types/games'
+
+export enum WowsShipType {
+  DESTROYER = 'Destroyer',
+  AIR_CARRIER = 'AirCarrier',
+  CRUISER = 'Cruiser',
+  BATTLESHIP = 'Battleship'
+}
 
 @Component({
   name: 'TheTeamListContent',
@@ -39,6 +46,10 @@ export default class TheTeamListContent extends Vue {
   @Prop() game!: Game
 
   selectedEntityId = ''
+
+  get sortedEntities () {
+    return this.selectedTeam?.entities.sort((entityA: GameEntity, entityB: GameEntity) => entityA.type < entityB.type ? -1 : 1) || []
+  }
 
   entityOnClickHandler (entity: Ship) {
     this.selectedEntityId = this.selectedEntityId === entity.id ? '' : entity.id

@@ -8,4 +8,12 @@ export interface ApiHeader {
   'X-Game': Game;
 }
 
+export interface Field {
+  id: string;
+  label: string;
+  placeholder: string;
+  suffix: string;
+  [key: string]: string;
+}
+
 export type GameEntity = Ship

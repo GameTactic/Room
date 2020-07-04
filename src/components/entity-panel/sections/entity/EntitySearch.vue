@@ -17,7 +17,7 @@ import Vue from 'vue'
 import Component from 'vue-class-component'
 import { Prop } from 'vue-property-decorator'
 import { getEntityName } from '@/games/utils'
-import { Game } from '../../../../store/types'
+import { Game } from '@/store/types'
 
 @Component({
   name: 'EntitySearch'

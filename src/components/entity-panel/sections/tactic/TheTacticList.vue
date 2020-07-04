@@ -1,6 +1,6 @@
 <template>
   <accordion-item
-    :rightButtonDisabled="ApiMaps"
+    :rightButtonDisabled="!ApiMaps"
     icon="fa-plus"
     @rightButtonClicked="newTacticOnClickHandler"
   >
@@ -22,10 +22,11 @@ import AccordionItem from '../AccordionItem.vue'
 import TheTacticListContent from './TheTacticListContent.vue'
 import { namespace } from 'vuex-class'
 import { Namespaces } from '@/store'
-import { AppRoomGetters } from '../../../../store/modules/app/room'
-import { Api, Game } from '../../../../store/types'
-import { GameApiRoutes } from '@/games/types'
+import { AppRoomGetters } from '@/store/modules/app/room'
+import { Api, Game } from '@/store/types'
+import { GameApiRoutes } from '@/games/utils'
 import { SocketRoomGetters } from '@/store/modules/socket/room'
+import { OpenOverlayList } from '@/components/overlays/types'
 
 const AppRoom = namespace(Namespaces.APP_ROOM)
 const SocketRoom = namespace(Namespaces.SOCKET_ROOM)
@@ -43,15 +44,11 @@ export default class TheTacticList extends Vue {
 
   get ApiMaps () {
     const mapApi: Api | undefined = this.api.find((api: Api) => (this.currentGame !== Game.NONE) && api.name === GameApiRoutes[this.currentGame].maps)
-    if (mapApi) {
-      return false
-    } else {
-      return true
-    }
+    return !!mapApi
   }
 
   newTacticOnClickHandler () {
-    EventBus.$emit('openCreateNewTacticOverlay')
+    EventBus.$emit(OpenOverlayList.OPEN_THE_CREATE_TACTIC_OVERLAY)
   }
 }
 </script>

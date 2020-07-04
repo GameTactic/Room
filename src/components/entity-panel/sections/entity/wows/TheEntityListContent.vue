@@ -53,7 +53,7 @@ import { Ship, EntitiesDataApi } from '@/types/games/wows'
 import { AppToolGetters } from '@/store/modules/app/tools'
 import { Tool } from '@/tools/tool'
 import EntityCard from '../EntityCard.vue'
-import { GameApiRoutes } from '@/games/types'
+import { GameApiRoutes } from '@/games/utils'
 import { Prop, Watch } from 'vue-property-decorator'
 import EntitySearch from '../EntitySearch.vue'
 import { CanvasElement, CanvasElementType } from '@/types/canvas'
@@ -120,7 +120,7 @@ export default class TheEntityListContent extends Vue {
 
   get getDefaultEntities (): Entity[] {
     const apiData: Api | undefined = this.api.find((api: Api) => api.name === GameApiRoutes[Game.WOWS].entities)
-    if (apiData && apiData.data) {
+    if (apiData?.data) {
       const entities = (apiData.data as EntitiesDataApi).entities as Ship[]
       return entities.filter((ship: Ship) => ship.default).map((ship: Ship): Ship => ({
         id: ship.id,

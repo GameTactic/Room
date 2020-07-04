@@ -77,7 +77,7 @@ import { Tool } from '@/tools/tool'
 import { namespace } from 'vuex-class'
 import { Namespaces } from '@/store'
 import { AppToolGetters, AppToolsAction } from '@/store/modules/app/tools'
-import { SocketUserGetters } from '../../store/modules/socket/user'
+import { SocketUserGetters } from '@/store/modules/socket/user'
 
 const AppTools = namespace(Namespaces.APP_TOOLS)
 const SocketUser = namespace(Namespaces.SOCKET_USER)

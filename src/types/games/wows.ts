@@ -18,6 +18,7 @@ export interface WowsShipsApiResponse {
 
 export interface Ship extends Entity {
   tier: number;
+  apiId: string | undefined;
   type: WowsShipType;
   default: boolean;
   data: {
@@ -28,6 +29,7 @@ export interface Ship extends Entity {
     concealmentPlane: number | undefined;
     concealmentShip: number | undefined;
     atbas: number | undefined;
+    [key: string]: number | undefined;
   };
 }
 

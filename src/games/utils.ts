@@ -13,6 +13,17 @@ type RomanNumeralLookup = {
   [key: string]: number;
 }
 
+type GameApiContents = {
+  maps: string;
+  entities: string;
+}
+
+type GameApiRoutes = {
+  wows: GameApiContents;
+  wot: GameApiContents;
+  [key: string]: GameApiContents;
+}
+
 export const getEntityName = (game: Game): string => {
   switch (game) {
     case Game.WOWS: return 'Ship'
@@ -34,4 +45,15 @@ export const convertNumberToRomanNumeral = (num: number) => {
     }
   }
   return romanNumeral
+}
+
+export const GameApiRoutes: GameApiRoutes = {
+  wows: {
+    maps: 'wows.encyclopedia.maps',
+    entities: 'wows.encyclopedia.ships'
+  },
+  wot: {
+    maps: '',
+    entities: ''
+  }
 }

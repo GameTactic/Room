@@ -5,7 +5,6 @@
     </template>
     <template v-slot:content>
       <the-wows-entity-list-content v-if="game === Game.WOWS" :game="game" />
-      <the-wot-entity-list-content v-if="game == Game.WOT" :game="game" />
     </template>
   </accordion-item>
 </template>
@@ -16,7 +15,6 @@ import Component from 'vue-class-component'
 import Vue from 'vue'
 import AccordionItem from '../AccordionItem.vue'
 import TheWowsEntityListContent from './wows/TheEntityListContent.vue'
-import TheWotEntityListContent from './wot/TheEntityListContent.vue'
 import { namespace } from 'vuex-class'
 import { Namespaces } from '@/store'
 import { getEntityName } from '@/games/utils'
@@ -29,7 +27,6 @@ const SocketRoom = namespace(Namespaces.SOCKET_ROOM)
   name: 'TheEntityList',
   components: {
     TheWowsEntityListContent,
-    TheWotEntityListContent,
     AccordionItem
   }
 })

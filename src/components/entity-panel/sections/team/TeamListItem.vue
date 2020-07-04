@@ -60,19 +60,26 @@
 import Component from 'vue-class-component'
 import Vue from 'vue'
 import { Prop } from 'vue-property-decorator'
-import { Ship } from '@/types/games/wows'
 import { TeamMenuOptions, MenuItem } from '../../types'
-import { Game } from '@/store/types'
+import { Game, AddTeamToEntity } from '@/store/types'
 import { getEntityName, convertNumberToRomanNumeral } from '@/games/utils'
 import { EventBus } from '@/event-bus'
+import { OpenOverlayList } from '@/components/overlays/types'
+import { GameEntity } from '@/types/games'
+import { namespace } from 'vuex-class'
+import { Namespaces } from '@/store'
+import { SocketTeamAction } from '@/store/modules/socket/team'
+
+const SocketTeam = namespace(Namespaces.SOCKET_TEAM)
 
 @Component({
   name: 'TeamListItem'
 })
 export default class TeamListItem extends Vue {
-  @Prop() private readonly entity!: Ship
+  @Prop() private readonly entity!: GameEntity
   @Prop() private readonly active!: boolean
   @Prop() private readonly game!: Game
+  @SocketTeam.Action(SocketTeamAction.ADD_ENTITY_TO_TEAM) addEntityToTeam!: (payload: AddTeamToEntity) => void
 
   getEntityName = getEntityName
   entityName: string = this.getEntityName(this.game)
@@ -83,7 +90,7 @@ export default class TeamListItem extends Vue {
   teamMenuOnClickHandler (menuItem: MenuItem) {
     switch (menuItem.action) {
       case TeamMenuOptions.STATS:
-        EventBus.$emit('openTheEntityPropertiesModal', this.entity)
+        EventBus.$emit(OpenOverlayList.OPEN_THE_ENTITY_PROPERTIES_MODAL, this.entity)
         break
       case TeamMenuOptions.CLONE_ENTITY_TEAM: break
       case TeamMenuOptions.CLONE_ENTITY_DIFFERENT_TEAM: break
@@ -92,18 +99,18 @@ export default class TeamListItem extends Vue {
     }
   }
 
-  getTeamMenuColour (entity: Ship, item: MenuItem) {
+  getTeamMenuColour (entity: GameEntity, item: MenuItem) {
     if (item.action === TeamMenuOptions.DELETE) {
       return 'error'
     }
-    return ''
+    return 'primary'
   }
 
-  getTeamMenuIcon (entity: Ship, item: MenuItem) {
+  getTeamMenuIcon (entity: GameEntity, item: MenuItem) {
     return item.icon
   }
 
-  getTeamMenuText (entity: Ship, item: MenuItem) {
+  getTeamMenuText (entity: GameEntity, item: MenuItem) {
     return this.$t(item.title)
   }
 

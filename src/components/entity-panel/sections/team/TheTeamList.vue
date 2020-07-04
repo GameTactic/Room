@@ -22,16 +22,15 @@
               filter-icon="fa fa-check"
               @click.stop="setSelectedTeam(team)"
             >
-              <v-icon :color="team.color" small>fa-users</v-icon>
+              <v-icon :color="team.color" small v-text="'fa-users'" />
             </v-chip>
           </template>
-          <span>{{ $t(team.name) }}</span>
+          <span v-text="$t(team.name)" />
         </v-tooltip>
       </v-chip-group>
     </template>
     <template v-slot:content>
       <the-wows-team-list-content v-if="game == Game.WOWS" :game="game" :selectedTeam="selectedTeam" />
-      <the-wot-team-list-content v-if="game == Game.WOT" :game="game" :selectedTeam="selectedTeam" />
     </template>
   </accordion-item>
 </template>
@@ -45,7 +44,6 @@ import { Team, Game } from '@/store/types'
 import { namespace } from 'vuex-class'
 import { SocketRoomGetters } from '@/store/modules/socket/room'
 import TheWowsTeamListContent from './wows/TheTeamListContent.vue'
-import TheWotTeamListContent from './wot/TheTeamListContent.vue'
 import AccordionItem from '../AccordionItem.vue'
 
 const SocketRoom = namespace(Namespaces.SOCKET_ROOM)
@@ -55,7 +53,6 @@ const SocketTeam = namespace(Namespaces.SOCKET_TEAM)
   name: 'TheTeamList',
   components: {
     TheWowsTeamListContent,
-    TheWotTeamListContent,
     AccordionItem
   }
 })

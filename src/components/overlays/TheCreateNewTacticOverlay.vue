@@ -81,8 +81,9 @@ import { SocketTacticGetters } from '@/store/modules/socket/tactic'
 import { Namespaces } from '@/store'
 import { MapsDataApi } from '@/types/games/wows'
 import HandleTactic from '@/util/handleTactic'
-import { GameApiRoutes } from '@/games/types'
+import { GameApiRoutes } from '@/games/utils'
 import { SocketRoomGetters } from '@/store/modules/socket/room'
+import { OpenOverlayList } from './types'
 
 const SocketRoom = namespace(Namespaces.SOCKET_ROOM)
 const AppRoom = namespace(Namespaces.APP_ROOM)
@@ -130,7 +131,7 @@ export default class CreateNewTacticOverlay extends mixins(TacticWatcher) {
   overlay = false
 
   created () {
-    EventBus.$on('openCreateNewTacticOverlay', () => {
+    EventBus.$on(OpenOverlayList.OPEN_THE_CREATE_TACTIC_OVERLAY, () => {
       this.overlay = !this.overlay
     })
   }
