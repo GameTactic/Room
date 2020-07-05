@@ -73,11 +73,11 @@
 
 <script lang="ts">
 import { Component, Prop, Vue } from 'vue-property-decorator'
-import { Tool } from '@/tools/Tool'
+import { Tool } from '@/tools/tool'
 import { namespace } from 'vuex-class'
 import { Namespaces } from '@/store'
 import { AppToolGetters, AppToolsAction } from '@/store/modules/app/tools'
-import { SocketUserGetters } from '../../store/modules/socket/user'
+import { SocketUserGetters } from '@/store/modules/socket/user'
 
 const AppTools = namespace(Namespaces.APP_TOOLS)
 const SocketUser = namespace(Namespaces.SOCKET_USER)
@@ -162,12 +162,15 @@ export default class ToolContainer extends Vue {
   background-color: $room-primary;
 }
 
-.custom-btn-disabled::before {
-  opacity: 0;
-}
-
 .custom-btn-disabled {
   background-color: rgba(0, 0, 0, 0);
+  .v-icon {
+    color: var(--v-primary-base) !important; // override
+  }
+
+  &::before {
+    opacity: 0;
+  }
 }
 
 .custom-btn-disabled .v-icon {

@@ -30,7 +30,7 @@
 import { Component, Vue, Prop } from 'vue-property-decorator'
 import { namespace } from 'vuex-class'
 import { Namespaces } from '@/store'
-import { SocketUserGetters } from '../../../store/modules/socket/user'
+import { SocketUserGetters } from '@/store/modules/socket/user'
 
 const SocketUser = namespace(Namespaces.SOCKET_USER)
 

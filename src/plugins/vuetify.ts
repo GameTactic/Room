@@ -1,5 +1,4 @@
 import Vue from 'vue'
-import '@mdi/font/css/materialdesignicons.css'
 import '@fortawesome/fontawesome-free/css/all.css'
 import colours from '@/assets/scss/_variables.scss'
 import { DashedLine, DashedLineActive, NormalLine, NormalLineActive, TBarHead, TBarHeadActive } from '@/assets/tool-icons'
@@ -9,6 +8,7 @@ import Vuetify, {
   VExpansionPanels,
   VExpansionPanel,
   VExpansionPanelHeader,
+  VVirtualScroll,
   VExpansionPanelContent,
   VAutocomplete,
   VAvatar,
@@ -64,7 +64,8 @@ import Vuetify, {
   VTooltip,
   VTreeview,
   VListItemGroup,
-  VLazy
+  VLazy,
+  VItem
 } from 'vuetify/lib'
 
 Vue.use(Vuetify, {
@@ -83,6 +84,7 @@ Vue.use(Vuetify, {
     VRadio,
     VContainer,
     VTreeviewNode,
+    VVirtualScroll,
     VAutocomplete,
     VBadge,
     VRow,
@@ -128,7 +130,8 @@ Vue.use(Vuetify, {
     VTabsSlider,
     VTabItem,
     VTabs,
-    VTabsItems
+    VTabsItems,
+    VItem
   },
   directives: {}
 })
@@ -156,7 +159,7 @@ const opts: Record<string, any> = {
         component: TBarHeadActive
       }
     },
-    iconfont: 'fa' || 'mdi' // || 'mdiSvg' || 'md' || 'fa' || 'fa4',
+    iconfont: 'fa' // || 'mdiSvg' || 'md' || 'fa' || 'fa4',
   },
   theme: {
     options: {
@@ -164,7 +167,8 @@ const opts: Record<string, any> = {
     },
     themes: {
       light: {
-        primary: colours.roomPrimary
+        primary: colours.roomPrimary,
+        primaryShade: colours.roomPrimaryShade
       }
     }
   }

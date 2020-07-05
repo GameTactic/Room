@@ -1,4 +1,4 @@
-import { CanvasElement, CanvasElementHistory } from '@/types/Canvas'
+import { CanvasElement, CanvasElementHistory } from '@/types/canvas'
 import { Namespaces } from '.'
 import { AppAuthenticationState } from './modules/app/authentication'
 import { AppLayerState } from './modules/app/layer'
@@ -10,7 +10,20 @@ import { SocketRoomState } from './modules/socket/room'
 import { SocketStageState } from './modules/socket/stage'
 import { SocketTacticState } from './modules/socket/tactic'
 import { SocketUserState } from './modules/socket/user'
-import { Dimensions } from '@/mixins/StageWatcher'
+import { Dimensions } from '@/mixins/stageWatcher'
+import { GameEntity } from '@/types/games'
+
+export enum RoleTypes {
+  ROOM_OWNER = 'roomOwner',
+  ADMIN = 'admin',
+  USER = 'user'
+}
+
+export enum Game {
+  NONE = 'none',
+  WOWS = 'wows',
+  WOT = 'wot'
+}
 
 export interface RootState {
   [Namespaces.APP_AUTHENTICATION]: AppAuthenticationState;
@@ -36,21 +49,17 @@ export interface ApiData {
 
 export interface Entity {
   id: string;
+  game: Game;
   name: string;
+  title: string;
   image: string;
   canvasImage: {
     image: string;
     dimensions: Dimensions;
   };
-  team?: Team;
-  game: Game;
+  teamId?: string;
+  alias?: string;
   color?: string;
-}
-
-export enum RoleTypes {
-  ROOM_OWNER = 'roomOwner',
-  ADMIN = 'admin',
-  USER = 'user'
 }
 
 export interface Role {
@@ -91,18 +100,12 @@ export interface Tactic {
   [key: string]: string | Map | Team[] | CanvasElement[] | CanvasElementHistory[] | boolean | undefined;
 }
 
-export enum Game {
-  NONE = '',
-  WOWS = 'wows',
-  WOT = 'wot'
-}
-
 export interface Team {
   id: string;
   tacticId: string;
   name: string;
   color: string;
-  entities: Entity[];
+  entities: GameEntity[];
 }
 
 export interface Collection {
@@ -122,4 +125,9 @@ export interface PresentationPayload {
 export interface Presentation {
   enabledBy: string | undefined;
   tacticId: string | undefined;
+}
+
+export interface AddTeamToEntity {
+  teamId: string;
+  entity: GameEntity;
 }

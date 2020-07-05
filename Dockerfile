@@ -2,7 +2,7 @@ FROM node:lts-alpine as build
 WORKDIR /app
 COPY package.json ./
 COPY yarn.lock ./
-RUN yarn install
+RUN wget https://raw.githubusercontent.com/GameTactic/Deployment/master/room/.env && yarn install
 COPY . .
 RUN yarn build
 

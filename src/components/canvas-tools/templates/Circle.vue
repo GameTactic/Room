@@ -62,7 +62,7 @@
 
 <script lang="ts">
 import { Component, Vue } from 'vue-property-decorator'
-import { Tool } from '@/tools/Tool'
+import { Tool } from '@/tools/tool'
 import { namespace } from 'vuex-class'
 import { Namespaces } from '@/store'
 import { AppToolGetters, AppToolsAction } from '@/store/modules/app/tools'

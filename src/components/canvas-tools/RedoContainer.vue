@@ -16,7 +16,7 @@
         <v-icon dense color="primary">{{icon}}</v-icon>
       </v-btn>
     </template>
-    <span>{{ $t('redo.container.redo') }}</span>
+    <span>{{ $t('tool.container.redo') }}</span>
   </v-tooltip>
 </template>
 
@@ -24,9 +24,9 @@
 import { Component, Prop, Vue } from 'vue-property-decorator'
 import { namespace } from 'vuex-class'
 import { SocketCanvasAction, SocketCanvasGetters } from '@/store/modules/socket/canvas'
-import { CanvasElement, CanvasElementHistory } from '@/types/Canvas'
-import HandleUndoRedo from '@/util/HandleUndoRedo'
-import HandleRenderShapes from '@/util/HandleRenderShapes'
+import { CanvasElement, CanvasElementHistory } from '@/types/canvas'
+import HandleUndoRedo from '@/util/handleUndoRedo'
+import HandleRenderShapes from '@/util/handleRenderShapes'
 import { Namespaces } from '@/store'
 import { SocketUserGetters } from '@/store/modules/socket/user'
 

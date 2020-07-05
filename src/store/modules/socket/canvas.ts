@@ -1,5 +1,5 @@
 import { ActionContext, Module } from 'vuex'
-import { CanvasElement, CanvasElementHistory, Point } from '@/types/Canvas'
+import { CanvasElement, CanvasElementHistory, Point } from '@/types/canvas'
 import { RootState } from '@/store/types'
 
 export enum SocketCanvasMutation {

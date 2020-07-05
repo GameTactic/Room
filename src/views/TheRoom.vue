@@ -15,11 +15,12 @@
     <v-overlay opacity="0.2" :value="isMapChanging" class="z-index-same-as-overlay">
       <v-icon class="custom-spinner">fa-spinner</v-icon>
     </v-overlay>
-    <the-nav class="z-index-above-overlay"/>
+    <the-nav class="z-index-above-overlay" @isEntityPanelOpen="isEntityPanelOpenHandler"/>
     <the-tool-panel class="d-none d-sm-flex z-index-above-overlay" />
-    <the-entity-panel v-if="isAuthorised" class="d-none d-sm-flex z-index-above-overlay" />
+    <the-entity-panel v-if="isAuthorised" class="d-none d-sm-flex z-index-above-overlay" :panelOpen="isEntityPanelOpen" />
     <the-create-new-tactic-overlay />
     <the-update-tactic-overlay />
+    <the-entity-properties-modal />
     <pinned-tactics class="z-index-above-overlay" v-if="isAuthorisedCanvasLoaded"></pinned-tactics>
   </div>
 </template>
@@ -31,14 +32,15 @@ import TheCanvas from '@/components/TheCanvas.vue'
 import TheEntityPanel from '@/components/TheEntityPanel.vue'
 import Component, { mixins } from 'vue-class-component'
 import { Prop, Watch } from 'vue-property-decorator'
-import { VueKonvaStage } from '@/types/Canvas'
+import { VueKonvaStage } from '@/types/canvas'
 import TheCreateNewTacticOverlay from '@/components/overlays/TheCreateNewTacticOverlay.vue'
 import TheUpdateTacticOverlay from '@/components/overlays/TheUpdateTacticOverlay.vue'
+import TheEntityPropertiesModal from '@/components/overlays/TheEntityPropertiesModal.vue'
 import { namespace } from 'vuex-class'
 import { EventBus } from '@/event-bus'
-import RoomSocket from '@/mixins/RoomSockets'
+import RoomSocket from '@/mixins/roomSockets'
 import { AppToolGetters } from '@/store/modules/app/tools'
-import { Tool } from '@/tools/Tool'
+import { Tool } from '@/tools/tool'
 import { SocketTacticGetters, SocketTacticAction } from '@/store/modules/socket/tactic'
 import { Tactic, Collection, RoleTypes } from '@/store/types'
 import uuid from 'uuid'
@@ -63,6 +65,7 @@ const AppRoom = namespace(Namespaces.APP_ROOM)
     PinnedTactics,
     TheCreateNewTacticOverlay,
     TheUpdateTacticOverlay,
+    TheEntityPropertiesModal,
     TheNav,
     TheToolPanel,
     TheCanvas,
@@ -92,6 +95,7 @@ export default class TheRoom extends mixins(RoomSocket) {
   }
   isDragEnabled = false
   isMapChanging = false
+  isEntityPanelOpen = true
 
   @Watch('jwt')
   onPropertyChanged () {
@@ -105,20 +109,17 @@ export default class TheRoom extends mixins(RoomSocket) {
         onTacticId: '1',
         isOnline: true,
         lastOnline: new Date(),
-        roles: [
-          {
-            id: '1',
-            roleTypes: RoleTypes.USER,
-            assignedBy: jti
-          },
-          {
-            id: '2',
-            roleTypes: RoleTypes.ADMIN,
-            assignedBy: jti
-          }
-        ]
+        roles: [{
+          id: '1',
+          roleTypes: RoleTypes.ADMIN,
+          assignedBy: jti
+        }]
       }])
     }
+  }
+
+  isEntityPanelOpenHandler () {
+    this.isEntityPanelOpen = !this.isEntityPanelOpen
   }
 
   mouseDownAction (e: MouseEvent) {

@@ -22,7 +22,7 @@ import { Component, Vue, Prop, Emit } from 'vue-property-decorator'
 import { namespace } from 'vuex-class'
 import { Namespaces } from '@/store'
 import { AppAuthenticationActions, AppAuthenticationGetters } from '@/store/modules/app/authentication'
-import { Providers } from '@/util/ProvidersUtil'
+import { Providers } from '@/util/providersUtil'
 import ProviderBlock from '@/components/navigation/login/ProviderBlock.vue'
 
 const AppAuthentication = namespace(Namespaces.APP_AUTHENTICATION)

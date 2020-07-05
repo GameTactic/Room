@@ -1,87 +1,91 @@
 <template>
-    <v-dialog
-      v-model="overlay"
-      width="700"
-      class="custom-overlay"
-    >
-      <v-card class="pa-12">
-        <v-row>
-          <v-col>
-            <v-card-title>
-              {{ $t('tactic.createTacticOverlay.title') }}
-            </v-card-title>
-            <v-card-actions>
-              <v-text-field
-                v-model="tactic.name"
-                :label="$t('tactic.overlay.name')"
-                prepend-icon="fa-file"
-              />
-            </v-card-actions>
-            <v-card-actions v-if="maps !== false">
-              <v-autocomplete
-                v-model="tactic.map"
-                :items="maps"
-                :search-input.sync="search"
-                :label="$t('tactic.overlay.maps')"
-                :placeholder="$t('tactic.overlay.search')"
-                item-text="name"
-                color="primary"
-                hide-no-data
-                hide-selected
-                prepend-icon="fa-search"
-                autocomplete="new-password"
-                return-object
-              >
-                <template v-slot:item="data">
-                  <v-list-item-avatar size="29" class="custom-list-item-avatar">
-                    <img :src="data.item.icon" :alt="data.item.name">
-                  </v-list-item-avatar>
-                  <v-list-item-content class="custom-list-item-content">
-                    <v-list-item-title v-text="data.item.name"></v-list-item-title>
-                  </v-list-item-content>
-                </template>
-              </v-autocomplete>
-            </v-card-actions>
-            <v-spacer></v-spacer>
-            <v-card-subtitle>
-              <v-btn
-                :disabled="isDisabled()"
-                color="primary"
-                @click="createTactic()"
-              >
-                {{ $t('tactic.createTacticOverlay.create') }}
-              </v-btn>
-            </v-card-subtitle>
-          </v-col>
-          <v-divider class="d-none" vertical />
-          <v-col>
-            <v-card-subtitle>
-              <v-img v-if="tactic.map.icon" :src="tactic.map.icon" max-width="200px"/>
-            </v-card-subtitle>
-            <v-card-subtitle>{{ tactic.map.name }}</v-card-subtitle>
-          </v-col>
-        </v-row>
-      </v-card>
-    </v-dialog>
+  <v-dialog
+    v-model="overlay"
+    width="700"
+    class="custom-overlay"
+  >
+    <v-card class="pa-12">
+      <v-row>
+        <v-col>
+          <v-card-title>
+            {{ $t('tactic.createTacticOverlay.title') }}
+          </v-card-title>
+          <v-card-actions>
+            <v-text-field
+              v-model="tactic.name"
+              :label="$t('tactic.overlay.name')"
+              prepend-icon="fa-file"
+            />
+          </v-card-actions>
+          <v-card-actions v-if="maps !== false">
+            <v-autocomplete
+              v-model="tactic.map"
+              :items="maps"
+              :search-input.sync="search"
+              :label="$t('tactic.overlay.maps')"
+              :placeholder="$t('tactic.overlay.search')"
+              item-text="name"
+              color="primary"
+              hide-no-data
+              hide-selected
+              prepend-icon="fa-search"
+              autocomplete="new-password"
+              return-object
+            >
+              <template v-slot:item="data">
+                <v-list-item-avatar size="29" class="custom-list-item-avatar">
+                  <img :src="data.item.icon" :alt="data.item.name">
+                </v-list-item-avatar>
+                <v-list-item-content class="custom-list-item-content">
+                  <v-list-item-title v-text="data.item.name"></v-list-item-title>
+                </v-list-item-content>
+              </template>
+            </v-autocomplete>
+          </v-card-actions>
+          <v-spacer></v-spacer>
+          <v-card-subtitle>
+            <v-btn
+              :disabled="isDisabled()"
+              color="primary"
+              @click="createTactic()"
+            >
+              {{ $t('tactic.createTacticOverlay.create') }}
+            </v-btn>
+          </v-card-subtitle>
+        </v-col>
+        <v-divider class="d-none" vertical />
+        <v-col>
+          <v-card-subtitle>
+            <v-img v-if="tactic.map.icon" :src="tactic.map.icon" max-width="200px"/>
+          </v-card-subtitle>
+          <v-card-subtitle>{{ tactic.map.name }}</v-card-subtitle>
+        </v-col>
+      </v-row>
+    </v-card>
+  </v-dialog>
 </template>
 <script lang="ts">
 import Component, { mixins } from 'vue-class-component'
 import { EventBus } from '@/event-bus'
 import { AppRoomAction, AppRoomGetters } from '@/store/modules/app/room'
 import { namespace } from 'vuex-class'
-import { Api, Collection, Team } from '@/store/types'
+import { Api, Collection, Game, Team } from '@/store/types'
 import { SocketStageActions } from '@/store/modules/socket/stage'
-import { CustomStageConfig } from '@/util/PointerEventMapper'
+import { CustomStageConfig } from '@/util/pointerEventMapper'
 import { SocketCanvasAction } from '@/store/modules/socket/canvas'
-import { CanvasElement, CanvasElementHistory } from '@/types/Canvas'
-import TacticWatcher from '@/mixins/TacticWatcher'
+import { CanvasElement, CanvasElementHistory } from '@/types/canvas'
+import TacticWatcher from '@/mixins/tacticWatcher'
 import uuid from 'uuid'
 import { AppAuthenticationGetters } from '@/store/modules/app/authentication'
 import { SocketTacticGetters } from '@/store/modules/socket/tactic'
 import { Namespaces } from '@/store'
-import { WowsMapsDataApi } from '@/types/Games/Wows'
-import HandleTactic from '@/util/HandleTactic'
+import { MapsDataApi } from '@/types/games/wows'
+import HandleTactic from '@/util/handleTactic'
+import { GameApiRoutes } from '@/games/utils'
+import { SocketRoomGetters } from '@/store/modules/socket/room'
+import { OpenOverlayList } from './types'
 
+const SocketRoom = namespace(Namespaces.SOCKET_ROOM)
 const AppRoom = namespace(Namespaces.APP_ROOM)
 const SocketTactic = namespace(Namespaces.SOCKET_TACTIC)
 const SocketStage = namespace(Namespaces.SOCKET_STAGE)
@@ -99,6 +103,7 @@ export default class CreateNewTacticOverlay extends mixins(TacticWatcher) {
   @SocketCanvas.Action(SocketCanvasAction.SET_CANVAS_ELEMENT_HISTORY) setCanvasElementsHistory!: (canvasElements: CanvasElementHistory[]) => void
   @AppRoom.Getter(AppRoomGetters.IS_CANVAS_LOADED) isCanvasLoaded!: boolean
   @AppRoom.Action(AppRoomAction.SET_IS_CANVAS_LOADED) setIsCanvasLoaded!: (isCanvasLoaded: boolean) => void
+  @SocketRoom.Getter(SocketRoomGetters.GAME) currentGame!: Game
 
   tactic = {
     map: {
@@ -113,12 +118,12 @@ export default class CreateNewTacticOverlay extends mixins(TacticWatcher) {
     name: '',
     teams: [
       {
-        name: 'Team 1',
-        color: '#00ff00'
+        name: 'teams.one',
+        color: '#43A047'
       },
       {
-        name: 'Team 2',
-        color: '#ff0000'
+        name: 'teams.two',
+        color: '#E53935'
       }
     ]
   }
@@ -126,15 +131,15 @@ export default class CreateNewTacticOverlay extends mixins(TacticWatcher) {
   overlay = false
 
   created () {
-    EventBus.$on('openCreateNewTacticOverlay', () => {
+    EventBus.$on(OpenOverlayList.OPEN_THE_CREATE_TACTIC_OVERLAY, () => {
       this.overlay = !this.overlay
     })
   }
 
   get maps () {
-    const mapApi: Api | undefined = this.api.find((api: Api) => api.name === 'wows.encyclopedia.maps')
+    const mapApi: Api | undefined = this.api.find((api: Api) => (this.currentGame !== Game.NONE) && api.name === GameApiRoutes[this.currentGame].maps)
     if (mapApi) {
-      return (mapApi.data as WowsMapsDataApi).maps
+      return (mapApi.data as MapsDataApi).maps
     } else {
       return false
     }
@@ -193,16 +198,7 @@ export default class CreateNewTacticOverlay extends mixins(TacticWatcher) {
         id: 0
       },
       name: '',
-      teams: [
-        {
-          name: 'Team 1',
-          color: '#00ff00'
-        },
-        {
-          name: 'Team 2',
-          color: '#ff0000'
-        }
-      ]
+      teams: [...this.tactic.teams]
     }
   }
 }

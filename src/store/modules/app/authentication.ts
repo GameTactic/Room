@@ -1,8 +1,8 @@
 import { ActionContext, Module } from 'vuex'
 import axios from 'axios'
 import { verify } from 'jsonwebtoken'
-import i18n from '@/lib/I18n'
-import { mapProviders, Providers, Provider } from '@/util/ProvidersUtil'
+import i18n from '@/lib/i18n'
+import { mapProviders, Providers, Provider } from '@/util/providersUtil'
 import { socket } from '@/plugins/socket'
 import { RootState } from '@/store/types'
 

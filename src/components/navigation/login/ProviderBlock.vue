@@ -21,8 +21,7 @@ import { Component, Prop, Vue } from 'vue-property-decorator'
 import { AppAuthenticationActions } from '@/store/modules/app/authentication'
 import { namespace } from 'vuex-class'
 import { Namespaces } from '@/store'
-import { Provider } from '@/util/ProvidersUtil'
-import { camelCaseToPascalCaseWithSpaces } from '@/util/stringFormatting'
+import { Provider, camelCaseToPascalCaseWithSpaces } from '@/util/providersUtil'
 
 const appAuthentication = namespace(Namespaces.APP_AUTHENTICATION)
 

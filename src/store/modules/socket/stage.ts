@@ -1,6 +1,6 @@
 import { ActionContext, Module } from 'vuex'
-import { CustomStageConfig } from '@/util/PointerEventMapper'
-import { Dimensions } from '@/mixins/StageWatcher'
+import { CustomStageConfig } from '@/util/pointerEventMapper'
+import { Dimensions } from '@/mixins/stageWatcher'
 import { Tactic, Map, RootState } from '@/store/types'
 import { AppRoomGetters } from '../app/room'
 import { Namespaces } from '@/store'

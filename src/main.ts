@@ -8,7 +8,7 @@ import App from '@/App.vue'
 import socket from '@/plugins/socket'
 import '@/plugins/sentry'
 import values from 'lodash.values'
-import i18n, { localeFiles } from '@/lib/I18n'
+import i18n, { localeFiles } from '@/lib/i18n'
 
 socket(store, Vue)
 Vue.use(VueKonva)

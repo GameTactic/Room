@@ -79,13 +79,13 @@
 
 <script lang="ts">
 import { Component, Vue } from 'vue-property-decorator'
-import { Tool } from '@/tools/Tool'
+import { Tool } from '@/tools/tool'
 import { namespace } from 'vuex-class'
 import { Namespaces } from '@/store'
 import { AppToolGetters, AppToolsAction } from '@/store/modules/app/tools'
 import ColourPicker from '@/components/canvas-tools/templates/template-tools/ColourPicker.vue'
 import SizePicker from '@/components/canvas-tools/templates/template-tools/SizePicker.vue'
-import { LineType } from '@/tools/Line'
+import { LineType } from '@/tools/line'
 
 const AppTools = namespace(Namespaces.APP_TOOLS)
 

@@ -1,5 +1,5 @@
 import { ActionContext, Module } from 'vuex'
-import { Api, RootState } from '../../types'
+import { Api, RootState } from '@/store/types'
 
 export enum Locale {
   CS = 'cs',
