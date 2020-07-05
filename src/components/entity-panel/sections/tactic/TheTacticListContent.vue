@@ -163,7 +163,7 @@ export default class TheTacticListContent extends Vue {
       new HandleTactic(tactic).setLocal()
     }
   }
-  // To Do: We do not have the logic to determine which users are viewing which Tactic yet
+  // TODO: We do not have the logic to determine which users are viewing which Tactic yet
   numberUsersOnTactic () {
     return 1
   }
