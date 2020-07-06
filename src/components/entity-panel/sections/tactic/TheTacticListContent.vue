@@ -163,6 +163,7 @@ export default class TheTacticListContent extends Vue {
       new HandleTactic(tactic).setLocal()
     }
   }
+
   // TODO: We do not have the logic to determine which users are viewing which Tactic yet
   numberUsersOnTactic () {
     return 1
@@ -183,6 +184,7 @@ export default class TheTacticListContent extends Vue {
         break
     }
   }
+
   tacticMenuColour (tactic: Tactic, item: MenuItem) {
     if (item.action === TacticMenuOptions.PIN && tactic.pinned) {
       return 'primary'
@@ -191,12 +193,15 @@ export default class TheTacticListContent extends Vue {
     }
     return ''
   }
+
   tacticMenuIcon (tactic: Tactic, item: MenuItem) {
     return item.icon
   }
+
   tacticMenuPinText (tactic: Tactic, item: MenuItem) {
     return item.action === TacticMenuOptions.PIN && tactic.isPinned && item.titleTwo ? this.$t(item.titleTwo) : this.$t(item.title)
   }
+
   cardMenuItems: MenuItem[] = [{
     action: TacticMenuOptions.EDIT,
     title: 'tactic.edit',

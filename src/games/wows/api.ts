@@ -37,9 +37,9 @@ export const getWowsApiData = async (token: string, setGameApi: (api: Api) => vo
     }
   }
   const headers: ApiHeader = {
-    'Authorization': token,
-    'X-Region': JWTRegion['EU'],
-    'X-Game': Game['WOWS']
+    Authorization: token,
+    'X-Region': JWTRegion.EU,
+    'X-Game': Game.WOWS
   }
   const gameInfo: WowsShipInfoApiResponse = await axios.get(`${process.env.VUE_APP_MS_WG_API}/wows/encyclopedia/info/`, { headers })
   const response: WowsShipsApiResponse = await axios.get(`${process.env.VUE_APP_MS_WG_API}/wows/encyclopedia/ships/`, { headers })

@@ -20,6 +20,7 @@ export default class Mask {
     this._mask.attrs.type = CanvasElementType.MASK
     this._mask.attrs.temporary = false
   }
+
   get mask (): Konva.Rect {
     return this._mask
   }

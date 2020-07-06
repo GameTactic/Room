@@ -37,7 +37,7 @@ const SocketRoomModule: Module<SocketRoomState, RootState> = {
   namespaced: true,
   state () {
     return {
-      game: Game['NONE'],
+      game: Game.NONE,
       presentation: {
         enabledBy: undefined,
         tacticId: undefined

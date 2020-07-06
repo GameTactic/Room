@@ -30,7 +30,7 @@ export function mapProviders (input: ProviderInput): Providers {
   const providers: Providers = {}
 
   for (const provider in input) {
-    if (input.hasOwnProperty(provider)) { providers[provider] = mapProvider(input[provider]) }
+    if (Object.prototype.hasOwnProperty.call(input, provider)) { providers[provider] = mapProvider(input[provider]) }
   }
 
   return providers

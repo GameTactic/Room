@@ -51,7 +51,7 @@ export default class Erase extends ToolClass {
   findAndHide = (event: CustomEvent): void => {
     const group = event.konvaPointerEvent.target.parent
     if (group && group instanceof Konva.Group && group.attrs.id && this.data?.removals && !(this.data?.removals.includes(group.attrs.id)) && group.attrs.type !== 'map') {
-      this.data.removals = [ ...this.data.removals, group.attrs.id ]
+      this.data.removals = [...this.data.removals, group.attrs.id]
       this.hideGroup(group.attrs.id)
     }
   }

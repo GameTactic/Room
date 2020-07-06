@@ -49,7 +49,7 @@ export default class FreeDraw extends ToolClass implements FreeDrawInterface {
   mouseMoveAction = throttle((event: CustomEvent): void => {
     if (this.enabled) {
       if (!this.hasMoved) { this.hasMoved = true }
-      this.data.points = this.data.points.concat([ event.globalOffset.x, event.globalOffset.y ])
+      this.data.points = this.data.points.concat([event.globalOffset.x, event.globalOffset.y])
       this.freeDrawCreator.move(this.data.points)
       this.layer.batchDraw()
     }

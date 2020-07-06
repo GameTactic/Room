@@ -13,6 +13,7 @@ export default class Circle extends ToolClass implements CircleInterface {
     from: { x: 0, y: 0 },
     to: { x: 0, y: 0 }
   }
+
   private hasMoved = false
   constructor (public readonly name: string,
                public size: number,

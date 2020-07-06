@@ -42,7 +42,7 @@ export default class TheApp extends Vue {
 
   async created () {
     this.setGame(Game.WOWS)
-    this.setLocale(Locale['EN'])
+    this.setLocale(Locale.EN)
     this.initAuthentication()
   }
 

@@ -57,7 +57,7 @@ export default class RulerCreator extends Shape implements RulerCreatorInterface
   createLineElement = (): Konva.Shape & Konva.Line => {
     return new Konva.Line({
       globalCompositeOperation: 'source-over',
-      points: [ this.from.x, this.from.y, this.to.x, this.to.y ],
+      points: [this.from.x, this.from.y, this.to.x, this.to.y],
       stroke: this.colour,
       strokeWidth: this.size,
       lineCap: 'mitter',

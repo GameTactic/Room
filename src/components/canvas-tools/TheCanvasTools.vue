@@ -141,6 +141,7 @@ export default class TheCanvasTools extends Vue {
     const centerCanvas = new CenterCanvas()
     centerCanvas.center(this.$store)
   }
+
   get isEnabledClass (): string {
     return (this.enabledTool?.name === 'moveCanvas') ? 'custom-move-active' : 'custom-move-disabled'
   }

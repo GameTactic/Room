@@ -127,6 +127,7 @@ export default class CreateNewTacticOverlay extends mixins(TacticWatcher) {
       }
     ]
   }
+
   search = ''
   overlay = false
 

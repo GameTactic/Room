@@ -51,7 +51,7 @@ export default class CircleCreator extends Shape implements CircleCreatorInterfa
   createLineElement = (): Konva.Shape & Konva.Line => {
     return new Konva.Line({
       globalCompositeOperation: 'source-over',
-      points: [ this.from.x, this.from.y, this.to.x, this.to.y ],
+      points: [this.from.x, this.from.y, this.to.x, this.to.y],
       stroke: this.outlineColour,
       strokeWidth: this.size,
       lineCap: 'mitter',
@@ -75,6 +75,7 @@ export default class CircleCreator extends Shape implements CircleCreatorInterfa
       dash: this.stroke[this.strokeStyle]
     })
   }
+
   // Pythagoras formula
   calcRadius = (x1: number, y1: number, x2: number, y2: number): number => {
     const a = Math.pow((x2 - x1), 2)

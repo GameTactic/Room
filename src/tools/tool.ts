@@ -64,7 +64,7 @@ export class ToolClass {
 
   addToState = (request: RequestCanvasEntity): void => {
     switch (request.modifyType) {
-      case Tracker.ADDITION:
+      case Tracker.ADDITION: // eslint-disable-next-line no-case-declarations
         const additionsData = request.modifyData as AdditionData
         if (request.canvasElements.length === additionsData.additions.length && request.canvasElements.length > 0) {
           store.dispatch(`${Namespaces.SOCKET_CANVAS}/${SocketCanvasAction.ADD_CANVAS_ELEMENT_HISTORY}`, {
@@ -98,7 +98,7 @@ export class ToolClass {
           }
         }
         break
-      case Tracker.REMOVAL:
+      case Tracker.REMOVAL: // eslint-disable-next-line no-case-declarations
         const removalsData = request.modifyData as RemovalData
         if (removalsData.removals && removalsData.removals.length > 0) {
           const canvasElements = store.getters[`${Namespaces.SOCKET_CANVAS}/${SocketCanvasGetters.CANVAS_ELEMENTS}`]
@@ -145,24 +145,28 @@ export class ToolClass {
   get layer (): Konva.Layer {
     return store.getters[`${Namespaces.APP_LAYER}/${AppLayerGetters.LAYER}`]
   }
+
   // Transform a global x position to local x position
   formatX = (num: number): number => {
     const stage = store.getters[`${Namespaces.APP_STAGE}/${AppStageGetters.STAGE}`]
     const stageConfig = store.getters[`${Namespaces.SOCKET_STAGE}/${SocketStageGetters.STAGE_CONFIG}`]
     return ((num / stageConfig.width) * stage.width())
   }
+
   // Transform a global y position to local y position
   formatY = (num: number): number => {
     const stage = store.getters[`${Namespaces.APP_STAGE}/${AppStageGetters.STAGE}`]
     const stageConfig = store.getters[`${Namespaces.SOCKET_STAGE}/${SocketStageGetters.STAGE_CONFIG}`]
     return ((num / stageConfig.height) * stage.height())
   }
+
   // Transform a local x position to global x position
   formatXInverse = (num: number): number => {
     const stage = store.getters[`${Namespaces.APP_STAGE}/${AppStageGetters.STAGE}`]
     const stageConfig = store.getters[`${Namespaces.SOCKET_STAGE}/${SocketStageGetters.STAGE_CONFIG}`]
     return ((num / stage.width()) * stageConfig.width)
   }
+
   // Transform a local x position to global x position
   formatYInverse = (num: number): number => {
     const stage = store.getters[`${Namespaces.APP_STAGE}/${AppStageGetters.STAGE}`]

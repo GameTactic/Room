@@ -93,6 +93,7 @@ export default class TheRoom extends mixins(RoomSocket) {
     app: HTMLDivElement;
     stage: VueKonvaStage;
   }
+
   isDragEnabled = false
   isMapChanging = false
   isEntityPanelOpen = true
