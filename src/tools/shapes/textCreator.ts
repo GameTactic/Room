@@ -1,7 +1,7 @@
 import Konva from 'konva'
 import { CanvasElementType, Point } from '@/types/canvas'
 import Shape, { TextCreatorInterface } from '@/tools/shapes/shape'
-import uuid from 'uuid'
+import { v4 as uuid } from 'uuid'
 import { CustomEvent } from '@/util/pointerEventMapper'
 
 export default class TextCreator extends Shape implements TextCreatorInterface {

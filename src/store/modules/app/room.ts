@@ -56,7 +56,7 @@ const AppRoomModule: Module<AppRoomState, RootState> = {
   namespaced: true,
   state () {
     return {
-      locale: Locale['EN'],
+      locale: Locale.EN,
       api: [],
       isCanvasLoaded: false
     }

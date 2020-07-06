@@ -2,7 +2,7 @@ import { Tracker } from '@/tools/tool'
 import { SocketCanvasAction, SocketCanvasGetters } from '@/store/modules/socket/canvas'
 import store from '@/main'
 import { ISO } from '@/util/iso'
-import uuid from 'uuid'
+import { v4 as uuid } from 'uuid'
 import { AppAuthenticationGetters, JWT } from '@/store/modules/app/authentication'
 import { SocketActions, SocketCanvasToolsEmit } from '@/store/modules/socket'
 import {

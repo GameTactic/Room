@@ -4,7 +4,7 @@ import FreeDrawCreator from '@/tools/shapes/freeDrawCreator'
 import { CustomEvent } from '@/util/pointerEventMapper'
 import throttle from 'lodash.throttle'
 import { ISO } from '@/util/iso'
-import uuid from 'uuid'
+import { v4 as uuid } from 'uuid'
 import { SocketCanvasToolsEmit } from '@/store/modules/socket'
 
 export default class FreeDraw extends ToolClass implements FreeDrawInterface {
@@ -49,7 +49,7 @@ export default class FreeDraw extends ToolClass implements FreeDrawInterface {
   mouseMoveAction = throttle((event: CustomEvent): void => {
     if (this.enabled) {
       if (!this.hasMoved) { this.hasMoved = true }
-      this.data.points = this.data.points.concat([ event.globalOffset.x, event.globalOffset.y ])
+      this.data.points = this.data.points.concat([event.globalOffset.x, event.globalOffset.y])
       this.freeDrawCreator.move(this.data.points)
       this.layer.batchDraw()
     }

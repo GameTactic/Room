@@ -5,7 +5,7 @@ import { CustomStageConfig } from '@/util/pointerEventMapper'
 import store from '@/main'
 import { SocketStageGetters } from '@/store/modules/socket/stage'
 import { Namespaces } from '@/store'
-import uuid from 'uuid'
+import { v4 as uuid } from 'uuid'
 
 export default class RulerCreator extends Shape implements RulerCreatorInterface {
   private line: Konva.Line
@@ -57,7 +57,7 @@ export default class RulerCreator extends Shape implements RulerCreatorInterface
   createLineElement = (): Konva.Shape & Konva.Line => {
     return new Konva.Line({
       globalCompositeOperation: 'source-over',
-      points: [ this.from.x, this.from.y, this.to.x, this.to.y ],
+      points: [this.from.x, this.from.y, this.to.x, this.to.y],
       stroke: this.colour,
       strokeWidth: this.size,
       lineCap: 'mitter',

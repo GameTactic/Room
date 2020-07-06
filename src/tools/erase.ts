@@ -3,7 +3,7 @@ import Konva from 'konva'
 import { CustomEvent } from '@/util/pointerEventMapper'
 import { ISO } from '@/util/iso'
 import { RemovalData } from '@/types/canvas'
-import uuid from 'uuid'
+import { v4 as uuid } from 'uuid'
 import { SocketCanvasToolsEmit } from '@/store/modules/socket'
 
 export default class Erase extends ToolClass {
@@ -51,7 +51,7 @@ export default class Erase extends ToolClass {
   findAndHide = (event: CustomEvent): void => {
     const group = event.konvaPointerEvent.target.parent
     if (group && group instanceof Konva.Group && group.attrs.id && this.data?.removals && !(this.data?.removals.includes(group.attrs.id)) && group.attrs.type !== 'map') {
-      this.data.removals = [ ...this.data.removals, group.attrs.id ]
+      this.data.removals = [...this.data.removals, group.attrs.id]
       this.hideGroup(group.attrs.id)
     }
   }

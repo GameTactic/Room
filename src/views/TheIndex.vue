@@ -5,7 +5,7 @@
 <script lang="ts">
 import Component from 'vue-class-component'
 import Vue from 'vue'
-import uuid from 'uuid'
+import { v4 as uuid } from 'uuid'
 import { namespace } from 'vuex-class'
 import { SocketRoomAction } from '../store/modules/socket/room'
 import { Namespaces } from '@/store'
@@ -18,7 +18,7 @@ const SocketRoom = namespace(Namespaces.SOCKET_ROOM)
 export default class TheIndex extends Vue {
   @SocketRoom.Action(SocketRoomAction.SET_ROOM_ID) setRoomId!: (roomId: string) => void
   created () {
-    const roomId = uuid.v4().toString()
+    const roomId = uuid().toString()
     this.setRoomId(roomId)
     this.$router.push('/' + roomId)
   }

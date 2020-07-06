@@ -355,6 +355,7 @@ export default class WowsMaps {
       ratio: 0
     }
   ]
+
   getMaps = (): Map[] => {
     return this.maps
   }

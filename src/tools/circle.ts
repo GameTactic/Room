@@ -3,7 +3,7 @@ import { AdditionTools, CanvasElement, CanvasElementType, RequestCanvasEntity } 
 import CircleCreator from '@/tools/shapes/circleCreator'
 import { CustomEvent } from '@/util/pointerEventMapper'
 import { ISO } from '@/util/iso'
-import uuid from 'uuid'
+import { v4 as uuid } from 'uuid'
 import { SocketCanvasToolsEmit } from '@/store/modules/socket'
 
 export default class Circle extends ToolClass implements CircleInterface {
@@ -13,6 +13,7 @@ export default class Circle extends ToolClass implements CircleInterface {
     from: { x: 0, y: 0 },
     to: { x: 0, y: 0 }
   }
+
   private hasMoved = false
   constructor (public readonly name: string,
                public size: number,

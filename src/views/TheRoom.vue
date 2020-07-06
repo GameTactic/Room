@@ -43,7 +43,7 @@ import { AppToolGetters } from '@/store/modules/app/tools'
 import { Tool } from '@/tools/tool'
 import { SocketTacticGetters, SocketTacticAction } from '@/store/modules/socket/tactic'
 import { Tactic, Collection, RoleTypes } from '@/store/types'
-import uuid from 'uuid'
+import { v4 as uuid } from 'uuid'
 import { AppAuthenticationGetters, ExtendedJWT } from '@/store/modules/app/authentication'
 import { SocketRoomAction } from '@/store/modules/socket/room'
 import { Namespaces } from '@/store'
@@ -93,6 +93,7 @@ export default class TheRoom extends mixins(RoomSocket) {
     app: HTMLDivElement;
     stage: VueKonvaStage;
   }
+
   isDragEnabled = false
   isMapChanging = false
   isEntityPanelOpen = true

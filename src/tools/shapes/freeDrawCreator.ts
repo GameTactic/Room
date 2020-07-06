@@ -1,7 +1,7 @@
 import Konva from 'konva'
 import { CanvasElementType } from '@/types/canvas'
 import Shape, { FreeDrawCreatorInterface } from '@/tools/shapes/shape'
-import uuid from 'uuid'
+import { v4 as uuid } from 'uuid'
 
 export default class FreeDrawCreator extends Shape implements FreeDrawCreatorInterface {
   private freeDraw: Konva.Line

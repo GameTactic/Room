@@ -71,7 +71,7 @@ import { AppRoomAction, AppRoomGetters } from '@/store/modules/app/room'
 import { namespace } from 'vuex-class'
 import { Api, Collection, Game, Team } from '@/store/types'
 import TacticWatcher from '@/mixins/tacticWatcher'
-import uuid from 'uuid'
+import { v4 as uuid } from 'uuid'
 import { AppAuthenticationGetters } from '@/store/modules/app/authentication'
 import { SocketTacticGetters } from '@/store/modules/socket/tactic'
 import { Namespaces } from '@/store'
@@ -118,6 +118,7 @@ export default class CreateNewTacticOverlay extends mixins(TacticWatcher) {
       }
     ]
   }
+
   search = ''
   overlay = false
 

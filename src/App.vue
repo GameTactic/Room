@@ -42,7 +42,7 @@ export default class TheApp extends Vue {
 
   async created () {
     this.setGame(Game.WOWS)
-    this.setLocale(Locale['EN'])
+    this.setLocale(Locale.EN)
     this.initAuthentication()
   }
 
@@ -88,7 +88,7 @@ export default class TheApp extends Vue {
 
     // clean out the JWT token from the address url leaving them just the roomId
     if (this.$route?.query?.code) {
-      if (history.pushState) {
+      if (history.pushState !== null) {
         window.history.pushState('', '', this.$route.path)
       } else {
         document.location.href = this.$route.path

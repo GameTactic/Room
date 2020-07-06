@@ -7,6 +7,7 @@ export default class MoveCanvas extends ToolClass implements CanvasToolInterface
     pointer: Point;
     element: Point;
   }
+
   constructor (public name: string,
                public temporary: boolean) {
     super()

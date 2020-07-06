@@ -7,7 +7,7 @@ import { ToolClass, Tracker } from '@/tools/tool'
 import { KonvaPointerEvent } from 'konva/types/PointerEvents'
 import { KonvaEventObject } from 'konva/types/Node'
 import { SocketCanvasAction } from '@/store/modules/socket/canvas'
-import uuid from 'uuid'
+import { v4 as uuid } from 'uuid'
 import { AppAuthenticationGetters } from '@/store/modules/app/authentication'
 import { ISO } from '@/util/iso'
 

@@ -2,7 +2,7 @@ import Konva from 'konva'
 import { CanvasElementType, Point } from '@/types/canvas'
 import Shape, { LineCreatorInterface } from '@/tools/shapes/shape'
 import { LineType } from '@/tools/line'
-import uuid from 'uuid'
+import { v4 as uuid } from 'uuid'
 
 export default class LineCreator extends Shape implements LineCreatorInterface {
   private line: Konva.Line
@@ -43,7 +43,7 @@ export default class LineCreator extends Shape implements LineCreatorInterface {
   createElement = (): { line: Konva.Line; tBar: Konva.Line | undefined } => {
     const line = this.createKonvaElement(
       this.endStyle,
-      [ this.from.x, this.from.y, this.to.x, this.to.y ],
+      [this.from.x, this.from.y, this.to.x, this.to.y],
       [this.stroke[this.strokeStyle][0] * this.size, this.stroke[this.strokeStyle][1] * this.size])
     if (this.endStyle === LineType.T_BAR) {
       const tBar = this.createKonvaElement(
@@ -79,7 +79,7 @@ export default class LineCreator extends Shape implements LineCreatorInterface {
   move = (from: Point, to: Point): void => {
     this.from = from
     this.to = to
-    this.line.points([ this.from.x, this.from.y, this.to.x, this.to.y ])
+    this.line.points([this.from.x, this.from.y, this.to.x, this.to.y])
     if (this.endStyle === LineType.T_BAR && this.tBar) {
       this.tBar.points(this.calcTBar(this.from.x, this.from.y, this.to.x, this.to.y))
     }

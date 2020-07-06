@@ -101,7 +101,7 @@ export default class ToolContainer extends Vue {
   isActive = false
 
   getIsActive (): boolean {
-    const menu = this.$refs['menu'] as MenuElement
+    const menu = this.$refs.menu as MenuElement
     if (menu) {
       this.isActive = menu.isActive
     }
