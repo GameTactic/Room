@@ -26,7 +26,7 @@ import { AppRoomGetters } from '@/store/modules/app/room'
 import { GameApiRoutes } from '@/games/utils'
 import { SocketRoomGetters } from '@/store/modules/socket/room'
 import { EntitiesDataApi } from '@/types/games/wows'
-import uuid from 'uuid'
+import { v4 as uuid } from 'uuid'
 
 export type CanvasDownAction = (event: CustomEvent, stage: VueKonvaStage) => void;
 export type CanvasMoveAction = (event: CustomEvent, stage: VueKonvaStage) => void;

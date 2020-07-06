@@ -4,7 +4,7 @@ import throttle from 'lodash.throttle'
 import PingCreator from '@/tools/shapes/pingCreator'
 import { CustomEvent } from '@/util/pointerEventMapper'
 import { ISO } from '@/util/iso'
-import uuid from 'uuid'
+import { v4 as uuid } from 'uuid'
 import { SocketCanvasToolsEmit } from '@/store/modules/socket'
 
 export default class Ping extends ToolClass implements PingInterface {

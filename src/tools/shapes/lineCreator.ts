@@ -2,7 +2,7 @@ import Konva from 'konva'
 import { CanvasElementType, Point } from '@/types/canvas'
 import Shape, { LineCreatorInterface } from '@/tools/shapes/shape'
 import { LineType } from '@/tools/line'
-import uuid from 'uuid'
+import { v4 as uuid } from 'uuid'
 
 export default class LineCreator extends Shape implements LineCreatorInterface {
   private line: Konva.Line

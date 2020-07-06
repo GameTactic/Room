@@ -4,7 +4,7 @@ import { AdditionTools, CanvasElement, CanvasElementType, RequestCanvasEntity } 
 import TextCreator from '@/tools/shapes/textCreator'
 import { CustomEvent } from '@/util/pointerEventMapper'
 import { ISO } from '@/util/iso'
-import uuid from 'uuid'
+import { v4 as uuid } from 'uuid'
 import { SocketCanvasToolsEmit } from '@/store/modules/socket'
 
 export default class Text extends ToolClass implements TextInterface {

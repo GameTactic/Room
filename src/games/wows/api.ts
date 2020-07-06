@@ -4,7 +4,7 @@ import axios from 'axios'
 import { Api, Game, Map } from '@/store/types'
 import { JWTRegion } from '@/store/modules/app/authentication'
 import WowsMaps from '@/types/games/wows/maps'
-import uuid from 'uuid'
+import { v4 as uuid } from 'uuid'
 
 export const getWowsApiData = async (token: string, setGameApi: (api: Api) => void): Promise<void> => {
   const scaleIcon = 0.8 // Sets default scale for all entities

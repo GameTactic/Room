@@ -4,7 +4,7 @@ import FreeDrawCreator from '@/tools/shapes/freeDrawCreator'
 import { CustomEvent } from '@/util/pointerEventMapper'
 import throttle from 'lodash.throttle'
 import { ISO } from '@/util/iso'
-import uuid from 'uuid'
+import { v4 as uuid } from 'uuid'
 import { SocketCanvasToolsEmit } from '@/store/modules/socket'
 
 export default class FreeDraw extends ToolClass implements FreeDrawInterface {

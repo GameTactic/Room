@@ -1,7 +1,7 @@
 import Konva from 'konva'
 import { CanvasElementType, Point } from '@/types/canvas'
 import Shape, { CircleCreatorInterface } from '@/tools/shapes/shape'
-import uuid from 'uuid'
+import { v4 as uuid } from 'uuid'
 
 export default class CircleCreator extends Shape implements CircleCreatorInterface {
   private line: Konva.Line

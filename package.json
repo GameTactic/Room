@@ -23,7 +23,7 @@
     "sass": "^1.23.7",
     "socket.io-client": "^2.3.0",
     "socket.io-json-parser": "^2.1.0",
-    "uuid": "^3.4.0",
+    "uuid": "^8.2",
     "vue": "2.6.11",
     "vue-class-component": "^7.2.3",
     "vue-i18n": "^8.17.3",
@@ -39,11 +39,11 @@
     "@babel/plugin-proposal-optional-chaining": "^7.8.3",
     "@fortawesome/fontawesome-free": "^5.12.1",
     "@types/core-js": "^2.5.3",
-    "@types/jest": "^24.0.25",
+    "@types/jest": "^26",
     "@types/jsonwebtoken": "^8.3.7",
     "@types/lodash.throttle": "^4.1.6",
     "@types/socket.io-client": "^1.4.32",
-    "@types/uuid": "^3.4.7",
+    "@types/uuid": "^8",
     "@typescript-eslint/eslint-plugin": "^2.20.0",
     "@typescript-eslint/parser": "^2.14.0",
     "@vue/cli-plugin-babel": "^4.1.2",
@@ -62,7 +62,7 @@
     "eslint-plugin-vue": "6.1.2",
     "node-sass": "^4.13.1",
     "sass-loader": "^8.0.2",
-    "typescript": "3.8.2",
+    "typescript": "3.9.6",
     "vue-template-compiler": "^2.6.11"
   }
 }

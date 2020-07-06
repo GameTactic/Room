@@ -3,7 +3,7 @@ import { AdditionTools, CanvasElement, CanvasElementType, RequestCanvasEntity } 
 import RulerCreator from '@/tools/shapes/rulerCreator'
 import { CustomEvent } from '@/util/pointerEventMapper'
 import { ISO } from '@/util/iso'
-import uuid from 'uuid'
+import { v4 as uuid } from 'uuid'
 import { SocketCanvasToolsEmit } from '@/store/modules/socket'
 
 export default class Ruler extends ToolClass implements RulerInterface {

@@ -3,7 +3,7 @@ import LineCreator from '@/tools/shapes/lineCreator'
 import { AdditionTools, CanvasElement, CanvasElementType, RequestCanvasEntity } from '@/types/canvas'
 import { CustomEvent } from '@/util/pointerEventMapper'
 import { ISO } from '@/util/iso'
-import uuid from 'uuid'
+import { v4 as uuid } from 'uuid'
 import { SocketCanvasToolsEmit } from '@/store/modules/socket'
 
 export enum LineType {

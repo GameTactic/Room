@@ -33,7 +33,7 @@ import { AppLayerActions, AppLayerGetters } from '@/store/modules/app/layer'
 import CanvasSockets from '@/mixins/canvasSockets'
 import StageWatcher from '@/mixins/stageWatcher'
 import { Namespaces } from '@/store'
-import uuid from 'uuid'
+import { v4 as uuid } from 'uuid'
 
 const AppLayer = namespace(Namespaces.APP_LAYER)
 const AppStage = namespace(Namespaces.APP_STAGE)
