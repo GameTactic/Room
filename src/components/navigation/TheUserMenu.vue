@@ -21,7 +21,7 @@
       </v-tooltip>
     </template>
     <v-list>
-      <v-list-item v-if="isAuth" @click="onClickLogout">
+      <v-list-item v-if="isAuth" @click="logout">
         <v-list-item-title>{{ $t('navigation.login.logout') }}</v-list-item-title>
       </v-list-item>
       <v-list-item
@@ -52,7 +52,7 @@
   </v-btn>
   <v-list v-else dense style="width: 100%;">
     <v-subheader v-text="$t('user.profile')" />
-    <v-list-item v-if="isAuth" @click="onClickLogout">
+    <v-list-item v-if="isAuth" @click="logout">
       <v-list-item-title>{{ $t('navigation.login.logout') }}</v-list-item-title>
     </v-list-item>
     <v-list-item v-else @click.stop="onClickOpenLoginDialog">
@@ -98,8 +98,7 @@ interface UserMenuItem {
 export default class TheUserMenu extends Vue {
   @Prop() private isSM!: boolean;
   @AppAuthentication.Getter(AppAuthenticationGetters.IS_AUTH) isAuth!: boolean
-  @AppAuthentication.Action(AppAuthenticationActions.LOGIN_WG) authenticate!: (region: string) => void;
-  @AppAuthentication.Action(AppAuthenticationActions.LOGOUT) onClickLogout!: () => void
+  @AppAuthentication.Action(AppAuthenticationActions.LOGOUT) logout!: () => void
 
   isDialogOpen = false
   userMenuItems: UserMenuItem[] = []

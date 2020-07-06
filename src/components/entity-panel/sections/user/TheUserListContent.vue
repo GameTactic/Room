@@ -1,11 +1,11 @@
 <template>
   <v-list class="pa-0">
-    <user-list-item v-if="owners.length" :users="owners" :type="RoleTypes.ROOM_OWNER" :online="true" />
-    <user-list-item v-if="admins.length" :users="admins" :type="RoleTypes.ADMIN" :online="true" />
-    <user-list-item v-if="users.length" :users="users" :type="RoleTypes.USER" :online="true" />
-    <user-list-item v-if="offlineOwners.length" :users="offlineOwners" :type="RoleTypes.ROOM_OWNER" />
-    <user-list-item v-if="offlineAdmins.length" :users="offlineAdmins" :type="RoleTypes.ADMIN"/>
-    <user-list-item v-if="offlineUsers.length" :users="offlineUsers" :type="RoleTypes.USER"/>
+    <user-list-item v-if="getOnlineUsersByRole(RoleTypes.ROOM_OWNER).length" :users="getOnlineUsersByRole(RoleTypes.ROOM_OWNER)" :type="RoleTypes.ROOM_OWNER" :online="true" />
+    <user-list-item v-if="getOnlineUsersByRole(RoleTypes.ADMIN).length" :users="getOnlineUsersByRole(RoleTypes.ADMIN)" :type="RoleTypes.ADMIN" :online="true" />
+    <user-list-item v-if="getOnlineUsersByRole(RoleTypes.USER).length" :users="getOnlineUsersByRole(RoleTypes.USER)" :type="RoleTypes.USER" :online="true" />
+    <user-list-item v-if="getOfflineUsersByRole(RoleTypes.ROOM_OWNER).length" :users="getOfflineUsersByRole(RoleTypes.ROOM_OWNER)" :type="RoleTypes.ROOM_OWNER" />
+    <user-list-item v-if="getOfflineUsersByRole(RoleTypes.ADMIN).length" :users="getOfflineUsersByRole(RoleTypes.ADMIN)" :type="RoleTypes.ADMIN"/>
+    <user-list-item v-if="getOfflineUsersByRole(RoleTypes.USER).length" :users="getOfflineUsersByRole(RoleTypes.USER)" :type="RoleTypes.USER"/>
   </v-list>
 </template>
 
@@ -33,28 +33,12 @@ export default class TheUserListContent extends Vue {
   // enum
   RoleTypes = RoleTypes
 
-  get owners (): User[] {
-    return this.allOnlineUsers.filter((user: User) => user.roles.find((role: Role) => role.roleTypes === RoleTypes.ROOM_OWNER))
+  getOnlineUsersByRole (roleType: RoleTypes): User[] {
+    return this.allOnlineUsers.filter((user: User) => user.roles.find((role: Role) => role.roleTypes === roleType))
   }
 
-  get offlineOwners (): User[] {
-    return this.allOfflineUsers.filter((user: User) => user.roles.find((role: Role) => role.roleTypes === RoleTypes.ROOM_OWNER))
-  }
-
-  get admins (): User[] {
-    return this.allOnlineUsers.filter((user: User) => user.roles.find((role: Role) => role.roleTypes === RoleTypes.ADMIN))
-  }
-
-  get offlineAdmins (): User[] {
-    return this.allOfflineUsers.filter((user: User) => user.roles.find((role: Role) => role.roleTypes === RoleTypes.ADMIN))
-  }
-
-  get users (): User[] {
-    return this.allOnlineUsers.filter((user: User) => user.roles.find((role: Role) => role.roleTypes === RoleTypes.USER))
-  }
-
-  get offlineUsers (): User[] {
-    return this.allOfflineUsers.filter((user: User) => user.roles.find((role: Role) => role.roleTypes === RoleTypes.USER))
+  getOfflineUsersByRole (roleType: RoleTypes): User[] {
+    return this.allOfflineUsers.filter((user: User) => user.roles.find((role: Role) => role.roleTypes === roleType))
   }
 }
 </script>

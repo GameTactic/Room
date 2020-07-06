@@ -15,7 +15,7 @@
     "axios": "^0.19.2",
     "core-js": "^3.6.4",
     "jsonwebtoken": "^8.5.1",
-    "konva": "6.0.0",
+    "konva": "^7.0.2",
     "lodash.clonedeep": "^4.5.0",
     "lodash.throttle": "^4.1.1",
     "lodash.values": "^4.3.0",

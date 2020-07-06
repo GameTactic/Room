@@ -8,7 +8,7 @@
         :key="entry.key"
         class="login-btn"
         color="primary"
-        @click="authenticate(entry.endpoint)"
+        @click="login(entry.endpoint)"
       >
         {{ entry.key }}
       </v-btn>
@@ -31,7 +31,7 @@ const appAuthentication = namespace(Namespaces.APP_AUTHENTICATION)
 export default class extends Vue {
   @Prop() providerName!: string
   @Prop() provider!: Provider
-  @appAuthentication.Action(AppAuthenticationActions.LOGIN_WG) authenticate!: (endpoint: string) => void
+  @appAuthentication.Action(AppAuthenticationActions.LOGIN) login!: (endpoint: string) => void
 
   get entries () {
     return this.provider.entries
