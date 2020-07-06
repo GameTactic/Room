@@ -70,10 +70,6 @@ import { EventBus } from '@/event-bus'
 import { AppRoomAction, AppRoomGetters } from '@/store/modules/app/room'
 import { namespace } from 'vuex-class'
 import { Api, Collection, Game, Team } from '@/store/types'
-import { SocketStageActions } from '@/store/modules/socket/stage'
-import { CustomStageConfig } from '@/util/pointerEventMapper'
-import { SocketCanvasAction } from '@/store/modules/socket/canvas'
-import { CanvasElement, CanvasElementHistory } from '@/types/canvas'
 import TacticWatcher from '@/mixins/tacticWatcher'
 import uuid from 'uuid'
 import { AppAuthenticationGetters } from '@/store/modules/app/authentication'
@@ -88,8 +84,6 @@ import { OpenOverlayList } from './types'
 const SocketRoom = namespace(Namespaces.SOCKET_ROOM)
 const AppRoom = namespace(Namespaces.APP_ROOM)
 const SocketTactic = namespace(Namespaces.SOCKET_TACTIC)
-const SocketStage = namespace(Namespaces.SOCKET_STAGE)
-const SocketCanvas = namespace(Namespaces.SOCKET_CANVAS)
 
 @Component({
   name: 'TheCreateNewTacticOverlay',
@@ -98,9 +92,6 @@ const SocketCanvas = namespace(Namespaces.SOCKET_CANVAS)
 export default class CreateNewTacticOverlay extends mixins(TacticWatcher) {
   @AppRoom.Getter(AppRoomGetters.API) api!: Api[]
   @SocketTactic.Getter(SocketTacticGetters.COLLECTIONS) collections!: Collection[]
-  @SocketStage.Action(SocketStageActions.SET_CONFIG) setConfig!: (config: CustomStageConfig) => void
-  @SocketCanvas.Action(SocketCanvasAction.SET_CANVAS_ELEMENT) setCanvasElements!: (canvasElements: CanvasElement[]) => void
-  @SocketCanvas.Action(SocketCanvasAction.SET_CANVAS_ELEMENT_HISTORY) setCanvasElementsHistory!: (canvasElements: CanvasElementHistory[]) => void
   @AppRoom.Getter(AppRoomGetters.IS_CANVAS_LOADED) isCanvasLoaded!: boolean
   @AppRoom.Action(AppRoomAction.SET_IS_CANVAS_LOADED) setIsCanvasLoaded!: (isCanvasLoaded: boolean) => void
   @SocketRoom.Getter(SocketRoomGetters.GAME) currentGame!: Game
@@ -138,11 +129,7 @@ export default class CreateNewTacticOverlay extends mixins(TacticWatcher) {
 
   get maps () {
     const mapApi: Api | undefined = this.api.find((api: Api) => (this.currentGame !== Game.NONE) && api.name === GameApiRoutes[this.currentGame].maps)
-    if (mapApi) {
-      return (mapApi.data as MapsDataApi).maps
-    } else {
-      return false
-    }
+    return mapApi ? (mapApi.data as MapsDataApi).maps : false
   }
 
   $refs!: {

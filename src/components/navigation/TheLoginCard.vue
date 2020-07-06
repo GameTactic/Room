@@ -21,7 +21,7 @@
 import { Component, Vue, Prop, Emit } from 'vue-property-decorator'
 import { namespace } from 'vuex-class'
 import { Namespaces } from '@/store'
-import { AppAuthenticationActions, AppAuthenticationGetters } from '@/store/modules/app/authentication'
+import { AppAuthenticationGetters } from '@/store/modules/app/authentication'
 import { Providers } from '@/util/providersUtil'
 import ProviderBlock from '@/components/navigation/login/ProviderBlock.vue'
 
@@ -33,7 +33,6 @@ const AppAuthentication = namespace(Namespaces.APP_AUTHENTICATION)
 })
 export default class TheLoginCard extends Vue {
   @Prop({ default: false }) isSM!: boolean
-  @AppAuthentication.Action(AppAuthenticationActions.LOGIN_WG) authenticate!: (endpoint: string) => void
   @AppAuthentication.Getter(AppAuthenticationGetters.PROVIDERS) providers!: Providers
   @Emit() closeHandler () {
     return null

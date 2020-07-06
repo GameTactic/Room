@@ -78,7 +78,7 @@ export enum AppAuthenticationActions {
   AUTHENTICATE = 'authenticate',
   REFRESH_TOKEN = 'refreshToken',
   LOAD_PROVIDERS = 'loadProviders',
-  LOGIN_WG = 'auth_wg',
+  LOGIN = 'auth_wg',
   LOGOUT = 'logout',
   STORE_TOKEN = 'storeToken',
 }
@@ -149,7 +149,7 @@ const AppAuthenticationModule: Module<AppAuthenticationState, RootState> = {
       }
       localStorage.setItem(JWT_KEY, token)
     },
-    [AppAuthenticationActions.LOGIN_WG] (context: AppAuthenticationActionContext, endpoint: string) {
+    [AppAuthenticationActions.LOGIN] (context: AppAuthenticationActionContext, endpoint: string) {
       const returnUrl = `${process.env.VUE_APP_MS_AUTH}${endpoint}/${window.location.href}`
       location.assign(returnUrl)
     },

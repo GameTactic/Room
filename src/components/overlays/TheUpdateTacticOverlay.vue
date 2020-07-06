@@ -113,11 +113,7 @@ export default class TheUpdateTacticOverlay extends mixins(TacticWatcher) {
 
   get maps () {
     const mapApi: Api | undefined = this.api.find((api: Api) => (this.currentGame !== Game.NONE) && api.name === GameApiRoutes[this.currentGame].maps)
-    if (mapApi) {
-      return (mapApi.data as MapsDataApi).maps
-    } else {
-      return false
-    }
+    return mapApi ? (mapApi.data as MapsDataApi).maps : false
   }
 
   $refs!: {
