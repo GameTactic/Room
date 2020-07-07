@@ -6,14 +6,14 @@ import { v4 as uuid } from 'uuid'
 import { AppAuthenticationGetters, JWT } from '@/store/modules/app/authentication'
 import { SocketActions, SocketCanvasToolsEmit } from '@/store/modules/socket'
 import {
-  AdditionData,
+  AdditionCommit,
   CanvasElement,
   CanvasElementHistory,
-  TransformData,
-  RedoData,
-  RemovalData,
-  UndoData
-} from '@/types/canvas'
+  RedoCommit,
+  RemovalCommit,
+  UndoCommit,
+  TransformCommit
+} from '@gametactic/state'
 import { Namespaces } from '@/store'
 
 export default class HandleUndoRedo {
@@ -35,9 +35,9 @@ export default class HandleUndoRedo {
     if (history) {
       const lastElement = history[(history.length - 1)]
       if (lastElement) {
-        if (lastElement.modifyType === Tracker.REDO) {
+        if (lastElement.commitType === Tracker.REDO) {
           return this.findUndo(this.findSoulmate(history))
-        } else if (lastElement.modifyType === Tracker.UNDO) {
+        } else if (lastElement.commitType === Tracker.UNDO) {
           return this.findUndo(this.findSoulmate(history))
         } else {
           return lastElement
@@ -50,9 +50,9 @@ export default class HandleUndoRedo {
     if (history) {
       const lastElement = history[(history.length - 1)]
       if (lastElement) {
-        if (lastElement.modifyType === Tracker.REDO) {
+        if (lastElement.commitType === Tracker.REDO) {
           return this.findRedo(this.findSoulmate(history))
-        } else if (lastElement.modifyType === Tracker.UNDO) {
+        } else if (lastElement.commitType === Tracker.UNDO) {
           return lastElement
         } else {
           return undefined
@@ -64,7 +64,7 @@ export default class HandleUndoRedo {
   // Find soulmate and remove it and itself. Then return array
   findSoulmate (history: CanvasElementHistory[]): CanvasElementHistory[] | undefined {
     const lastElement = history[history.length - 1]
-    const data = lastElement.modifyData as RedoData
+    const data = lastElement.commitData as RedoCommit
     if (data.historyId) {
       const foundElement = history.find((item: CanvasElementHistory) => item.id === data.historyId)
       if (foundElement) {
@@ -79,19 +79,19 @@ export default class HandleUndoRedo {
     return undefined
   }
 
-  undo (modifyType: Tracker, modifyData: UndoData) {
+  undo (commitType: Tracker, commitData: UndoCommit) {
     const data: CanvasElementHistory = {
       id: uuid(),
       jti: (store.getters[`${Namespaces.APP_AUTHENTICATION}/${AppAuthenticationGetters.JWT}`]).jti,
-      modifyType: modifyType,
-      modifyData: modifyData,
+      commitType: commitType,
+      commitData: commitData,
       timestampModified: ISO.timestamp()
     }
     const canvasElements = store.getters[`${Namespaces.SOCKET_CANVAS}/${SocketCanvasGetters.CANVAS_ELEMENTS}`]
     const canvasElementHistory = store.getters[`${Namespaces.SOCKET_CANVAS}/${SocketCanvasGetters.CANVAS_ELEMENTS_HISTORY}`]
-    const undo: CanvasElementHistory = canvasElementHistory.find((history: CanvasElementHistory) => history.id === modifyData.historyId)
+    const undo: CanvasElementHistory = canvasElementHistory.find((history: CanvasElementHistory) => history.id === commitData.historyId)
     if (undo) {
-      switch (undo.modifyType) {
+      switch (undo.commitType) {
         case Tracker.ADDITION:
           this.undoAdditions(undo, canvasElements)
           break
@@ -107,20 +107,20 @@ export default class HandleUndoRedo {
     }
   }
 
-  redo (modifyType: Tracker, history: CanvasElementHistory) {
+  redo (commitType: Tracker, history: CanvasElementHistory) {
     const data: CanvasElementHistory = {
       id: uuid(),
       jti: (store.getters[`${Namespaces.APP_AUTHENTICATION}/${AppAuthenticationGetters.JWT}`]).jti,
-      modifyType: modifyType,
-      modifyData: { historyId: history.id },
+      commitType: commitType,
+      commitData: { historyId: history.id },
       timestampModified: ISO.timestamp()
     }
     const canvasElements = store.getters[`${Namespaces.SOCKET_CANVAS}/${SocketCanvasGetters.CANVAS_ELEMENTS}`]
     const canvasElementHistory = store.getters[`${Namespaces.SOCKET_CANVAS}/${SocketCanvasGetters.CANVAS_ELEMENTS_HISTORY}`]
-    const modifier = history.modifyData as UndoData
+    const modifier = history.commitData as UndoCommit
     const redo: CanvasElementHistory = canvasElementHistory.find((history: CanvasElementHistory) => history.id === modifier.historyId)
     if (redo) {
-      switch (redo.modifyType) {
+      switch (redo.commitType) {
         case Tracker.ADDITION:
           this.redoAdditions(redo, canvasElements)
           break
@@ -137,7 +137,7 @@ export default class HandleUndoRedo {
   }
 
   undoAdditions (history: CanvasElementHistory, canvasElements: CanvasElement[]) {
-    const additions = (history.modifyData as AdditionData).additions
+    const additions = (history.commitData as AdditionCommit).additions
     if (additions) {
       additions.forEach((canvasElementId: string) => {
         const foundElement: CanvasElement | undefined = canvasElements.find((canvasElement: CanvasElement) => canvasElement.id === canvasElementId)
@@ -149,7 +149,7 @@ export default class HandleUndoRedo {
   }
 
   undoRemovals (history: CanvasElementHistory, canvasElements: CanvasElement[]) {
-    const removals = (history.modifyData as RemovalData).removals
+    const removals = (history.commitData as RemovalCommit).removals
     if (removals) {
       removals.forEach((canvasElementId: string) => {
         const foundElement: CanvasElement | undefined = canvasElements.find((canvasElement: CanvasElement) => canvasElement.id === canvasElementId)
@@ -161,12 +161,12 @@ export default class HandleUndoRedo {
   }
 
   undoTransform (history: CanvasElementHistory, canvasElements: CanvasElement[]) {
-    const groups = (history.modifyData as TransformData).groups
+    const groups = (history.commitData as TransformCommit).groups
     if (groups) {
       groups.forEach((groupId: string) => {
         const foundElement: CanvasElement | undefined = canvasElements.find((canvasElement: CanvasElement) => canvasElement.id === groupId)
         if (foundElement) {
-          const data = history.modifyData as TransformData
+          const data = history.commitData as TransformCommit
           const prev = foundElement.attrs
           foundElement.attrs = {
             position: {
@@ -185,7 +185,7 @@ export default class HandleUndoRedo {
   }
 
   redoAdditions (history: CanvasElementHistory, canvasElements: CanvasElement[]) {
-    const additions = (history.modifyData as AdditionData).additions
+    const additions = (history.commitData as AdditionCommit).additions
     if (additions) {
       additions.forEach((canvasElementId: string) => {
         const foundElement: CanvasElement | undefined = canvasElements.find((canvasElement: CanvasElement) => canvasElement.id === canvasElementId)
@@ -197,7 +197,7 @@ export default class HandleUndoRedo {
   }
 
   redoRemovals (history: CanvasElementHistory, canvasElements: CanvasElement[]) {
-    const removals = (history.modifyData as RemovalData).removals
+    const removals = (history.commitData as RemovalCommit).removals
     if (removals) {
       removals.forEach((canvasElementId: string) => {
         const foundElement: CanvasElement | undefined = canvasElements.find((canvasElement: CanvasElement) => canvasElement.id === canvasElementId)
@@ -209,12 +209,12 @@ export default class HandleUndoRedo {
   }
 
   redoTransform (history: CanvasElementHistory, canvasElements: CanvasElement[]) {
-    const groups = (history.modifyData as TransformData).groups
+    const groups = (history.commitData as TransformCommit).groups
     if (groups) {
       groups.forEach((groupId: string) => {
         const foundElement: CanvasElement | undefined = canvasElements.find((canvasElement: CanvasElement) => canvasElement.id === groupId)
         if (foundElement) {
-          const data = history.modifyData as TransformData
+          const data = history.commitData as TransformCommit
           const prev = foundElement.attrs
           foundElement.attrs = {
             position: {
