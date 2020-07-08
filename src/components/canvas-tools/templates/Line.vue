@@ -1,64 +1,64 @@
 <template>
   <v-card>
     <v-card-subtitle class="pb-0 pl-5 custom-hide-text">
-      Colour
+      {{ $t('tool.template.colour') }}
     </v-card-subtitle>
     <v-card-actions class="py-0">
       <colour-picker :value.sync="lineColour" />
     </v-card-actions>
     <v-card-subtitle class="py-0 pl-5 custom-hide-text">
-      Size
+      {{ $t('tool.template.size') }}
     </v-card-subtitle>
     <v-card-actions class="py-0">
       <size-picker class="px-2" :value.sync="lineSize"></size-picker>
     </v-card-actions>
-    <v-card-subtitle class="py-0 pl-5 custom-hide-text">
-      End style
+    <v-card-subtitle class="pb-0 pl-5 pt-2 custom-hide-text">
+      {{ $t('tool.template.endStyle') }}
     </v-card-subtitle>
     <v-card-actions class="pb-0">
       <v-radio-group v-model="lineEndStyle" row class="mt-1 px-3 flex-fill">
         <v-spacer></v-spacer>
-        <v-tooltip top>
+        <v-tooltip top :open-delay="500">
           <template v-slot:activator="{ on }">
-            <v-radio v-on="on" class="mr-0" name="endStyle" on-icon="fa-arrow-right" off-icon="fa-arrow-right" :value="'arrow'"></v-radio>
+            <v-radio v-on="on" class="mr-0" name="endStyle" on-icon="fa-arrow-right" off-icon="fa-arrow-right" :value="LineType.ARROW"></v-radio>
           </template>
-          <span>Arrow</span>
+          <span>{{ $t('tool.template.arrow') }}</span>
         </v-tooltip>
         <v-spacer></v-spacer>
-        <v-tooltip top>
+        <v-tooltip top :open-delay="500">
           <template v-slot:activator="{ on }">
-            <v-radio v-on="on" class="mr-0" name="endStyle" on-icon="$vuetify.icons.normalLineActive" off-icon="$vuetify.icons.normalLine" :value="'line'"></v-radio>
+            <v-radio v-on="on" class="mr-0" name="endStyle" on-icon="$vuetify.icons.normalLineActive" off-icon="$vuetify.icons.normalLine" :value="LineType.LINE"></v-radio>
           </template>
-          <span>Line</span>
+          <span>{{ $t('tool.template.solidLine') }}</span>
         </v-tooltip>
         <v-spacer></v-spacer>
-        <v-tooltip top>
+        <v-tooltip top :open-delay="500">
           <template v-slot:activator="{ on }">
-            <v-radio v-on="on" class="mr-0" name="endStyle" on-icon="$vuetify.icons.tBarHeadActive" off-icon="$vuetify.icons.tBarHead" :value="'tBar'"></v-radio>
+            <v-radio v-on="on" class="mr-0" name="endStyle" on-icon="$vuetify.icons.tBarHeadActive" off-icon="$vuetify.icons.tBarHead" :value="LineType.T_BAR"></v-radio>
           </template>
-          <span>T Bar</span>
+          <span>{{ $t('tool.template.tBar') }}</span>
         </v-tooltip>
         <v-spacer></v-spacer>
       </v-radio-group>
     </v-card-actions>
     <v-card-subtitle class="py-0 pl-5 custom-hide-text">
-      Stroke style
+      {{ $t('tool.template.strokeStyle') }}
     </v-card-subtitle>
     <v-card-actions class="pb-0">
       <v-radio-group v-model="lineStrokeStyle" row class="mt-1 px-3 flex-fill">
         <v-spacer></v-spacer>
-        <v-tooltip top>
+        <v-tooltip top :open-delay="500">
           <template v-slot:activator="{ on }">
             <v-radio v-on="on" class="mr-0" name="strokeStyle" on-icon="$vuetify.icons.normalLineActive" off-icon="$vuetify.icons.normalLine" :value="0"></v-radio>
           </template>
-          <span>Normal Line</span>
+          <span>{{ $t('tool.template.solidLine') }}</span>
         </v-tooltip>
         <v-spacer></v-spacer>
-        <v-tooltip top>
+        <v-tooltip top :open-delay="500">
           <template v-slot:activator="{ on }">
             <v-radio v-on="on" class="mr-0" name="strokeStyle" on-icon="$vuetify.icons.dashedLineActive" off-icon="$vuetify.icons.dashedLine" :value="1"></v-radio>
           </template>
-          <span>Dashed Line</span>
+          <span>{{ $t('tool.template.dashedLine') }}</span>
         </v-tooltip>
         <v-spacer></v-spacer>
       </v-radio-group>
@@ -69,7 +69,7 @@
         <v-switch
           v-model="lineTemporary"
           class="mt-0"
-          :label="lineTemporary ? 'Permanent' : 'Temporary'"
+          :label="lineTemporary ? $t('tool.template.permanent') : $t('tool.template.temporary')"
         ></v-switch>
         <v-spacer></v-spacer>
       </v-row>
@@ -79,27 +79,28 @@
 
 <script lang="ts">
 import { Component, Vue } from 'vue-property-decorator'
-import { Tool } from '@/tools/Tool'
+import { Tool } from '@/tools/tool'
 import { namespace } from 'vuex-class'
 import { Namespaces } from '@/store'
-import { ToolGetters, ToolsAction } from '@/store/modules/tools'
+import { AppToolGetters, AppToolsAction } from '@/store/modules/app/tools'
 import ColourPicker from '@/components/canvas-tools/templates/template-tools/ColourPicker.vue'
 import SizePicker from '@/components/canvas-tools/templates/template-tools/SizePicker.vue'
+import { LineType } from '@/tools/line'
 
-const Tools = namespace(Namespaces.TOOLS)
+const AppTools = namespace(Namespaces.APP_TOOLS)
 
 @Component({
   name: 'StraightLine',
-  computed: {},
   components: { SizePicker, ColourPicker }
 })
 export default class PopoutButton extends Vue {
-  @Tools.Getter(ToolGetters.TOOL) findTool!: (name: string) => Tool
-  @Tools.Action(ToolsAction.SET_COLOUR) setColour!: (colour: string) => void
-  @Tools.Action(ToolsAction.SET_SIZE) setSize!: (size: number) => void
-  @Tools.Action(ToolsAction.SET_END_STYLE) setEndStyle!: (endStyle: string) => void
-  @Tools.Action(ToolsAction.SET_STROKE_STYLE) setStrokeStyle!: (strokeStyle: number) => void
-  @Tools.Action(ToolsAction.SET_TEMPORARY) setTemporary!: (temporary: boolean) => void
+  @AppTools.Getter(AppToolGetters.TOOL) findTool!: (name: string) => Tool
+  @AppTools.Action(AppToolsAction.SET_COLOUR) setColour!: (colour: string) => void
+  @AppTools.Action(AppToolsAction.SET_SIZE) setSize!: (size: number) => void
+  @AppTools.Action(AppToolsAction.SET_END_STYLE) setEndStyle!: (endStyle: string) => void
+  @AppTools.Action(AppToolsAction.SET_STROKE_STYLE) setStrokeStyle!: (strokeStyle: number) => void
+  @AppTools.Action(AppToolsAction.SET_TEMPORARY) setTemporary!: (temporary: boolean) => void
+  LineType = LineType
 
   get lineSize () {
     return this.findTool('line').size || 5
@@ -118,7 +119,7 @@ export default class PopoutButton extends Vue {
   }
 
   get lineEndStyle (): string {
-    return this.findTool('line').endStyle || 'line'
+    return this.findTool('line').endStyle || LineType.LINE
   }
 
   set lineEndStyle (newValue: string) {

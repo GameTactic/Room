@@ -1,0 +1,4 @@
+[submodule "translations"]
+	path = translations
+	url = https://github.com/GameTactic/Translations.git
+	branch = master

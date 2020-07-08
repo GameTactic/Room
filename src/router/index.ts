@@ -1,7 +1,7 @@
 import Vue from 'vue'
 import VueRouter, { RouteConfig } from 'vue-router'
-import Room from '@/views/Room.vue'
-import Index from '@/views/Index.vue'
+import TheRoom from '@/views/TheRoom.vue'
+import TheIndex from '@/views/TheIndex.vue'
 
 Vue.use(VueRouter)
 
@@ -9,13 +9,13 @@ const routes: RouteConfig[] = [
   {
     path: '/:id',
     name: 'room',
-    component: Room,
+    component: TheRoom,
     props: true
   },
   {
     path: '/',
     name: 'index',
-    component: Index
+    component: TheIndex
   }
 ]
 

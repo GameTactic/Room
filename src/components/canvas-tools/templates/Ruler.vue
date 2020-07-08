@@ -5,13 +5,13 @@
       <v-switch
         v-model="rulerTemporary"
         class="mt-0 pr-12"
-        :label="rulerTemporary ? 'Permanent' : 'Temporary'"
+        :label="rulerTemporary ? $t('tool.template.permanent') : $t('tool.template.temporary')"
       ></v-switch>
       <v-spacer></v-spacer>
       <v-switch
         v-model="rulerShowCircle"
         class="mt-0"
-        :label="rulerShowCircle ? 'Circle' : 'Line'"
+        :label="rulerShowCircle ? $t('tool.container.circle') : $t('tool.container.line')"
       ></v-switch>
       <v-spacer></v-spacer>
     </v-card-actions>
@@ -20,21 +20,20 @@
 
 <script lang="ts">
 import { Component, Vue } from 'vue-property-decorator'
-import { Tool } from '@/tools/Tool'
+import { Tool } from '@/tools/tool'
 import { namespace } from 'vuex-class'
 import { Namespaces } from '@/store'
-import { ToolGetters, ToolsAction } from '@/store/modules/tools'
+import { AppToolGetters, AppToolsAction } from '@/store/modules/app/tools'
 
-const Tools = namespace(Namespaces.TOOLS)
+const AppTools = namespace(Namespaces.APP_TOOLS)
 
 @Component({
-  name: 'Ruler',
-  computed: {}
+  name: 'Ruler'
 })
 export default class PopoutButton extends Vue {
-  @Tools.Getter(ToolGetters.TOOL) findTool!: (name: string) => Tool
-  @Tools.Action(ToolsAction.SET_TEMPORARY) setTemporary!: (temporary: boolean) => void
-  @Tools.Action(ToolsAction.SET_SHOW_CIRCLE) setShowCircle!: (showCircle: boolean) => void
+  @AppTools.Getter(AppToolGetters.TOOL) findTool!: (name: string) => Tool
+  @AppTools.Action(AppToolsAction.SET_TEMPORARY) setTemporary!: (temporary: boolean) => void
+  @AppTools.Action(AppToolsAction.SET_SHOW_CIRCLE) setShowCircle!: (showCircle: boolean) => void
 
   get rulerTemporary (): boolean {
     return !this.findTool('ruler').temporary || false

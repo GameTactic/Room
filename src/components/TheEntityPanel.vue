@@ -1,238 +1,72 @@
 <template>
-  <v-card
-    :class="`custom-card-minimised ${show ? 'custom-card-expanded' : ''}`"
-    :elevation="5"
+  <v-navigation-drawer
+    v-model="panelOpen"
+    class="custom-navigation-drawer"
+    width="300"
+    temporary
+    stateless
+    hide-overlay
+    right
+    absolute
   >
-    <v-row>
-      <v-col class="pt-1" id="entity-panel">
-        <v-card
-          tile
-          class="custom-entity-panel"
-        >
-          <wows-panel v-if="roomState.game.name === 'wows'" :clickedItem="clickedItem" :teams="teams" />
-          <wot-panel v-if="roomState.game.name === 'wot'" :clickedItem="clickedItem" :teams="teams" />
-        </v-card>
-      </v-col>
-      <v-col class="pt-1">
-        <v-navigation-drawer
-          class="custom-navigation-drawer"
-          mini-variant
-          mini-variant-width="50"
-          permanent
-        >
-          <div>
-            <v-list-item class="px-2">
-              <v-list-item-avatar>
-                <v-img :src="images[roomState.game.name]"></v-img>
-              </v-list-item-avatar>
-            </v-list-item>
-            <v-divider></v-divider>
-            <div>
-              <v-list
-                dense
-                nav
-              >
-                <v-tooltip
-                  left
-                  v-for="(item, index) in items"
-                  :key="item.title"
-                  :title="item.title"
-                  :color="item.color"
-                >
-                  <template v-slot:activator="{ on }">
-                    <v-list-item
-                      v-on="on"
-                      dark
-                      active-class="test"
-                      :input-value="clickedItem === item.title"
-                      class="custom-list-item-center"
-                      @click="onItemClickHandler(item.title)"
-                    >
-                      <v-list-item-action>
-                        <v-badge
-                          v-if="index"
-                          :content="item.noOfEntities"
-                        >
-                          <v-icon :color="item.color">{{ item.icon }}</v-icon>
-                        </v-badge>
-                        <v-icon
-                          v-else
-                          :color="item.color"
-                        >
-                          {{ item.icon }}
-                        </v-icon>
-                      </v-list-item-action>
-
-                      <v-list-item-content>
-                        <v-list-item-title>{{ item.title }}</v-list-item-title>
-                      </v-list-item-content>
-                    </v-list-item>
-                  </template>
-                  <span>{{ item.title }}</span>
-                </v-tooltip>
-              </v-list>
-              <v-btn
-                text
-                small
-                icon
-                @click="show = !show"
-              >
-                <v-icon>{{ show ? 'fa-chevron-right' : 'fa-chevron-left' }}</v-icon>
-              </v-btn>
-            </div>
-          </div>
-        </v-navigation-drawer>
-      </v-col>
-    </v-row>
-  </v-card>
+    <v-expansion-panels
+      v-model="panels"
+      accordion
+      flat
+      tile
+      multiple
+      class="custom-expansion-panels"
+    >
+      <the-entity-list v-if="isAuthorisedAndCanvasLoaded && currentTacticId" />
+      <the-team-list v-if="isAuthorisedAndCanvasLoaded && currentTacticId" />
+      <the-tactic-list />
+      <the-user-list />
+    </v-expansion-panels>
+  </v-navigation-drawer>
 </template>
 
 <script lang="ts">
-import { Component, Prop, Vue } from 'vue-property-decorator'
-import { RoomGetters, RoomState } from '@/store/modules/room'
-import { Getter } from 'vuex-class'
-import { WowsPanel, WotPanel } from './entity-panel'
+import { Component, Vue, Prop } from 'vue-property-decorator'
+import { namespace } from 'vuex-class'
+import { Namespaces } from '@/store'
+import { SocketTacticGetters } from '@/store/modules/socket/tactic'
+import { SocketUserGetters } from '@/store/modules/socket/user'
+import TheEntityList from '@/components/entity-panel/sections/entity/TheEntityList.vue'
+import TheTacticList from '@/components/entity-panel/sections/tactic/TheTacticList.vue'
+import TheUserList from '@/components/entity-panel/sections/user/TheUserList.vue'
+import TheTeamList from '@/components/entity-panel/sections/team/TheTeamList.vue'
 
-export interface MenuItem {
-  id: number;
-  title: string;
-  icon: string;
-  color?: string;
-  noOfEntities?: number;
-}
+const SocketTactic = namespace(Namespaces.SOCKET_TACTIC)
+const SocketUser = namespace(Namespaces.SOCKET_USER)
 
 @Component({
   name: 'TheEntityPanel',
   components: {
-    WowsPanel,
-    WotPanel
+    TheEntityList,
+    TheTacticList,
+    TheUserList,
+    TheTeamList
   }
 })
-export default class MapButtons extends Vue {
-  @Prop() private id!: string;
-  @Getter(`room/${RoomGetters.ROOM_STATE}`) private readonly roomState!: RoomState;
-
-  show = true
-
-  teams: MenuItem[] = [
-    { id: 1, title: 'Team 1', icon: 'fa-users', color: 'green', noOfEntities: 0 },
-    { id: 2, title: 'Team 2', icon: 'fa-users', color: 'red', noOfEntities: 0 }
-  ]
-
-  items: MenuItem[] = [
-    { id: 0, title: 'Add', icon: 'fa-plus' },
-    ...this.teams
-  ]
-
-  clickedItem = 'Add'
-
-  images = {
-    wows: require('@/assets/wows-icon2.png'),
-    wot: require('@/assets/wot-icon.png')
-  }
-
-  onItemClickHandler (title: string) {
-    this.show = title !== this.clickedItem ? true : !this.show
-    if (!this.show) {
-      this.clickedItem = ''
-    } else {
-      this.clickedItem = title
-    }
-  }
+export default class EntityPanel extends Vue {
+  @Prop() private readonly panelOpen: boolean = true;
+  @SocketTactic.Getter(SocketTacticGetters.CURRENT_TACTIC_ID) private readonly currentTacticId!: string | undefined
+  @SocketUser.Getter(SocketUserGetters.IS_AUTHORISED_CANVAS_LOADED) isAuthorisedAndCanvasLoaded!: boolean
+  panels = [0, 1, 2, 3]
 }
 </script>
 <style scoped lang="scss">
-.custom-card-minimised>div {
-  top: 48px;
-  right: 0;
-  position: fixed;
-  display: flex;
-  justify-content: space-between;
-  transition: width 1s;
-
-  >div {
-    margin: 0;
-
-    >div {
-      display: none;
-      margin: 0;
-      flex-grow: 1;
-      flex-direction: column;
-
-      >div:first-child {
-        flex-grow: 1;
-      }
-
-      >div {
-        margin: 0;
-      }
-    }
-  }
-
-  button {
-    color: $room-text !important;
-    margin: 0.5rem;
-  }
-}
-
-.custom-entity-panel {
-  overflow-y: auto;
-  overflow-x: hidden;
-}
-
-.custom-card-expanded >div >div {
-  >div {
-    display: flex;
-  }
-  &:first-child {
-    padding: 0px;
-    width: 350px;
-  }
-
-  &:last-child {
-    padding: 0px;
-    flex: 0 0 62px;
-    max-width: 62px;
-  }
-}
-
 .custom-navigation-drawer {
-  background-color: $room-primary;
-
-  i {
-    color: $room-text;
-  }
-
-  >div >div {
-    display: flex;
-    height: 100%;
-    flex-direction: column;
-
-    >div:first-child {
-      flex: 1 1 30px;
-    }
-
-    >div:last-child {
-      display: flex;
-      flex-direction: column;
-      flex: 1 1 100%;
-      justify-content: space-between;
-      align-items: center;
-    }
-  }
+  box-shadow: none;
+  background-color: #FFFFFFFF;
+  height: calc(100vh - 52px) !important;
+  top: 52px !important;
+  overflow: visible !important;
+  visibility: visible !important;
 }
-
-.custom-list-item-center {
-  padding-top: 0px;
-  padding-bottom: 0px;
-  justify-content: center;
-
-  &:hover::before {
-    background-color: white;
-  }
-}
-.test {
-  background-color: rgba(white, 0.001);
-  color: white;
+</style>
+<style lang="scss">
+.custom-navigation-drawer .v-navigation-drawer__content {
+  @include custom-scroll-bar;
 }
 </style>

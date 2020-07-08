@@ -1,13 +1,13 @@
 <template>
   <v-card>
     <v-card-subtitle class="pb-0 pl-5 custom-hide-text">
-      Colour
+      {{ $t('tool.template.colour') }}
     </v-card-subtitle>
     <v-card-actions class="py-0">
       <colour-picker :value.sync="textColour" />
     </v-card-actions>
     <v-card-subtitle class="py-0 pl-5 custom-hide-text">
-      Size
+      {{ $t('tool.template.size') }}
     </v-card-subtitle>
     <v-card-actions class="py-0">
       <size-picker class="px-2" :value.sync="textSize"></size-picker>
@@ -17,24 +17,23 @@
 
 <script lang="ts">
 import { Component, Vue } from 'vue-property-decorator'
-import { Tool } from '@/tools/Tool'
+import { Tool } from '@/tools/tool'
 import { namespace } from 'vuex-class'
 import { Namespaces } from '@/store'
-import { ToolGetters, ToolsAction } from '@/store/modules/tools'
+import { AppToolGetters, AppToolsAction } from '@/store/modules/app/tools'
 import ColourPicker from '@/components/canvas-tools/templates/template-tools/ColourPicker.vue'
 import SizePicker from '@/components/canvas-tools/templates/template-tools/SizePicker.vue'
 
-const Tools = namespace(Namespaces.TOOLS)
+const AppTools = namespace(Namespaces.APP_TOOLS)
 
 @Component({
   name: 'Freedraw',
-  computed: {},
   components: { SizePicker, ColourPicker }
 })
 export default class PopoutButton extends Vue {
-  @Tools.Getter(ToolGetters.TOOL) findTool!: (name: string) => Tool
-  @Tools.Action(ToolsAction.SET_COLOUR) setColour!: (colour: string) => void
-  @Tools.Action(ToolsAction.SET_SIZE) setSize!: (size: number) => void
+  @AppTools.Getter(AppToolGetters.TOOL) findTool!: (name: string) => Tool
+  @AppTools.Action(AppToolsAction.SET_COLOUR) setColour!: (colour: string) => void
+  @AppTools.Action(AppToolsAction.SET_SIZE) setSize!: (size: number) => void
 
   get textSize () {
     return this.findTool('text').size || 5

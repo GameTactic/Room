@@ -1,61 +1,94 @@
 import Vue from 'vue'
 import '@fortawesome/fontawesome-free/css/all.css'
 import colours from '@/assets/scss/_variables.scss'
-import { DashedLine, NormalLine, TBarHead, DashedLineActive, NormalLineActive, TBarHeadActive } from '@/assets/tool-icons'
+import { DashedLine, DashedLineActive, NormalLine, NormalLineActive, TBarHead, TBarHeadActive } from '@/assets/tool-icons'
 
 import Vuetify, {
   VApp,
-  VRadio,
-  VRadioGroup,
+  VExpansionPanels,
+  VExpansionPanel,
+  VExpansionPanelHeader,
+  VVirtualScroll,
+  VExpansionPanelContent,
   VAutocomplete,
+  VAvatar,
+  VTreeviewNode,
   VBadge,
-  VRow,
-  VImg,
-  VSwitch,
-  VDivider,
-  VToolbar,
-  VItemGroup,
-  VContainer,
-  VSpacer,
   VBtn,
-  VIcon,
-  VCardSubtitle,
-  VTooltip,
-  VCol,
   VBtnToggle,
-  VMenu,
+  VCard,
+  VCardActions,
+  VCardSubtitle,
+  VCardText,
+  VCardTitle,
+  VChip,
+  VChipGroup,
+  VCol,
+  VColorPicker,
+  VContainer,
+  VContent,
+  VDialog,
+  VDivider,
+  VIcon,
+  VImg,
+  VInput,
+  VItemGroup,
+  VBottomNavigation,
   VList,
   VListItem,
   VListItemAction,
   VListItemAvatar,
   VListItemContent,
-  VListItemTitle,
   VListItemIcon,
-  VSubheader,
-  VContent,
-  VCard,
-  VCardActions,
-  VSheet,
-  VColorPicker,
-  VSlider,
-  VSelect,
+  VListItemTitle,
+  VMenu,
   VNavigationDrawer,
+  VOverlay,
+  VRadio,
+  VRadioGroup,
+  VRow,
+  VSelect,
+  VSheet,
+  VSkeletonLoader,
+  VSlider,
+  VSpacer,
+  VSubheader,
+  VSwitch,
+  VTab,
+  VTabItem,
+  VTabs,
+  VTabsItems,
+  VTabsSlider,
   VTextField,
-  VChipGroup,
-  VChip,
-  VSkeletonLoader
+  VToolbar,
+  VTooltip,
+  VTreeview,
+  VListItemGroup,
+  VLazy,
+  VItem
 } from 'vuetify/lib'
 
 Vue.use(Vuetify, {
   components: {
     VApp,
+    VBottomNavigation,
+    VLazy,
+    VExpansionPanels,
+    VExpansionPanel,
+    VExpansionPanelHeader,
+    VExpansionPanelContent,
+    VListItemGroup,
+    VAvatar,
     VRadioGroup,
     VSwitch,
     VRadio,
     VContainer,
+    VTreeviewNode,
+    VVirtualScroll,
     VAutocomplete,
     VBadge,
     VRow,
+    VOverlay,
     VImg,
     VTooltip,
     VDivider,
@@ -65,6 +98,7 @@ Vue.use(Vuetify, {
     VSpacer,
     VBtn,
     VIcon,
+    VDialog,
     VCol,
     VBtnToggle,
     VMenu,
@@ -78,6 +112,7 @@ Vue.use(Vuetify, {
     VContent,
     VSubheader,
     VCard,
+    VCardText,
     VCardActions,
     VSheet,
     VColorPicker,
@@ -87,9 +122,18 @@ Vue.use(Vuetify, {
     VTextField,
     VChipGroup,
     VChip,
-    VSkeletonLoader
+    VSkeletonLoader,
+    VInput,
+    VCardTitle,
+    VTreeview,
+    VTab,
+    VTabsSlider,
+    VTabItem,
+    VTabs,
+    VTabsItems,
+    VItem
   },
-  directives: { }
+  directives: {}
 })
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -115,7 +159,7 @@ const opts: Record<string, any> = {
         component: TBarHeadActive
       }
     },
-    iconfont: 'fa' // 'mdi' || 'mdiSvg' || 'md' || 'fa' || 'fa4',
+    iconfont: 'fa' // || 'mdiSvg' || 'md' || 'fa' || 'fa4',
   },
   theme: {
     options: {
@@ -123,7 +167,8 @@ const opts: Record<string, any> = {
     },
     themes: {
       light: {
-        primary: colours.roomPrimary
+        primary: colours.roomPrimary,
+        primaryShade: colours.roomPrimaryShade
       }
     }
   }

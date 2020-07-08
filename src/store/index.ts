@@ -1,34 +1,49 @@
+import AppAuthenticationModule from '@/store/modules/app/authentication'
+import AppLayerModule from '@/store/modules/app/layer'
+import AppRoomModule from '@/store/modules/app/room'
+import AppStageModule from '@/store/modules/app/stage'
+import AppToolModule from '@/store/modules/app/tools'
+import SocketCanvasModule from '@/store/modules/socket/canvas'
+import SocketModule from '@/store/modules/socket'
+import SocketRoomModule from '@/store/modules/socket/room'
+import SocketStageModule from '@/store/modules/socket/stage'
+import SocketTacticModule from '@/store/modules/socket/tactic'
+import SocketUserModule from '@/store/modules/socket/user'
+import SocketTeamModule from '@/store/modules/socket/team'
 import Vue from 'vue'
 import Vuex from 'vuex'
-import ToolModule from '@/store/modules/tools'
-import CursorModule from '@/store/modules/cursor'
-import SocketModule from '@/store/modules/socket'
-import CanvasModule from '@/store/modules/canvas'
-import StageModule from '@/store/modules/stage'
-import RoomModule from '@/store/modules/room'
-import AuthenticationModule from '@/store/modules/authentication'
+import { RootState } from '@/store/types'
 
 Vue.use(Vuex)
 
 export enum Namespaces {
-  TOOLS = 'tools',
-  CURSOR = 'cursor',
+  APP_AUTHENTICATION = 'appAuthentication',
+  APP_LAYER = 'appLayer',
+  APP_ROOM = 'appRoom',
+  APP_STAGE = 'appStage',
+  APP_TOOLS = 'appTools',
+  SOCKET_CANVAS = 'socketCanvas',
   SOCKET = 'socket',
-  CANVAS = 'canvas',
-  ROOM = 'room',
-  AUTH = 'authentication',
-  STAGE = 'stage'
+  SOCKET_TEAM = 'socketTeam',
+  SOCKET_ROOM = 'socketRoom',
+  SOCKET_STAGE = 'socketStage',
+  SOCKET_TACTIC = 'socketTactic',
+  SOCKET_USER = 'socketUser'
 }
 
-// eslint-disable-next-line
-export default new Vuex.Store<any>({
+export default new Vuex.Store<RootState>({
   modules: {
-    [Namespaces.TOOLS]: ToolModule,
-    [Namespaces.CURSOR]: CursorModule,
+    [Namespaces.APP_AUTHENTICATION]: AppAuthenticationModule,
+    [Namespaces.APP_LAYER]: AppLayerModule,
+    [Namespaces.APP_ROOM]: AppRoomModule,
+    [Namespaces.APP_STAGE]: AppStageModule,
+    [Namespaces.APP_TOOLS]: AppToolModule,
+    [Namespaces.SOCKET_CANVAS]: SocketCanvasModule,
     [Namespaces.SOCKET]: SocketModule,
-    [Namespaces.CANVAS]: CanvasModule,
-    [Namespaces.ROOM]: RoomModule,
-    [Namespaces.AUTH]: AuthenticationModule,
-    [Namespaces.STAGE]: StageModule
+    [Namespaces.SOCKET_TEAM]: SocketTeamModule,
+    [Namespaces.SOCKET_ROOM]: SocketRoomModule,
+    [Namespaces.SOCKET_STAGE]: SocketStageModule,
+    [Namespaces.SOCKET_TACTIC]: SocketTacticModule,
+    [Namespaces.SOCKET_USER]: SocketUserModule
   }
 })

@@ -1,8 +1,12 @@
 <template>
-  <v-tooltip right nudge-right="10">
+  <v-tooltip
+    right
+    nudge-right="10"
+    :open-delay="500"
+  >
     <template v-slot:activator="{ on }">
       <v-btn
-        :disabled="isDisabled"
+        :disabled="isDisabled || !isAuthorisedCanvasLoaded"
         class="undoBtn"
         icon
         elevation=""
@@ -13,36 +17,53 @@
         <v-icon dense color="primary">{{icon}}</v-icon>
       </v-btn>
     </template>
-    <span>Undo</span>
+    <span>{{ $t('tool.container.undo') }}</span>
   </v-tooltip>
 </template>
 
 <script lang="ts">
 import { Component, Prop, Vue } from 'vue-property-decorator'
-import { Getter } from 'vuex-class'
-import { CanvasGetters } from '@/store/modules/canvas'
-import { CanvasElement } from '@/types/Canvas'
-import { EventBus } from '@/event-bus'
-import HandleUndoRedo from '@/util/HandleUndoRedo'
+import { namespace } from 'vuex-class'
+import { SocketCanvasAction, SocketCanvasGetters } from '@/store/modules/socket/canvas'
+import { CanvasElement, CanvasElementHistory } from '@/types/canvas'
+import HandleUndoRedo from '@/util/handleUndoRedo'
+import HandleRenderShapes from '@/util/handleRenderShapes'
+import { Namespaces } from '@/store'
+import { SocketUserGetters } from '@/store/modules/socket/user'
+
+const SocketCanvas = namespace(Namespaces.SOCKET_CANVAS)
+const SocketUser = namespace(Namespaces.SOCKET_USER)
 
 @Component({
-  name: 'UndoContainer.vue'
+  name: 'UndoContainer'
 })
 export default class UndoContainer extends Vue {
-    @Prop() private id!: string
-    @Prop() private icon!: string
-    @Prop() private toolname!: string
-    @Getter(`canvas/${CanvasGetters.CANVAS_ELEMENTS_HISTORY}`) canvasElementsHistory!: CanvasElement[]
-    @Getter(`canvas/${CanvasGetters.CANVAS_ELEMENTS}`) canvasElements!: CanvasElement[]
+  @Prop() private icon!: string
+  @Prop() private toolname!: string
+  @SocketUser.Getter(SocketUserGetters.IS_AUTHORISED_CANVAS_LOADED) isAuthorisedCanvasLoaded!: boolean
+  @SocketCanvas.Getter(SocketCanvasGetters.CANVAS_ELEMENTS_HISTORY) canvasElementsHistory!: CanvasElementHistory[]
+  @SocketCanvas.Getter(SocketCanvasGetters.CANVAS_ELEMENTS) canvasElements!: CanvasElement[]
+  @SocketCanvas.Getter(SocketCanvasGetters.CANVAS_ELEMENT_HISTORY_BY_ID) canvasElementHistoryById!: (id: string) => CanvasElementHistory | void
+  @SocketCanvas.Getter(SocketCanvasGetters.CANVAS_ELEMENT_BY_ID) canvasElementById!: (id: string) => CanvasElement | void
+  @SocketCanvas.Action(SocketCanvasAction.ADD_CANVAS_ELEMENT_HISTORY) addCanvasElementHistory!: (canvasElement: CanvasElement) => void
 
-    onButtonClickHandler () {
-      EventBus.$emit('undoRedo', (this.toolname.charAt(0).toUpperCase() + this.toolname.slice(1)))
-    }
+  onButtonClickHandler () {
+    const handleUndoRedo = new HandleUndoRedo()
+    handleUndoRedo.handleUndoRedo('Undo')
+    new HandleRenderShapes(this.$store).handle()
+  }
 
-    get isDisabled (): boolean {
-      const undoRedo = new HandleUndoRedo(this.canvasElementsHistory, this.canvasElements)
-      return (undoRedo.findUndo([...this.canvasElementsHistory]) === undefined)
-    }
+  get isDisabled (): boolean {
+    return new HandleUndoRedo().findUndo([...this.canvasElementsHistory]) === undefined
+  }
+
+  created () {
+    window.addEventListener('keydown', (e) => {
+      if (e.ctrlKey && e.key === 'z') {
+        this.onButtonClickHandler()
+      }
+    })
+  }
 }
 
 </script>
@@ -51,14 +72,17 @@ export default class UndoContainer extends Vue {
   margin-left: 5px;
   box-shadow: 0 4px 4px -3px rgba(0, 0, 0, 0.2), 0px 2px 2px 0px rgba(0, 0, 0, 0.14), 0px 1px 5px 0px rgba(0, 0, 0, 0.12)
 }
+
 .tools-caret-down {
   right:2px;
   transition:0.2s ease-in-out;
   margin-top:28px;
 }
+
 .rotate90 {
   transform: rotate(-90deg);
 }
+
 .undoBtn {
   background-color: white;
   padding: 0 12px;
