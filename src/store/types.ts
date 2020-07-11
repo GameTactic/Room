@@ -100,6 +100,16 @@ export interface Tactic {
   [key: string]: string | Map | Team[] | CanvasElement[] | CanvasElementHistory[] | boolean | undefined;
 }
 
+export type ToggleLockTactic = {
+  tacticId: string;
+  jti: string;
+}
+
+export type DuplicateTactic = {
+  tactic: Tactic;
+  jti: string;
+}
+
 export interface Team {
   id: string;
   tacticId: string;

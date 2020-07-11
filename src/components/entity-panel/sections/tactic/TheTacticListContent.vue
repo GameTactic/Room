@@ -18,9 +18,9 @@
           v-else
           icon="fa-bookmark"
           :value="item.tactic.isPinned"
-          offset-y="15"
-          left
           overlap
+          left
+          offset-y="17"
         >
           <v-avatar
             size="30"
@@ -36,55 +36,62 @@
         class="d-flex justify-space-between align-center"
         :title="item.name"
       >
-          <span class="d-flex flex-column">
-            <span class="body-2" v-text="item.name" />
+          <span class="d-flex flex-column custom-tactic-content">
+            <span class="body-2" >
+              <v-icon v-if="item.tactic.lockedBy" x-small class="pr-1">fa-lock</v-icon>
+              <span v-text="item.name" />
+            </span>
             <span class="caption" v-text="item.tactic.map.name" />
           </span>
-          <v-menu
-            v-if="!item.children"
-            offset-y
-            nudge-left="80"
-            nudge-width="80"
-            content-class="elevation-2"
-          >
-            <template v-slot:activator="{ on: usersOnTactic }">
-              <v-btn
-                v-if="getUsersOnTactic(item.id) > 0"
-                elevation="0"
-                tile
-                class="mr-1 px-0"
-                :width="30"
-                color="transparent"
-                ripple
-                small
-                v-on="usersOnTactic"
-                @click.stop=""
-              >
-                <v-badge
-                  :v-if="getUsersOnTactic(item.id) > 0"
-                  :content="getUsersOnTactic(item.id)"
-                  right
-                  overlap
-                  color="primary"
-                >
-                  <v-icon color="grey darken-1">fa-user-circle</v-icon>
-                </v-badge>
-              </v-btn>
-            </template>
-            <v-card tile>
-              <v-list dense>
-                <v-list-item v-for="user in getUsersOnTactic(item.id)" :key="user.id">
-                  <v-list-item-content>
-                    <v-list-item-title v-text="user.name" />
-                  </v-list-item-content>
-                </v-list-item>
-              </v-list>
-            </v-card>
-          </v-menu>
         </span>
       <a v-else>{{ item.name }}</a>
     </template>
     <template v-slot:append="{ item: item }">
+      <span>
+        <v-menu
+          v-if="!item.children"
+          offset-y
+          nudge-left="80"
+          nudge-width="80"
+          content-class="elevation-2"
+        >
+          <template v-slot:activator="{ on: usersOnTactic }">
+            <v-btn
+              v-if="getUsersOnTactic(item.id).length"
+              elevation="0"
+              tile
+              icon
+              class="mr-1 px-0"
+              :width="30"
+              color="transparent"
+              ripple
+              v-on="usersOnTactic"
+              @click.stop=""
+            >
+              <v-badge
+                :v-if="getUsersOnTactic(item.id).length"
+                :content="getUsersOnTactic(item.id).length"
+                offset-x="12"
+                offset-y="15"
+                overlap
+                right
+                color="primary"
+              >
+                <v-icon dense color="grey darken-1">far fa-user</v-icon>
+              </v-badge>
+            </v-btn>
+          </template>
+          <v-card tile>
+            <v-list dense>
+              <v-list-item v-for="user in getUsersOnTactic(item.id)" :key="user.id">
+                <v-list-item-content>
+                  <v-list-item-title v-text="user.name" />
+                </v-list-item-content>
+              </v-list-item>
+            </v-list>
+          </v-card>
+        </v-menu>
+      </span>
       <v-menu
         v-if="!item.children"
         offset-y
@@ -97,7 +104,7 @@
             elevation="0"
             color="transparent"
             fab
-            small
+            x-small
             ripple
             v-on="menuItem"
           >
@@ -106,21 +113,25 @@
         </template>
         <v-card tile>
           <v-list dense>
-            <v-list-item
+            <span
               v-for="(cardItem, index) in cardMenuItems"
               :key="index"
-              @click="tacticMenuOnClickHandler(cardItem, item.tactic)"
             >
-              <v-list-item-icon class="custom-autocomplete-tactic-menu-icon">
-                <v-icon
-                  :color="tacticMenuIconColour(item.tactic, cardItem)"
-                  small
-                  v-text="tacticMenuIcon(item.tactic, cardItem)" />
-              </v-list-item-icon>
-              <v-list-item-content>
-                <v-list-item-title :title="tacticMenuPinText(item.tactic, cardItem)" v-text="tacticMenuPinText(item.tactic, cardItem)" />
-              </v-list-item-content>
-            </v-list-item>
+              <v-list-item
+                v-if="item.tactic.createdBy === jwt.jti"
+                @click="tacticMenuOnClickHandler(cardItem, item.tactic)"
+              >
+                <v-list-item-icon class="custom-autocomplete-tactic-menu-icon">
+                  <v-icon
+                    :color="tacticMenuIconColour(item.tactic, cardItem)"
+                    small
+                    v-text="tacticMenuIcon(item.tactic, cardItem)" />
+                </v-list-item-icon>
+                <v-list-item-content>
+                  <v-list-item-title :title="tacticMenuText(item.tactic, cardItem)" v-text="tacticMenuText(item.tactic, cardItem)" />
+                </v-list-item-content>
+              </v-list-item>
+            </span>
           </v-list>
         </v-card>
       </v-menu>
@@ -135,13 +146,15 @@ import Vue from 'vue'
 import { namespace } from 'vuex-class'
 import { Namespaces } from '@/store'
 import { SocketTacticAction, SocketTacticGetters } from '@/store/modules/socket/tactic'
-import { Collection, Tactic, User } from '@/store/types'
+import { Collection, Tactic, User, ToggleLockTactic, DuplicateTactic } from '@/store/types'
 import { MenuItem, TacticMenuOptions, TreeViewItem } from '../../types'
 import { EventBus } from '@/event-bus'
 import { SocketUserGetters } from '@/store/modules/socket/user'
 import HandleTactic from '@/util/handleTactic'
 import { OpenOverlayList } from '@/components/overlays/types'
+import { AppAuthenticationGetters, ExtendedJWT } from '../../../../store/modules/app/authentication'
 
+const AppAuthentication = namespace(Namespaces.APP_AUTHENTICATION)
 const SocketTactic = namespace(Namespaces.SOCKET_TACTIC)
 const SocketUser = namespace(Namespaces.SOCKET_USER)
 
@@ -149,15 +162,45 @@ const SocketUser = namespace(Namespaces.SOCKET_USER)
   name: 'TheTacticListContent'
 })
 export default class TheTacticListContent extends Vue {
+  @AppAuthentication.Getter(AppAuthenticationGetters.JWT) jwt!: ExtendedJWT
   @SocketTactic.Getter(SocketTacticGetters.COLLECTIONS) collections!: Collection[]
   @SocketTactic.Getter(SocketTacticGetters.TACTICS) tactics!: Tactic[]
   @SocketTactic.Getter(SocketTacticGetters.PINNED_TACTICS) pinnedTactics!: Tactic[]
   @SocketTactic.Getter(SocketTacticGetters.CURRENT_TACTIC_ID) currentTacticId!: string
   @SocketUser.Getter(SocketUserGetters.IS_AUTHORISED) isAuthorised!: boolean;
   @SocketUser.Getter(SocketUserGetters.ONLINE_USERS) onlineUsers!: User[];
+  @SocketUser.Getter(SocketUserGetters.USERS) users!: User[];
   @SocketTactic.Action(SocketTacticAction.DELETE_TACTIC) deleteTactic!: (id: string) => void
   @SocketTactic.Action(SocketTacticAction.UPDATE_TACTIC) updateTactic!: (tactic: Tactic) => void
+  @SocketTactic.Action(SocketTacticAction.DUPLICATE_TACTIC) duplicateTactic!: (payload: DuplicateTactic) => void
   @SocketTactic.Action(SocketTacticAction.TOGGLE_PIN_TACTIC) togglePinTactic!: (tactic: Tactic) => void
+  @SocketTactic.Action(SocketTacticAction.TOGGLE_LOCK_TACTIC) toggleLockTactic!: (payload: ToggleLockTactic) => void
+
+  cardMenuItems: MenuItem[] = [{
+    action: TacticMenuOptions.EDIT,
+    title: 'tactic.edit',
+    icon: 'fa-edit'
+  }, {
+    action: TacticMenuOptions.LOCK,
+    title: 'tactic.lock',
+    titleTwo: 'tactic.unlock',
+    icon: 'fa-lock',
+    iconTwo: 'fa-lock-open'
+  }, {
+    action: TacticMenuOptions.DUPLICATE,
+    title: 'tactic.duplicate',
+    icon: 'far fa-clone'
+  }, {
+    action: TacticMenuOptions.PIN,
+    title: 'tactic.pin',
+    titleTwo: 'tactic.unpin',
+    icon: 'fa-bookmark',
+    iconTwo: 'far fa-bookmark'
+  }, {
+    action: TacticMenuOptions.DELETE,
+    title: 'tactic.delete',
+    icon: 'fa-times'
+  }]
 
   get items (): TreeViewItem[] {
     const collections: TreeViewItem[] = this.collections.map((collection: Collection) => {
@@ -193,7 +236,7 @@ export default class TheTacticListContent extends Vue {
     }
   }
 
-  getUsersOnTactic (tactic: Tactic) {
+  getUsersOnTactic (tactic: Tactic): User[] {
     return this.onlineUsers.filter((onlineUser: User) => onlineUser.onTacticId === tactic.id)
   }
 
@@ -202,8 +245,13 @@ export default class TheTacticListContent extends Vue {
       case TacticMenuOptions.EDIT:
         EventBus.$emit(OpenOverlayList.OPEN_THE_UPDATE_TACTIC_OVERLAY, tactic)
         break
+      case TacticMenuOptions.LOCK:
+        this.toggleLockTactic({ tacticId: tactic.id, jti: this.jwt.jti })
+        break
+      case TacticMenuOptions.DUPLICATE:
+        this.duplicateTactic({ tactic, jti: this.jwt.jti })
+        break
       case TacticMenuOptions.DELETE:
-        this.deleteTactic(tactic.id)
         break
       case TacticMenuOptions.PIN:
         this.togglePinTactic(tactic)
@@ -221,29 +269,39 @@ export default class TheTacticListContent extends Vue {
   }
 
   tacticMenuIcon (tactic: Tactic, item: MenuItem) {
+    if (item.titleTwo && item.action === TacticMenuOptions.PIN && tactic.isPinned) {
+      return item.iconTwo
+    }
+    if (item.titleTwo && item.action === TacticMenuOptions.LOCK && tactic.lockedBy) {
+      return item.iconTwo
+    }
     return item.icon
   }
 
-  tacticMenuPinText (tactic: Tactic, item: MenuItem) {
-    return item.action === TacticMenuOptions.PIN && tactic.isPinned && item.titleTwo ? this.$t(item.titleTwo) : this.$t(item.title)
+  tacticMenuText (tactic: Tactic, item: MenuItem) {
+    if (item.titleTwo && item.action === TacticMenuOptions.PIN && tactic.isPinned) {
+      return this.$t(item.titleTwo)
+    }
+    if (item.titleTwo && item.action === TacticMenuOptions.LOCK && tactic.lockedBy) {
+      return this.$t(item.titleTwo)
+    }
+    return this.$t(item.title)
   }
 
-  cardMenuItems: MenuItem[] = [{
-    action: TacticMenuOptions.EDIT,
-    title: 'tactic.edit',
-    icon: 'fa-edit'
-  }, {
-    action: TacticMenuOptions.PIN,
-    title: 'tactic.pin',
-    titleTwo: 'tactic.unpin',
-    icon: 'fa-bookmark'
-  }, {
-    action: TacticMenuOptions.DELETE,
-    title: 'tactic.delete',
-    icon: 'fa-times'
-  }]
+  getUserNameFromJTI (jti: string) {
+    return this.users.find((user: User) => user.jti === jti)?.name ?? ''
+  }
 }
 </script>
+<style lang="scss" scoped>
+.custom-tactic-content {
+  overflow: hidden;
+  >span {
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+}
+</style>
 <style lang="scss">
 .v-treeview-node__level{
   width: 12px !important;
@@ -252,8 +310,16 @@ export default class TheTacticListContent extends Vue {
   margin-right: 6px !important;
 }
 
-.custom-expansion-panel-content .v-treeview-node__root {
-  padding-left: 0;
-  padding-right: 4px;
+.custom-expansion-panel-content {
+  .v-treeview-node__content {
+    margin-left: 0px;
+  }
+  .v-treeview-node__append {
+    margin-left: 0px;
+  }
+  .v-treeview-node__root {
+    padding-left: 0;
+    padding-right: 4px;
+  }
 }
 </style>

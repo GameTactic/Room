@@ -105,7 +105,7 @@ export default class PinnedTactics extends Vue {
   contextMenuItems: MenuItem[] = [{
     action: TacticMenuOptions.PIN,
     title: 'tactic.unpin',
-    icon: 'fa-bookmark'
+    icon: 'far fa-bookmark'
   }]
 
   get currentTabValue () {
