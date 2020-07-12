@@ -2,7 +2,7 @@
   <v-stage
     ref="stage"
     class="konva-stage"
-    :class="[enabledTool ? enabledTool.name : '']"
+    :class="[enabledTool ? enabledTool.name : '', isMouseDown ? 'mouseDown' : '']"
     :config="stageConfig"
     @mousedown="onMouseHandler"
     @mousemove="onMouseHandler"
@@ -66,6 +66,8 @@ export default class TheCanvas extends mixins(CanvasSockets, StageWatcher) {
     stage: VueKonvaStage;
   }
 
+  isMouseDown = false
+
   mounted () {
     this.setLayer(this.$refs.layer.getNode())
     this.setStage(this.$refs.stage.getNode())
@@ -86,7 +88,10 @@ export default class TheCanvas extends mixins(CanvasSockets, StageWatcher) {
   onMouseHandler (e: Konva.KonvaPointerEvent): void {
     let type = ''
     switch (e.evt.type) {
-      case 'mousedown': type = 'mouseDownAction'; break
+      case 'mousedown':
+        type = 'mouseDownAction'
+        this.isMouseDown = true
+        break
       case 'mousemove': type = 'mouseMoveAction'; break
       case 'mouseup': type = 'mouseUpAction'; break
     }
@@ -98,6 +103,7 @@ export default class TheCanvas extends mixins(CanvasSockets, StageWatcher) {
     }
     if (type === 'mouseUpAction') {
       this.renderShapes()
+      this.isMouseDown = false
     }
   }
 
@@ -116,22 +122,28 @@ export default class TheCanvas extends mixins(CanvasSockets, StageWatcher) {
   position: absolute;
   /* These are FA icons and might need replacing. */
   &.ping::v-deep canvas {
-    cursor: pointer;
+    cursor: crosshair;
   }
   &.move::v-deep canvas {
     cursor: default;
   }
   &.line::v-deep canvas {
-    cursor: url('~@/assets/cursor/pen.png'), auto;
+    cursor: crosshair;
   }
   &.freeDraw::v-deep canvas {
-    cursor: url('~@/assets/cursor/pen.png'), auto;
+    cursor: crosshair;
   }
   &.erase::v-deep canvas {
-    cursor: url('~@/assets/cursor/eraser.png'), auto;
+    cursor: crosshair;
+  }
+  &.ruler::v-deep canvas {
+    cursor: crosshair;
   }
   &.circle::v-deep canvas {
-    cursor: url('~@/assets/cursor/circle.png'), auto;
+    cursor: crosshair;
+  }
+  &.text::v-deep canvas {
+    cursor: text;
   }
   &.moveCanvas::v-deep canvas {
     cursor: grab;

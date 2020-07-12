@@ -34,9 +34,9 @@ export default class TextCreator extends Shape implements TextCreatorInterface {
       globalCompositeOperation: 'source-over',
       text: this.textString,
       x: this.point.x,
-      y: this.point.y,
+      y: this.point.y - 10,
       fill: this.colour,
-      fontSize: (this.size) ? this.size * 5 : 25,
+      fontSize: (this.size) ? this.size * 5 : 20,
       hitStrokeWidth: this.hitStroke,
       id: uuid(),
       fontFamily: this.fontFamily,
@@ -51,11 +51,11 @@ export default class TextCreator extends Shape implements TextCreatorInterface {
     textArea.id = this.groupId
     textArea.style.position = 'absolute'
     textArea.style.overflow = 'hidden'
-    textArea.style.top = event.pointerEvent.pageY + 'px'
+    textArea.style.top = event.pointerEvent.pageY - 10 + 'px'
     textArea.style.left = event.pointerEvent.pageX + 'px'
     textArea.style.color = this.colour
     textArea.style.transformOrigin = 'left top'
-    textArea.style.fontSize = ((this.size) ? this.size * 5 : 25) * (this.stageConfig.width / this.stageConfig.initialWidth) + 'px'
+    textArea.style.fontSize = ((this.size) ? this.size * 5 : 20) * (this.stageConfig.width / this.stageConfig.initialWidth) + 'px'
     textArea.style.border = 'none'
     textArea.style.padding = '0px'
     textArea.style.margin = '0px'
