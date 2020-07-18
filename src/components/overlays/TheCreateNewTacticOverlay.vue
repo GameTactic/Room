@@ -2,6 +2,7 @@
   <v-dialog
     v-model="overlay"
     width="700"
+    eager
     class="custom-overlay"
   >
     <v-card class="pa-12">
@@ -131,11 +132,6 @@ export default class CreateNewTacticOverlay extends mixins(TacticWatcher) {
   get maps () {
     const mapApi: Api | undefined = this.api.find((api: Api) => (this.currentGame !== Game.NONE) && api.name === GameApiRoutes[this.currentGame].maps)
     return mapApi ? (mapApi.data as MapsDataApi).maps : false
-  }
-
-  $refs!: {
-    img: HTMLImageElement;
-    imgName: HTMLHeadingElement;
   }
 
   isDisabled (): boolean {

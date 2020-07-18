@@ -50,10 +50,10 @@ const SocketRoom = namespace(Namespaces.SOCKET_ROOM)
 const SocketTeam = namespace(Namespaces.SOCKET_TEAM)
 
 @Component({
-  name: 'TheEntityPropertiesModal',
+  name: 'TheEntityPropertiesOverlay',
   components: { TheEntityPropertiesContent }
 })
-export default class TheEntityPropertiesModal extends Vue {
+export default class TheEntityPropertiesOverlay extends Vue {
   @SocketRoom.Getter(SocketRoomGetters.GAME) game!: Game
   @SocketTeam.Action(SocketTeamAction.UPDATE_ENTITY_IN_TEAM) updateEntityInTeam!: (payload: GameEntity) => void
 
@@ -65,7 +65,7 @@ export default class TheEntityPropertiesModal extends Vue {
   getEntityName = getEntityName
 
   created () {
-    EventBus.$on(OpenOverlayList.OPEN_THE_ENTITY_PROPERTIES_MODAL, (entity: GameEntity) => {
+    EventBus.$on(OpenOverlayList.OPEN_THE_ENTITY_PROPERTIES_OVERLAY, (entity: GameEntity) => {
       this.overlay = true
       this.selectedEntity = { ...entity, data: { ...entity.data } }
     })

@@ -8,43 +8,54 @@
     dense
     open-on-click
     activatable
-    @update:active="switchTactic($event)"
+    @update:active.passive="switchTactic"
   >
-    <template v-slot:prepend="{ item, isOpen }">
-      <v-icon v-if="item.children">
+    <template v-slot:prepend="{ item, isOpen, active }">
+      <v-icon
+        v-if="item.children"
+        @click="active && $event.stopPropagation()"
+      >
         {{ isOpen ? 'fa-folder-open' : 'fa-folder' }}
       </v-icon>
-        <v-badge
-          v-else
-          icon="fa-bookmark"
-          :value="item.tactic.isPinned"
-          overlap
-          left
-          offset-y="17"
-        >
-          <v-avatar
-            size="30"
-            class="ml-0 pl-0"
-          >
-             <img :src="item.tactic.map.icon">
-           </v-avatar>
-        </v-badge>
+      <v-avatar
+        size="30"
+        class="ml-0 pl-0"
+        @click="active && $event.stopPropagation()"
+      >
+        <img :src="item.tactic.map.icon">
+      </v-avatar>
     </template>
-    <template v-slot:label="{ item }">
+    <template v-slot:label="{ item, active }">
       <span
         v-if="!item.children"
-        class="d-flex justify-space-between align-center"
         :title="item.name"
+        class="d-flex justify-space-between align-center"
+        @click="active && $event.stopPropagation()"
       >
           <span class="d-flex flex-column custom-tactic-content">
             <span class="body-2" >
-              <v-icon v-if="item.tactic.lockedBy" x-small class="pr-1">fa-lock</v-icon>
-              <span v-text="item.name" />
+            <v-icon
+              v-if="item.tactic.lockedBy"
+              :title="$t('tactic.locked')"
+              x-small
+              class="pr-1"
+            >
+              fa-lock
+            </v-icon>
+            <v-icon
+              v-if="item.tactic.isPinned"
+              :title="$t('tactic.pinned')"
+              x-small
+              class="pr-1"
+            >
+              fa-bookmark
+            </v-icon>
+            <span v-text="item.name" />
             </span>
-            <span class="caption" v-text="item.tactic.map.name" />
+            <span :title="item.tactic.map.name" class="caption" v-text="item.tactic.map.name" />
           </span>
         </span>
-      <a v-else>{{ item.name }}</a>
+      <a v-else @click="active && $event.stopPropagation()">{{ item.name }}</a>
     </template>
     <template v-slot:append="{ item: item }">
       <span>
@@ -58,11 +69,11 @@
           <template v-slot:activator="{ on: usersOnTactic }">
             <v-btn
               v-if="getUsersOnTactic(item.id).length"
+              :width="30"
               elevation="0"
               tile
               icon
               class="mr-1 px-0"
-              :width="30"
               color="transparent"
               ripple
               v-on="usersOnTactic"
@@ -92,49 +103,16 @@
           </v-card>
         </v-menu>
       </span>
-      <v-menu
+      <entity-menu
         v-if="!item.children"
-        offset-y
-        nudge-left="100"
-        nudge-width="80"
-        content-class="elevation-2"
-      >
-        <template v-slot:activator="{ on: menuItem }">
-          <v-btn
-            elevation="0"
-            color="transparent"
-            fab
-            x-small
-            ripple
-            v-on="menuItem"
-          >
-            <v-icon small color="grey darken-1">fa-ellipsis-v</v-icon>
-          </v-btn>
-        </template>
-        <v-card tile>
-          <v-list dense>
-            <span
-              v-for="(cardItem, index) in cardMenuItems"
-              :key="index"
-            >
-              <v-list-item
-                v-if="item.tactic.createdBy === jwt.jti"
-                @click="tacticMenuOnClickHandler(cardItem, item.tactic)"
-              >
-                <v-list-item-icon class="custom-autocomplete-tactic-menu-icon">
-                  <v-icon
-                    :color="tacticMenuIconColour(item.tactic, cardItem)"
-                    small
-                    v-text="tacticMenuIcon(item.tactic, cardItem)" />
-                </v-list-item-icon>
-                <v-list-item-content>
-                  <v-list-item-title :title="tacticMenuText(item.tactic, cardItem)" v-text="tacticMenuText(item.tactic, cardItem)" />
-                </v-list-item-content>
-              </v-list-item>
-            </span>
-          </v-list>
-        </v-card>
-      </v-menu>
+        :item="item.tactic"
+        :cardMenuItems="cardMenuItems"
+        :isMenuItemVisible="isTacticMenuVisible"
+        :menuOnClickHandler="tacticMenuOnClickHandler"
+        :getMenuIconColour="tacticMenuIconColour"
+        :getMenuIcon="tacticMenuIcon"
+        :getMenuText="tacticMenuText"
+      />
     </template>
   </v-treeview>
 </template>
@@ -152,14 +130,18 @@ import { EventBus } from '@/event-bus'
 import { SocketUserGetters } from '@/store/modules/socket/user'
 import HandleTactic from '@/util/handleTactic'
 import { OpenOverlayList } from '@/components/overlays/types'
-import { AppAuthenticationGetters, ExtendedJWT } from '../../../../store/modules/app/authentication'
+import { AppAuthenticationGetters, ExtendedJWT } from '@/store/modules/app/authentication'
+import EntityMenu from '../EntityMenu.vue'
 
 const AppAuthentication = namespace(Namespaces.APP_AUTHENTICATION)
 const SocketTactic = namespace(Namespaces.SOCKET_TACTIC)
 const SocketUser = namespace(Namespaces.SOCKET_USER)
 
 @Component({
-  name: 'TheTacticListContent'
+  name: 'TheTacticListContent',
+  components: {
+    EntityMenu
+  }
 })
 export default class TheTacticListContent extends Vue {
   @AppAuthentication.Getter(AppAuthenticationGetters.JWT) jwt!: ExtendedJWT
@@ -218,6 +200,7 @@ export default class TheTacticListContent extends Vue {
         }))
       }
     })
+
     collections.forEach((collection: TreeViewItem) => {
       if (collection.parent) {
         const parent = collections.find((parent: TreeViewItem) => parent.id === collection.parent)
@@ -227,6 +210,13 @@ export default class TheTacticListContent extends Vue {
       }
     })
     return collections[0].children || []
+  }
+
+  isTacticMenuVisible (tactic: Tactic, cardItem: MenuItem) {
+    if (cardItem.action !== TacticMenuOptions.LOCK || (cardItem.action === TacticMenuOptions.LOCK && tactic.createdBy === this.jwt.jti)) {
+      return true
+    }
+    return false
   }
 
   switchTactic (ids: string[]) {
@@ -240,42 +230,44 @@ export default class TheTacticListContent extends Vue {
     return this.onlineUsers.filter((onlineUser: User) => onlineUser.onTacticId === tactic.id)
   }
 
-  tacticMenuOnClickHandler (menuItem: MenuItem, tactic: Tactic) {
-    switch (menuItem.action) {
-      case TacticMenuOptions.EDIT:
-        EventBus.$emit(OpenOverlayList.OPEN_THE_UPDATE_TACTIC_OVERLAY, tactic)
-        break
-      case TacticMenuOptions.LOCK:
-        this.toggleLockTactic({ tacticId: tactic.id, jti: this.jwt.jti })
-        break
-      case TacticMenuOptions.DUPLICATE:
-        this.duplicateTactic({ tactic, jti: this.jwt.jti })
-        break
-      case TacticMenuOptions.DELETE:
-        break
-      case TacticMenuOptions.PIN:
-        this.togglePinTactic(tactic)
-        break
-      default:
-        break
+  tacticMenuOnClickHandler (tactic: Tactic, menuItem: MenuItem) {
+    if (tactic) {
+      switch (menuItem.action) {
+        case TacticMenuOptions.EDIT:
+          EventBus.$emit(OpenOverlayList.OPEN_THE_UPDATE_TACTIC_OVERLAY, tactic)
+          break
+        case TacticMenuOptions.LOCK:
+          this.toggleLockTactic({ tacticId: tactic.id, jti: this.jwt.jti })
+          break
+        case TacticMenuOptions.DUPLICATE:
+          this.duplicateTactic({ tactic, jti: this.jwt.jti })
+          break
+        case TacticMenuOptions.DELETE:
+          break
+        case TacticMenuOptions.PIN:
+          this.togglePinTactic(tactic)
+          break
+        default:
+          break
+      }
     }
   }
 
-  tacticMenuIconColour (tactic: Tactic, item: MenuItem) {
-    if (item.action === TacticMenuOptions.DELETE) {
+  tacticMenuIconColour (tactic: Tactic, menuItem: MenuItem) {
+    if (menuItem.action === TacticMenuOptions.DELETE) {
       return 'error'
     }
     return 'primary'
   }
 
-  tacticMenuIcon (tactic: Tactic, item: MenuItem) {
-    if (item.titleTwo && item.action === TacticMenuOptions.PIN && tactic.isPinned) {
-      return item.iconTwo
+  tacticMenuIcon (tactic: Tactic, menuItem: MenuItem) {
+    if (menuItem.titleTwo && menuItem.action === TacticMenuOptions.PIN && tactic.isPinned) {
+      return menuItem.iconTwo
     }
-    if (item.titleTwo && item.action === TacticMenuOptions.LOCK && tactic.lockedBy) {
-      return item.iconTwo
+    if (menuItem.titleTwo && menuItem.action === TacticMenuOptions.LOCK && tactic.lockedBy) {
+      return menuItem.iconTwo
     }
-    return item.icon
+    return menuItem.icon
   }
 
   tacticMenuText (tactic: Tactic, item: MenuItem) {

@@ -16,42 +16,15 @@
       </v-list-item-title>
     </v-list-item-content>
     <v-list-item-action class="pa-0 ma-0" @click.stop="teamListItemActionHandler">
-      <v-menu
-        offset-y
-        nudge-left="100"
-        nudge-width="80"
-        content-class="elevation-2"
-      >
-        <template v-slot:activator="{ on: menuItem }">
-          <v-btn
-            v-on="menuItem"
-            small
-            icon
-            class="mr-1"
-          >
-            <v-icon small color="grey">fa-ellipsis-v</v-icon>
-          </v-btn>
-        </template>
-        <v-card tile>
-          <v-list dense>
-            <v-list-item
-              v-for="(cardItem, index) in menuItems"
-              :key="index"
-              @click="teamMenuOnClickHandler(cardItem)"
-            >
-              <v-list-item-icon class="custom-entity-menu-icon">
-                <v-icon
-                  :color="getTeamMenuColour(entity, cardItem)"
-                  small
-                  v-text="getTeamMenuIcon(entity, cardItem)" />
-              </v-list-item-icon>
-              <v-list-item-content>
-                <v-list-item-title v-text="getTeamMenuText(entity, cardItem)" />
-              </v-list-item-content>
-            </v-list-item>
-          </v-list>
-        </v-card>
-      </v-menu>
+      <entity-menu
+        :item="entity"
+        :cardMenuItems="cardMenuItems"
+        :isMenuItemVisible="() => true"
+        :menuOnClickHandler="teamMenuOnClickHandler"
+        :getMenuIconColour="getTeamMenuColour"
+        :getMenuIcon="getTeamMenuIcon"
+        :getMenuText="getTeamMenuText"
+      />
     </v-list-item-action>
   </v-list-item>
 </template>
@@ -69,11 +42,13 @@ import { GameEntity } from '@/types/games'
 import { namespace } from 'vuex-class'
 import { Namespaces } from '@/store'
 import { SocketTeamAction } from '@/store/modules/socket/team'
+import EntityMenu from '../EntityMenu.vue'
 
 const SocketTeam = namespace(Namespaces.SOCKET_TEAM)
 
 @Component({
-  name: 'TeamListItem'
+  name: 'TeamListItem',
+  components: { EntityMenu }
 })
 export default class TeamListItem extends Vue {
   @Prop() private readonly entity!: GameEntity
@@ -83,38 +58,7 @@ export default class TeamListItem extends Vue {
 
   getEntityName = getEntityName
   entityName: string = this.getEntityName(this.game)
-
-  // util function
-  convertNumberToRomanNumeral = convertNumberToRomanNumeral
-
-  teamMenuOnClickHandler (menuItem: MenuItem) {
-    switch (menuItem.action) {
-      case TeamMenuOptions.STATS:
-        EventBus.$emit(OpenOverlayList.OPEN_THE_ENTITY_PROPERTIES_MODAL, this.entity)
-        break
-      case TeamMenuOptions.DUPLICATE_ENTITY_TEAM: break
-      case TeamMenuOptions.DUPLICATE_ENTITY_DIFFERENT_TEAM: break
-      case TeamMenuOptions.DELETE: break
-      default: break
-    }
-  }
-
-  getTeamMenuColour (entity: GameEntity, item: MenuItem) {
-    if (item.action === TeamMenuOptions.DELETE) {
-      return 'error'
-    }
-    return 'primary'
-  }
-
-  getTeamMenuIcon (entity: GameEntity, item: MenuItem) {
-    return item.icon
-  }
-
-  getTeamMenuText (entity: GameEntity, item: MenuItem) {
-    return this.$t(item.title)
-  }
-
-  menuItems: MenuItem[] = [{
+  cardMenuItems: MenuItem[] = [{
     action: TeamMenuOptions.STATS,
     title: 'teams.menu.stats',
     icon: 'fa-edit'
@@ -131,6 +75,36 @@ export default class TeamListItem extends Vue {
     title: 'teams.menu.delete',
     icon: 'fa-times'
   }]
+
+  // util function
+  convertNumberToRomanNumeral = convertNumberToRomanNumeral
+
+  teamMenuOnClickHandler (_entity: GameEntity, menuItem: MenuItem) {
+    switch (menuItem.action) {
+      case TeamMenuOptions.STATS:
+        EventBus.$emit(OpenOverlayList.OPEN_THE_ENTITY_PROPERTIES_OVERLAY, this.entity)
+        break
+      case TeamMenuOptions.DUPLICATE_ENTITY_TEAM: break
+      case TeamMenuOptions.DUPLICATE_ENTITY_DIFFERENT_TEAM: break
+      case TeamMenuOptions.DELETE: break
+      default: break
+    }
+  }
+
+  getTeamMenuColour (_entity: GameEntity, menuItem: MenuItem) {
+    if (menuItem.action === TeamMenuOptions.DELETE) {
+      return 'error'
+    }
+    return 'primary'
+  }
+
+  getTeamMenuIcon (_entity: GameEntity, menuItem: MenuItem) {
+    return menuItem.icon
+  }
+
+  getTeamMenuText (_entity: GameEntity, menuItem: MenuItem) {
+    return this.$t(menuItem.title)
+  }
 
   teamListItemActionHandler () {
     // console.log('fired')

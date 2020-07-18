@@ -42,7 +42,3 @@ export default class TheUserListContent extends Vue {
   }
 }
 </script>
-
-<style scoped>
-
-</style>

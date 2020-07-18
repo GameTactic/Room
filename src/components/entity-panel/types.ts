@@ -31,3 +31,8 @@ export enum TeamMenuOptions {
   DUPLICATE_ENTITY_DIFFERENT_TEAM = 'duplicateEntityDifferentTeam',
   DELETE = 'delete'
 }
+
+export enum UserMenuOptions {
+  MANAGE_ROLES = 'manageRoles',
+  BAN = 'ban'
+}

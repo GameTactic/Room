@@ -33,9 +33,15 @@
         {{ user.name }}
       </v-list-item-content>
       <v-list-item-action class="ma-0">
-        <v-btn fab text small>
-          <v-icon small class="grey--text darken-2">fa-ellipsis-v</v-icon>
-        </v-btn>
+        <entity-menu
+          :item="user"
+          :cardMenuItems="cardMenuItems"
+          :isMenuItemVisible="isMenuItemVisibleHandler"
+          :menuOnClickHandler="userMenuOnClickHandler"
+          :getMenuIconColour="getUserMenuColour"
+          :getMenuIcon="getUserMenuIcon"
+          :getMenuText="getUserMenuText"
+        />
       </v-list-item-action>
     </v-list-item>
   </span>
@@ -46,15 +52,30 @@
 import Component from 'vue-class-component'
 import Vue from 'vue'
 import { Prop } from 'vue-property-decorator'
-import { User, RoleTypes } from '@/store/types'
+import { User, RoleTypes, Role } from '@/store/types'
+import { MenuItem, UserMenuOptions } from '../../types'
+import EntityMenu from '../EntityMenu.vue'
 
 @Component({
-  name: 'UserListItem'
+  name: 'UserListItem',
+  components: {
+    EntityMenu
+  }
 })
 export default class UserListItem extends Vue {
   @Prop() private users!: User[]
   @Prop() private type!: RoleTypes
   @Prop() private online!: boolean
+
+  cardMenuItems: MenuItem[] = [{
+    action: UserMenuOptions.MANAGE_ROLES,
+    title: 'user.menu.manageRoles',
+    icon: 'fa-edit'
+  }, {
+    action: UserMenuOptions.BAN,
+    title: 'user.menu.ban',
+    icon: 'fa-ban'
+  }]
 
   // enum
   RoleTypes = RoleTypes
@@ -66,6 +87,37 @@ export default class UserListItem extends Vue {
       case RoleTypes.USER: return 'Users'
       default: return ''
     }
+  }
+
+  userMenuOnClickHandler (user: User, menuItem: MenuItem) {
+    switch (menuItem.action) {
+      case UserMenuOptions.MANAGE_ROLES: break
+      case UserMenuOptions.BAN: break
+      default: break
+    }
+  }
+
+  getUserMenuColour (user: User, menuItem: MenuItem) {
+    if (menuItem.action === UserMenuOptions.BAN) {
+      return 'error'
+    }
+    return 'primary'
+  }
+
+  getUserMenuIcon (user: User, menuItem: MenuItem) {
+    return menuItem.icon
+  }
+
+  getUserMenuText (user: User, menuItem: MenuItem) {
+    return this.$t(menuItem.title)
+  }
+
+  isMenuItemVisibleHandler (user: User, menuItem: MenuItem) {
+    if ((menuItem.action === UserMenuOptions.BAN || menuItem.action === UserMenuOptions.MANAGE_ROLES) &&
+      !user.roles.find((role: Role) => role.roleTypes === RoleTypes.ROOM_OWNER || role.roleTypes === RoleTypes.ADMIN)) {
+      return false
+    }
+    return true
   }
 }
 </script>

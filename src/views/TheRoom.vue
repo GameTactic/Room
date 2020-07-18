@@ -20,7 +20,8 @@
     <the-entity-panel v-if="isAuthorised" class="d-none d-sm-flex z-index-above-overlay" :panelOpen="isEntityPanelOpen" />
     <the-create-new-tactic-overlay />
     <the-update-tactic-overlay />
-    <the-entity-properties-modal />
+    <the-entity-properties-overlay />
+    <the-invite-user-overlay />
     <pinned-tactics class="z-index-above-overlay" v-if="isAuthorisedCanvasLoaded"></pinned-tactics>
   </div>
 </template>
@@ -35,7 +36,8 @@ import { Prop, Watch } from 'vue-property-decorator'
 import { VueKonvaStage } from '@/types/canvas'
 import TheCreateNewTacticOverlay from '@/components/overlays/TheCreateNewTacticOverlay.vue'
 import TheUpdateTacticOverlay from '@/components/overlays/TheUpdateTacticOverlay.vue'
-import TheEntityPropertiesModal from '@/components/overlays/TheEntityPropertiesModal.vue'
+import TheEntityPropertiesOverlay from '@/components/overlays/TheEntityPropertiesOverlay.vue'
+import TheInviteUserOverlay from '@/components/overlays/TheInviteUserOverlay.vue'
 import { namespace } from 'vuex-class'
 import { EventBus } from '@/event-bus'
 import RoomSocket from '@/mixins/roomSockets'
@@ -65,11 +67,12 @@ const AppRoom = namespace(Namespaces.APP_ROOM)
     PinnedTactics,
     TheCreateNewTacticOverlay,
     TheUpdateTacticOverlay,
-    TheEntityPropertiesModal,
+    TheEntityPropertiesOverlay,
     TheNav,
     TheToolPanel,
     TheCanvas,
-    TheEntityPanel
+    TheEntityPanel,
+    TheInviteUserOverlay
   }
 })
 export default class TheRoom extends mixins(RoomSocket) {

@@ -25,11 +25,21 @@
           :href="`#tab-'${pinnedTactic.id}`"
           :title="pinnedTactic.name"
           v-on="pinnedTab"
-          class="custom-pinned-tab"
+          class="custom-pinned-tab px-2"
           @click="switchTactic(pinnedTactic.id)"
           @contextmenu="showTacticTabContextMenu(pinnedTactic, $event)"
         >
-          <div class="caption" v-text="pinnedTactic.name" />
+          <span class="custom-pinned-tactic-content">
+            <div class="caption" v-text="pinnedTactic.name" />
+            <v-icon
+              class="ml-1"
+              small
+              :title="$t('tactic.unpin')"
+              @click="togglePinTactic(pinnedTactic)"
+            >
+              fa-times
+            </v-icon>
+          </span>
         </v-tab>
       </template>
       <v-card
@@ -49,31 +59,6 @@
         </div>
       </v-card>
     </v-menu>
-    <v-menu
-      v-model="showMenu"
-      :position-x="x"
-      :position-y="y"
-      absolute
-      offset-y
-    >
-      <v-list dense>
-        <v-list-item
-          v-for="(contextMenuItem, index) in contextMenuItems"
-          :key="index"
-          @click="tacticMenuOnClickHandler(contextMenuItem)"
-        >
-          <v-list-item-icon class="custom-autocomplete-tactic-menu-icon">
-            <v-icon
-              color="primary"
-              small
-              v-text="contextMenuItem.icon" />
-          </v-list-item-icon>
-          <v-list-item-content>
-            <v-list-item-title :title="$t(contextMenuItem.title)" v-text="$t(contextMenuItem.title)" />
-          </v-list-item-content>
-        </v-list-item>
-      </v-list>
-    </v-menu>
   </v-tabs>
 </template>
 
@@ -85,7 +70,6 @@ import { Namespaces } from '@/store'
 import { SocketTacticGetters, SocketTacticAction } from '@/store/modules/socket/tactic'
 import { Tactic } from '@/store/types'
 import HandleTactic from '@/util/handleTactic'
-import { MenuItem, TacticMenuOptions } from '../entity-panel/types'
 
 const SocketTactic = namespace(Namespaces.SOCKET_TACTIC)
 
@@ -98,29 +82,12 @@ export default class PinnedTactics extends Vue {
   @SocketTactic.Getter(SocketTacticGetters.CURRENT_TACTIC) currentTactic!: Tactic | undefined
   @SocketTactic.Action(SocketTacticAction.TOGGLE_PIN_TACTIC) togglePinTactic!: (tactic: Tactic) => void
 
-  selectedTactic: Tactic | null = null
   showMenu = false
   x = 0
   y = 0
-  contextMenuItems: MenuItem[] = [{
-    action: TacticMenuOptions.PIN,
-    title: 'tactic.unpin',
-    icon: 'far fa-bookmark'
-  }]
 
   get currentTabValue () {
     return this.currentTactic?.isPinned ? `tab-'${this.currentTactic.id}` : ''
-  }
-
-  showTacticTabContextMenu (tactic: Tactic, event: MouseEvent) {
-    event.preventDefault()
-    this.selectedTactic = tactic
-    this.showMenu = false
-    this.x = event.clientX
-    this.y = event.clientY
-    this.$nextTick(() => {
-      this.showMenu = true
-    })
   }
 
   get pinnedTactics (): Tactic[] {
@@ -131,18 +98,6 @@ export default class PinnedTactics extends Vue {
     const tactic: Tactic | undefined = this.tactics.find((tactic: Tactic) => tactic.id === id)
     if (tactic) {
       new HandleTactic(tactic).setLocal()
-    }
-  }
-
-  tacticMenuOnClickHandler (contextMenuItem: MenuItem) {
-    if (this.selectedTactic) {
-      switch (contextMenuItem.action) {
-        case TacticMenuOptions.PIN:
-          this.togglePinTactic(this.selectedTactic)
-          break
-        default:
-          break
-      }
     }
   }
 }
@@ -158,12 +113,13 @@ export default class PinnedTactics extends Vue {
     border-top-right-radius: 4px;
   }
   .custom-pinned-tactic-popup {
-    margin: 0px;
+    margin: 0;
   }
   .custom-pinned-tab {
     width: 200px;
     overflow-x: hidden;
     align-items: flex-start;
+    padding-top: 2px;
     border-right: 1.5px solid rgba(0, 0, 0, 0.1);
     > div {
       white-space: nowrap;
@@ -175,11 +131,13 @@ export default class PinnedTactics extends Vue {
   .custom-pinned-tab-card {
     width: 200px;
     justify-content: center;
-    display: flex;;
+    display: flex;
   }
-
-  .custom-autocomplete-tactic-menu-icon {
-    margin-right: 6px !important;
+  .custom-pinned-tactic-content {
+    display: flex;
+    width: 100%;
+    justify-content: space-between;
+    overflow: hidden;
   }
 </style>
 <style lang="scss">
