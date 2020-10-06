@@ -66,13 +66,13 @@ const AppToolModule: Module<AppToolState, RootState> = {
       enabledTool: undefined,
       enabled: false,
       tools: [
-        new Ping('ping', 5, '#005555FF', true),
-        new FreeDraw('freeDraw', 5, '#CE0000FF', false),
+        new Ping('ping', 3, '#005555FF', true),
+        new FreeDraw('freeDraw', 3, '#CE0000FF', false),
         new Erase('erase', false),
-        new Line('line', 5, '#CE0000FF', LineType.LINE, 0, false),
-        new Circle('circle', 5, '#CE000080', false, true, '#CE0000FF', 0),
+        new Line('line', 3, '#CE0000FF', LineType.LINE, 0, false),
+        new Circle('circle', 3, '#CE000080', false, true, '#CE0000FF', 0),
         new Ruler('ruler', 3, '#C2C4BD80', false, true),
-        new Text('text', 5, '#CE0000FF', false, ''),
+        new Text('text', 4, '#CE0000FF', false, ''),
         new Move('move', false),
         new MoveCanvas('moveCanvas', false),
         new Entity('entity', false)

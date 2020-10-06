@@ -14,17 +14,20 @@ export interface MenuItem {
   title: string;
   icon: string;
   titleTwo?: string;
+  iconTwo?: string;
 }
 
 export enum TacticMenuOptions {
+  LOCK = 'lock',
   EDIT = 'edit',
   PIN = 'pin',
+  DUPLICATE = 'duplicate',
   DELETE = 'delete',
 }
 
 export enum TeamMenuOptions {
   STATS = 'stats',
-  CLONE_ENTITY_TEAM = 'cloneEntityTeam',
-  CLONE_ENTITY_DIFFERENT_TEAM = 'cloneEntityDifferentTeam',
-  DELETE = 'delete',
+  DUPLICATE_ENTITY_TEAM = 'duplicateEntityTeam',
+  DUPLICATE_ENTITY_DIFFERENT_TEAM = 'duplicateEntityDifferentTeam',
+  DELETE = 'delete'
 }

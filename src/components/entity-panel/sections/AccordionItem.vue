@@ -12,7 +12,7 @@
         <v-divider v-if="icon" vertical />
         <v-btn
           v-if="icon"
-          :disabled="rightButtonDisabled"
+          :disabled="isRightButtonDisabled"
           class="custom-button"
           icon
           dark
@@ -41,7 +41,7 @@ import { Prop } from 'vue-property-decorator'
 })
 export default class AccordionItem extends Vue {
   @Prop() private readonly icon!: string
-  @Prop() private readonly rightButtonDisabled!: boolean
+  @Prop() private readonly isRightButtonDisabled!: boolean
 }
 </script>
 <style lang="scss" scoped>
@@ -78,7 +78,6 @@ export default class AccordionItem extends Vue {
   max-height: 420px;
   overflow-y: auto;
   overflow-x: hidden;
-  margin-right: 4px;
   @include custom-scroll-bar;
 }
 
