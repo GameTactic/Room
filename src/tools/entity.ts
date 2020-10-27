@@ -11,26 +11,20 @@ export default class Entity extends ToolClass {
   private data: EntityData | undefined
   private entityCreator: EntityCreator
   private entity: EntityInterface | undefined
-  private groupId = uuid()
   constructor (public readonly name: string,
-               public temporary: boolean) {
+               public temporary: boolean,
+               public groupId: string = uuid()) {
     super()
-    this.entityCreator = new EntityCreator(
-      this.temporary,
-      '',
-      { x: 0, y: 0 },
-      { width: 0, height: 0 },
-      '',
-      '',
-      this.groupId
-    )
+    this.entityCreator = new EntityCreator(this.temporary, '', { x: 0, y: 0 }, { width: 0, height: 0 }, '', '', this.groupId)
   }
   // eslint-disable-next-line
   mouseDownAction = (event: CustomEvent): void => {
   }
+
   // eslint-disable-next-line
   mouseMoveAction = (event: CustomEvent): void => {
   }
+
   // eslint-disable-next-line
   mouseUpAction = (event: CustomEvent): void => {
     if (this.entity && this.currentTeam && this.jti) {
@@ -45,7 +39,7 @@ export default class Entity extends ToolClass {
         name: this.entity.name,
         id: this.entity.id,
         team: this.currentTeam
-      } as EntityData
+      }
       this.entityCreator = new EntityCreator(
         this.temporary,
         this.data.image,
@@ -57,6 +51,7 @@ export default class Entity extends ToolClass {
           width: this.formatX(this.data.dimensions.width),
           height: this.formatY(this.data.dimensions.height)
         },
+        this.data.name,
         this.data.name,
         this.groupId,
         this.data.team.color

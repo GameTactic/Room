@@ -1,5 +1,5 @@
 import Konva from 'konva'
-import { CanvasElement, CanvasElementType, TransformData, Point, CanvasElementHistory } from '@/types/canvas'
+import { CanvasElement, CanvasElementType, TransformData, Point, CanvasElementHistory, CanvasElementSubType } from '@/types/canvas'
 import store from '@/main'
 import { Namespaces } from '@/store'
 import { AppStageGetters } from '@/store/modules/app/stage'
@@ -172,6 +172,16 @@ export default class Transformer extends ToolClass {
         y: e.evt.y
       }
       this.tr.getNodes().forEach((node: Konva.Node) => {
+        if (node.parent) {
+          node.parent.children.each((childNode: Konva.Node) => {
+            if (childNode.attrs.type === CanvasElementSubType.TEXT) {
+              childNode.move({
+                x: (this.moveData.to.x - this.moveData.prev.x) / (stageZoom / 100),
+                y: (this.moveData.to.y - this.moveData.prev.y) / (stageZoom / 100)
+              })
+            }
+          })
+        }
         node.move({
           x: (this.moveData.to.x - this.moveData.prev.x) / (stageZoom / 100),
           y: (this.moveData.to.y - this.moveData.prev.y) / (stageZoom / 100)

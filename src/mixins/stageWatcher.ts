@@ -61,7 +61,7 @@ export default class StageWatch extends Vue {
   @Watch('stageMapSrc')
   onStageMapSrc () {
     const mapCanvas = new MapCanvas()
-    const renderCanvas = new HandleRenderShapes(this.$store)
+    const renderCanvas = new HandleRenderShapes(this.$store, true)
     mapCanvas.setMap().then(() => renderCanvas.handle())
   }
 

@@ -195,7 +195,7 @@ export default class TheTacticListContent extends Vue {
           parent: tactic.collectionId,
           id: tactic.id,
           name: tactic.name,
-          tactic: tactic,
+          tactic: { ...tactic },
           icon: tactic.map.icon || 'fa-map'
         }))
       }

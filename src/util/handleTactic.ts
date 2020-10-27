@@ -36,6 +36,10 @@ export default class HandleTactic {
       this.setElements()
       this.setTeams()
       // Here we need to notify sockets that we switched tactic
+    } else {
+      // This is when the existing and updated tactic are the same but we are just updating the name and map
+      this.checkNeedForOverlay()
+      this.setStage()
     }
   }
 

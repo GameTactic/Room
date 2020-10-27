@@ -38,7 +38,8 @@ const SocketTeamModule: Module<SocketTeamState, {}> = {
   state () {
     return {
       teams: [],
-      selectedTeam: undefined
+      selectedTeam: undefined,
+      selectedEntity: undefined
     }
   },
   getters: {

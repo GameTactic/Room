@@ -14,7 +14,6 @@ export enum LineType {
 
 export default class Line extends ToolClass implements LineInterface {
   private lineCreator: LineCreator
-  private groupId = uuid()
   private hasMoved = false
   private data: LineData | undefined
   constructor (public readonly name: string,
@@ -22,7 +21,8 @@ export default class Line extends ToolClass implements LineInterface {
                public colour: string,
                public endStyle: LineType,
                public strokeStyle: number,
-               public temporary: boolean) {
+               public temporary: boolean,
+               public groupId: string = uuid()) {
     super()
     this.lineCreator = new LineCreator(
       this.temporary,

@@ -1,6 +1,8 @@
 import { ActionContext, Module } from 'vuex'
 import { v4 as uuid } from 'uuid'
 import { Collection, Tactic, RootState, ToggleLockTactic, DuplicateTactic } from '@/store/types'
+import { CanvasElement, CanvasElementHistory } from '@/types/canvas'
+import HandleTactic from '@/util/handleTactic'
 
 export enum SocketTacticAction {
   SET_COLLECTIONS = 'setCollections',
@@ -9,6 +11,8 @@ export enum SocketTacticAction {
   DELETE_COLLECTION = 'deleteCollection',
   SET_TACTICS = 'setSocketTactics',
   ADD_TACTIC = 'addSocketTactic',
+  ADD_CANVAS_ELEMENT_TO_TACTIC = 'addCanvasElementToTactic',
+  ADD_CANVAS_ELEMENT_HISTORY_TO_TACTIC = 'addCanvasElementHistoryToTactic',
   DUPLICATE_TACTIC = 'duplicateTactic',
   TOGGLE_PIN_TACTIC = 'togglePinSocketTactic',
   TOGGLE_LOCK_TACTIC = 'toggleLockTactic',
@@ -24,6 +28,8 @@ export enum SocketTacticMutation {
   DELETE_COLLECTION = 'DELETE_COLLECTION',
   SET_TACTICS = 'SET_TACTICS',
   ADD_TACTIC = 'ADD_TACTIC',
+  ADD_CANVAS_ELEMENT_TO_TACTIC = 'ADD_CANVAS_ELEMENT_TO_TACTIC',
+  ADD_CANVAS_ELEMENT_HISTORY_TO_TACTIC = 'ADD_CANVAS_ELEMENT_HISTORY_TO_TACTIC',
   TOGGLE_PIN_TACTIC = 'TOGGLE_PIN_TACTIC',
   TOGGLE_LOCK_TACTIC = 'TOGGLE_LOCK_TACTIC',
   UPDATE_TACTIC = 'UPDATE_TACTIC',
@@ -84,28 +90,51 @@ const SocketTacticModule: Module<SocketTacticState, RootState> = {
       state.tactics = payload
     },
     [SocketTacticMutation.TOGGLE_PIN_TACTIC] (state: SocketTacticState, payload: Tactic) {
-      payload.isPinned = !payload.isPinned
+      state.tactics = state.tactics.map((tactic: Tactic) => {
+        if (tactic.id === payload.id) {
+          return { ...tactic, isPinned: !tactic.isPinned }
+        }
+        return tactic
+      })
     },
     [SocketTacticMutation.TOGGLE_LOCK_TACTIC] (state: SocketTacticState, payload: ToggleLockTactic) {
-      let foundTacticIndex = -1
-      const foundTactic: Tactic | undefined = state.tactics.find((tactic: Tactic, index: number) => {
+      state.tactics = state.tactics.map((tactic: Tactic) => {
         if (tactic.id === payload.tacticId) {
-          foundTacticIndex = index
-          return true
+          return { ...tactic, lockedBy: !tactic.lockedBy ? payload.jti : undefined }
         }
+        return tactic
       })
-      if (foundTacticIndex > -1 && foundTactic) {
-        state.tactics.splice(foundTacticIndex, 1, { ...foundTactic, lockedBy: !foundTactic.lockedBy ? payload.jti : undefined })
-      }
     },
     [SocketTacticMutation.ADD_TACTIC] (state: SocketTacticState, payload: Tactic) {
       state.tactics.push(payload)
     },
+    [SocketTacticMutation.ADD_CANVAS_ELEMENT_TO_TACTIC] (state: SocketTacticState, payload: CanvasElement) {
+      state.tactics.forEach((tactic: Tactic) => {
+        if (tactic.tacticId === state.currentTacticId) {
+          tactic.canvasElements.push({ ...payload })
+        }
+      })
+    },
+    [SocketTacticMutation.ADD_CANVAS_ELEMENT_HISTORY_TO_TACTIC] (state: SocketTacticState, payload: CanvasElementHistory) {
+      state.tactics.forEach((tactic: Tactic) => {
+        if (tactic.id === state.currentTacticId) {
+          tactic.canvasElementsHistory.push({ ...payload })
+        }
+      })
+    },
     [SocketTacticMutation.UPDATE_TACTIC] (state: SocketTacticState, payload: Tactic) {
-      state.tactics.splice(state.tactics.findIndex((tactic: Tactic) => tactic.id === payload.id), 1, payload)
+      state.tactics = state.tactics.map((tactic: Tactic) => {
+        if (tactic.id === payload.id) {
+          new HandleTactic(payload).setLocal()
+          return payload
+        }
+        return tactic
+      })
     },
     [SocketTacticMutation.DELETE_TACTIC] (state: SocketTacticState, id: string) {
-      state.tactics.splice(state.tactics.findIndex((tactic: Tactic) => tactic.id === id), 1)
+      state.tactics = state.tactics.filter((tactic: Tactic) => {
+        return tactic.id !== id
+      })
     },
     [SocketTacticMutation.SET_CURRENT_TACTIC_ID] (state: SocketTacticState, id: string) {
       state.currentTacticId = id
@@ -129,6 +158,12 @@ const SocketTacticModule: Module<SocketTacticState, RootState> = {
     },
     [SocketTacticAction.ADD_TACTIC] (context: SocketTacticActionContext, payload: Tactic) {
       context.commit('ADD_TACTIC', payload)
+    },
+    [SocketTacticAction.ADD_CANVAS_ELEMENT_TO_TACTIC] (context: SocketTacticActionContext, payload: CanvasElement) {
+      context.commit('ADD_CANVAS_ELEMENT_TO_TACTIC', payload)
+    },
+    [SocketTacticAction.ADD_CANVAS_ELEMENT_HISTORY_TO_TACTIC] (context: SocketTacticActionContext, payload: CanvasElementHistory) {
+      context.commit('ADD_CANVAS_ELEMENT_HISTORY_TO_TACTIC', payload)
     },
     [SocketTacticAction.DUPLICATE_TACTIC] (context: SocketTacticActionContext, payload: DuplicateTactic) {
       context.commit('ADD_TACTIC', { ...payload.tactic, createdBy: payload.jti, id: uuid() })

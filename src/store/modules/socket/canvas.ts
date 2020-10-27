@@ -1,6 +1,8 @@
 import { ActionContext, Module } from 'vuex'
 import { CanvasElement, CanvasElementHistory, Point } from '@/types/canvas'
 import { RootState } from '@/store/types'
+import { Namespaces } from '@/store'
+import { SocketTacticAction } from './tactic'
 
 export enum SocketCanvasMutation {
   SET_CANVAS_ELEMENT = 'SET_CANVAS_ELEMENT',
@@ -101,7 +103,9 @@ const SocketCanvasModule: Module<SocketCanvasState, RootState> = {
       context.commit('SET_CANVAS_ELEMENT_HISTORY', payload)
     },
     [SocketCanvasAction.ADD_CANVAS_ELEMENT] (context: SocketCanvasActionContext, payload: CanvasElement) {
-      context.commit('ADD_CANVAS_ELEMENT', payload)
+      const canvasElementJSON: CanvasElement = JSON.parse(JSON.stringify({ ...payload }))
+      context.dispatch(`${Namespaces.SOCKET_TACTIC}/${SocketTacticAction.ADD_CANVAS_ELEMENT_TO_TACTIC}`, canvasElementJSON, { root: true })
+      context.commit('ADD_CANVAS_ELEMENT', canvasElementJSON)
     },
     [SocketCanvasAction.HIDE_CANVAS_ELEMENT] (context: SocketCanvasActionContext, payload: CanvasElement) {
       context.commit('HIDE_CANVAS_ELEMENT', payload)
@@ -110,7 +114,9 @@ const SocketCanvasModule: Module<SocketCanvasState, RootState> = {
       context.commit('SHOW_CANVAS_ELEMENT', payload)
     },
     [SocketCanvasAction.ADD_CANVAS_ELEMENT_HISTORY] (context: SocketCanvasActionContext, payload: CanvasElementHistory) {
-      context.commit('ADD_CANVAS_ELEMENT_HISTORY', payload)
+      const canvasElementHistoryJSON: CanvasElementHistory = JSON.parse(JSON.stringify({ ...payload }))
+      context.dispatch(`${Namespaces.SOCKET_TACTIC}/${SocketTacticAction.ADD_CANVAS_ELEMENT_HISTORY_TO_TACTIC}`, canvasElementHistoryJSON, { root: true })
+      context.commit('ADD_CANVAS_ELEMENT_HISTORY', canvasElementHistoryJSON)
     },
     [SocketCanvasAction.UPDATE_CANVAS_ELEMENT_ATTRS] (context: SocketCanvasActionContext, payload: { id: string; attrs: CanvasElement['attrs'] }) {
       context.commit('UPDATE_CANVAS_ELEMENT_ATTRS', payload)

@@ -5,6 +5,7 @@ import { CanvasElementType, TransformData, Point } from '@/types/canvas'
 import Transformer from '@/tools/util/transformer'
 import Mask from '@/tools/util/mask'
 import Collection = Konva.Collection;
+
 export default class Move extends ToolClass implements ToolClassInterface {
   private data: TransformData | undefined
   private position: { from: Point; to: Point } | undefined
@@ -46,7 +47,9 @@ export default class Move extends ToolClass implements ToolClassInterface {
   // eslint-disable-next-line
   mouseMoveAction = (event: CustomEvent): void => {
     if (this.enabled) {
-      if (!this.hasMoved) { this.hasMoved = true }
+      if (!this.hasMoved) {
+        this.hasMoved = true
+      }
       if (this.position) {
         this.position.to = {
           x: event.globalOffset.x,
@@ -78,14 +81,19 @@ export default class Move extends ToolClass implements ToolClassInterface {
     this.layer.batchDraw()
   }
 
+  mouseRightUpAction = (event: CustomEvent): void => {
+    console.log('event', event)
+    console.log('this.data', this)
+  }
+
   // Use mask to check which shapes it covers in the layer.
   // Return the IDs of the groups that are covered by the mask and dont exist in the groups array
   hitCheck = (): Collection<Konva.Node> => {
     return this.layer.find((node: Konva.Node) => {
       if (node instanceof Konva.Group &&
         (node.attrs.type === CanvasElementType.ENTITY || node.attrs.type === CanvasElementType.SHAPE) &&
-        !node.attrs.temporary &&
-        this.mask) {
+        !node.attrs.temporary && this.mask
+      ) {
         const r1 = this.mask.getClientRect({})
         const r2 = node.getClientRect({})
         return !(

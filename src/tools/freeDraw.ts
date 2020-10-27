@@ -11,15 +11,17 @@ export default class FreeDraw extends ToolClass implements FreeDrawInterface {
   private freeDrawCreator: FreeDrawCreator
   private data: FreeDrawData
   private hasMoved = false
-  private groupId = uuid()
+
   constructor (public readonly name: string,
                public size: number,
                public colour: string,
-               public temporary: boolean) {
+               public temporary: boolean,
+               public groupId: string = uuid()) {
     super()
     this.data = {
       points: []
     }
+
     this.freeDrawCreator = new FreeDrawCreator(
       this.temporary,
       this.size,

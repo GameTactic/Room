@@ -1,5 +1,5 @@
 import Konva from 'konva'
-import { AdditionData, CanvasElement, CanvasElementHistory, CanvasElementType } from '@/types/canvas'
+import { AdditionData, CanvasElement, CanvasElementHistory, CanvasElementType, AdditionTools } from '@/types/canvas'
 import { Tool, Tracker } from '@/tools/tool'
 import { CustomStageConfig } from '@/util/pointerEventMapper'
 import { AppLayerGetters } from '@/store/modules/app/layer'
@@ -9,6 +9,7 @@ import { AppStageGetters } from '@/store/modules/app/stage'
 import { AppToolGetters } from '@/store/modules/app/tools'
 import { Store } from 'vuex'
 import { Namespaces } from '@/store'
+import { FreeDraw, Circle, Entity, Line, Ruler, Text } from '@/tools'
 
 export default class HandleRenderShapes {
   // eslint-disable-next-line no-useless-constructor
@@ -18,17 +19,22 @@ export default class HandleRenderShapes {
   public canvasElementsHistory: CanvasElementHistory[]
   public tools: Tool[]
   public stage: Konva.Stage
+  public destroyChildren: boolean
 
-  constructor (private propStore: Store<string>) {
+  constructor (private propStore: Store<string>, destroyChildren?: boolean) {
     this.layer = this.propStore.getters[`${Namespaces.APP_LAYER}/${AppLayerGetters.LAYER}`]
     this.canvasElements = this.propStore.getters[`${Namespaces.SOCKET_CANVAS}/${SocketCanvasGetters.CANVAS_ELEMENTS}`]
     this.stageConfig = this.propStore.getters[`${Namespaces.SOCKET_STAGE}/${SocketStageGetters.STAGE_CONFIG}`]
     this.canvasElementsHistory = this.propStore.getters[`${Namespaces.SOCKET_CANVAS}/${SocketCanvasGetters.CANVAS_ELEMENTS_HISTORY}`]
     this.tools = this.propStore.getters[`${Namespaces.APP_TOOLS}/${AppToolGetters.TOOLS}`]
     this.stage = this.propStore.getters[`${Namespaces.APP_STAGE}/${AppStageGetters.STAGE}`]
+    this.destroyChildren = destroyChildren ?? false
   }
 
   handle = (): void => {
+    if (this.destroyChildren) {
+      this.layer.destroyChildren()
+    }
     this.handleLayerNodes()
     this.handleCanvasElements()
     this.layer.batchDraw()
@@ -36,14 +42,37 @@ export default class HandleRenderShapes {
 
   handleCanvasElements = (): void => {
     this.canvasElements.forEach((canvasElement: CanvasElement) => {
-      if (canvasElement.tool.renderCanvas) {
-        if (canvasElement.isVisible) {
-          this.handleCanvasElementVisible(canvasElement)
-        } else {
-          this.handleCanvasElementInvisible(canvasElement)
+      const foundGroup = this.layer.findOne((group: Konva.Group) => group.attrs.id === canvasElement.tool.groupId)
+      if (!canvasElement.tool.renderCanvas && !foundGroup) {
+        const { name, size, colour, temporary, groupId, showRadius, outlineColour, strokeStyle, endStyle, showCircle, textString } = canvasElement.tool
+        switch (name) {
+          case AdditionTools.FREEDRAW:
+            canvasElement.tool = { ...new FreeDraw(name, size, colour, temporary, groupId), tool: canvasElement.tool }
+            break
+          case AdditionTools.CIRCLE:
+            canvasElement.tool = { ...new Circle(name, size, colour, temporary, showRadius, outlineColour, strokeStyle, groupId), tool: canvasElement.tool }
+            break
+          case AdditionTools.ENTITY:
+            canvasElement.tool = { ...new Entity(name, temporary, groupId), tool: canvasElement.tool }
+            break
+          case AdditionTools.LINE:
+            canvasElement.tool = { ...new Line(name, size, colour, endStyle, strokeStyle, temporary, groupId), tool: canvasElement.tool }
+            break
+          case AdditionTools.RULER:
+            canvasElement.tool = { ...new Ruler(name, size, colour, temporary, showCircle, groupId), tool: canvasElement.tool }
+            break
+          case AdditionTools.TEXT:
+            canvasElement.tool = { ...new Text(name, size, colour, temporary, textString, groupId), tool: canvasElement.tool }
+            break
+          default: break
         }
-        this.checkGroupAttrs(canvasElement)
       }
+      if (canvasElement.isVisible) {
+        this.handleCanvasElementVisible(canvasElement)
+      } else {
+        this.handleCanvasElementInvisible(canvasElement)
+      }
+      this.checkGroupAttrs(canvasElement)
     })
   }
 

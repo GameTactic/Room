@@ -15,7 +15,7 @@ export default class Mask {
       width: this.config.width,
       height: this.config.height,
       stroke: '#004e8c',
-      dash: [5, 5]
+      dash: [10, 5]
     })
     this._mask.attrs.type = CanvasElementType.MASK
     this._mask.attrs.temporary = false

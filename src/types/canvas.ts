@@ -31,6 +31,10 @@ export enum CanvasElementType {
   MASK = 'mask'
 }
 
+export enum CanvasElementSubType {
+  TEXT = 'text',
+}
+
 export interface CanvasElement {
   id: string;
   tool: Tool;

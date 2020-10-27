@@ -1,7 +1,11 @@
 <template>
   <div class="custom-the-entity-list-content">
     <v-divider class="px-2"></v-divider>
-    <entity-search v-model="search" :game="game" placeholder="entity.textField.placeholder" />
+    <entity-search
+      v-model="search"
+      :game="game"
+      placeholder="entity.textField.placeholder"
+    />
     <v-item-group
       :value="selectedDefaultEntityId"
       class="custom-default-entities-container mb-2"
@@ -11,7 +15,7 @@
         :key="defaultEntity.id"
       >
         <entity-card
-          :active="Number(defaultEntity.id) === selectedDefaultEntityId"
+          :active="defaultEntity.id === selectedDefaultEntityId"
           :entity="defaultEntity"
           :noOfEntitiesOnCanvas="getNumberOfEntitiesOnCanvas(defaultEntity)"
           @click="defaultEntityChipGroupOnChangeHandler"
@@ -19,7 +23,7 @@
       </v-item>
     </v-item-group>
     <v-lazy
-      v-if="entitySearch.length > 0"
+      v-if="entitySearch.length"
       max-height="200"
     >
       <v-item-group
@@ -31,7 +35,7 @@
           :key="entity.id"
         >
           <entity-card
-            :active="Number(entity.id) === selectedEntityId"
+            :active="entity.id === selectedEntityId"
             :entity="entity"
             :noOfEntitiesOnCanvas="getNumberOfEntitiesOnCanvas(entity)"
             @click="entityChipGroupOnChangeHandler"
@@ -79,14 +83,14 @@ export default class TheEntityListContent extends Vue {
   @Watch('enabledTool')
   onPropertyChangeHandler () {
     if (this.enabledTool?.name !== 'entity') {
-      this.selectedDefaultEntityId = -1
-      this.selectedEntityId = -1
+      this.selectedDefaultEntityId = null
+      this.selectedEntityId = null
     }
   }
 
   search = ''
-  selectedDefaultEntityId = -1
-  selectedEntityId = -1
+  selectedDefaultEntityId: string | null = null
+  selectedEntityId: string | null = null
 
   get entities (): Entity[] {
     const apiData: Api | undefined = this.api.find((api: Api) => api.name === GameApiRoutes[Game.WOWS].entities)
@@ -149,17 +153,17 @@ export default class TheEntityListContent extends Vue {
   }
 
   defaultEntityChipGroupOnChangeHandler (entity: Ship) {
-    if (this.selectedEntityId !== -1) {
-      this.selectedEntityId = -1
+    if (this.selectedEntityId !== null) {
+      this.selectedEntityId = null
     }
-    this.selectedDefaultEntityId = this.selectedDefaultEntityId === Number(entity.id) ? -1 : Number(entity.id)
+    this.selectedDefaultEntityId = this.selectedDefaultEntityId === entity.id ? null : entity.id
   }
 
   entityChipGroupOnChangeHandler (entity: Ship) {
-    if (this.selectedDefaultEntityId !== -1) {
-      this.selectedDefaultEntityId = -1
+    if (this.selectedDefaultEntityId !== null) {
+      this.selectedDefaultEntityId = null
     }
-    this.selectedEntityId = this.selectedEntityId === Number(entity.id) ? -1 : Number(entity.id)
+    this.selectedEntityId = this.selectedEntityId === entity.id ? null : entity.id
   }
 }
 </script>

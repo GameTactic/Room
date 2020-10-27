@@ -8,7 +8,6 @@ import { SocketCanvasToolsEmit } from '@/store/modules/socket'
 
 export default class Circle extends ToolClass implements CircleInterface {
   private circleCreator: CircleCreator
-  private groupId = uuid()
   private data: CircleData = {
     from: { x: 0, y: 0 },
     to: { x: 0, y: 0 }
@@ -21,7 +20,8 @@ export default class Circle extends ToolClass implements CircleInterface {
                public temporary: boolean,
                public showRadius: boolean,
                public outlineColour: string,
-               public strokeStyle: number) {
+               public strokeStyle: number,
+               public groupId: string = uuid()) {
     super()
     this.circleCreator = new CircleCreator(
       this.temporary,

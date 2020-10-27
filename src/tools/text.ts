@@ -10,12 +10,12 @@ import { SocketCanvasToolsEmit } from '@/store/modules/socket'
 export default class Text extends ToolClass implements TextInterface {
   private textCreator: TextCreator
   private data: TextData = { point: { x: 0, y: 0 } }
-  private groupId = uuid()
   constructor (public readonly name: string,
                public size: number,
                public colour: string,
                public temporary: boolean,
-               public textString: string) {
+               public textString: string,
+               public groupId: string = uuid()) {
     super()
     this.textCreator = new TextCreator(
       this.temporary,

@@ -10,12 +10,13 @@ export default class Ruler extends ToolClass implements RulerInterface {
   private rulerCreator: RulerCreator
   private hasMoved = false
   private data: RulerData = { from: { x: 0, y: 0 }, to: { x: 0, y: 0 } }
-  private groupId = uuid()
+
   constructor (public readonly name: string,
                public size: number,
                public colour: string,
                public temporary: boolean,
-               public showCircle: boolean) {
+               public showCircle: boolean,
+               public groupId: string = uuid()) {
     super()
     this.rulerCreator = new RulerCreator(
       this.temporary,

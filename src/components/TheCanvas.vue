@@ -18,7 +18,7 @@
 <script lang="ts">
 import Component, { mixins } from 'vue-class-component'
 import { Tool } from '@/tools/tool'
-import { CanvasElement, VueKonvaLayer, VueKonvaStage } from '@/types/canvas'
+import { CanvasElement, VueKonvaLayer, VueKonvaStage, CanvasElementType } from '@/types/canvas'
 import { namespace } from 'vuex-class'
 import { AppToolGetters } from '@/store/modules/app/tools'
 import { SocketCanvasAction, SocketCanvasGetters } from '@/store/modules/socket/canvas'
@@ -34,6 +34,9 @@ import CanvasSockets from '@/mixins/canvasSockets'
 import StageWatcher from '@/mixins/stageWatcher'
 import { Namespaces } from '@/store'
 import { v4 as uuid } from 'uuid'
+import { Shape, ShapeConfig } from 'konva/types/Shape'
+import { Group } from 'konva/types/Group'
+import { Watch } from 'vue-property-decorator'
 
 const AppLayer = namespace(Namespaces.APP_LAYER)
 const AppStage = namespace(Namespaces.APP_STAGE)
@@ -87,13 +90,22 @@ export default class TheCanvas extends mixins(CanvasSockets, StageWatcher) {
 
   onMouseHandler (e: Konva.KonvaPointerEvent): void {
     let type = ''
-    switch (e.evt.type) {
-      case 'mousedown':
-        type = 'mouseDownAction'
-        this.isMouseDown = true
-        break
-      case 'mousemove': type = 'mouseMoveAction'; break
-      case 'mouseup': type = 'mouseUpAction'; break
+    // if left mouse button
+    if (e.evt.which === 1) {
+      switch (e.evt.type) {
+        case 'mousedown':
+          type = 'mouseDownAction'
+          this.isMouseDown = true
+          break
+        case 'mousemove': type = 'mouseMoveAction'; break
+        case 'mouseup': type = 'mouseUpAction'; break
+      }
+    }
+    // if right mouse button
+    if (e.evt.which === 3) {
+      switch (e.evt.type) {
+        case 'mouseup': type = 'mouseRightUpAction'; break
+      }
     }
     const event = PointerEventMapper.globalEventMapper(e)
     if (this.enabledTool?.[type]) {
@@ -102,7 +114,6 @@ export default class TheCanvas extends mixins(CanvasSockets, StageWatcher) {
       this.enabledTool[`canvas${type.substring(5)}`](event)
     }
     if (type === 'mouseUpAction') {
-      this.renderShapes()
       this.isMouseDown = false
     }
   }
