@@ -2,55 +2,85 @@
   <span v-if="!items.length" class="caption px-2" v-text="$t('tactic.noTacticsFound')"/>
   <v-treeview
     v-else
-    v-model="activeElements"
+    :active="[currentTacticId]"
     :items="items"
-    :open="open"
     class="pa-0"
     dense
     open-on-click
     activatable
+    @update:active="switchTactic($event)"
   >
     <template v-slot:prepend="{ item, isOpen }">
       <v-icon v-if="item.children">
         {{ isOpen ? 'fa-folder-open' : 'fa-folder' }}
       </v-icon>
-      <v-avatar
-        v-else
-        size="30"
-        class="ml-0 pl-0"
-      >
-        <img :src="item.tactic.map.icon">
-      </v-avatar>
+        <v-badge
+          v-else
+          icon="fa-bookmark"
+          :value="item.tactic.isPinned"
+          offset-y="15"
+          left
+          overlap
+        >
+          <v-avatar
+            size="30"
+            class="ml-0 pl-0"
+          >
+             <img :src="item.tactic.map.icon">
+           </v-avatar>
+        </v-badge>
     </template>
     <template v-slot:label="{ item }">
       <span
         v-if="!item.children"
         class="d-flex justify-space-between align-center"
-        @click="switchTactic(item.id)"
+        :title="item.name"
       >
           <span class="d-flex flex-column">
             <span class="body-2" v-text="item.name" />
             <span class="caption" v-text="item.tactic.map.name" />
           </span>
-          <v-btn
-            elevation="0"
-            tile
-            class="mr-1 px-0"
-            :width="30"
-            color="transparent"
-            ripple
-            small
+          <v-menu
+            v-if="!item.children"
+            offset-y
+            nudge-left="80"
+            nudge-width="80"
+            content-class="elevation-2"
           >
-            <v-badge
-              :v-if="numberUsersOnTactic(item.id) > 0"
-              :content="numberUsersOnTactic(item.id)"
-              right
-              overlap
-              color="primary"
-            >
-              <v-icon color="grey darken-1">fa-user-circle</v-icon>
-            </v-badge>
-          </v-btn>
+            <template v-slot:activator="{ on: usersOnTactic }">
+              <v-btn
+                v-if="getUsersOnTactic(item.id) > 0"
+                elevation="0"
+                tile
+                class="mr-1 px-0"
+                :width="30"
+                color="transparent"
+                ripple
+                small
+                v-on="usersOnTactic"
+                @click.stop=""
+              >
+                <v-badge
+                  :v-if="getUsersOnTactic(item.id) > 0"
+                  :content="getUsersOnTactic(item.id)"
+                  right
+                  overlap
+                  color="primary"
+                >
+                  <v-icon color="grey darken-1">fa-user-circle</v-icon>
+                </v-badge>
+              </v-btn>
+            </template>
+            <v-card tile>
+              <v-list dense>
+                <v-list-item v-for="user in getUsersOnTactic(item.id)" :key="user.id">
+                  <v-list-item-content>
+                    <v-list-item-title v-text="user.name" />
+                  </v-list-item-content>
+                </v-list-item>
+              </v-list>
+            </v-card>
+          </v-menu>
         </span>
       <a v-else>{{ item.name }}</a>
     </template>
@@ -83,12 +113,12 @@
             >
               <v-list-item-icon class="custom-autocomplete-tactic-menu-icon">
                 <v-icon
-                  :color="tacticMenuColour(item.tactic, cardItem)"
+                  :color="tacticMenuIconColour(item.tactic, cardItem)"
                   small
                   v-text="tacticMenuIcon(item.tactic, cardItem)" />
               </v-list-item-icon>
               <v-list-item-content>
-                <v-list-item-title v-text="tacticMenuPinText(item.tactic, cardItem)" />
+                <v-list-item-title :title="tacticMenuPinText(item.tactic, cardItem)" v-text="tacticMenuPinText(item.tactic, cardItem)" />
               </v-list-item-content>
             </v-list-item>
           </v-list>
@@ -105,7 +135,7 @@ import Vue from 'vue'
 import { namespace } from 'vuex-class'
 import { Namespaces } from '@/store'
 import { SocketTacticAction, SocketTacticGetters } from '@/store/modules/socket/tactic'
-import { Collection, Tactic } from '@/store/types'
+import { Collection, Tactic, User } from '@/store/types'
 import { MenuItem, TacticMenuOptions, TreeViewItem } from '../../types'
 import { EventBus } from '@/event-bus'
 import { SocketUserGetters } from '@/store/modules/socket/user'
@@ -122,13 +152,12 @@ export default class TheTacticListContent extends Vue {
   @SocketTactic.Getter(SocketTacticGetters.COLLECTIONS) collections!: Collection[]
   @SocketTactic.Getter(SocketTacticGetters.TACTICS) tactics!: Tactic[]
   @SocketTactic.Getter(SocketTacticGetters.PINNED_TACTICS) pinnedTactics!: Tactic[]
+  @SocketTactic.Getter(SocketTacticGetters.CURRENT_TACTIC_ID) currentTacticId!: string
   @SocketUser.Getter(SocketUserGetters.IS_AUTHORISED) isAuthorised!: boolean;
+  @SocketUser.Getter(SocketUserGetters.ONLINE_USERS) onlineUsers!: User[];
   @SocketTactic.Action(SocketTacticAction.DELETE_TACTIC) deleteTactic!: (id: string) => void
   @SocketTactic.Action(SocketTacticAction.UPDATE_TACTIC) updateTactic!: (tactic: Tactic) => void
   @SocketTactic.Action(SocketTacticAction.TOGGLE_PIN_TACTIC) togglePinTactic!: (tactic: Tactic) => void
-  activeElements: TreeViewItem[] = []
-  open: string[] = []
-  search: string | null = null
 
   get items (): TreeViewItem[] {
     const collections: TreeViewItem[] = this.collections.map((collection: Collection) => {
@@ -157,16 +186,15 @@ export default class TheTacticListContent extends Vue {
     return collections[0].children || []
   }
 
-  switchTactic (id: string) {
-    const tactic: Tactic | undefined = this.tactics.find((tactic: Tactic) => tactic.id === id)
+  switchTactic (ids: string[]) {
+    const tactic: Tactic | undefined = this.tactics.find((tactic: Tactic) => tactic.id === ids[0])
     if (tactic) {
       new HandleTactic(tactic).setLocal()
     }
   }
 
-  // TODO: We do not have the logic to determine which users are viewing which Tactic yet
-  numberUsersOnTactic () {
-    return 1
+  getUsersOnTactic (tactic: Tactic) {
+    return this.onlineUsers.filter((onlineUser: User) => onlineUser.onTacticId === tactic.id)
   }
 
   tacticMenuOnClickHandler (menuItem: MenuItem, tactic: Tactic) {
@@ -185,13 +213,11 @@ export default class TheTacticListContent extends Vue {
     }
   }
 
-  tacticMenuColour (tactic: Tactic, item: MenuItem) {
-    if (item.action === TacticMenuOptions.PIN && tactic.pinned) {
-      return 'primary'
-    } else if (item.action === TacticMenuOptions.DELETE) {
+  tacticMenuIconColour (tactic: Tactic, item: MenuItem) {
+    if (item.action === TacticMenuOptions.DELETE) {
       return 'error'
     }
-    return ''
+    return 'primary'
   }
 
   tacticMenuIcon (tactic: Tactic, item: MenuItem) {

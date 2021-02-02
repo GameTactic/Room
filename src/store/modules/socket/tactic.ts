@@ -33,6 +33,7 @@ export enum SocketTacticGetters {
   TACTICS = 'tactics',
   TACTIC = 'tactic',
   CURRENT_TACTIC_ID = 'currentTacticId',
+  CURRENT_TACTIC = 'currentTactic',
   PINNED_TACTICS = 'pinnedSocketTactics'
 }
 
@@ -55,6 +56,7 @@ const SocketTacticModule: Module<SocketTacticState, RootState> = {
   },
   getters: {
     [SocketTacticGetters.CURRENT_TACTIC_ID]: state => state.currentTacticId,
+    [SocketTacticGetters.CURRENT_TACTIC]: state => state.tactics.find((tactic: Tactic) => tactic.id === state.currentTacticId),
     [SocketTacticGetters.COLLECTIONS]: (state): Collection[] => state.collections,
     [SocketTacticGetters.COLLECTION]: (state) => (id: string): Collection | undefined => state.collections.find((collection: Collection) => collection.id === id),
     [SocketTacticGetters.TACTICS]: (state): Tactic[] => state.tactics,

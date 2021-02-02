@@ -85,7 +85,9 @@ export default class TheRoom extends mixins(RoomSocket) {
   @SocketRoom.Action(SocketRoomAction.SET_ROOM_ID) setRoomId!: (roomId: string) => void
 
   created () {
-    EventBus.$on('MapChanging', (v: boolean) => { this.isMapChanging = v })
+    EventBus.$on('MapChanging', (hasChanged: boolean) => {
+      this.isMapChanging = hasChanged
+    })
     this.setRoomId(window.location.pathname.replace('/', ''))
   }
 
