@@ -92,8 +92,8 @@ export default class TeamListItem extends Vue {
       case TeamMenuOptions.STATS:
         EventBus.$emit(OpenOverlayList.OPEN_THE_ENTITY_PROPERTIES_MODAL, this.entity)
         break
-      case TeamMenuOptions.CLONE_ENTITY_TEAM: break
-      case TeamMenuOptions.CLONE_ENTITY_DIFFERENT_TEAM: break
+      case TeamMenuOptions.DUPLICATE_ENTITY_TEAM: break
+      case TeamMenuOptions.DUPLICATE_ENTITY_DIFFERENT_TEAM: break
       case TeamMenuOptions.DELETE: break
       default: break
     }
@@ -119,13 +119,13 @@ export default class TeamListItem extends Vue {
     title: 'teams.menu.stats',
     icon: 'fa-edit'
   }, {
-    action: TeamMenuOptions.CLONE_ENTITY_TEAM,
-    title: 'teams.menu.cloneEntityTeam',
-    icon: 'fa-clone'
+    action: TeamMenuOptions.DUPLICATE_ENTITY_TEAM,
+    title: 'teams.menu.duplicateEntityTeam',
+    icon: 'far fa-clone'
   }, {
-    action: TeamMenuOptions.CLONE_ENTITY_DIFFERENT_TEAM,
-    title: 'teams.menu.cloneEntityDifferentTeam',
-    icon: 'fa-clone'
+    action: TeamMenuOptions.DUPLICATE_ENTITY_DIFFERENT_TEAM,
+    title: 'teams.menu.duplicateEntityDifferentTeam',
+    icon: 'far fa-clone'
   }, {
     action: TeamMenuOptions.DELETE,
     title: 'teams.menu.delete',

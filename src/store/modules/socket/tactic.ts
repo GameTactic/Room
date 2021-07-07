@@ -1,5 +1,6 @@
 import { ActionContext, Module } from 'vuex'
-import { Collection, Tactic, RootState } from '@/store/types'
+import { v4 as uuid } from 'uuid'
+import { Collection, Tactic, RootState, ToggleLockTactic, DuplicateTactic } from '@/store/types'
 
 export enum SocketTacticAction {
   SET_COLLECTIONS = 'setCollections',
@@ -8,7 +9,9 @@ export enum SocketTacticAction {
   DELETE_COLLECTION = 'deleteCollection',
   SET_TACTICS = 'setSocketTactics',
   ADD_TACTIC = 'addSocketTactic',
+  DUPLICATE_TACTIC = 'duplicateTactic',
   TOGGLE_PIN_TACTIC = 'togglePinSocketTactic',
+  TOGGLE_LOCK_TACTIC = 'toggleLockTactic',
   UPDATE_TACTIC = 'updateSocketTactic',
   DELETE_TACTIC = 'deleteSocketTactic',
   SET_CURRENT_TACTIC_ID = 'setCurrentTacticID'
@@ -22,6 +25,7 @@ export enum SocketTacticMutation {
   SET_TACTICS = 'SET_TACTICS',
   ADD_TACTIC = 'ADD_TACTIC',
   TOGGLE_PIN_TACTIC = 'TOGGLE_PIN_TACTIC',
+  TOGGLE_LOCK_TACTIC = 'TOGGLE_LOCK_TACTIC',
   UPDATE_TACTIC = 'UPDATE_TACTIC',
   DELETE_TACTIC = 'DELETE_TACTIC',
   SET_CURRENT_TACTIC_ID = 'SET_CURRENT_TACTIC_ID'
@@ -33,6 +37,7 @@ export enum SocketTacticGetters {
   TACTICS = 'tactics',
   TACTIC = 'tactic',
   CURRENT_TACTIC_ID = 'currentTacticId',
+  CURRENT_TACTIC = 'currentTactic',
   PINNED_TACTICS = 'pinnedSocketTactics'
 }
 
@@ -55,6 +60,7 @@ const SocketTacticModule: Module<SocketTacticState, RootState> = {
   },
   getters: {
     [SocketTacticGetters.CURRENT_TACTIC_ID]: state => state.currentTacticId,
+    [SocketTacticGetters.CURRENT_TACTIC]: state => state.tactics.find((tactic: Tactic) => tactic.id === state.currentTacticId),
     [SocketTacticGetters.COLLECTIONS]: (state): Collection[] => state.collections,
     [SocketTacticGetters.COLLECTION]: (state) => (id: string): Collection | undefined => state.collections.find((collection: Collection) => collection.id === id),
     [SocketTacticGetters.TACTICS]: (state): Tactic[] => state.tactics,
@@ -79,6 +85,18 @@ const SocketTacticModule: Module<SocketTacticState, RootState> = {
     },
     [SocketTacticMutation.TOGGLE_PIN_TACTIC] (state: SocketTacticState, payload: Tactic) {
       payload.isPinned = !payload.isPinned
+    },
+    [SocketTacticMutation.TOGGLE_LOCK_TACTIC] (state: SocketTacticState, payload: ToggleLockTactic) {
+      let foundTacticIndex = -1
+      const foundTactic: Tactic | undefined = state.tactics.find((tactic: Tactic, index: number) => {
+        if (tactic.id === payload.tacticId) {
+          foundTacticIndex = index
+          return true
+        }
+      })
+      if (foundTacticIndex > -1 && foundTactic) {
+        state.tactics.splice(foundTacticIndex, 1, { ...foundTactic, lockedBy: !foundTactic.lockedBy ? payload.jti : undefined })
+      }
     },
     [SocketTacticMutation.ADD_TACTIC] (state: SocketTacticState, payload: Tactic) {
       state.tactics.push(payload)
@@ -112,8 +130,14 @@ const SocketTacticModule: Module<SocketTacticState, RootState> = {
     [SocketTacticAction.ADD_TACTIC] (context: SocketTacticActionContext, payload: Tactic) {
       context.commit('ADD_TACTIC', payload)
     },
+    [SocketTacticAction.DUPLICATE_TACTIC] (context: SocketTacticActionContext, payload: DuplicateTactic) {
+      context.commit('ADD_TACTIC', { ...payload.tactic, createdBy: payload.jti, id: uuid() })
+    },
     [SocketTacticAction.TOGGLE_PIN_TACTIC] (context: SocketTacticActionContext, payload: Tactic) {
       context.commit('TOGGLE_PIN_TACTIC', payload)
+    },
+    [SocketTacticAction.TOGGLE_LOCK_TACTIC] (context: SocketTacticActionContext, payload: ToggleLockTactic) {
+      context.commit('TOGGLE_LOCK_TACTIC', payload)
     },
     [SocketTacticAction.UPDATE_TACTIC] (context: SocketTacticActionContext, payload: Tactic) {
       context.commit('UPDATE_TACTIC', payload)

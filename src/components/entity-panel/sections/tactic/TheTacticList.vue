@@ -1,6 +1,6 @@
 <template>
   <accordion-item
-    :rightButtonDisabled="!ApiMaps"
+    :isRightButtonDisabled="!ApiMaps"
     icon="fa-plus"
     @rightButtonClicked="newTacticOnClickHandler"
   >
