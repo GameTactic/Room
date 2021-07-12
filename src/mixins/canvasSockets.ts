@@ -2,7 +2,8 @@ import Vue from 'vue'
 import Component from 'vue-class-component'
 import { Socket } from 'vue-socket.io-extended'
 import { namespace } from 'vuex-class'
-import { AdditionData, CanvasElement, CanvasElementHistory, TransformData, RedoData, RemovalData, RemovalTools, RequestCanvasEntity, UndoData } from '@/types/canvas'
+import { RemovalTools, RequestCanvasEntity } from '@/types/canvas'
+import { AdditionCommit, CanvasElement, CanvasElementHistory, TransformCommit, RedoCommit, RemovalCommit, UndoCommit } from '@gametactic/state'
 import { Tool, Tracker } from '@/tools/tool'
 import { AppToolGetters } from '@/store/modules/app/tools'
 import { SocketCanvasAction, SocketCanvasGetters } from '@/store/modules/socket/canvas'
@@ -118,7 +119,7 @@ export default class CanvasSocket extends Vue {
   }
 
   onAddition (request: RequestCanvasEntity) {
-    const additionData = request.modifyData as AdditionData
+    const additionData = request.modifyData as AdditionCommit
     if (request.canvasElements && additionData.tool) {
       const foundTool: Tool | void = this.findTool(additionData.tool)
       if (foundTool && foundTool.renderCanvas) {
@@ -129,7 +130,7 @@ export default class CanvasSocket extends Vue {
   }
 
   onRemoval (request: RequestCanvasEntity) {
-    const removalData = request.modifyData as RemovalData
+    const removalData = request.modifyData as RemovalCommit
     if (removalData.removals) {
       const foundTool: Tool | void = this.findTool(RemovalTools.ERASER)
       if (foundTool && foundTool.renderCanvas) {
@@ -140,19 +141,19 @@ export default class CanvasSocket extends Vue {
   }
 
   additionToState (request: RequestCanvasEntity) {
-    const additionsData = request.modifyData as AdditionData
+    const additionsData = request.modifyData as AdditionCommit
     if (request.canvasElements.length === additionsData.additions.length && request.canvasElements) {
-      request.canvasElements.forEach((canvasElement: CanvasElement) => {
-        this.addCanvasElement(canvasElement)
+      request.canvasElements.forEach((canvasElement: unknown) => {
+        this.addCanvasElement(canvasElement as CanvasElement)
       })
       delete request.canvasElements
-      this.addCanvasElementHistory(request)
+      this.addCanvasElementHistory(request as unknown as CanvasElementHistory)
     }
     new HandleRenderShapes(this.$store).handle()
   }
 
   removalToState (request: RequestCanvasEntity) {
-    const removalsData = request.modifyData as RemovalData
+    const removalsData = request.modifyData as RemovalCommit
     if (removalsData.removals) {
       removalsData.removals.forEach((groupId: string) => {
         const foundElement: CanvasElement | void = this.canvasElementById(groupId)
@@ -161,13 +162,13 @@ export default class CanvasSocket extends Vue {
         }
       })
       delete request.canvasElements
-      this.addCanvasElementHistory(request)
+      this.addCanvasElementHistory(request as unknown as CanvasElementHistory)
     }
     new HandleRenderShapes(this.$store).handle()
   }
 
   transformToState (request: RequestCanvasEntity) {
-    const moveData = request.modifyData as TransformData
+    const moveData = request.modifyData as TransformCommit
     if (moveData.to && moveData.from && moveData.groups) {
       moveData.groups.forEach((groupId: string) => {
         const foundElement: CanvasElement | void = this.canvasElementById(groupId)
@@ -192,12 +193,12 @@ export default class CanvasSocket extends Vue {
   }
 
   undoToState (request: RequestCanvasEntity) {
-    const undoData = request.modifyData as UndoData
+    const undoData = request.modifyData as UndoCommit
     if (undoData.historyId) {
       const undo: CanvasElementHistory | void = this.canvasElementHistoryById(undoData.historyId)
       if (undo) {
         const handleUndoRedo = new HandleUndoRedo()
-        switch (undo.modifyType) {
+        switch (undo.commitType) {
           case Tracker.ADDITION:
             handleUndoRedo.undoAdditions(undo, this.canvasElements)
             break
@@ -209,23 +210,23 @@ export default class CanvasSocket extends Vue {
             break
         }
         delete request.canvasElements
-        this.addCanvasElementHistory(request)
+        this.addCanvasElementHistory(request as unknown as CanvasElementHistory)
       }
     }
     new HandleRenderShapes(this.$store).handle()
   }
 
   redoToState (request: RequestCanvasEntity) {
-    const redoData = request.modifyData as RedoData
+    const redoData = request.modifyData as RedoCommit
     if (redoData.historyId) {
       const undoObject: CanvasElementHistory | void = this.canvasElementHistoryById(redoData.historyId)
       if (undoObject) {
-        const undoModifyData = undoObject.modifyData as UndoData
+        const undoModifyData = undoObject.commitData as UndoCommit
         if (undoModifyData) {
           const redo: CanvasElementHistory | void = this.canvasElementHistoryById(undoModifyData.historyId)
           if (redo) {
             const handleUndoRedo = new HandleUndoRedo()
-            switch (redo.modifyType) {
+            switch (redo.commitType) {
               case Tracker.ADDITION:
                 handleUndoRedo.redoAdditions(redo, this.canvasElements)
                 break
@@ -237,7 +238,7 @@ export default class CanvasSocket extends Vue {
                 break
             }
             delete request.canvasElements
-            this.addCanvasElementHistory(request)
+            this.addCanvasElementHistory(request as unknown as CanvasElementHistory)
           }
         }
       }

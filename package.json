@@ -9,6 +9,7 @@
     "lint": "vue-cli-service lint"
   },
   "dependencies": {
+    "@gametactic/state": "^0.0.5",
     "@sentry/browser": "^5.13.0",
     "@sentry/integrations": "^5.13.0",
     "@types/lodash.values": "^4.3.6",
