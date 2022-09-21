@@ -31,7 +31,7 @@
     "vue-property-decorator": "^8.4.0",
     "vue-router": "^3.0.7",
     "vue-socket.io-extended": "^4.0.1",
-    "vuetify": "^2.3.3",
+    "vuetify": "^2.6.10",
     "vuex": "^3.1.2",
     "vuex-class": "^0.3.2"
   },
